@@ -34,7 +34,6 @@ CompileFlags:
   Add:
     - -xc
     - -DPYTHON_RE_LANGUAGE=python_re
-    - -DPYTHON_RE_INITIAL_VERBOSE=0
     - -I../../python_re/src
 
 ---
@@ -42,6 +41,4 @@ If:
   PathMatch: test/scanner\.test\.c
 CompileFlags:
   Add:
-    - -DPYTHON_RE_LANGUAGE=python_re_test
-    - -DPYTHON_RE_INITIAL_VERBOSE=0
     - -I../python_re/src

@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <stddef.h>
+#include <stdlib.h>
 #include <string.h>
 
 #if defined(JAVASCRIPT_REGEX_MODE)
@@ -17,12 +18,46 @@
 #define LAST_TOKEN (TOKEN_COUNT - 1)
 #endif
 #else
-#ifndef PYTHON_RE_LANGUAGE
-#define PYTHON_RE_LANGUAGE python_re_test
+#ifdef PYTHON_RE_VERBOSE
+#include "../python_re_verbose/src/scanner.c"
+#define SCANNER(name) tree_sitter_python_re_verbose_external_scanner_##name
+#else
+#include "../python_re/src/scanner.c"
+#define SCANNER(name) tree_sitter_python_re_external_scanner_##name
 #endif
-#include "../common/python/scanner.h"
-#define SCANNER(name) tree_sitter_python_re_test_external_scanner_##name
 #define LAST_TOKEN LITERAL_CHARACTER_VERBOSE
+#endif
+
+#ifdef TREE_SITTER_REUSE_ALLOCATOR
+static size_t reuse_calloc_calls;
+static size_t reuse_free_calls;
+static size_t reuse_live_allocations;
+static bool reuse_fail_next_calloc;
+
+static void *reuse_calloc(size_t count, size_t size) {
+  reuse_calloc_calls += 1;
+  if (reuse_fail_next_calloc) {
+    reuse_fail_next_calloc = false;
+    return NULL;
+  }
+  void *result = calloc(count, size);
+  if (result != NULL) {
+    reuse_live_allocations += 1;
+  }
+  return result;
+}
+
+static void reuse_free(void *allocation) {
+  reuse_free_calls += 1;
+  if (allocation != NULL) {
+    assert(reuse_live_allocations > 0);
+    reuse_live_allocations -= 1;
+  }
+  free(allocation);
+}
+
+void *(*ts_current_calloc)(size_t, size_t) = reuse_calloc;
+void (*ts_current_free)(void *) = reuse_free;
 #endif
 
 typedef struct {
@@ -240,17 +275,13 @@ static void assert_token(const char *source, TSSymbol token, size_t length) {
   MockLexer mock = make_lexer(source, strlen(source));
   bool valid_symbols[LITERAL_CHARACTER_VERBOSE + 1] = {false};
   valid_symbols[token] = true;
-  assert(tree_sitter_python_re_test_external_scanner_scan(
-    NULL,
-    &mock.lexer,
-    valid_symbols
-  ));
+  assert(SCANNER(scan)(NULL, &mock.lexer, valid_symbols));
   assert(mock.lexer.result_symbol == token);
   assert(mock.mark == length);
 }
 
 static void test_stateless_lifecycle_and_serialization(void) {
-  void *scanner = tree_sitter_python_re_test_external_scanner_create();
+  void *scanner = SCANNER(create)();
   assert(scanner == NULL);
   char buffer[TREE_SITTER_SERIALIZATION_BUFFER_SIZE];
   memset(buffer, 0x5a, sizeof(buffer));
@@ -258,13 +289,9 @@ static void test_stateless_lifecycle_and_serialization(void) {
   for (unsigned index = 0; index < sizeof(buffer); index += 1) {
     assert(buffer[index] == 0x5a);
   }
-  tree_sitter_python_re_test_external_scanner_deserialize(scanner, NULL, 0);
-  tree_sitter_python_re_test_external_scanner_deserialize(
-    scanner,
-    buffer,
-    sizeof(buffer)
-  );
-  tree_sitter_python_re_test_external_scanner_destroy(scanner);
+  SCANNER(deserialize)(scanner, NULL, 0);
+  SCANNER(deserialize)(scanner, buffer, sizeof(buffer));
+  SCANNER(destroy)(scanner);
 }
 
 static void test_token_ranges_follow_the_grammar_context(void) {
@@ -347,11 +374,7 @@ static void test_invalid_tokens_are_not_emitted(void) {
     valid_symbols[cases[index].token] = true;
     MockLexer mock =
       make_lexer(cases[index].source, strlen(cases[index].source));
-    assert(!tree_sitter_python_re_test_external_scanner_scan(
-      NULL,
-      &mock.lexer,
-      valid_symbols
-    ));
+    assert(!SCANNER(scan)(NULL, &mock.lexer, valid_symbols));
   }
   bool all_symbols[LITERAL_CHARACTER_VERBOSE + 1];
   for (
@@ -361,11 +384,7 @@ static void test_invalid_tokens_are_not_emitted(void) {
     all_symbols[index] = true;
   }
   MockLexer eof = make_lexer("", 0);
-  assert(!tree_sitter_python_re_test_external_scanner_scan(
-    NULL,
-    &eof.lexer,
-    all_symbols
-  ));
+  assert(!SCANNER(scan)(NULL, &eof.lexer, all_symbols));
 }
 
 static void test_nul_and_eof_are_distinct(void) {
@@ -385,6 +404,21 @@ static void test_nul_and_eof_are_distinct(void) {
 
 #endif
 
+#ifdef TREE_SITTER_REUSE_ALLOCATOR
+static void test_reuse_allocator_contract(void) {
+#if JAVASCRIPT_REGEX_MODE == 0
+  assert(reuse_calloc_calls > 0);
+  reuse_fail_next_calloc = true;
+  assert(SCANNER(create)() == NULL);
+  assert(!reuse_fail_next_calloc);
+#else
+  assert(reuse_calloc_calls == 0);
+#endif
+  assert(reuse_free_calls > 0);
+  assert(reuse_live_allocations == 0);
+}
+#endif
+
 int main(void) {
   test_disabled_tokens_preserve_state();
 #if defined(JAVASCRIPT_REGEX_MODE)
@@ -400,6 +434,9 @@ int main(void) {
   test_token_ranges_follow_the_grammar_context();
   test_invalid_tokens_are_not_emitted();
   test_nul_and_eof_are_distinct();
+#endif
+#ifdef TREE_SITTER_REUSE_ALLOCATOR
+  test_reuse_allocator_contract();
 #endif
   return 0;
 }

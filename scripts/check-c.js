@@ -18,28 +18,30 @@ const scannerConfigurations = {
   javascript_regex: {
     externalCount: "TOKEN_COUNT",
     contractArguments: ["-DJAVASCRIPT_REGEX_MODE=0"],
+    reuseAllocator: true,
   },
   javascript_regex_u: {
     externalCount: "TOKEN_COUNT",
     contractArguments: ["-DJAVASCRIPT_REGEX_MODE=1"],
+    reuseAllocator: true,
   },
   javascript_regex_v: {
     externalCount: "TOKEN_COUNT",
     contractArguments: ["-DJAVASCRIPT_REGEX_MODE=2"],
+    reuseAllocator: true,
   },
   python_re: {
     externalCount: "LITERAL_CHARACTER_VERBOSE + 1",
-    contractArguments: [
-      "-DPYTHON_RE_INITIAL_VERBOSE=0",
-      "-DPYTHON_RE_LANGUAGE=python_re_test",
-    ],
+    contractArguments: ["-DPYTHON_RE_LANGUAGE=python_re"],
+    reuseAllocator: false,
   },
   python_re_verbose: {
     externalCount: "LITERAL_CHARACTER_VERBOSE + 1",
     contractArguments: [
-      "-DPYTHON_RE_INITIAL_VERBOSE=1",
-      "-DPYTHON_RE_LANGUAGE=python_re_test",
+      "-DPYTHON_RE_VERBOSE",
+      "-DPYTHON_RE_LANGUAGE=python_re_verbose",
     ],
+    reuseAllocator: false,
   },
 };
 
@@ -145,6 +147,10 @@ function scannerVariants() {
     const configuration = scannerConfigurations[grammar.name];
     if (configuration === undefined)
       throw new Error(`Unsupported scanner grammar ${grammar.name}.`);
+    if (typeof configuration.reuseAllocator !== "boolean")
+      throw new Error(
+        `Scanner grammar ${grammar.name} must declare reuseAllocator.`,
+      );
     const includeDirectory = join(root, grammar.path, "src");
     return {
       ...configuration,
