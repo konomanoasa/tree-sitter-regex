@@ -1,0 +1,34 @@
+CompileFlags:
+  Add: [-std=c17]
+
+---
+If:
+  PathMatch:
+    - javascript_regex(_u|_v)?/src/.*
+    - python_re(_verbose)?/src/.*
+CompileFlags:
+  Add: [-I.]
+
+---
+If:
+  PathMatch: common/scanner\.h
+CompileFlags:
+  Add: [-xc, -I../javascript_regex/src]
+
+---
+If:
+  PathMatch: common/javascript/scanner\.h
+CompileFlags:
+  Add: [-xc, -I../../javascript_regex/src]
+
+---
+If:
+  PathMatch: common/python/scanner\.h
+CompileFlags:
+  Add: [-xc, -DPYTHON_RE_LANGUAGE=python_re, -DPYTHON_RE_INITIAL_VERBOSE=0, -I../../python_re/src]
+
+---
+If:
+  PathMatch: test/scanner\.test\.c
+CompileFlags:
+  Add: [-DPYTHON_RE_LANGUAGE=python_re_test, -DPYTHON_RE_INITIAL_VERBOSE=0, -I../python_re/src]

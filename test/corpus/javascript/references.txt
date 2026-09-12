@@ -1,0 +1,255 @@
+==============================
+Unicode numeric references retain maximal digits without resolving captures
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==============================
+\1(a)\1234+
+---
+0:0  - 0:11   pattern
+0:0  - 0:11     body: disjunction
+0:0  - 0:11       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                decimal_escape
+0:1  - 0:2                  non_zero_digit `1`
+0:2  - 0:5          term
+0:2  - 0:5            operand: atom
+0:2  - 0:3              "("
+0:3  - 0:4              body: disjunction
+0:3  - 0:4                alternative
+0:3  - 0:4                  term
+0:3  - 0:4                    operand: atom
+0:3  - 0:4                      pattern_character
+0:3  - 0:4                        source_character `a`
+0:4  - 0:5              ")"
+0:5  - 0:11         term
+0:5  - 0:10           operand: atom
+0:5  - 0:6              "\\"
+0:6  - 0:10             atom_escape
+0:6  - 0:10               decimal_escape
+0:6  - 0:7                  non_zero_digit `1`
+0:7  - 0:10                 decimal_digits
+0:7  - 0:8                    decimal_digit `2`
+0:8  - 0:9                    decimal_digit `3`
+0:9  - 0:10                   decimal_digit `4`
+0:10 - 0:11           quantifier: quantifier
+0:10 - 0:11             quantifier_prefix
+0:10 - 0:11               "+"
+
+==============================
+Named references preserve forward and escaped names (javascript_regex)
+:language(javascript_regex)
+:cst
+==============================
+\k<x>(?<x>a)\k<\u0078>?
+---
+0:0  - 0:23   pattern
+0:0  - 0:23     body: disjunction
+0:0  - 0:23       alternative
+0:0  - 0:5          term
+0:0  - 0:5            operand: extended_atom
+0:0  - 0:1              "\\"
+0:1  - 0:5              atom_escape
+0:1  - 0:2                "k"
+0:2  - 0:5                group_name
+0:2  - 0:3                  "<"
+0:3  - 0:4                  name: reg_exp_identifier_name
+0:3  - 0:4                    reg_exp_identifier_start
+0:3  - 0:4                      identifier_start_char
+0:3  - 0:4                        unicode_id_start `x`
+0:4  - 0:5                  ">"
+0:5  - 0:12         term
+0:5  - 0:12           operand: extended_atom
+0:5  - 0:6              "("
+0:6  - 0:10             group_specifier
+0:6  - 0:7                "?"
+0:7  - 0:10               group_name
+0:7  - 0:8                  "<"
+0:8  - 0:9                  name: reg_exp_identifier_name
+0:8  - 0:9                    reg_exp_identifier_start
+0:8  - 0:9                      identifier_start_char
+0:8  - 0:9                        unicode_id_start `x`
+0:9  - 0:10                 ">"
+0:10 - 0:11             body: disjunction
+0:10 - 0:11               alternative
+0:10 - 0:11                 term
+0:10 - 0:11                   operand: extended_atom
+0:10 - 0:11                     extended_pattern_character
+0:10 - 0:11                       source_character `a`
+0:11 - 0:12             ")"
+0:12 - 0:23         term
+0:12 - 0:22           operand: extended_atom
+0:12 - 0:13             "\\"
+0:13 - 0:22             atom_escape
+0:13 - 0:14               "k"
+0:14 - 0:22               group_name
+0:14 - 0:15                 "<"
+0:15 - 0:21                 name: reg_exp_identifier_name
+0:15 - 0:21                   reg_exp_identifier_start
+0:15 - 0:16                     "\\"
+0:16 - 0:21                     reg_exp_unicode_escape_sequence
+0:16 - 0:17                       "u"
+0:17 - 0:21                       hex_non_surrogate
+0:17 - 0:21                         hex4_digits
+0:17 - 0:18                           hex_digit `0`
+0:18 - 0:19                           hex_digit `0`
+0:19 - 0:20                           hex_digit `7`
+0:20 - 0:21                           hex_digit `8`
+0:21 - 0:22                 ">"
+0:22 - 0:23           quantifier: quantifier
+0:22 - 0:23             quantifier_prefix
+0:22 - 0:23               "?"
+
+==============================
+Named references preserve forward and escaped names (javascript_regex_u, javascript_regex_v)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==============================
+\k<x>(?<x>a)\k<\u0078>?
+---
+0:0  - 0:23   pattern
+0:0  - 0:23     body: disjunction
+0:0  - 0:23       alternative
+0:0  - 0:5          term
+0:0  - 0:5            operand: atom
+0:0  - 0:1              "\\"
+0:1  - 0:5              atom_escape
+0:1  - 0:2                "k"
+0:2  - 0:5                group_name
+0:2  - 0:3                  "<"
+0:3  - 0:4                  name: reg_exp_identifier_name
+0:3  - 0:4                    reg_exp_identifier_start
+0:3  - 0:4                      identifier_start_char
+0:3  - 0:4                        unicode_id_start `x`
+0:4  - 0:5                  ">"
+0:5  - 0:12         term
+0:5  - 0:12           operand: atom
+0:5  - 0:6              "("
+0:6  - 0:10             group_specifier
+0:6  - 0:7                "?"
+0:7  - 0:10               group_name
+0:7  - 0:8                  "<"
+0:8  - 0:9                  name: reg_exp_identifier_name
+0:8  - 0:9                    reg_exp_identifier_start
+0:8  - 0:9                      identifier_start_char
+0:8  - 0:9                        unicode_id_start `x`
+0:9  - 0:10                 ">"
+0:10 - 0:11             body: disjunction
+0:10 - 0:11               alternative
+0:10 - 0:11                 term
+0:10 - 0:11                   operand: atom
+0:10 - 0:11                     pattern_character
+0:10 - 0:11                       source_character `a`
+0:11 - 0:12             ")"
+0:12 - 0:23         term
+0:12 - 0:22           operand: atom
+0:12 - 0:13             "\\"
+0:13 - 0:22             atom_escape
+0:13 - 0:14               "k"
+0:14 - 0:22               group_name
+0:14 - 0:15                 "<"
+0:15 - 0:21                 name: reg_exp_identifier_name
+0:15 - 0:21                   reg_exp_identifier_start
+0:15 - 0:16                     "\\"
+0:16 - 0:21                     reg_exp_unicode_escape_sequence
+0:16 - 0:17                       "u"
+0:17 - 0:21                       hex_non_surrogate
+0:17 - 0:21                         hex4_digits
+0:17 - 0:18                           hex_digit `0`
+0:18 - 0:19                           hex_digit `0`
+0:19 - 0:20                           hex_digit `7`
+0:20 - 0:21                           hex_digit `8`
+0:21 - 0:22                 ">"
+0:22 - 0:23           quantifier: quantifier
+0:22 - 0:23             quantifier_prefix
+0:22 - 0:23               "?"
+
+==============================
+Group names accept braced escapes and surrogate pairs in every mode
+:language(javascript_regex_u)
+:cst
+==============================
+(?<\u0061\u{62}_0>c)(?<\uD801\uDC00>d)
+---
+0:0  - 0:38   pattern
+0:0  - 0:38     body: disjunction
+0:0  - 0:38       alternative
+0:0  - 0:20         term
+0:0  - 0:20           operand: atom
+0:0  - 0:1              "("
+0:1  - 0:18             group_specifier
+0:1  - 0:2                "?"
+0:2  - 0:18               group_name
+0:2  - 0:3                  "<"
+0:3  - 0:17                 name: reg_exp_identifier_name
+0:3  - 0:9                    reg_exp_identifier_start
+0:3  - 0:4                      "\\"
+0:4  - 0:9                      reg_exp_unicode_escape_sequence
+0:4  - 0:5                        "u"
+0:5  - 0:9                        hex_non_surrogate
+0:5  - 0:9                          hex4_digits
+0:5  - 0:6                            hex_digit `0`
+0:6  - 0:7                            hex_digit `0`
+0:7  - 0:8                            hex_digit `6`
+0:8  - 0:9                            hex_digit `1`
+0:9  - 0:15                   reg_exp_identifier_part
+0:9  - 0:10                     "\\"
+0:10 - 0:15                     reg_exp_unicode_escape_sequence
+0:10 - 0:11                       "u"
+0:11 - 0:12                       "{"
+0:12 - 0:14                       code_point
+0:12 - 0:14                         hex_digits
+0:12 - 0:13                           hex_digit `6`
+0:13 - 0:14                           hex_digit `2`
+0:14 - 0:15                       "}"
+0:15 - 0:16                   reg_exp_identifier_part
+0:15 - 0:16                     identifier_part_char
+0:15 - 0:16                       unicode_id_continue `_`
+0:16 - 0:17                   reg_exp_identifier_part
+0:16 - 0:17                     identifier_part_char
+0:16 - 0:17                       unicode_id_continue `0`
+0:17 - 0:18                 ">"
+0:18 - 0:19             body: disjunction
+0:18 - 0:19               alternative
+0:18 - 0:19                 term
+0:18 - 0:19                   operand: atom
+0:18 - 0:19                     pattern_character
+0:18 - 0:19                       source_character `c`
+0:19 - 0:20             ")"
+0:20 - 0:38         term
+0:20 - 0:38           operand: atom
+0:20 - 0:21             "("
+0:21 - 0:36             group_specifier
+0:21 - 0:22               "?"
+0:22 - 0:36               group_name
+0:22 - 0:23                 "<"
+0:23 - 0:35                 name: reg_exp_identifier_name
+0:23 - 0:35                   reg_exp_identifier_start
+0:23 - 0:24                     "\\"
+0:24 - 0:35                     reg_exp_unicode_escape_sequence
+0:24 - 0:25                       "u"
+0:25 - 0:29                       hex_lead_surrogate
+0:25 - 0:29                         hex4_digits
+0:25 - 0:26                           hex_digit `D`
+0:26 - 0:27                           hex_digit `8`
+0:27 - 0:28                           hex_digit `0`
+0:28 - 0:29                           hex_digit `1`
+0:29 - 0:31                       "\\u"
+0:31 - 0:35                       hex_trail_surrogate
+0:31 - 0:35                         hex4_digits
+0:31 - 0:32                           hex_digit `D`
+0:32 - 0:33                           hex_digit `C`
+0:33 - 0:34                           hex_digit `0`
+0:34 - 0:35                           hex_digit `0`
+0:35 - 0:36                 ">"
+0:36 - 0:37             body: disjunction
+0:36 - 0:37               alternative
+0:36 - 0:37                 term
+0:36 - 0:37                   operand: atom
+0:36 - 0:37                     pattern_character
+0:36 - 0:37                       source_character `d`
+0:37 - 0:38             ")"

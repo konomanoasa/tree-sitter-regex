@@ -1,0 +1,1553 @@
+==============================
+Empty classes own separate bracket and negation tokens and a body caret stays an anchor (javascript_regex)
+:language(javascript_regex)
+:cst
+==============================
+[][^][a]^
+---
+0:0 - 0:9   pattern
+0:0 - 0:9     body: disjunction
+0:0 - 0:9       alternative
+0:0 - 0:2         term
+0:0 - 0:2           operand: extended_atom
+0:0 - 0:2             character_class
+0:0 - 0:1               "["
+0:1 - 0:2               "]"
+0:2 - 0:5         term
+0:2 - 0:5           operand: extended_atom
+0:2 - 0:5             character_class
+0:2 - 0:3               "["
+0:3 - 0:4               "^"
+0:4 - 0:5               "]"
+0:5 - 0:8         term
+0:5 - 0:8           operand: extended_atom
+0:5 - 0:8             character_class
+0:5 - 0:6               "["
+0:6 - 0:7               nonempty_class_ranges
+0:6 - 0:7                 class_atom
+0:6 - 0:7                   class_atom_no_dash
+0:6 - 0:7                     source_character `a`
+0:7 - 0:8               "]"
+0:8 - 0:9         term
+0:8 - 0:9           assertion
+0:8 - 0:9             "^"
+
+==============================
+Empty classes own separate bracket and negation tokens and a body caret stays an anchor (javascript_regex_u)
+:language(javascript_regex_u)
+:cst
+==============================
+[][^][a]^
+---
+0:0 - 0:9   pattern
+0:0 - 0:9     body: disjunction
+0:0 - 0:9       alternative
+0:0 - 0:2         term
+0:0 - 0:2           operand: atom
+0:0 - 0:2             character_class
+0:0 - 0:1               "["
+0:1 - 0:2               "]"
+0:2 - 0:5         term
+0:2 - 0:5           operand: atom
+0:2 - 0:5             character_class
+0:2 - 0:3               "["
+0:3 - 0:4               "^"
+0:4 - 0:5               "]"
+0:5 - 0:8         term
+0:5 - 0:8           operand: atom
+0:5 - 0:8             character_class
+0:5 - 0:6               "["
+0:6 - 0:7               nonempty_class_ranges
+0:6 - 0:7                 class_atom
+0:6 - 0:7                   class_atom_no_dash
+0:6 - 0:7                     source_character `a`
+0:7 - 0:8               "]"
+0:8 - 0:9         term
+0:8 - 0:9           assertion
+0:8 - 0:9             "^"
+
+==============================
+Empty classes own separate bracket and negation tokens and a body caret stays an anchor (javascript_regex_v)
+:language(javascript_regex_v)
+:cst
+==============================
+[][^][a]^
+---
+0:0 - 0:9   pattern
+0:0 - 0:9     body: disjunction
+0:0 - 0:9       alternative
+0:0 - 0:2         term
+0:0 - 0:2           operand: atom
+0:0 - 0:2             character_class
+0:0 - 0:1               "["
+0:1 - 0:2               "]"
+0:2 - 0:5         term
+0:2 - 0:5           operand: atom
+0:2 - 0:5             character_class
+0:2 - 0:3               "["
+0:3 - 0:4               "^"
+0:4 - 0:5               "]"
+0:5 - 0:8         term
+0:5 - 0:8           operand: atom
+0:5 - 0:8             character_class
+0:5 - 0:6               "["
+0:6 - 0:7               class_set_expression
+0:6 - 0:7                 class_union
+0:6 - 0:7                   class_set_operand
+0:6 - 0:7                     class_set_character
+0:6 - 0:7                       source_character `a`
+0:7 - 0:8               "]"
+0:8 - 0:9         term
+0:8 - 0:9           assertion
+0:8 - 0:9             "^"
+
+==============================
+Carets after the leading negation are ordinary class members (javascript_regex)
+:language(javascript_regex)
+:cst
+==============================
+[^^a][a^]
+---
+0:0 - 0:9   pattern
+0:0 - 0:9     body: disjunction
+0:0 - 0:9       alternative
+0:0 - 0:5         term
+0:0 - 0:5           operand: extended_atom
+0:0 - 0:5             character_class
+0:0 - 0:1               "["
+0:1 - 0:2               "^"
+0:2 - 0:4               nonempty_class_ranges
+0:2 - 0:3                 class_atom
+0:2 - 0:3                   class_atom_no_dash
+0:2 - 0:3                     source_character `^`
+0:3 - 0:4                 nonempty_class_ranges_no_dash
+0:3 - 0:4                   class_atom
+0:3 - 0:4                     class_atom_no_dash
+0:3 - 0:4                       source_character `a`
+0:4 - 0:5               "]"
+0:5 - 0:9         term
+0:5 - 0:9           operand: extended_atom
+0:5 - 0:9             character_class
+0:5 - 0:6               "["
+0:6 - 0:8               nonempty_class_ranges
+0:6 - 0:7                 class_atom
+0:6 - 0:7                   class_atom_no_dash
+0:6 - 0:7                     source_character `a`
+0:7 - 0:8                 nonempty_class_ranges_no_dash
+0:7 - 0:8                   class_atom
+0:7 - 0:8                     class_atom_no_dash
+0:7 - 0:8                       source_character `^`
+0:8 - 0:9               "]"
+
+==============================
+Carets after the leading negation are ordinary class members (javascript_regex_u)
+:language(javascript_regex_u)
+:cst
+==============================
+[^^a][a^]
+---
+0:0 - 0:9   pattern
+0:0 - 0:9     body: disjunction
+0:0 - 0:9       alternative
+0:0 - 0:5         term
+0:0 - 0:5           operand: atom
+0:0 - 0:5             character_class
+0:0 - 0:1               "["
+0:1 - 0:2               "^"
+0:2 - 0:4               nonempty_class_ranges
+0:2 - 0:3                 class_atom
+0:2 - 0:3                   class_atom_no_dash
+0:2 - 0:3                     source_character `^`
+0:3 - 0:4                 nonempty_class_ranges_no_dash
+0:3 - 0:4                   class_atom
+0:3 - 0:4                     class_atom_no_dash
+0:3 - 0:4                       source_character `a`
+0:4 - 0:5               "]"
+0:5 - 0:9         term
+0:5 - 0:9           operand: atom
+0:5 - 0:9             character_class
+0:5 - 0:6               "["
+0:6 - 0:8               nonempty_class_ranges
+0:6 - 0:7                 class_atom
+0:6 - 0:7                   class_atom_no_dash
+0:6 - 0:7                     source_character `a`
+0:7 - 0:8                 nonempty_class_ranges_no_dash
+0:7 - 0:8                   class_atom
+0:7 - 0:8                     class_atom_no_dash
+0:7 - 0:8                       source_character `^`
+0:8 - 0:9               "]"
+
+==============================
+Carets after the leading negation are ordinary class members (javascript_regex_v)
+:language(javascript_regex_v)
+:cst
+==============================
+[^^a][a^]
+---
+0:0 - 0:9   pattern
+0:0 - 0:9     body: disjunction
+0:0 - 0:9       alternative
+0:0 - 0:5         term
+0:0 - 0:5           operand: atom
+0:0 - 0:5             character_class
+0:0 - 0:1               "["
+0:1 - 0:2               "^"
+0:2 - 0:4               class_set_expression
+0:2 - 0:4                 class_union
+0:2 - 0:3                   class_set_operand
+0:2 - 0:3                     class_set_character
+0:2 - 0:3                       source_character `^`
+0:3 - 0:4                   class_set_operand
+0:3 - 0:4                     class_set_character
+0:3 - 0:4                       source_character `a`
+0:4 - 0:5               "]"
+0:5 - 0:9         term
+0:5 - 0:9           operand: atom
+0:5 - 0:9             character_class
+0:5 - 0:6               "["
+0:6 - 0:8               class_set_expression
+0:6 - 0:8                 class_union
+0:6 - 0:7                   class_set_operand
+0:6 - 0:7                     class_set_character
+0:6 - 0:7                       source_character `a`
+0:7 - 0:8                   class_set_operand
+0:7 - 0:8                     class_set_character
+0:7 - 0:8                       source_character `^`
+0:8 - 0:9               "]"
+
+==============================
+Consecutive class ranges retain separate endpoints (javascript_regex)
+:language(javascript_regex)
+:cst
+==============================
+[a-zA-Z0-9]+
+---
+0:0  - 0:12   pattern
+0:0  - 0:12     body: disjunction
+0:0  - 0:12       alternative
+0:0  - 0:12         term
+0:0  - 0:11           operand: extended_atom
+0:0  - 0:11             character_class
+0:0  - 0:1                "["
+0:1  - 0:10               nonempty_class_ranges
+0:1  - 0:2                  start: class_atom
+0:1  - 0:2                    class_atom_no_dash
+0:1  - 0:2                      source_character `a`
+0:2  - 0:3                  "-"
+0:3  - 0:4                  end: class_atom
+0:3  - 0:4                    class_atom_no_dash
+0:3  - 0:4                      source_character `z`
+0:4  - 0:5                  start: class_atom
+0:4  - 0:5                    class_atom_no_dash
+0:4  - 0:5                      source_character `A`
+0:5  - 0:6                  "-"
+0:6  - 0:7                  end: class_atom
+0:6  - 0:7                    class_atom_no_dash
+0:6  - 0:7                      source_character `Z`
+0:7  - 0:8                  start: class_atom
+0:7  - 0:8                    class_atom_no_dash
+0:7  - 0:8                      source_character `0`
+0:8  - 0:9                  "-"
+0:9  - 0:10                 end: class_atom
+0:9  - 0:10                   class_atom_no_dash
+0:9  - 0:10                     source_character `9`
+0:10 - 0:11               "]"
+0:11 - 0:12           quantifier: quantifier
+0:11 - 0:12             quantifier_prefix
+0:11 - 0:12               "+"
+
+==============================
+Consecutive class ranges retain separate endpoints (javascript_regex_u)
+:language(javascript_regex_u)
+:cst
+==============================
+[a-zA-Z0-9]+
+---
+0:0  - 0:12   pattern
+0:0  - 0:12     body: disjunction
+0:0  - 0:12       alternative
+0:0  - 0:12         term
+0:0  - 0:11           operand: atom
+0:0  - 0:11             character_class
+0:0  - 0:1                "["
+0:1  - 0:10               nonempty_class_ranges
+0:1  - 0:2                  start: class_atom
+0:1  - 0:2                    class_atom_no_dash
+0:1  - 0:2                      source_character `a`
+0:2  - 0:3                  "-"
+0:3  - 0:4                  end: class_atom
+0:3  - 0:4                    class_atom_no_dash
+0:3  - 0:4                      source_character `z`
+0:4  - 0:5                  start: class_atom
+0:4  - 0:5                    class_atom_no_dash
+0:4  - 0:5                      source_character `A`
+0:5  - 0:6                  "-"
+0:6  - 0:7                  end: class_atom
+0:6  - 0:7                    class_atom_no_dash
+0:6  - 0:7                      source_character `Z`
+0:7  - 0:8                  start: class_atom
+0:7  - 0:8                    class_atom_no_dash
+0:7  - 0:8                      source_character `0`
+0:8  - 0:9                  "-"
+0:9  - 0:10                 end: class_atom
+0:9  - 0:10                   class_atom_no_dash
+0:9  - 0:10                     source_character `9`
+0:10 - 0:11               "]"
+0:11 - 0:12           quantifier: quantifier
+0:11 - 0:12             quantifier_prefix
+0:11 - 0:12               "+"
+
+==============================
+Consecutive class ranges retain separate endpoints (javascript_regex_v)
+:language(javascript_regex_v)
+:cst
+==============================
+[a-zA-Z0-9]+
+---
+0:0  - 0:12   pattern
+0:0  - 0:12     body: disjunction
+0:0  - 0:12       alternative
+0:0  - 0:12         term
+0:0  - 0:11           operand: atom
+0:0  - 0:11             character_class
+0:0  - 0:1                "["
+0:1  - 0:10               class_set_expression
+0:1  - 0:10                 class_union
+0:1  - 0:4                    class_set_range
+0:1  - 0:2                      start: class_set_character
+0:1  - 0:2                        source_character `a`
+0:2  - 0:3                      "-"
+0:3  - 0:4                      end: class_set_character
+0:3  - 0:4                        source_character `z`
+0:4  - 0:7                    class_set_range
+0:4  - 0:5                      start: class_set_character
+0:4  - 0:5                        source_character `A`
+0:5  - 0:6                      "-"
+0:6  - 0:7                      end: class_set_character
+0:6  - 0:7                        source_character `Z`
+0:7  - 0:10                   class_set_range
+0:7  - 0:8                      start: class_set_character
+0:7  - 0:8                        source_character `0`
+0:8  - 0:9                      "-"
+0:9  - 0:10                     end: class_set_character
+0:9  - 0:10                       source_character `9`
+0:10 - 0:11               "]"
+0:11 - 0:12           quantifier: quantifier
+0:11 - 0:12             quantifier_prefix
+0:11 - 0:12               "+"
+
+==============================
+Hyphens can be ordinary members or range endpoints (javascript_regex)
+:language(javascript_regex)
+:cst
+==============================
+[-a][a-][--][--a][a--]
+---
+0:0  - 0:22   pattern
+0:0  - 0:22     body: disjunction
+0:0  - 0:22       alternative
+0:0  - 0:4          term
+0:0  - 0:4            operand: extended_atom
+0:0  - 0:4              character_class
+0:0  - 0:1                "["
+0:1  - 0:3                nonempty_class_ranges
+0:1  - 0:2                  class_atom
+0:1  - 0:2                    "-"
+0:2  - 0:3                  nonempty_class_ranges_no_dash
+0:2  - 0:3                    class_atom
+0:2  - 0:3                      class_atom_no_dash
+0:2  - 0:3                        source_character `a`
+0:3  - 0:4                "]"
+0:4  - 0:8          term
+0:4  - 0:8            operand: extended_atom
+0:4  - 0:8              character_class
+0:4  - 0:5                "["
+0:5  - 0:7                nonempty_class_ranges
+0:5  - 0:6                  class_atom
+0:5  - 0:6                    class_atom_no_dash
+0:5  - 0:6                      source_character `a`
+0:6  - 0:7                  nonempty_class_ranges_no_dash
+0:6  - 0:7                    class_atom
+0:6  - 0:7                      "-"
+0:7  - 0:8                "]"
+0:8  - 0:12         term
+0:8  - 0:12           operand: extended_atom
+0:8  - 0:12             character_class
+0:8  - 0:9                "["
+0:9  - 0:11               nonempty_class_ranges
+0:9  - 0:10                 class_atom
+0:9  - 0:10                   "-"
+0:10 - 0:11                 nonempty_class_ranges_no_dash
+0:10 - 0:11                   class_atom
+0:10 - 0:11                     "-"
+0:11 - 0:12               "]"
+0:12 - 0:17         term
+0:12 - 0:17           operand: extended_atom
+0:12 - 0:17             character_class
+0:12 - 0:13               "["
+0:13 - 0:16               nonempty_class_ranges
+0:13 - 0:14                 start: class_atom
+0:13 - 0:14                   "-"
+0:14 - 0:15                 "-"
+0:15 - 0:16                 end: class_atom
+0:15 - 0:16                   class_atom_no_dash
+0:15 - 0:16                     source_character `a`
+0:16 - 0:17               "]"
+0:17 - 0:22         term
+0:17 - 0:22           operand: extended_atom
+0:17 - 0:22             character_class
+0:17 - 0:18               "["
+0:18 - 0:21               nonempty_class_ranges
+0:18 - 0:19                 start: class_atom
+0:18 - 0:19                   class_atom_no_dash
+0:18 - 0:19                     source_character `a`
+0:19 - 0:20                 "-"
+0:20 - 0:21                 end: class_atom
+0:20 - 0:21                   "-"
+0:21 - 0:22               "]"
+
+==============================
+Hyphens can be ordinary members or range endpoints (javascript_regex_u)
+:language(javascript_regex_u)
+:cst
+==============================
+[-a][a-][--][--a][a--]
+---
+0:0  - 0:22   pattern
+0:0  - 0:22     body: disjunction
+0:0  - 0:22       alternative
+0:0  - 0:4          term
+0:0  - 0:4            operand: atom
+0:0  - 0:4              character_class
+0:0  - 0:1                "["
+0:1  - 0:3                nonempty_class_ranges
+0:1  - 0:2                  class_atom
+0:1  - 0:2                    "-"
+0:2  - 0:3                  nonempty_class_ranges_no_dash
+0:2  - 0:3                    class_atom
+0:2  - 0:3                      class_atom_no_dash
+0:2  - 0:3                        source_character `a`
+0:3  - 0:4                "]"
+0:4  - 0:8          term
+0:4  - 0:8            operand: atom
+0:4  - 0:8              character_class
+0:4  - 0:5                "["
+0:5  - 0:7                nonempty_class_ranges
+0:5  - 0:6                  class_atom
+0:5  - 0:6                    class_atom_no_dash
+0:5  - 0:6                      source_character `a`
+0:6  - 0:7                  nonempty_class_ranges_no_dash
+0:6  - 0:7                    class_atom
+0:6  - 0:7                      "-"
+0:7  - 0:8                "]"
+0:8  - 0:12         term
+0:8  - 0:12           operand: atom
+0:8  - 0:12             character_class
+0:8  - 0:9                "["
+0:9  - 0:11               nonempty_class_ranges
+0:9  - 0:10                 class_atom
+0:9  - 0:10                   "-"
+0:10 - 0:11                 nonempty_class_ranges_no_dash
+0:10 - 0:11                   class_atom
+0:10 - 0:11                     "-"
+0:11 - 0:12               "]"
+0:12 - 0:17         term
+0:12 - 0:17           operand: atom
+0:12 - 0:17             character_class
+0:12 - 0:13               "["
+0:13 - 0:16               nonempty_class_ranges
+0:13 - 0:14                 start: class_atom
+0:13 - 0:14                   "-"
+0:14 - 0:15                 "-"
+0:15 - 0:16                 end: class_atom
+0:15 - 0:16                   class_atom_no_dash
+0:15 - 0:16                     source_character `a`
+0:16 - 0:17               "]"
+0:17 - 0:22         term
+0:17 - 0:22           operand: atom
+0:17 - 0:22             character_class
+0:17 - 0:18               "["
+0:18 - 0:21               nonempty_class_ranges
+0:18 - 0:19                 start: class_atom
+0:18 - 0:19                   class_atom_no_dash
+0:18 - 0:19                     source_character `a`
+0:19 - 0:20                 "-"
+0:20 - 0:21                 end: class_atom
+0:20 - 0:21                   "-"
+0:21 - 0:22               "]"
+
+==============================
+Members after a completed range begin a new range only with another separator (javascript_regex)
+:language(javascript_regex)
+:cst
+==============================
+[a-b-c][a-b--c]
+---
+0:0  - 0:15   pattern
+0:0  - 0:15     body: disjunction
+0:0  - 0:15       alternative
+0:0  - 0:7          term
+0:0  - 0:7            operand: extended_atom
+0:0  - 0:7              character_class
+0:0  - 0:1                "["
+0:1  - 0:6                nonempty_class_ranges
+0:1  - 0:2                  start: class_atom
+0:1  - 0:2                    class_atom_no_dash
+0:1  - 0:2                      source_character `a`
+0:2  - 0:3                  "-"
+0:3  - 0:4                  end: class_atom
+0:3  - 0:4                    class_atom_no_dash
+0:3  - 0:4                      source_character `b`
+0:4  - 0:5                  class_atom
+0:4  - 0:5                    "-"
+0:5  - 0:6                  nonempty_class_ranges_no_dash
+0:5  - 0:6                    class_atom
+0:5  - 0:6                      class_atom_no_dash
+0:5  - 0:6                        source_character `c`
+0:6  - 0:7                "]"
+0:7  - 0:15         term
+0:7  - 0:15           operand: extended_atom
+0:7  - 0:15             character_class
+0:7  - 0:8                "["
+0:8  - 0:14               nonempty_class_ranges
+0:8  - 0:9                  start: class_atom
+0:8  - 0:9                    class_atom_no_dash
+0:8  - 0:9                      source_character `a`
+0:9  - 0:10                 "-"
+0:10 - 0:11                 end: class_atom
+0:10 - 0:11                   class_atom_no_dash
+0:10 - 0:11                     source_character `b`
+0:11 - 0:12                 start: class_atom
+0:11 - 0:12                   "-"
+0:12 - 0:13                 "-"
+0:13 - 0:14                 end: class_atom
+0:13 - 0:14                   class_atom_no_dash
+0:13 - 0:14                     source_character `c`
+0:14 - 0:15               "]"
+
+==============================
+Members after a completed range begin a new range only with another separator (javascript_regex_u)
+:language(javascript_regex_u)
+:cst
+==============================
+[a-b-c][a-b--c]
+---
+0:0  - 0:15   pattern
+0:0  - 0:15     body: disjunction
+0:0  - 0:15       alternative
+0:0  - 0:7          term
+0:0  - 0:7            operand: atom
+0:0  - 0:7              character_class
+0:0  - 0:1                "["
+0:1  - 0:6                nonempty_class_ranges
+0:1  - 0:2                  start: class_atom
+0:1  - 0:2                    class_atom_no_dash
+0:1  - 0:2                      source_character `a`
+0:2  - 0:3                  "-"
+0:3  - 0:4                  end: class_atom
+0:3  - 0:4                    class_atom_no_dash
+0:3  - 0:4                      source_character `b`
+0:4  - 0:5                  class_atom
+0:4  - 0:5                    "-"
+0:5  - 0:6                  nonempty_class_ranges_no_dash
+0:5  - 0:6                    class_atom
+0:5  - 0:6                      class_atom_no_dash
+0:5  - 0:6                        source_character `c`
+0:6  - 0:7                "]"
+0:7  - 0:15         term
+0:7  - 0:15           operand: atom
+0:7  - 0:15             character_class
+0:7  - 0:8                "["
+0:8  - 0:14               nonempty_class_ranges
+0:8  - 0:9                  start: class_atom
+0:8  - 0:9                    class_atom_no_dash
+0:8  - 0:9                      source_character `a`
+0:9  - 0:10                 "-"
+0:10 - 0:11                 end: class_atom
+0:10 - 0:11                   class_atom_no_dash
+0:10 - 0:11                     source_character `b`
+0:11 - 0:12                 start: class_atom
+0:11 - 0:12                   "-"
+0:12 - 0:13                 "-"
+0:13 - 0:14                 end: class_atom
+0:13 - 0:14                   class_atom_no_dash
+0:13 - 0:14                     source_character `c`
+0:14 - 0:15               "]"
+
+==============================
+Basic classes treat doubled ampersands as ordinary members (javascript_regex)
+:language(javascript_regex)
+:cst
+==============================
+[a&&b]
+---
+0:0 - 0:6   pattern
+0:0 - 0:6     body: disjunction
+0:0 - 0:6       alternative
+0:0 - 0:6         term
+0:0 - 0:6           operand: extended_atom
+0:0 - 0:6             character_class
+0:0 - 0:1               "["
+0:1 - 0:5               nonempty_class_ranges
+0:1 - 0:2                 class_atom
+0:1 - 0:2                   class_atom_no_dash
+0:1 - 0:2                     source_character `a`
+0:2 - 0:5                 nonempty_class_ranges_no_dash
+0:2 - 0:3                   class_atom_no_dash
+0:2 - 0:3                     source_character `&`
+0:3 - 0:4                   class_atom_no_dash
+0:3 - 0:4                     source_character `&`
+0:4 - 0:5                   class_atom
+0:4 - 0:5                     class_atom_no_dash
+0:4 - 0:5                       source_character `b`
+0:5 - 0:6               "]"
+
+==============================
+Basic classes treat doubled ampersands as ordinary members (javascript_regex_u)
+:language(javascript_regex_u)
+:cst
+==============================
+[a&&b]
+---
+0:0 - 0:6   pattern
+0:0 - 0:6     body: disjunction
+0:0 - 0:6       alternative
+0:0 - 0:6         term
+0:0 - 0:6           operand: atom
+0:0 - 0:6             character_class
+0:0 - 0:1               "["
+0:1 - 0:5               nonempty_class_ranges
+0:1 - 0:2                 class_atom
+0:1 - 0:2                   class_atom_no_dash
+0:1 - 0:2                     source_character `a`
+0:2 - 0:5                 nonempty_class_ranges_no_dash
+0:2 - 0:3                   class_atom_no_dash
+0:2 - 0:3                     source_character `&`
+0:3 - 0:4                   class_atom_no_dash
+0:3 - 0:4                     source_character `&`
+0:4 - 0:5                   class_atom
+0:4 - 0:5                     class_atom_no_dash
+0:4 - 0:5                       source_character `b`
+0:5 - 0:6               "]"
+
+==============================
+Groups alternatives whitespace and opening brackets are ordinary inside basic classes (javascript_regex)
+:language(javascript_regex)
+:cst
+==============================
+[()|.$*+?{}[ #]
+---
+0:0  - 0:15   pattern
+0:0  - 0:15     body: disjunction
+0:0  - 0:15       alternative
+0:0  - 0:15         term
+0:0  - 0:15           operand: extended_atom
+0:0  - 0:15             character_class
+0:0  - 0:1                "["
+0:1  - 0:14               nonempty_class_ranges
+0:1  - 0:2                  class_atom
+0:1  - 0:2                    class_atom_no_dash
+0:1  - 0:2                      source_character `(`
+0:2  - 0:14                 nonempty_class_ranges_no_dash
+0:2  - 0:3                    class_atom_no_dash
+0:2  - 0:3                      source_character `)`
+0:3  - 0:4                    class_atom_no_dash
+0:3  - 0:4                      source_character `|`
+0:4  - 0:5                    class_atom_no_dash
+0:4  - 0:5                      source_character `.`
+0:5  - 0:6                    class_atom_no_dash
+0:5  - 0:6                      source_character `$`
+0:6  - 0:7                    class_atom_no_dash
+0:6  - 0:7                      source_character `*`
+0:7  - 0:8                    class_atom_no_dash
+0:7  - 0:8                      source_character `+`
+0:8  - 0:9                    class_atom_no_dash
+0:8  - 0:9                      source_character `?`
+0:9  - 0:10                   class_atom_no_dash
+0:9  - 0:10                     source_character `{`
+0:10 - 0:11                   class_atom_no_dash
+0:10 - 0:11                     source_character `}`
+0:11 - 0:12                   class_atom_no_dash
+0:11 - 0:12                     source_character `[`
+0:12 - 0:13                   class_atom_no_dash
+0:12 - 0:13                     source_character ` `
+0:13 - 0:14                   class_atom
+0:13 - 0:14                     class_atom_no_dash
+0:13 - 0:14                       source_character `#`
+0:14 - 0:15               "]"
+
+==============================
+Groups alternatives whitespace and opening brackets are ordinary inside basic classes (javascript_regex_u)
+:language(javascript_regex_u)
+:cst
+==============================
+[()|.$*+?{}[ #]
+---
+0:0  - 0:15   pattern
+0:0  - 0:15     body: disjunction
+0:0  - 0:15       alternative
+0:0  - 0:15         term
+0:0  - 0:15           operand: atom
+0:0  - 0:15             character_class
+0:0  - 0:1                "["
+0:1  - 0:14               nonempty_class_ranges
+0:1  - 0:2                  class_atom
+0:1  - 0:2                    class_atom_no_dash
+0:1  - 0:2                      source_character `(`
+0:2  - 0:14                 nonempty_class_ranges_no_dash
+0:2  - 0:3                    class_atom_no_dash
+0:2  - 0:3                      source_character `)`
+0:3  - 0:4                    class_atom_no_dash
+0:3  - 0:4                      source_character `|`
+0:4  - 0:5                    class_atom_no_dash
+0:4  - 0:5                      source_character `.`
+0:5  - 0:6                    class_atom_no_dash
+0:5  - 0:6                      source_character `$`
+0:6  - 0:7                    class_atom_no_dash
+0:6  - 0:7                      source_character `*`
+0:7  - 0:8                    class_atom_no_dash
+0:7  - 0:8                      source_character `+`
+0:8  - 0:9                    class_atom_no_dash
+0:8  - 0:9                      source_character `?`
+0:9  - 0:10                   class_atom_no_dash
+0:9  - 0:10                     source_character `{`
+0:10 - 0:11                   class_atom_no_dash
+0:10 - 0:11                     source_character `}`
+0:11 - 0:12                   class_atom_no_dash
+0:11 - 0:12                     source_character `[`
+0:12 - 0:13                   class_atom_no_dash
+0:12 - 0:13                     source_character ` `
+0:13 - 0:14                   class_atom
+0:13 - 0:14                     class_atom_no_dash
+0:13 - 0:14                       source_character `#`
+0:14 - 0:15               "]"
+
+==============================
+Class escapes distinguish backspace and escaped brackets from delimiters (javascript_regex)
+:language(javascript_regex)
+:cst
+==============================
+[\b\d\s\w\x41\u0042\cA\0\-\]\[]
+---
+0:0  - 0:31   pattern
+0:0  - 0:31     body: disjunction
+0:0  - 0:31       alternative
+0:0  - 0:31         term
+0:0  - 0:31           operand: extended_atom
+0:0  - 0:31             character_class
+0:0  - 0:1                "["
+0:1  - 0:30               nonempty_class_ranges
+0:1  - 0:3                  class_atom
+0:1  - 0:3                    class_atom_no_dash
+0:1  - 0:2                      "\\"
+0:2  - 0:3                      class_escape
+0:2  - 0:3                        "b"
+0:3  - 0:30                 nonempty_class_ranges_no_dash
+0:3  - 0:5                    class_atom_no_dash
+0:3  - 0:4                      "\\"
+0:4  - 0:5                      class_escape
+0:4  - 0:5                        character_class_escape `d`
+0:5  - 0:7                    class_atom_no_dash
+0:5  - 0:6                      "\\"
+0:6  - 0:7                      class_escape
+0:6  - 0:7                        character_class_escape `s`
+0:7  - 0:9                    class_atom_no_dash
+0:7  - 0:8                      "\\"
+0:8  - 0:9                      class_escape
+0:8  - 0:9                        character_class_escape `w`
+0:9  - 0:13                   class_atom_no_dash
+0:9  - 0:10                     "\\"
+0:10 - 0:13                     class_escape
+0:10 - 0:13                       character_escape
+0:10 - 0:13                         hex_escape_sequence
+0:10 - 0:11                           "x"
+0:11 - 0:12                           hex_digit `4`
+0:12 - 0:13                           hex_digit `1`
+0:13 - 0:19                   class_atom_no_dash
+0:13 - 0:14                     "\\"
+0:14 - 0:19                     class_escape
+0:14 - 0:19                       character_escape
+0:14 - 0:19                         reg_exp_unicode_escape_sequence
+0:14 - 0:15                           "u"
+0:15 - 0:19                           hex4_digits
+0:15 - 0:16                             hex_digit `0`
+0:16 - 0:17                             hex_digit `0`
+0:17 - 0:18                             hex_digit `4`
+0:18 - 0:19                             hex_digit `2`
+0:19 - 0:22                   class_atom_no_dash
+0:19 - 0:20                     "\\"
+0:20 - 0:22                     class_escape
+0:20 - 0:22                       character_escape
+0:20 - 0:21                         "c"
+0:21 - 0:22                         ascii_letter `A`
+0:22 - 0:24                   class_atom_no_dash
+0:22 - 0:23                     "\\"
+0:23 - 0:24                     class_escape
+0:23 - 0:24                       character_escape
+0:23 - 0:24                         "0"
+0:24 - 0:26                   class_atom_no_dash
+0:24 - 0:25                     "\\"
+0:25 - 0:26                     class_escape
+0:25 - 0:26                       character_escape
+0:25 - 0:26                         identity_escape
+0:25 - 0:26                           source_character_identity_escape
+0:25 - 0:26                             source_character `-`
+0:26 - 0:28                   class_atom_no_dash
+0:26 - 0:27                     "\\"
+0:27 - 0:28                     class_escape
+0:27 - 0:28                       character_escape
+0:27 - 0:28                         identity_escape
+0:27 - 0:28                           source_character_identity_escape
+0:27 - 0:28                             source_character `]`
+0:28 - 0:30                   class_atom
+0:28 - 0:30                     class_atom_no_dash
+0:28 - 0:29                       "\\"
+0:29 - 0:30                       class_escape
+0:29 - 0:30                         character_escape
+0:29 - 0:30                           identity_escape
+0:29 - 0:30                             source_character_identity_escape
+0:29 - 0:30                               source_character `[`
+0:30 - 0:31               "]"
+
+==============================
+Class escapes distinguish backspace and escaped brackets from delimiters (javascript_regex_u)
+:language(javascript_regex_u)
+:cst
+==============================
+[\b\d\s\w\x41\u0042\cA\0\-\]\[]
+---
+0:0  - 0:31   pattern
+0:0  - 0:31     body: disjunction
+0:0  - 0:31       alternative
+0:0  - 0:31         term
+0:0  - 0:31           operand: atom
+0:0  - 0:31             character_class
+0:0  - 0:1                "["
+0:1  - 0:30               nonempty_class_ranges
+0:1  - 0:3                  class_atom
+0:1  - 0:3                    class_atom_no_dash
+0:1  - 0:2                      "\\"
+0:2  - 0:3                      class_escape
+0:2  - 0:3                        "b"
+0:3  - 0:30                 nonempty_class_ranges_no_dash
+0:3  - 0:5                    class_atom_no_dash
+0:3  - 0:4                      "\\"
+0:4  - 0:5                      class_escape
+0:4  - 0:5                        character_class_escape `d`
+0:5  - 0:7                    class_atom_no_dash
+0:5  - 0:6                      "\\"
+0:6  - 0:7                      class_escape
+0:6  - 0:7                        character_class_escape `s`
+0:7  - 0:9                    class_atom_no_dash
+0:7  - 0:8                      "\\"
+0:8  - 0:9                      class_escape
+0:8  - 0:9                        character_class_escape `w`
+0:9  - 0:13                   class_atom_no_dash
+0:9  - 0:10                     "\\"
+0:10 - 0:13                     class_escape
+0:10 - 0:13                       character_escape
+0:10 - 0:13                         hex_escape_sequence
+0:10 - 0:11                           "x"
+0:11 - 0:12                           hex_digit `4`
+0:12 - 0:13                           hex_digit `1`
+0:13 - 0:19                   class_atom_no_dash
+0:13 - 0:14                     "\\"
+0:14 - 0:19                     class_escape
+0:14 - 0:19                       character_escape
+0:14 - 0:19                         reg_exp_unicode_escape_sequence
+0:14 - 0:15                           "u"
+0:15 - 0:19                           hex_non_surrogate
+0:15 - 0:19                             hex4_digits
+0:15 - 0:16                               hex_digit `0`
+0:16 - 0:17                               hex_digit `0`
+0:17 - 0:18                               hex_digit `4`
+0:18 - 0:19                               hex_digit `2`
+0:19 - 0:22                   class_atom_no_dash
+0:19 - 0:20                     "\\"
+0:20 - 0:22                     class_escape
+0:20 - 0:22                       character_escape
+0:20 - 0:21                         "c"
+0:21 - 0:22                         ascii_letter `A`
+0:22 - 0:24                   class_atom_no_dash
+0:22 - 0:23                     "\\"
+0:23 - 0:24                     class_escape
+0:23 - 0:24                       character_escape
+0:23 - 0:24                         "0"
+0:24 - 0:26                   class_atom_no_dash
+0:24 - 0:25                     "\\"
+0:25 - 0:26                     class_escape
+0:25 - 0:26                       "-"
+0:26 - 0:28                   class_atom_no_dash
+0:26 - 0:27                     "\\"
+0:27 - 0:28                     class_escape
+0:27 - 0:28                       character_escape
+0:27 - 0:28                         identity_escape
+0:27 - 0:28                           syntax_character `]`
+0:28 - 0:30                   class_atom
+0:28 - 0:30                     class_atom_no_dash
+0:28 - 0:29                       "\\"
+0:29 - 0:30                       class_escape
+0:29 - 0:30                         character_escape
+0:29 - 0:30                           identity_escape
+0:29 - 0:30                             syntax_character `[`
+0:30 - 0:31               "]"
+
+==============================
+Class escapes distinguish backspace and escaped brackets from delimiters (javascript_regex_v)
+:language(javascript_regex_v)
+:cst
+==============================
+[\b\d\s\w\x41\u0042\cA\0\-\]\[]
+---
+0:0  - 0:31   pattern
+0:0  - 0:31     body: disjunction
+0:0  - 0:31       alternative
+0:0  - 0:31         term
+0:0  - 0:31           operand: atom
+0:0  - 0:31             character_class
+0:0  - 0:1                "["
+0:1  - 0:30               class_set_expression
+0:1  - 0:30                 class_union
+0:1  - 0:3                    class_set_operand
+0:1  - 0:3                      class_set_character
+0:1  - 0:3                        "\\b"
+0:3  - 0:5                    class_set_operand
+0:3  - 0:5                      nested_class
+0:3  - 0:4                        "\\"
+0:4  - 0:5                        character_class_escape `d`
+0:5  - 0:7                    class_set_operand
+0:5  - 0:7                      nested_class
+0:5  - 0:6                        "\\"
+0:6  - 0:7                        character_class_escape `s`
+0:7  - 0:9                    class_set_operand
+0:7  - 0:9                      nested_class
+0:7  - 0:8                        "\\"
+0:8  - 0:9                        character_class_escape `w`
+0:9  - 0:13                   class_set_operand
+0:9  - 0:13                     class_set_character
+0:9  - 0:10                       "\\"
+0:10 - 0:13                       character_escape
+0:10 - 0:13                         hex_escape_sequence
+0:10 - 0:11                           "x"
+0:11 - 0:12                           hex_digit `4`
+0:12 - 0:13                           hex_digit `1`
+0:13 - 0:19                   class_set_operand
+0:13 - 0:19                     class_set_character
+0:13 - 0:14                       "\\"
+0:14 - 0:19                       character_escape
+0:14 - 0:19                         reg_exp_unicode_escape_sequence
+0:14 - 0:15                           "u"
+0:15 - 0:19                           hex_non_surrogate
+0:15 - 0:19                             hex4_digits
+0:15 - 0:16                               hex_digit `0`
+0:16 - 0:17                               hex_digit `0`
+0:17 - 0:18                               hex_digit `4`
+0:18 - 0:19                               hex_digit `2`
+0:19 - 0:22                   class_set_operand
+0:19 - 0:22                     class_set_character
+0:19 - 0:20                       "\\"
+0:20 - 0:22                       character_escape
+0:20 - 0:21                         "c"
+0:21 - 0:22                         ascii_letter `A`
+0:22 - 0:24                   class_set_operand
+0:22 - 0:24                     class_set_character
+0:22 - 0:23                       "\\"
+0:23 - 0:24                       character_escape
+0:23 - 0:24                         "0"
+0:24 - 0:26                   class_set_operand
+0:24 - 0:26                     class_set_character
+0:24 - 0:25                       "\\"
+0:25 - 0:26                       class_set_reserved_punctuator `-`
+0:26 - 0:28                   class_set_operand
+0:26 - 0:28                     class_set_character
+0:26 - 0:27                       "\\"
+0:27 - 0:28                       character_escape
+0:27 - 0:28                         identity_escape
+0:27 - 0:28                           syntax_character `]`
+0:28 - 0:30                   class_set_operand
+0:28 - 0:30                     class_set_character
+0:28 - 0:29                       "\\"
+0:29 - 0:30                       character_escape
+0:29 - 0:30                         identity_escape
+0:29 - 0:30                           syntax_character `[`
+0:30 - 0:31               "]"
+
+==============================
+Class range endpoints preserve escape kinds and leave set validation to the consumer (javascript_regex)
+:language(javascript_regex)
+:cst
+==============================
+[\x41-\u005a\b-\cZ\d-a-z]
+---
+0:0  - 0:25   pattern
+0:0  - 0:25     body: disjunction
+0:0  - 0:25       alternative
+0:0  - 0:25         term
+0:0  - 0:25           operand: extended_atom
+0:0  - 0:25             character_class
+0:0  - 0:1                "["
+0:1  - 0:24               nonempty_class_ranges
+0:1  - 0:5                  start: class_atom
+0:1  - 0:5                    class_atom_no_dash
+0:1  - 0:2                      "\\"
+0:2  - 0:5                      class_escape
+0:2  - 0:5                        character_escape
+0:2  - 0:5                          hex_escape_sequence
+0:2  - 0:3                            "x"
+0:3  - 0:4                            hex_digit `4`
+0:4  - 0:5                            hex_digit `1`
+0:5  - 0:6                  "-"
+0:6  - 0:12                 end: class_atom
+0:6  - 0:12                   class_atom_no_dash
+0:6  - 0:7                      "\\"
+0:7  - 0:12                     class_escape
+0:7  - 0:12                       character_escape
+0:7  - 0:12                         reg_exp_unicode_escape_sequence
+0:7  - 0:8                            "u"
+0:8  - 0:12                           hex4_digits
+0:8  - 0:9                              hex_digit `0`
+0:9  - 0:10                             hex_digit `0`
+0:10 - 0:11                             hex_digit `5`
+0:11 - 0:12                             hex_digit `a`
+0:12 - 0:14                 start: class_atom
+0:12 - 0:14                   class_atom_no_dash
+0:12 - 0:13                     "\\"
+0:13 - 0:14                     class_escape
+0:13 - 0:14                       "b"
+0:14 - 0:15                 "-"
+0:15 - 0:18                 end: class_atom
+0:15 - 0:18                   class_atom_no_dash
+0:15 - 0:16                     "\\"
+0:16 - 0:18                     class_escape
+0:16 - 0:18                       character_escape
+0:16 - 0:17                         "c"
+0:17 - 0:18                         ascii_letter `Z`
+0:18 - 0:20                 start: class_atom
+0:18 - 0:20                   class_atom_no_dash
+0:18 - 0:19                     "\\"
+0:19 - 0:20                     class_escape
+0:19 - 0:20                       character_class_escape `d`
+0:20 - 0:21                 "-"
+0:21 - 0:22                 end: class_atom
+0:21 - 0:22                   class_atom_no_dash
+0:21 - 0:22                     source_character `a`
+0:22 - 0:23                 class_atom
+0:22 - 0:23                   "-"
+0:23 - 0:24                 nonempty_class_ranges_no_dash
+0:23 - 0:24                   class_atom
+0:23 - 0:24                     class_atom_no_dash
+0:23 - 0:24                       source_character `z`
+0:24 - 0:25               "]"
+
+==============================
+Class range endpoints preserve escape kinds and leave set validation to the consumer (javascript_regex_u)
+:language(javascript_regex_u)
+:cst
+==============================
+[\x41-\u005a\b-\cZ\d-a-z]
+---
+0:0  - 0:25   pattern
+0:0  - 0:25     body: disjunction
+0:0  - 0:25       alternative
+0:0  - 0:25         term
+0:0  - 0:25           operand: atom
+0:0  - 0:25             character_class
+0:0  - 0:1                "["
+0:1  - 0:24               nonempty_class_ranges
+0:1  - 0:5                  start: class_atom
+0:1  - 0:5                    class_atom_no_dash
+0:1  - 0:2                      "\\"
+0:2  - 0:5                      class_escape
+0:2  - 0:5                        character_escape
+0:2  - 0:5                          hex_escape_sequence
+0:2  - 0:3                            "x"
+0:3  - 0:4                            hex_digit `4`
+0:4  - 0:5                            hex_digit `1`
+0:5  - 0:6                  "-"
+0:6  - 0:12                 end: class_atom
+0:6  - 0:12                   class_atom_no_dash
+0:6  - 0:7                      "\\"
+0:7  - 0:12                     class_escape
+0:7  - 0:12                       character_escape
+0:7  - 0:12                         reg_exp_unicode_escape_sequence
+0:7  - 0:8                            "u"
+0:8  - 0:12                           hex_non_surrogate
+0:8  - 0:12                             hex4_digits
+0:8  - 0:9                                hex_digit `0`
+0:9  - 0:10                               hex_digit `0`
+0:10 - 0:11                               hex_digit `5`
+0:11 - 0:12                               hex_digit `a`
+0:12 - 0:14                 start: class_atom
+0:12 - 0:14                   class_atom_no_dash
+0:12 - 0:13                     "\\"
+0:13 - 0:14                     class_escape
+0:13 - 0:14                       "b"
+0:14 - 0:15                 "-"
+0:15 - 0:18                 end: class_atom
+0:15 - 0:18                   class_atom_no_dash
+0:15 - 0:16                     "\\"
+0:16 - 0:18                     class_escape
+0:16 - 0:18                       character_escape
+0:16 - 0:17                         "c"
+0:17 - 0:18                         ascii_letter `Z`
+0:18 - 0:20                 start: class_atom
+0:18 - 0:20                   class_atom_no_dash
+0:18 - 0:19                     "\\"
+0:19 - 0:20                     class_escape
+0:19 - 0:20                       character_class_escape `d`
+0:20 - 0:21                 "-"
+0:21 - 0:22                 end: class_atom
+0:21 - 0:22                   class_atom_no_dash
+0:21 - 0:22                     source_character `a`
+0:22 - 0:23                 class_atom
+0:22 - 0:23                   "-"
+0:23 - 0:24                 nonempty_class_ranges_no_dash
+0:23 - 0:24                   class_atom
+0:23 - 0:24                     class_atom_no_dash
+0:23 - 0:24                       source_character `z`
+0:24 - 0:25               "]"
+
+==============================
+Unicode properties and code points remain distinct class members (javascript_regex_u)
+:language(javascript_regex_u)
+:cst
+==============================
+[\p{ASCII}\P{Script=Greek}\u{61}-\u{7A}]
+---
+0:0  - 0:40   pattern
+0:0  - 0:40     body: disjunction
+0:0  - 0:40       alternative
+0:0  - 0:40         term
+0:0  - 0:40           operand: atom
+0:0  - 0:40             character_class
+0:0  - 0:1                "["
+0:1  - 0:39               nonempty_class_ranges
+0:1  - 0:10                 class_atom
+0:1  - 0:10                   class_atom_no_dash
+0:1  - 0:2                      "\\"
+0:2  - 0:10                     class_escape
+0:2  - 0:10                       character_class_escape
+0:2  - 0:3                          "p"
+0:3  - 0:4                          "{"
+0:4  - 0:9                          unicode_property_value_expression
+0:4  - 0:9                            lone_unicode_property_name_or_value
+0:4  - 0:9                              unicode_property_value_characters
+0:4  - 0:5                                unicode_property_value_character
+0:4  - 0:5                                  unicode_property_name_character
+0:4  - 0:5                                    ascii_letter `A`
+0:5  - 0:6                                unicode_property_value_character
+0:5  - 0:6                                  unicode_property_name_character
+0:5  - 0:6                                    ascii_letter `S`
+0:6  - 0:7                                unicode_property_value_character
+0:6  - 0:7                                  unicode_property_name_character
+0:6  - 0:7                                    ascii_letter `C`
+0:7  - 0:8                                unicode_property_value_character
+0:7  - 0:8                                  unicode_property_name_character
+0:7  - 0:8                                    ascii_letter `I`
+0:8  - 0:9                                unicode_property_value_character
+0:8  - 0:9                                  unicode_property_name_character
+0:8  - 0:9                                    ascii_letter `I`
+0:9  - 0:10                         "}"
+0:10 - 0:39                 nonempty_class_ranges_no_dash
+0:10 - 0:26                   class_atom_no_dash
+0:10 - 0:11                     "\\"
+0:11 - 0:26                     class_escape
+0:11 - 0:26                       character_class_escape
+0:11 - 0:12                         "P"
+0:12 - 0:13                         "{"
+0:13 - 0:25                         unicode_property_value_expression
+0:13 - 0:19                           unicode_property_name
+0:13 - 0:19                             unicode_property_name_characters
+0:13 - 0:14                               unicode_property_name_character
+0:13 - 0:14                                 ascii_letter `S`
+0:14 - 0:15                               unicode_property_name_character
+0:14 - 0:15                                 ascii_letter `c`
+0:15 - 0:16                               unicode_property_name_character
+0:15 - 0:16                                 ascii_letter `r`
+0:16 - 0:17                               unicode_property_name_character
+0:16 - 0:17                                 ascii_letter `i`
+0:17 - 0:18                               unicode_property_name_character
+0:17 - 0:18                                 ascii_letter `p`
+0:18 - 0:19                               unicode_property_name_character
+0:18 - 0:19                                 ascii_letter `t`
+0:19 - 0:20                           "="
+0:20 - 0:25                           unicode_property_value
+0:20 - 0:25                             unicode_property_value_characters
+0:20 - 0:21                               unicode_property_value_character
+0:20 - 0:21                                 unicode_property_name_character
+0:20 - 0:21                                   ascii_letter `G`
+0:21 - 0:22                               unicode_property_value_character
+0:21 - 0:22                                 unicode_property_name_character
+0:21 - 0:22                                   ascii_letter `r`
+0:22 - 0:23                               unicode_property_value_character
+0:22 - 0:23                                 unicode_property_name_character
+0:22 - 0:23                                   ascii_letter `e`
+0:23 - 0:24                               unicode_property_value_character
+0:23 - 0:24                                 unicode_property_name_character
+0:23 - 0:24                                   ascii_letter `e`
+0:24 - 0:25                               unicode_property_value_character
+0:24 - 0:25                                 unicode_property_name_character
+0:24 - 0:25                                   ascii_letter `k`
+0:25 - 0:26                         "}"
+0:26 - 0:32                   start: class_atom_no_dash
+0:26 - 0:27                     "\\"
+0:27 - 0:32                     class_escape
+0:27 - 0:32                       character_escape
+0:27 - 0:32                         reg_exp_unicode_escape_sequence
+0:27 - 0:28                           "u"
+0:28 - 0:29                           "{"
+0:29 - 0:31                           code_point
+0:29 - 0:31                             hex_digits
+0:29 - 0:30                               hex_digit `6`
+0:30 - 0:31                               hex_digit `1`
+0:31 - 0:32                           "}"
+0:32 - 0:33                   "-"
+0:33 - 0:39                   end: class_atom
+0:33 - 0:39                     class_atom_no_dash
+0:33 - 0:34                       "\\"
+0:34 - 0:39                       class_escape
+0:34 - 0:39                         character_escape
+0:34 - 0:39                           reg_exp_unicode_escape_sequence
+0:34 - 0:35                             "u"
+0:35 - 0:36                             "{"
+0:36 - 0:38                             code_point
+0:36 - 0:38                               hex_digits
+0:36 - 0:37                                 hex_digit `7`
+0:37 - 0:38                                 hex_digit `A`
+0:38 - 0:39                             "}"
+0:39 - 0:40               "]"
+
+==============================
+Unicode properties and code points remain distinct class members (javascript_regex_v)
+:language(javascript_regex_v)
+:cst
+==============================
+[\p{ASCII}\P{Script=Greek}\u{61}-\u{7A}]
+---
+0:0  - 0:40   pattern
+0:0  - 0:40     body: disjunction
+0:0  - 0:40       alternative
+0:0  - 0:40         term
+0:0  - 0:40           operand: atom
+0:0  - 0:40             character_class
+0:0  - 0:1                "["
+0:1  - 0:39               class_set_expression
+0:1  - 0:39                 class_union
+0:1  - 0:10                   class_set_operand
+0:1  - 0:10                     nested_class
+0:1  - 0:2                        "\\"
+0:2  - 0:10                       character_class_escape
+0:2  - 0:3                          "p"
+0:3  - 0:4                          "{"
+0:4  - 0:9                          unicode_property_value_expression
+0:4  - 0:9                            lone_unicode_property_name_or_value
+0:4  - 0:9                              unicode_property_value_characters
+0:4  - 0:5                                unicode_property_value_character
+0:4  - 0:5                                  unicode_property_name_character
+0:4  - 0:5                                    ascii_letter `A`
+0:5  - 0:6                                unicode_property_value_character
+0:5  - 0:6                                  unicode_property_name_character
+0:5  - 0:6                                    ascii_letter `S`
+0:6  - 0:7                                unicode_property_value_character
+0:6  - 0:7                                  unicode_property_name_character
+0:6  - 0:7                                    ascii_letter `C`
+0:7  - 0:8                                unicode_property_value_character
+0:7  - 0:8                                  unicode_property_name_character
+0:7  - 0:8                                    ascii_letter `I`
+0:8  - 0:9                                unicode_property_value_character
+0:8  - 0:9                                  unicode_property_name_character
+0:8  - 0:9                                    ascii_letter `I`
+0:9  - 0:10                         "}"
+0:10 - 0:26                   class_set_operand
+0:10 - 0:26                     nested_class
+0:10 - 0:11                       "\\"
+0:11 - 0:26                       character_class_escape
+0:11 - 0:12                         "P"
+0:12 - 0:13                         "{"
+0:13 - 0:25                         unicode_property_value_expression
+0:13 - 0:19                           unicode_property_name
+0:13 - 0:19                             unicode_property_name_characters
+0:13 - 0:14                               unicode_property_name_character
+0:13 - 0:14                                 ascii_letter `S`
+0:14 - 0:15                               unicode_property_name_character
+0:14 - 0:15                                 ascii_letter `c`
+0:15 - 0:16                               unicode_property_name_character
+0:15 - 0:16                                 ascii_letter `r`
+0:16 - 0:17                               unicode_property_name_character
+0:16 - 0:17                                 ascii_letter `i`
+0:17 - 0:18                               unicode_property_name_character
+0:17 - 0:18                                 ascii_letter `p`
+0:18 - 0:19                               unicode_property_name_character
+0:18 - 0:19                                 ascii_letter `t`
+0:19 - 0:20                           "="
+0:20 - 0:25                           unicode_property_value
+0:20 - 0:25                             unicode_property_value_characters
+0:20 - 0:21                               unicode_property_value_character
+0:20 - 0:21                                 unicode_property_name_character
+0:20 - 0:21                                   ascii_letter `G`
+0:21 - 0:22                               unicode_property_value_character
+0:21 - 0:22                                 unicode_property_name_character
+0:21 - 0:22                                   ascii_letter `r`
+0:22 - 0:23                               unicode_property_value_character
+0:22 - 0:23                                 unicode_property_name_character
+0:22 - 0:23                                   ascii_letter `e`
+0:23 - 0:24                               unicode_property_value_character
+0:23 - 0:24                                 unicode_property_name_character
+0:23 - 0:24                                   ascii_letter `e`
+0:24 - 0:25                               unicode_property_value_character
+0:24 - 0:25                                 unicode_property_name_character
+0:24 - 0:25                                   ascii_letter `k`
+0:25 - 0:26                         "}"
+0:26 - 0:39                   class_set_range
+0:26 - 0:32                     start: class_set_character
+0:26 - 0:27                       "\\"
+0:27 - 0:32                       character_escape
+0:27 - 0:32                         reg_exp_unicode_escape_sequence
+0:27 - 0:28                           "u"
+0:28 - 0:29                           "{"
+0:29 - 0:31                           code_point
+0:29 - 0:31                             hex_digits
+0:29 - 0:30                               hex_digit `6`
+0:30 - 0:31                               hex_digit `1`
+0:31 - 0:32                           "}"
+0:32 - 0:33                     "-"
+0:33 - 0:39                     end: class_set_character
+0:33 - 0:34                       "\\"
+0:34 - 0:39                       character_escape
+0:34 - 0:39                         reg_exp_unicode_escape_sequence
+0:34 - 0:35                           "u"
+0:35 - 0:36                           "{"
+0:36 - 0:38                           code_point
+0:36 - 0:38                             hex_digits
+0:36 - 0:37                               hex_digit `7`
+0:37 - 0:38                               hex_digit `A`
+0:38 - 0:39                           "}"
+0:39 - 0:40               "]"
+
+==============================
+Unicode property range validity is left to the consumer
+:language(javascript_regex_u)
+:cst
+==============================
+[\p{ASCII}-z]
+---
+0:0  - 0:13   pattern
+0:0  - 0:13     body: disjunction
+0:0  - 0:13       alternative
+0:0  - 0:13         term
+0:0  - 0:13           operand: atom
+0:0  - 0:13             character_class
+0:0  - 0:1                "["
+0:1  - 0:12               nonempty_class_ranges
+0:1  - 0:10                 start: class_atom
+0:1  - 0:10                   class_atom_no_dash
+0:1  - 0:2                      "\\"
+0:2  - 0:10                     class_escape
+0:2  - 0:10                       character_class_escape
+0:2  - 0:3                          "p"
+0:3  - 0:4                          "{"
+0:4  - 0:9                          unicode_property_value_expression
+0:4  - 0:9                            lone_unicode_property_name_or_value
+0:4  - 0:9                              unicode_property_value_characters
+0:4  - 0:5                                unicode_property_value_character
+0:4  - 0:5                                  unicode_property_name_character
+0:4  - 0:5                                    ascii_letter `A`
+0:5  - 0:6                                unicode_property_value_character
+0:5  - 0:6                                  unicode_property_name_character
+0:5  - 0:6                                    ascii_letter `S`
+0:6  - 0:7                                unicode_property_value_character
+0:6  - 0:7                                  unicode_property_name_character
+0:6  - 0:7                                    ascii_letter `C`
+0:7  - 0:8                                unicode_property_value_character
+0:7  - 0:8                                  unicode_property_name_character
+0:7  - 0:8                                    ascii_letter `I`
+0:8  - 0:9                                unicode_property_value_character
+0:8  - 0:9                                  unicode_property_name_character
+0:8  - 0:9                                    ascii_letter `I`
+0:9  - 0:10                         "}"
+0:10 - 0:11                 "-"
+0:11 - 0:12                 end: class_atom
+0:11 - 0:12                   class_atom_no_dash
+0:11 - 0:12                     source_character `z`
+0:12 - 0:13               "]"
+
+==============================
+Unicode mode combines surrogate escapes before assigning class range endpoints (javascript_regex_u)
+:language(javascript_regex_u)
+:cst
+==============================
+[\uD83D\uDE00-\uD83D\uDE4F]
+---
+0:0  - 0:27   pattern
+0:0  - 0:27     body: disjunction
+0:0  - 0:27       alternative
+0:0  - 0:27         term
+0:0  - 0:27           operand: atom
+0:0  - 0:27             character_class
+0:0  - 0:1                "["
+0:1  - 0:26               nonempty_class_ranges
+0:1  - 0:13                 start: class_atom
+0:1  - 0:13                   class_atom_no_dash
+0:1  - 0:2                      "\\"
+0:2  - 0:13                     class_escape
+0:2  - 0:13                       character_escape
+0:2  - 0:13                         reg_exp_unicode_escape_sequence
+0:2  - 0:3                            "u"
+0:3  - 0:7                            hex_lead_surrogate
+0:3  - 0:7                              hex4_digits
+0:3  - 0:4                                hex_digit `D`
+0:4  - 0:5                                hex_digit `8`
+0:5  - 0:6                                hex_digit `3`
+0:6  - 0:7                                hex_digit `D`
+0:7  - 0:9                            "\\u"
+0:9  - 0:13                           hex_trail_surrogate
+0:9  - 0:13                             hex4_digits
+0:9  - 0:10                               hex_digit `D`
+0:10 - 0:11                               hex_digit `E`
+0:11 - 0:12                               hex_digit `0`
+0:12 - 0:13                               hex_digit `0`
+0:13 - 0:14                 "-"
+0:14 - 0:26                 end: class_atom
+0:14 - 0:26                   class_atom_no_dash
+0:14 - 0:15                     "\\"
+0:15 - 0:26                     class_escape
+0:15 - 0:26                       character_escape
+0:15 - 0:26                         reg_exp_unicode_escape_sequence
+0:15 - 0:16                           "u"
+0:16 - 0:20                           hex_lead_surrogate
+0:16 - 0:20                             hex4_digits
+0:16 - 0:17                               hex_digit `D`
+0:17 - 0:18                               hex_digit `8`
+0:18 - 0:19                               hex_digit `3`
+0:19 - 0:20                               hex_digit `D`
+0:20 - 0:22                           "\\u"
+0:22 - 0:26                           hex_trail_surrogate
+0:22 - 0:26                             hex4_digits
+0:22 - 0:23                               hex_digit `D`
+0:23 - 0:24                               hex_digit `E`
+0:24 - 0:25                               hex_digit `4`
+0:25 - 0:26                               hex_digit `F`
+0:26 - 0:27               "]"
+
+==============================
+Unicode mode combines surrogate escapes before assigning class range endpoints (javascript_regex_v)
+:language(javascript_regex_v)
+:cst
+==============================
+[\uD83D\uDE00-\uD83D\uDE4F]
+---
+0:0  - 0:27   pattern
+0:0  - 0:27     body: disjunction
+0:0  - 0:27       alternative
+0:0  - 0:27         term
+0:0  - 0:27           operand: atom
+0:0  - 0:27             character_class
+0:0  - 0:1                "["
+0:1  - 0:26               class_set_expression
+0:1  - 0:26                 class_union
+0:1  - 0:26                   class_set_range
+0:1  - 0:13                     start: class_set_character
+0:1  - 0:2                        "\\"
+0:2  - 0:13                       character_escape
+0:2  - 0:13                         reg_exp_unicode_escape_sequence
+0:2  - 0:3                            "u"
+0:3  - 0:7                            hex_lead_surrogate
+0:3  - 0:7                              hex4_digits
+0:3  - 0:4                                hex_digit `D`
+0:4  - 0:5                                hex_digit `8`
+0:5  - 0:6                                hex_digit `3`
+0:6  - 0:7                                hex_digit `D`
+0:7  - 0:9                            "\\u"
+0:9  - 0:13                           hex_trail_surrogate
+0:9  - 0:13                             hex4_digits
+0:9  - 0:10                               hex_digit `D`
+0:10 - 0:11                               hex_digit `E`
+0:11 - 0:12                               hex_digit `0`
+0:12 - 0:13                               hex_digit `0`
+0:13 - 0:14                     "-"
+0:14 - 0:26                     end: class_set_character
+0:14 - 0:15                       "\\"
+0:15 - 0:26                       character_escape
+0:15 - 0:26                         reg_exp_unicode_escape_sequence
+0:15 - 0:16                           "u"
+0:16 - 0:20                           hex_lead_surrogate
+0:16 - 0:20                             hex4_digits
+0:16 - 0:17                               hex_digit `D`
+0:17 - 0:18                               hex_digit `8`
+0:18 - 0:19                               hex_digit `3`
+0:19 - 0:20                               hex_digit `D`
+0:20 - 0:22                           "\\u"
+0:22 - 0:26                           hex_trail_surrogate
+0:22 - 0:26                             hex4_digits
+0:22 - 0:23                               hex_digit `D`
+0:23 - 0:24                               hex_digit `E`
+0:24 - 0:25                               hex_digit `4`
+0:25 - 0:26                               hex_digit `F`
+0:26 - 0:27               "]"
+
+==============================
+Ordinary mode assigns class range endpoints to individual surrogate escapes
+:language(javascript_regex)
+:cst
+==============================
+[\uD83D\uDE00-\uD83D\uDE4F]
+---
+0:0  - 0:27   pattern
+0:0  - 0:27     body: disjunction
+0:0  - 0:27       alternative
+0:0  - 0:27         term
+0:0  - 0:27           operand: extended_atom
+0:0  - 0:27             character_class
+0:0  - 0:1                "["
+0:1  - 0:26               nonempty_class_ranges
+0:1  - 0:7                  class_atom
+0:1  - 0:7                    class_atom_no_dash
+0:1  - 0:2                      "\\"
+0:2  - 0:7                      class_escape
+0:2  - 0:7                        character_escape
+0:2  - 0:7                          reg_exp_unicode_escape_sequence
+0:2  - 0:3                            "u"
+0:3  - 0:7                            hex4_digits
+0:3  - 0:4                              hex_digit `D`
+0:4  - 0:5                              hex_digit `8`
+0:5  - 0:6                              hex_digit `3`
+0:6  - 0:7                              hex_digit `D`
+0:7  - 0:26                 nonempty_class_ranges_no_dash
+0:7  - 0:13                   start: class_atom_no_dash
+0:7  - 0:8                      "\\"
+0:8  - 0:13                     class_escape
+0:8  - 0:13                       character_escape
+0:8  - 0:13                         reg_exp_unicode_escape_sequence
+0:8  - 0:9                            "u"
+0:9  - 0:13                           hex4_digits
+0:9  - 0:10                             hex_digit `D`
+0:10 - 0:11                             hex_digit `E`
+0:11 - 0:12                             hex_digit `0`
+0:12 - 0:13                             hex_digit `0`
+0:13 - 0:14                   "-"
+0:14 - 0:20                   end: class_atom
+0:14 - 0:20                     class_atom_no_dash
+0:14 - 0:15                       "\\"
+0:15 - 0:20                       class_escape
+0:15 - 0:20                         character_escape
+0:15 - 0:20                           reg_exp_unicode_escape_sequence
+0:15 - 0:16                             "u"
+0:16 - 0:20                             hex4_digits
+0:16 - 0:17                               hex_digit `D`
+0:17 - 0:18                               hex_digit `8`
+0:18 - 0:19                               hex_digit `3`
+0:19 - 0:20                               hex_digit `D`
+0:20 - 0:26                   nonempty_class_ranges
+0:20 - 0:26                     class_atom
+0:20 - 0:26                       class_atom_no_dash
+0:20 - 0:21                         "\\"
+0:21 - 0:26                         class_escape
+0:21 - 0:26                           character_escape
+0:21 - 0:26                             reg_exp_unicode_escape_sequence
+0:21 - 0:22                               "u"
+0:22 - 0:26                               hex4_digits
+0:22 - 0:23                                 hex_digit `D`
+0:23 - 0:24                                 hex_digit `E`
+0:24 - 0:25                                 hex_digit `4`
+0:25 - 0:26                                 hex_digit `F`
+0:26 - 0:27               "]"

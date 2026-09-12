@@ -1,0 +1,225 @@
+==============================
+Anchors word boundaries and lookarounds remain assertions (javascript_regex)
+:language(javascript_regex)
+:cst
+==============================
+^\ba\B$(?=b)(?!c)(?<=d)(?<!e)
+---
+0:0  - 0:29   pattern
+0:0  - 0:29     body: disjunction
+0:0  - 0:29       alternative
+0:0  - 0:1          term
+0:0  - 0:1            assertion
+0:0  - 0:1              "^"
+0:1  - 0:3          term
+0:1  - 0:3            assertion
+0:1  - 0:3              "\\b"
+0:3  - 0:4          term
+0:3  - 0:4            operand: extended_atom
+0:3  - 0:4              extended_pattern_character
+0:3  - 0:4                source_character `a`
+0:4  - 0:6          term
+0:4  - 0:6            assertion
+0:4  - 0:6              "\\B"
+0:6  - 0:7          term
+0:6  - 0:7            assertion
+0:6  - 0:7              "$"
+0:7  - 0:12         term
+0:7  - 0:12           assertion
+0:7  - 0:12             quantifiable_assertion
+0:7  - 0:8                "("
+0:8  - 0:9                "?"
+0:9  - 0:10               "="
+0:10 - 0:11               body: disjunction
+0:10 - 0:11                 alternative
+0:10 - 0:11                   term
+0:10 - 0:11                     operand: extended_atom
+0:10 - 0:11                       extended_pattern_character
+0:10 - 0:11                         source_character `b`
+0:11 - 0:12               ")"
+0:12 - 0:17         term
+0:12 - 0:17           assertion
+0:12 - 0:17             quantifiable_assertion
+0:12 - 0:13               "("
+0:13 - 0:14               "?"
+0:14 - 0:15               "!"
+0:15 - 0:16               body: disjunction
+0:15 - 0:16                 alternative
+0:15 - 0:16                   term
+0:15 - 0:16                     operand: extended_atom
+0:15 - 0:16                       extended_pattern_character
+0:15 - 0:16                         source_character `c`
+0:16 - 0:17               ")"
+0:17 - 0:23         term
+0:17 - 0:23           assertion
+0:17 - 0:18             "("
+0:18 - 0:19             "?"
+0:19 - 0:21             "<="
+0:21 - 0:22             body: disjunction
+0:21 - 0:22               alternative
+0:21 - 0:22                 term
+0:21 - 0:22                   operand: extended_atom
+0:21 - 0:22                     extended_pattern_character
+0:21 - 0:22                       source_character `d`
+0:22 - 0:23             ")"
+0:23 - 0:29         term
+0:23 - 0:29           assertion
+0:23 - 0:24             "("
+0:24 - 0:25             "?"
+0:25 - 0:27             "<!"
+0:27 - 0:28             body: disjunction
+0:27 - 0:28               alternative
+0:27 - 0:28                 term
+0:27 - 0:28                   operand: extended_atom
+0:27 - 0:28                     extended_pattern_character
+0:27 - 0:28                       source_character `e`
+0:28 - 0:29             ")"
+
+==============================
+Anchors word boundaries and lookarounds remain assertions (javascript_regex_u, javascript_regex_v)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==============================
+^\ba\B$(?=b)(?!c)(?<=d)(?<!e)
+---
+0:0  - 0:29   pattern
+0:0  - 0:29     body: disjunction
+0:0  - 0:29       alternative
+0:0  - 0:1          term
+0:0  - 0:1            assertion
+0:0  - 0:1              "^"
+0:1  - 0:3          term
+0:1  - 0:3            assertion
+0:1  - 0:3              "\\b"
+0:3  - 0:4          term
+0:3  - 0:4            operand: atom
+0:3  - 0:4              pattern_character
+0:3  - 0:4                source_character `a`
+0:4  - 0:6          term
+0:4  - 0:6            assertion
+0:4  - 0:6              "\\B"
+0:6  - 0:7          term
+0:6  - 0:7            assertion
+0:6  - 0:7              "$"
+0:7  - 0:12         term
+0:7  - 0:12           assertion
+0:7  - 0:8              "("
+0:8  - 0:9              "?"
+0:9  - 0:10             "="
+0:10 - 0:11             body: disjunction
+0:10 - 0:11               alternative
+0:10 - 0:11                 term
+0:10 - 0:11                   operand: atom
+0:10 - 0:11                     pattern_character
+0:10 - 0:11                       source_character `b`
+0:11 - 0:12             ")"
+0:12 - 0:17         term
+0:12 - 0:17           assertion
+0:12 - 0:13             "("
+0:13 - 0:14             "?"
+0:14 - 0:15             "!"
+0:15 - 0:16             body: disjunction
+0:15 - 0:16               alternative
+0:15 - 0:16                 term
+0:15 - 0:16                   operand: atom
+0:15 - 0:16                     pattern_character
+0:15 - 0:16                       source_character `c`
+0:16 - 0:17             ")"
+0:17 - 0:23         term
+0:17 - 0:23           assertion
+0:17 - 0:18             "("
+0:18 - 0:19             "?"
+0:19 - 0:21             "<="
+0:21 - 0:22             body: disjunction
+0:21 - 0:22               alternative
+0:21 - 0:22                 term
+0:21 - 0:22                   operand: atom
+0:21 - 0:22                     pattern_character
+0:21 - 0:22                       source_character `d`
+0:22 - 0:23             ")"
+0:23 - 0:29         term
+0:23 - 0:29           assertion
+0:23 - 0:24             "("
+0:24 - 0:25             "?"
+0:25 - 0:27             "<!"
+0:27 - 0:28             body: disjunction
+0:27 - 0:28               alternative
+0:27 - 0:28                 term
+0:27 - 0:28                   operand: atom
+0:27 - 0:28                     pattern_character
+0:27 - 0:28                       source_character `e`
+0:28 - 0:29             ")"
+
+==============================
+Every lookaround supports an empty body (javascript_regex)
+:language(javascript_regex)
+:cst
+==============================
+(?=)(?!)(?<=)(?<!)
+---
+0:0  - 0:18   pattern
+0:0  - 0:18     body: disjunction
+0:0  - 0:18       alternative
+0:0  - 0:4          term
+0:0  - 0:4            assertion
+0:0  - 0:4              quantifiable_assertion
+0:0  - 0:1                "("
+0:1  - 0:2                "?"
+0:2  - 0:3                "="
+0:3  - 0:4                ")"
+0:4  - 0:8          term
+0:4  - 0:8            assertion
+0:4  - 0:8              quantifiable_assertion
+0:4  - 0:5                "("
+0:5  - 0:6                "?"
+0:6  - 0:7                "!"
+0:7  - 0:8                ")"
+0:8  - 0:13         term
+0:8  - 0:13           assertion
+0:8  - 0:9              "("
+0:9  - 0:10             "?"
+0:10 - 0:12             "<="
+0:12 - 0:13             ")"
+0:13 - 0:18         term
+0:13 - 0:18           assertion
+0:13 - 0:14             "("
+0:14 - 0:15             "?"
+0:15 - 0:17             "<!"
+0:17 - 0:18             ")"
+
+==============================
+Every lookaround supports an empty body (javascript_regex_u, javascript_regex_v)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==============================
+(?=)(?!)(?<=)(?<!)
+---
+0:0  - 0:18   pattern
+0:0  - 0:18     body: disjunction
+0:0  - 0:18       alternative
+0:0  - 0:4          term
+0:0  - 0:4            assertion
+0:0  - 0:1              "("
+0:1  - 0:2              "?"
+0:2  - 0:3              "="
+0:3  - 0:4              ")"
+0:4  - 0:8          term
+0:4  - 0:8            assertion
+0:4  - 0:5              "("
+0:5  - 0:6              "?"
+0:6  - 0:7              "!"
+0:7  - 0:8              ")"
+0:8  - 0:13         term
+0:8  - 0:13           assertion
+0:8  - 0:9              "("
+0:9  - 0:10             "?"
+0:10 - 0:12             "<="
+0:12 - 0:13             ")"
+0:13 - 0:18         term
+0:13 - 0:18           assertion
+0:13 - 0:14             "("
+0:14 - 0:15             "?"
+0:15 - 0:17             "<!"
+0:17 - 0:18             ")"

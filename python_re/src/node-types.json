@@ -1,0 +1,1011 @@
+[
+  {
+    "type": "alternation",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "concatenation",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "atomic_group",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "alternation",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "capturing_group",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "alternation",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "character_class",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "backspace_escape",
+          "named": true
+        },
+        {
+          "type": "character_class_escape",
+          "named": true
+        },
+        {
+          "type": "class_character",
+          "named": true
+        },
+        {
+          "type": "class_range",
+          "named": true
+        },
+        {
+          "type": "control_escape",
+          "named": true
+        },
+        {
+          "type": "hex_escape",
+          "named": true
+        },
+        {
+          "type": "literal_escape",
+          "named": true
+        },
+        {
+          "type": "named_unicode_escape",
+          "named": true
+        },
+        {
+          "type": "octal_escape",
+          "named": true
+        },
+        {
+          "type": "unicode_escape",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "class_character",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "class_range",
+    "named": true,
+    "fields": {
+      "end": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "backspace_escape",
+            "named": true
+          },
+          {
+            "type": "class_character",
+            "named": true
+          },
+          {
+            "type": "control_escape",
+            "named": true
+          },
+          {
+            "type": "hex_escape",
+            "named": true
+          },
+          {
+            "type": "literal_escape",
+            "named": true
+          },
+          {
+            "type": "named_unicode_escape",
+            "named": true
+          },
+          {
+            "type": "octal_escape",
+            "named": true
+          },
+          {
+            "type": "unicode_escape",
+            "named": true
+          }
+        ]
+      },
+      "start": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "backspace_escape",
+            "named": true
+          },
+          {
+            "type": "class_character",
+            "named": true
+          },
+          {
+            "type": "control_escape",
+            "named": true
+          },
+          {
+            "type": "hex_escape",
+            "named": true
+          },
+          {
+            "type": "literal_escape",
+            "named": true
+          },
+          {
+            "type": "named_unicode_escape",
+            "named": true
+          },
+          {
+            "type": "octal_escape",
+            "named": true
+          },
+          {
+            "type": "unicode_escape",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "comment_group",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "concatenation",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "anchor_escape",
+          "named": true
+        },
+        {
+          "type": "atomic_group",
+          "named": true
+        },
+        {
+          "type": "capturing_group",
+          "named": true
+        },
+        {
+          "type": "character_class",
+          "named": true
+        },
+        {
+          "type": "character_class_escape",
+          "named": true
+        },
+        {
+          "type": "comment_group",
+          "named": true
+        },
+        {
+          "type": "conditional_group",
+          "named": true
+        },
+        {
+          "type": "control_escape",
+          "named": true
+        },
+        {
+          "type": "end_anchor",
+          "named": true
+        },
+        {
+          "type": "hex_escape",
+          "named": true
+        },
+        {
+          "type": "literal_character",
+          "named": true
+        },
+        {
+          "type": "literal_escape",
+          "named": true
+        },
+        {
+          "type": "named_backreference",
+          "named": true
+        },
+        {
+          "type": "named_capturing_group",
+          "named": true
+        },
+        {
+          "type": "named_unicode_escape",
+          "named": true
+        },
+        {
+          "type": "negative_lookahead_assertion",
+          "named": true
+        },
+        {
+          "type": "negative_lookbehind_assertion",
+          "named": true
+        },
+        {
+          "type": "non_capturing_group",
+          "named": true
+        },
+        {
+          "type": "numeric_backreference",
+          "named": true
+        },
+        {
+          "type": "octal_escape",
+          "named": true
+        },
+        {
+          "type": "positive_lookahead_assertion",
+          "named": true
+        },
+        {
+          "type": "positive_lookbehind_assertion",
+          "named": true
+        },
+        {
+          "type": "repetition",
+          "named": true
+        },
+        {
+          "type": "scoped_flags_group",
+          "named": true
+        },
+        {
+          "type": "start_anchor",
+          "named": true
+        },
+        {
+          "type": "unicode_escape",
+          "named": true
+        },
+        {
+          "type": "verbose_comment",
+          "named": true
+        },
+        {
+          "type": "verbose_whitespace",
+          "named": true
+        },
+        {
+          "type": "wildcard",
+          "named": true
+        },
+        {
+          "type": "word_boundary_escape",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "conditional_group",
+    "named": true,
+    "fields": {
+      "condition": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "group_id",
+            "named": true
+          },
+          {
+            "type": "group_name",
+            "named": true
+          }
+        ]
+      },
+      "no_pattern": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "concatenation",
+            "named": true
+          }
+        ]
+      },
+      "yes_pattern": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "concatenation",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "global_flags",
+    "named": true,
+    "fields": {
+      "flags": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "flag_set",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "hex_escape",
+    "named": true,
+    "fields": {
+      "digits": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "hexadecimal_digits",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "literal_escape",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "named_backreference",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "group_name",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "named_capturing_group",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "alternation",
+            "named": true
+          }
+        ]
+      },
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "group_name",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "named_unicode_escape",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "unicode_character_name",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "negative_lookahead_assertion",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "alternation",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "negative_lookbehind_assertion",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "alternation",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "non_capturing_group",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "alternation",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "numeric_backreference",
+    "named": true,
+    "fields": {
+      "group": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "group_id",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "octal_escape",
+    "named": true,
+    "fields": {
+      "digits": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "octal_digits",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "pattern",
+    "named": true,
+    "root": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "alternation",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "comment_group",
+          "named": true
+        },
+        {
+          "type": "global_flags",
+          "named": true
+        },
+        {
+          "type": "verbose_comment",
+          "named": true
+        },
+        {
+          "type": "verbose_whitespace",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "positive_lookahead_assertion",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "alternation",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "positive_lookbehind_assertion",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "alternation",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "quantifier",
+    "named": true,
+    "fields": {
+      "count": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "decimal_digits",
+            "named": true
+          }
+        ]
+      },
+      "maximum": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "decimal_digits",
+            "named": true
+          }
+        ]
+      },
+      "minimum": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "decimal_digits",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "repetition",
+    "named": true,
+    "fields": {
+      "operand": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "atomic_group",
+            "named": true
+          },
+          {
+            "type": "capturing_group",
+            "named": true
+          },
+          {
+            "type": "character_class",
+            "named": true
+          },
+          {
+            "type": "character_class_escape",
+            "named": true
+          },
+          {
+            "type": "conditional_group",
+            "named": true
+          },
+          {
+            "type": "control_escape",
+            "named": true
+          },
+          {
+            "type": "hex_escape",
+            "named": true
+          },
+          {
+            "type": "literal_character",
+            "named": true
+          },
+          {
+            "type": "literal_escape",
+            "named": true
+          },
+          {
+            "type": "named_backreference",
+            "named": true
+          },
+          {
+            "type": "named_capturing_group",
+            "named": true
+          },
+          {
+            "type": "named_unicode_escape",
+            "named": true
+          },
+          {
+            "type": "negative_lookahead_assertion",
+            "named": true
+          },
+          {
+            "type": "negative_lookbehind_assertion",
+            "named": true
+          },
+          {
+            "type": "non_capturing_group",
+            "named": true
+          },
+          {
+            "type": "numeric_backreference",
+            "named": true
+          },
+          {
+            "type": "octal_escape",
+            "named": true
+          },
+          {
+            "type": "positive_lookahead_assertion",
+            "named": true
+          },
+          {
+            "type": "positive_lookbehind_assertion",
+            "named": true
+          },
+          {
+            "type": "scoped_flags_group",
+            "named": true
+          },
+          {
+            "type": "unicode_escape",
+            "named": true
+          },
+          {
+            "type": "wildcard",
+            "named": true
+          }
+        ]
+      },
+      "quantifier": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "quantifier",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "comment_group",
+          "named": true
+        },
+        {
+          "type": "verbose_comment",
+          "named": true
+        },
+        {
+          "type": "verbose_whitespace",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "scoped_flags_group",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "alternation",
+            "named": true
+          }
+        ]
+      },
+      "disable": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "flag_set",
+            "named": true
+          }
+        ]
+      },
+      "enable": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "flag_set",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "unicode_escape",
+    "named": true,
+    "fields": {
+      "digits": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "hexadecimal_digits",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "verbose_comment",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "verbose_whitespace",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "!",
+    "named": false
+  },
+  {
+    "type": "#",
+    "named": false
+  },
+  {
+    "type": "(",
+    "named": false
+  },
+  {
+    "type": ")",
+    "named": false
+  },
+  {
+    "type": "*",
+    "named": false
+  },
+  {
+    "type": "+",
+    "named": false
+  },
+  {
+    "type": ",",
+    "named": false
+  },
+  {
+    "type": "-",
+    "named": false
+  },
+  {
+    "type": ":",
+    "named": false
+  },
+  {
+    "type": "<",
+    "named": false
+  },
+  {
+    "type": "<!",
+    "named": false
+  },
+  {
+    "type": "<=",
+    "named": false
+  },
+  {
+    "type": "=",
+    "named": false
+  },
+  {
+    "type": ">",
+    "named": false
+  },
+  {
+    "type": "?",
+    "named": false
+  },
+  {
+    "type": "?P",
+    "named": false
+  },
+  {
+    "type": "[",
+    "named": false
+  },
+  {
+    "type": "\\",
+    "named": false
+  },
+  {
+    "type": "\\N",
+    "named": false
+  },
+  {
+    "type": "\\U",
+    "named": false
+  },
+  {
+    "type": "\\u",
+    "named": false
+  },
+  {
+    "type": "\\x",
+    "named": false
+  },
+  {
+    "type": "]",
+    "named": false
+  },
+  {
+    "type": "^",
+    "named": false
+  },
+  {
+    "type": "anchor_escape",
+    "named": true
+  },
+  {
+    "type": "backspace_escape",
+    "named": true
+  },
+  {
+    "type": "character_class_escape",
+    "named": true
+  },
+  {
+    "type": "comment_content",
+    "named": false
+  },
+  {
+    "type": "control_escape",
+    "named": true
+  },
+  {
+    "type": "decimal_digits",
+    "named": true
+  },
+  {
+    "type": "end_anchor",
+    "named": true
+  },
+  {
+    "type": "flag_set",
+    "named": true
+  },
+  {
+    "type": "group_id",
+    "named": true
+  },
+  {
+    "type": "group_name",
+    "named": true
+  },
+  {
+    "type": "hexadecimal_digits",
+    "named": true
+  },
+  {
+    "type": "literal_character",
+    "named": true
+  },
+  {
+    "type": "octal_digits",
+    "named": true
+  },
+  {
+    "type": "start_anchor",
+    "named": true
+  },
+  {
+    "type": "unicode_character_name",
+    "named": true
+  },
+  {
+    "type": "wildcard",
+    "named": true
+  },
+  {
+    "type": "word_boundary_escape",
+    "named": true
+  },
+  {
+    "type": "{",
+    "named": false
+  },
+  {
+    "type": "|",
+    "named": false
+  },
+  {
+    "type": "}",
+    "named": false
+  }
+]

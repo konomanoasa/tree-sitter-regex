@@ -1,0 +1,1487 @@
+==============================
+Common character escapes preserve their syntactic categories (javascript_regex)
+:language(javascript_regex)
+:cst
+==============================
+\f\n\r\t\v\cA\cz\0\x41\u0042\d\D\s\S\w\W
+---
+0:0  - 0:40   pattern
+0:0  - 0:40     body: disjunction
+0:0  - 0:40       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: extended_atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                character_escape
+0:1  - 0:2                  control_escape `f`
+0:2  - 0:4          term
+0:2  - 0:4            operand: extended_atom
+0:2  - 0:3              "\\"
+0:3  - 0:4              atom_escape
+0:3  - 0:4                character_escape
+0:3  - 0:4                  control_escape `n`
+0:4  - 0:6          term
+0:4  - 0:6            operand: extended_atom
+0:4  - 0:5              "\\"
+0:5  - 0:6              atom_escape
+0:5  - 0:6                character_escape
+0:5  - 0:6                  control_escape `r`
+0:6  - 0:8          term
+0:6  - 0:8            operand: extended_atom
+0:6  - 0:7              "\\"
+0:7  - 0:8              atom_escape
+0:7  - 0:8                character_escape
+0:7  - 0:8                  control_escape `t`
+0:8  - 0:10         term
+0:8  - 0:10           operand: extended_atom
+0:8  - 0:9              "\\"
+0:9  - 0:10             atom_escape
+0:9  - 0:10               character_escape
+0:9  - 0:10                 control_escape `v`
+0:10 - 0:13         term
+0:10 - 0:13           operand: extended_atom
+0:10 - 0:11             "\\"
+0:11 - 0:13             atom_escape
+0:11 - 0:13               character_escape
+0:11 - 0:12                 "c"
+0:12 - 0:13                 ascii_letter `A`
+0:13 - 0:16         term
+0:13 - 0:16           operand: extended_atom
+0:13 - 0:14             "\\"
+0:14 - 0:16             atom_escape
+0:14 - 0:16               character_escape
+0:14 - 0:15                 "c"
+0:15 - 0:16                 ascii_letter `z`
+0:16 - 0:18         term
+0:16 - 0:18           operand: extended_atom
+0:16 - 0:17             "\\"
+0:17 - 0:18             atom_escape
+0:17 - 0:18               character_escape
+0:17 - 0:18                 "0"
+0:18 - 0:22         term
+0:18 - 0:22           operand: extended_atom
+0:18 - 0:19             "\\"
+0:19 - 0:22             atom_escape
+0:19 - 0:22               character_escape
+0:19 - 0:22                 hex_escape_sequence
+0:19 - 0:20                   "x"
+0:20 - 0:21                   hex_digit `4`
+0:21 - 0:22                   hex_digit `1`
+0:22 - 0:28         term
+0:22 - 0:28           operand: extended_atom
+0:22 - 0:23             "\\"
+0:23 - 0:28             atom_escape
+0:23 - 0:28               character_escape
+0:23 - 0:28                 reg_exp_unicode_escape_sequence
+0:23 - 0:24                   "u"
+0:24 - 0:28                   hex4_digits
+0:24 - 0:25                     hex_digit `0`
+0:25 - 0:26                     hex_digit `0`
+0:26 - 0:27                     hex_digit `4`
+0:27 - 0:28                     hex_digit `2`
+0:28 - 0:30         term
+0:28 - 0:30           operand: extended_atom
+0:28 - 0:29             "\\"
+0:29 - 0:30             atom_escape
+0:29 - 0:30               character_class_escape `d`
+0:30 - 0:32         term
+0:30 - 0:32           operand: extended_atom
+0:30 - 0:31             "\\"
+0:31 - 0:32             atom_escape
+0:31 - 0:32               character_class_escape `D`
+0:32 - 0:34         term
+0:32 - 0:34           operand: extended_atom
+0:32 - 0:33             "\\"
+0:33 - 0:34             atom_escape
+0:33 - 0:34               character_class_escape `s`
+0:34 - 0:36         term
+0:34 - 0:36           operand: extended_atom
+0:34 - 0:35             "\\"
+0:35 - 0:36             atom_escape
+0:35 - 0:36               character_class_escape `S`
+0:36 - 0:38         term
+0:36 - 0:38           operand: extended_atom
+0:36 - 0:37             "\\"
+0:37 - 0:38             atom_escape
+0:37 - 0:38               character_class_escape `w`
+0:38 - 0:40         term
+0:38 - 0:40           operand: extended_atom
+0:38 - 0:39             "\\"
+0:39 - 0:40             atom_escape
+0:39 - 0:40               character_class_escape `W`
+
+==============================
+Common character escapes preserve their syntactic categories (javascript_regex_u, javascript_regex_v)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==============================
+\f\n\r\t\v\cA\cz\0\x41\u0042\d\D\s\S\w\W
+---
+0:0  - 0:40   pattern
+0:0  - 0:40     body: disjunction
+0:0  - 0:40       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                character_escape
+0:1  - 0:2                  control_escape `f`
+0:2  - 0:4          term
+0:2  - 0:4            operand: atom
+0:2  - 0:3              "\\"
+0:3  - 0:4              atom_escape
+0:3  - 0:4                character_escape
+0:3  - 0:4                  control_escape `n`
+0:4  - 0:6          term
+0:4  - 0:6            operand: atom
+0:4  - 0:5              "\\"
+0:5  - 0:6              atom_escape
+0:5  - 0:6                character_escape
+0:5  - 0:6                  control_escape `r`
+0:6  - 0:8          term
+0:6  - 0:8            operand: atom
+0:6  - 0:7              "\\"
+0:7  - 0:8              atom_escape
+0:7  - 0:8                character_escape
+0:7  - 0:8                  control_escape `t`
+0:8  - 0:10         term
+0:8  - 0:10           operand: atom
+0:8  - 0:9              "\\"
+0:9  - 0:10             atom_escape
+0:9  - 0:10               character_escape
+0:9  - 0:10                 control_escape `v`
+0:10 - 0:13         term
+0:10 - 0:13           operand: atom
+0:10 - 0:11             "\\"
+0:11 - 0:13             atom_escape
+0:11 - 0:13               character_escape
+0:11 - 0:12                 "c"
+0:12 - 0:13                 ascii_letter `A`
+0:13 - 0:16         term
+0:13 - 0:16           operand: atom
+0:13 - 0:14             "\\"
+0:14 - 0:16             atom_escape
+0:14 - 0:16               character_escape
+0:14 - 0:15                 "c"
+0:15 - 0:16                 ascii_letter `z`
+0:16 - 0:18         term
+0:16 - 0:18           operand: atom
+0:16 - 0:17             "\\"
+0:17 - 0:18             atom_escape
+0:17 - 0:18               character_escape
+0:17 - 0:18                 "0"
+0:18 - 0:22         term
+0:18 - 0:22           operand: atom
+0:18 - 0:19             "\\"
+0:19 - 0:22             atom_escape
+0:19 - 0:22               character_escape
+0:19 - 0:22                 hex_escape_sequence
+0:19 - 0:20                   "x"
+0:20 - 0:21                   hex_digit `4`
+0:21 - 0:22                   hex_digit `1`
+0:22 - 0:28         term
+0:22 - 0:28           operand: atom
+0:22 - 0:23             "\\"
+0:23 - 0:28             atom_escape
+0:23 - 0:28               character_escape
+0:23 - 0:28                 reg_exp_unicode_escape_sequence
+0:23 - 0:24                   "u"
+0:24 - 0:28                   hex_non_surrogate
+0:24 - 0:28                     hex4_digits
+0:24 - 0:25                       hex_digit `0`
+0:25 - 0:26                       hex_digit `0`
+0:26 - 0:27                       hex_digit `4`
+0:27 - 0:28                       hex_digit `2`
+0:28 - 0:30         term
+0:28 - 0:30           operand: atom
+0:28 - 0:29             "\\"
+0:29 - 0:30             atom_escape
+0:29 - 0:30               character_class_escape `d`
+0:30 - 0:32         term
+0:30 - 0:32           operand: atom
+0:30 - 0:31             "\\"
+0:31 - 0:32             atom_escape
+0:31 - 0:32               character_class_escape `D`
+0:32 - 0:34         term
+0:32 - 0:34           operand: atom
+0:32 - 0:33             "\\"
+0:33 - 0:34             atom_escape
+0:33 - 0:34               character_class_escape `s`
+0:34 - 0:36         term
+0:34 - 0:36           operand: atom
+0:34 - 0:35             "\\"
+0:35 - 0:36             atom_escape
+0:35 - 0:36               character_class_escape `S`
+0:36 - 0:38         term
+0:36 - 0:38           operand: atom
+0:36 - 0:37             "\\"
+0:37 - 0:38             atom_escape
+0:37 - 0:38               character_class_escape `w`
+0:38 - 0:40         term
+0:38 - 0:40           operand: atom
+0:38 - 0:39             "\\"
+0:39 - 0:40             atom_escape
+0:39 - 0:40               character_class_escape `W`
+
+==============================
+Every syntax character and the literal delimiter can be escaped (javascript_regex)
+:language(javascript_regex)
+:cst
+==============================
+\^\$\\\.\*\+\?\(\)\[\]\{\}\|\/
+---
+0:0  - 0:30   pattern
+0:0  - 0:30     body: disjunction
+0:0  - 0:30       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: extended_atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                character_escape
+0:1  - 0:2                  identity_escape
+0:1  - 0:2                    source_character_identity_escape
+0:1  - 0:2                      source_character `^`
+0:2  - 0:4          term
+0:2  - 0:4            operand: extended_atom
+0:2  - 0:3              "\\"
+0:3  - 0:4              atom_escape
+0:3  - 0:4                character_escape
+0:3  - 0:4                  identity_escape
+0:3  - 0:4                    source_character_identity_escape
+0:3  - 0:4                      source_character `$`
+0:4  - 0:6          term
+0:4  - 0:6            operand: extended_atom
+0:4  - 0:5              "\\"
+0:5  - 0:6              atom_escape
+0:5  - 0:6                character_escape
+0:5  - 0:6                  identity_escape
+0:5  - 0:6                    source_character_identity_escape
+0:5  - 0:6                      source_character `\\`
+0:6  - 0:8          term
+0:6  - 0:8            operand: extended_atom
+0:6  - 0:7              "\\"
+0:7  - 0:8              atom_escape
+0:7  - 0:8                character_escape
+0:7  - 0:8                  identity_escape
+0:7  - 0:8                    source_character_identity_escape
+0:7  - 0:8                      source_character `.`
+0:8  - 0:10         term
+0:8  - 0:10           operand: extended_atom
+0:8  - 0:9              "\\"
+0:9  - 0:10             atom_escape
+0:9  - 0:10               character_escape
+0:9  - 0:10                 identity_escape
+0:9  - 0:10                   source_character_identity_escape
+0:9  - 0:10                     source_character `*`
+0:10 - 0:12         term
+0:10 - 0:12           operand: extended_atom
+0:10 - 0:11             "\\"
+0:11 - 0:12             atom_escape
+0:11 - 0:12               character_escape
+0:11 - 0:12                 identity_escape
+0:11 - 0:12                   source_character_identity_escape
+0:11 - 0:12                     source_character `+`
+0:12 - 0:14         term
+0:12 - 0:14           operand: extended_atom
+0:12 - 0:13             "\\"
+0:13 - 0:14             atom_escape
+0:13 - 0:14               character_escape
+0:13 - 0:14                 identity_escape
+0:13 - 0:14                   source_character_identity_escape
+0:13 - 0:14                     source_character `?`
+0:14 - 0:16         term
+0:14 - 0:16           operand: extended_atom
+0:14 - 0:15             "\\"
+0:15 - 0:16             atom_escape
+0:15 - 0:16               character_escape
+0:15 - 0:16                 identity_escape
+0:15 - 0:16                   source_character_identity_escape
+0:15 - 0:16                     source_character `(`
+0:16 - 0:18         term
+0:16 - 0:18           operand: extended_atom
+0:16 - 0:17             "\\"
+0:17 - 0:18             atom_escape
+0:17 - 0:18               character_escape
+0:17 - 0:18                 identity_escape
+0:17 - 0:18                   source_character_identity_escape
+0:17 - 0:18                     source_character `)`
+0:18 - 0:20         term
+0:18 - 0:20           operand: extended_atom
+0:18 - 0:19             "\\"
+0:19 - 0:20             atom_escape
+0:19 - 0:20               character_escape
+0:19 - 0:20                 identity_escape
+0:19 - 0:20                   source_character_identity_escape
+0:19 - 0:20                     source_character `[`
+0:20 - 0:22         term
+0:20 - 0:22           operand: extended_atom
+0:20 - 0:21             "\\"
+0:21 - 0:22             atom_escape
+0:21 - 0:22               character_escape
+0:21 - 0:22                 identity_escape
+0:21 - 0:22                   source_character_identity_escape
+0:21 - 0:22                     source_character `]`
+0:22 - 0:24         term
+0:22 - 0:24           operand: extended_atom
+0:22 - 0:23             "\\"
+0:23 - 0:24             atom_escape
+0:23 - 0:24               character_escape
+0:23 - 0:24                 identity_escape
+0:23 - 0:24                   source_character_identity_escape
+0:23 - 0:24                     source_character `{`
+0:24 - 0:26         term
+0:24 - 0:26           operand: extended_atom
+0:24 - 0:25             "\\"
+0:25 - 0:26             atom_escape
+0:25 - 0:26               character_escape
+0:25 - 0:26                 identity_escape
+0:25 - 0:26                   source_character_identity_escape
+0:25 - 0:26                     source_character `}`
+0:26 - 0:28         term
+0:26 - 0:28           operand: extended_atom
+0:26 - 0:27             "\\"
+0:27 - 0:28             atom_escape
+0:27 - 0:28               character_escape
+0:27 - 0:28                 identity_escape
+0:27 - 0:28                   source_character_identity_escape
+0:27 - 0:28                     source_character `|`
+0:28 - 0:30         term
+0:28 - 0:30           operand: extended_atom
+0:28 - 0:29             "\\"
+0:29 - 0:30             atom_escape
+0:29 - 0:30               character_escape
+0:29 - 0:30                 identity_escape
+0:29 - 0:30                   source_character_identity_escape
+0:29 - 0:30                     source_character `/`
+
+==============================
+Every syntax character and the literal delimiter can be escaped (javascript_regex_u, javascript_regex_v)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==============================
+\^\$\\\.\*\+\?\(\)\[\]\{\}\|\/
+---
+0:0  - 0:30   pattern
+0:0  - 0:30     body: disjunction
+0:0  - 0:30       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                character_escape
+0:1  - 0:2                  identity_escape
+0:1  - 0:2                    syntax_character `^`
+0:2  - 0:4          term
+0:2  - 0:4            operand: atom
+0:2  - 0:3              "\\"
+0:3  - 0:4              atom_escape
+0:3  - 0:4                character_escape
+0:3  - 0:4                  identity_escape
+0:3  - 0:4                    syntax_character `$`
+0:4  - 0:6          term
+0:4  - 0:6            operand: atom
+0:4  - 0:5              "\\"
+0:5  - 0:6              atom_escape
+0:5  - 0:6                character_escape
+0:5  - 0:6                  identity_escape
+0:5  - 0:6                    syntax_character `\\`
+0:6  - 0:8          term
+0:6  - 0:8            operand: atom
+0:6  - 0:7              "\\"
+0:7  - 0:8              atom_escape
+0:7  - 0:8                character_escape
+0:7  - 0:8                  identity_escape
+0:7  - 0:8                    syntax_character `.`
+0:8  - 0:10         term
+0:8  - 0:10           operand: atom
+0:8  - 0:9              "\\"
+0:9  - 0:10             atom_escape
+0:9  - 0:10               character_escape
+0:9  - 0:10                 identity_escape
+0:9  - 0:10                   syntax_character `*`
+0:10 - 0:12         term
+0:10 - 0:12           operand: atom
+0:10 - 0:11             "\\"
+0:11 - 0:12             atom_escape
+0:11 - 0:12               character_escape
+0:11 - 0:12                 identity_escape
+0:11 - 0:12                   syntax_character `+`
+0:12 - 0:14         term
+0:12 - 0:14           operand: atom
+0:12 - 0:13             "\\"
+0:13 - 0:14             atom_escape
+0:13 - 0:14               character_escape
+0:13 - 0:14                 identity_escape
+0:13 - 0:14                   syntax_character `?`
+0:14 - 0:16         term
+0:14 - 0:16           operand: atom
+0:14 - 0:15             "\\"
+0:15 - 0:16             atom_escape
+0:15 - 0:16               character_escape
+0:15 - 0:16                 identity_escape
+0:15 - 0:16                   syntax_character `(`
+0:16 - 0:18         term
+0:16 - 0:18           operand: atom
+0:16 - 0:17             "\\"
+0:17 - 0:18             atom_escape
+0:17 - 0:18               character_escape
+0:17 - 0:18                 identity_escape
+0:17 - 0:18                   syntax_character `)`
+0:18 - 0:20         term
+0:18 - 0:20           operand: atom
+0:18 - 0:19             "\\"
+0:19 - 0:20             atom_escape
+0:19 - 0:20               character_escape
+0:19 - 0:20                 identity_escape
+0:19 - 0:20                   syntax_character `[`
+0:20 - 0:22         term
+0:20 - 0:22           operand: atom
+0:20 - 0:21             "\\"
+0:21 - 0:22             atom_escape
+0:21 - 0:22               character_escape
+0:21 - 0:22                 identity_escape
+0:21 - 0:22                   syntax_character `]`
+0:22 - 0:24         term
+0:22 - 0:24           operand: atom
+0:22 - 0:23             "\\"
+0:23 - 0:24             atom_escape
+0:23 - 0:24               character_escape
+0:23 - 0:24                 identity_escape
+0:23 - 0:24                   syntax_character `{`
+0:24 - 0:26         term
+0:24 - 0:26           operand: atom
+0:24 - 0:25             "\\"
+0:25 - 0:26             atom_escape
+0:25 - 0:26               character_escape
+0:25 - 0:26                 identity_escape
+0:25 - 0:26                   syntax_character `}`
+0:26 - 0:28         term
+0:26 - 0:28           operand: atom
+0:26 - 0:27             "\\"
+0:27 - 0:28             atom_escape
+0:27 - 0:28               character_escape
+0:27 - 0:28                 identity_escape
+0:27 - 0:28                   syntax_character `|`
+0:28 - 0:30         term
+0:28 - 0:30           operand: atom
+0:28 - 0:29             "\\"
+0:29 - 0:30             atom_escape
+0:29 - 0:30               character_escape
+0:29 - 0:30                 identity_escape
+0:29 - 0:30                   "/"
+
+==============================
+Fixed width hexadecimal escapes leave subsequent digits as literals (javascript_regex)
+:language(javascript_regex)
+:cst
+==============================
+\x412\u00423
+---
+0:0  - 0:12   pattern
+0:0  - 0:12     body: disjunction
+0:0  - 0:12       alternative
+0:0  - 0:4          term
+0:0  - 0:4            operand: extended_atom
+0:0  - 0:1              "\\"
+0:1  - 0:4              atom_escape
+0:1  - 0:4                character_escape
+0:1  - 0:4                  hex_escape_sequence
+0:1  - 0:2                    "x"
+0:2  - 0:3                    hex_digit `4`
+0:3  - 0:4                    hex_digit `1`
+0:4  - 0:5          term
+0:4  - 0:5            operand: extended_atom
+0:4  - 0:5              extended_pattern_character
+0:4  - 0:5                source_character `2`
+0:5  - 0:11         term
+0:5  - 0:11           operand: extended_atom
+0:5  - 0:6              "\\"
+0:6  - 0:11             atom_escape
+0:6  - 0:11               character_escape
+0:6  - 0:11                 reg_exp_unicode_escape_sequence
+0:6  - 0:7                    "u"
+0:7  - 0:11                   hex4_digits
+0:7  - 0:8                      hex_digit `0`
+0:8  - 0:9                      hex_digit `0`
+0:9  - 0:10                     hex_digit `4`
+0:10 - 0:11                     hex_digit `2`
+0:11 - 0:12         term
+0:11 - 0:12           operand: extended_atom
+0:11 - 0:12             extended_pattern_character
+0:11 - 0:12               source_character `3`
+
+==============================
+Fixed width hexadecimal escapes leave subsequent digits as literals (javascript_regex_u, javascript_regex_v)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==============================
+\x412\u00423
+---
+0:0  - 0:12   pattern
+0:0  - 0:12     body: disjunction
+0:0  - 0:12       alternative
+0:0  - 0:4          term
+0:0  - 0:4            operand: atom
+0:0  - 0:1              "\\"
+0:1  - 0:4              atom_escape
+0:1  - 0:4                character_escape
+0:1  - 0:4                  hex_escape_sequence
+0:1  - 0:2                    "x"
+0:2  - 0:3                    hex_digit `4`
+0:3  - 0:4                    hex_digit `1`
+0:4  - 0:5          term
+0:4  - 0:5            operand: atom
+0:4  - 0:5              pattern_character
+0:4  - 0:5                source_character `2`
+0:5  - 0:11         term
+0:5  - 0:11           operand: atom
+0:5  - 0:6              "\\"
+0:6  - 0:11             atom_escape
+0:6  - 0:11               character_escape
+0:6  - 0:11                 reg_exp_unicode_escape_sequence
+0:6  - 0:7                    "u"
+0:7  - 0:11                   hex_non_surrogate
+0:7  - 0:11                     hex4_digits
+0:7  - 0:8                        hex_digit `0`
+0:8  - 0:9                        hex_digit `0`
+0:9  - 0:10                       hex_digit `4`
+0:10 - 0:11                       hex_digit `2`
+0:11 - 0:12         term
+0:11 - 0:12           operand: atom
+0:11 - 0:12             pattern_character
+0:11 - 0:12               source_character `3`
+
+==============================
+An escaped backslash prevents the following spelling from becoming an escape (javascript_regex)
+:language(javascript_regex)
+:cst
+==============================
+\\b\\u0041
+---
+0:0  - 0:10   pattern
+0:0  - 0:10     body: disjunction
+0:0  - 0:10       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: extended_atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                character_escape
+0:1  - 0:2                  identity_escape
+0:1  - 0:2                    source_character_identity_escape
+0:1  - 0:2                      source_character `\\`
+0:2  - 0:3          term
+0:2  - 0:3            operand: extended_atom
+0:2  - 0:3              extended_pattern_character
+0:2  - 0:3                source_character `b`
+0:3  - 0:5          term
+0:3  - 0:5            operand: extended_atom
+0:3  - 0:4              "\\"
+0:4  - 0:5              atom_escape
+0:4  - 0:5                character_escape
+0:4  - 0:5                  identity_escape
+0:4  - 0:5                    source_character_identity_escape
+0:4  - 0:5                      source_character `\\`
+0:5  - 0:6          term
+0:5  - 0:6            operand: extended_atom
+0:5  - 0:6              extended_pattern_character
+0:5  - 0:6                source_character `u`
+0:6  - 0:7          term
+0:6  - 0:7            operand: extended_atom
+0:6  - 0:7              extended_pattern_character
+0:6  - 0:7                source_character `0`
+0:7  - 0:8          term
+0:7  - 0:8            operand: extended_atom
+0:7  - 0:8              extended_pattern_character
+0:7  - 0:8                source_character `0`
+0:8  - 0:9          term
+0:8  - 0:9            operand: extended_atom
+0:8  - 0:9              extended_pattern_character
+0:8  - 0:9                source_character `4`
+0:9  - 0:10         term
+0:9  - 0:10           operand: extended_atom
+0:9  - 0:10             extended_pattern_character
+0:9  - 0:10               source_character `1`
+
+==============================
+An escaped backslash prevents the following spelling from becoming an escape (javascript_regex_u, javascript_regex_v)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==============================
+\\b\\u0041
+---
+0:0  - 0:10   pattern
+0:0  - 0:10     body: disjunction
+0:0  - 0:10       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                character_escape
+0:1  - 0:2                  identity_escape
+0:1  - 0:2                    syntax_character `\\`
+0:2  - 0:3          term
+0:2  - 0:3            operand: atom
+0:2  - 0:3              pattern_character
+0:2  - 0:3                source_character `b`
+0:3  - 0:5          term
+0:3  - 0:5            operand: atom
+0:3  - 0:4              "\\"
+0:4  - 0:5              atom_escape
+0:4  - 0:5                character_escape
+0:4  - 0:5                  identity_escape
+0:4  - 0:5                    syntax_character `\\`
+0:5  - 0:6          term
+0:5  - 0:6            operand: atom
+0:5  - 0:6              pattern_character
+0:5  - 0:6                source_character `u`
+0:6  - 0:7          term
+0:6  - 0:7            operand: atom
+0:6  - 0:7              pattern_character
+0:6  - 0:7                source_character `0`
+0:7  - 0:8          term
+0:7  - 0:8            operand: atom
+0:7  - 0:8              pattern_character
+0:7  - 0:8                source_character `0`
+0:8  - 0:9          term
+0:8  - 0:9            operand: atom
+0:8  - 0:9              pattern_character
+0:8  - 0:9                source_character `4`
+0:9  - 0:10         term
+0:9  - 0:10           operand: atom
+0:9  - 0:10             pattern_character
+0:9  - 0:10               source_character `1`
+
+==============================
+A null escape is complete at end of input (javascript_regex)
+:language(javascript_regex)
+:cst
+==============================
+\0
+---
+0:0 - 0:2   pattern
+0:0 - 0:2     body: disjunction
+0:0 - 0:2       alternative
+0:0 - 0:2         term
+0:0 - 0:2           operand: extended_atom
+0:0 - 0:1             "\\"
+0:1 - 0:2             atom_escape
+0:1 - 0:2               character_escape
+0:1 - 0:2                 "0"
+
+==============================
+A null escape is complete at end of input (javascript_regex_u, javascript_regex_v)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==============================
+\0
+---
+0:0 - 0:2   pattern
+0:0 - 0:2     body: disjunction
+0:0 - 0:2       alternative
+0:0 - 0:2         term
+0:0 - 0:2           operand: atom
+0:0 - 0:1             "\\"
+0:1 - 0:2             atom_escape
+0:1 - 0:2               character_escape
+0:1 - 0:2                 "0"
+
+==============================
+Null escape lookahead preserves following nondecimal characters and escapes (javascript_regex)
+:language(javascript_regex)
+:cst
+==============================
+\0a\0_\0😀\0\0
+---
+0:0  - 0:16   pattern
+0:0  - 0:16     body: disjunction
+0:0  - 0:16       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: extended_atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                character_escape
+0:1  - 0:2                  "0"
+0:2  - 0:3          term
+0:2  - 0:3            operand: extended_atom
+0:2  - 0:3              extended_pattern_character
+0:2  - 0:3                source_character `a`
+0:3  - 0:5          term
+0:3  - 0:5            operand: extended_atom
+0:3  - 0:4              "\\"
+0:4  - 0:5              atom_escape
+0:4  - 0:5                character_escape
+0:4  - 0:5                  "0"
+0:5  - 0:6          term
+0:5  - 0:6            operand: extended_atom
+0:5  - 0:6              extended_pattern_character
+0:5  - 0:6                source_character `_`
+0:6  - 0:8          term
+0:6  - 0:8            operand: extended_atom
+0:6  - 0:7              "\\"
+0:7  - 0:8              atom_escape
+0:7  - 0:8                character_escape
+0:7  - 0:8                  "0"
+0:8  - 0:12         term
+0:8  - 0:12           operand: extended_atom
+0:8  - 0:12             extended_pattern_character
+0:8  - 0:12               source_character `😀`
+0:12 - 0:14         term
+0:12 - 0:14           operand: extended_atom
+0:12 - 0:13             "\\"
+0:13 - 0:14             atom_escape
+0:13 - 0:14               character_escape
+0:13 - 0:14                 "0"
+0:14 - 0:16         term
+0:14 - 0:16           operand: extended_atom
+0:14 - 0:15             "\\"
+0:15 - 0:16             atom_escape
+0:15 - 0:16               character_escape
+0:15 - 0:16                 "0"
+
+==============================
+Null escape lookahead preserves following nondecimal characters and escapes (javascript_regex_u, javascript_regex_v)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==============================
+\0a\0_\0😀\0\0
+---
+0:0  - 0:16   pattern
+0:0  - 0:16     body: disjunction
+0:0  - 0:16       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                character_escape
+0:1  - 0:2                  "0"
+0:2  - 0:3          term
+0:2  - 0:3            operand: atom
+0:2  - 0:3              pattern_character
+0:2  - 0:3                source_character `a`
+0:3  - 0:5          term
+0:3  - 0:5            operand: atom
+0:3  - 0:4              "\\"
+0:4  - 0:5              atom_escape
+0:4  - 0:5                character_escape
+0:4  - 0:5                  "0"
+0:5  - 0:6          term
+0:5  - 0:6            operand: atom
+0:5  - 0:6              pattern_character
+0:5  - 0:6                source_character `_`
+0:6  - 0:8          term
+0:6  - 0:8            operand: atom
+0:6  - 0:7              "\\"
+0:7  - 0:8              atom_escape
+0:7  - 0:8                character_escape
+0:7  - 0:8                  "0"
+0:8  - 0:12         term
+0:8  - 0:12           operand: atom
+0:8  - 0:12             pattern_character
+0:8  - 0:12               source_character `😀`
+0:12 - 0:14         term
+0:12 - 0:14           operand: atom
+0:12 - 0:13             "\\"
+0:13 - 0:14             atom_escape
+0:13 - 0:14               character_escape
+0:13 - 0:14                 "0"
+0:14 - 0:16         term
+0:14 - 0:16           operand: atom
+0:14 - 0:15             "\\"
+0:15 - 0:16             atom_escape
+0:15 - 0:16               character_escape
+0:15 - 0:16                 "0"
+
+==============================
+Null escapes can be quantified and followed by an alternative (javascript_regex)
+:language(javascript_regex)
+:cst
+==============================
+\0?|\0
+---
+0:0 - 0:6   pattern
+0:0 - 0:6     body: disjunction
+0:0 - 0:3       alternative
+0:0 - 0:3         term
+0:0 - 0:2           operand: extended_atom
+0:0 - 0:1             "\\"
+0:1 - 0:2             atom_escape
+0:1 - 0:2               character_escape
+0:1 - 0:2                 "0"
+0:2 - 0:3           quantifier: quantifier
+0:2 - 0:3             quantifier_prefix
+0:2 - 0:3               "?"
+0:3 - 0:4       "|"
+0:4 - 0:6       alternative
+0:4 - 0:6         term
+0:4 - 0:6           operand: extended_atom
+0:4 - 0:5             "\\"
+0:5 - 0:6             atom_escape
+0:5 - 0:6               character_escape
+0:5 - 0:6                 "0"
+
+==============================
+Null escapes can be quantified and followed by an alternative (javascript_regex_u, javascript_regex_v)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==============================
+\0?|\0
+---
+0:0 - 0:6   pattern
+0:0 - 0:6     body: disjunction
+0:0 - 0:3       alternative
+0:0 - 0:3         term
+0:0 - 0:2           operand: atom
+0:0 - 0:1             "\\"
+0:1 - 0:2             atom_escape
+0:1 - 0:2               character_escape
+0:1 - 0:2                 "0"
+0:2 - 0:3           quantifier: quantifier
+0:2 - 0:3             quantifier_prefix
+0:2 - 0:3               "?"
+0:3 - 0:4       "|"
+0:4 - 0:6       alternative
+0:4 - 0:6         term
+0:4 - 0:6           operand: atom
+0:4 - 0:5             "\\"
+0:5 - 0:6             atom_escape
+0:5 - 0:6               character_escape
+0:5 - 0:6                 "0"
+
+==============================
+Unicode modes combine only adjacent leading and trailing surrogate escapes
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==============================
+\uD800\uDC00+\uD800\uD801\uDC00\uDC00\uDbFf\udFff
+---
+0:0  - 0:49   pattern
+0:0  - 0:49     body: disjunction
+0:0  - 0:49       alternative
+0:0  - 0:13         term
+0:0  - 0:12           operand: atom
+0:0  - 0:1              "\\"
+0:1  - 0:12             atom_escape
+0:1  - 0:12               character_escape
+0:1  - 0:12                 reg_exp_unicode_escape_sequence
+0:1  - 0:2                    "u"
+0:2  - 0:6                    hex_lead_surrogate
+0:2  - 0:6                      hex4_digits
+0:2  - 0:3                        hex_digit `D`
+0:3  - 0:4                        hex_digit `8`
+0:4  - 0:5                        hex_digit `0`
+0:5  - 0:6                        hex_digit `0`
+0:6  - 0:8                    "\\u"
+0:8  - 0:12                   hex_trail_surrogate
+0:8  - 0:12                     hex4_digits
+0:8  - 0:9                        hex_digit `D`
+0:9  - 0:10                       hex_digit `C`
+0:10 - 0:11                       hex_digit `0`
+0:11 - 0:12                       hex_digit `0`
+0:12 - 0:13           quantifier: quantifier
+0:12 - 0:13             quantifier_prefix
+0:12 - 0:13               "+"
+0:13 - 0:19         term
+0:13 - 0:19           operand: atom
+0:13 - 0:14             "\\"
+0:14 - 0:19             atom_escape
+0:14 - 0:19               character_escape
+0:14 - 0:19                 reg_exp_unicode_escape_sequence
+0:14 - 0:15                   "u"
+0:15 - 0:19                   hex_lead_surrogate
+0:15 - 0:19                     hex4_digits
+0:15 - 0:16                       hex_digit `D`
+0:16 - 0:17                       hex_digit `8`
+0:17 - 0:18                       hex_digit `0`
+0:18 - 0:19                       hex_digit `0`
+0:19 - 0:31         term
+0:19 - 0:31           operand: atom
+0:19 - 0:20             "\\"
+0:20 - 0:31             atom_escape
+0:20 - 0:31               character_escape
+0:20 - 0:31                 reg_exp_unicode_escape_sequence
+0:20 - 0:21                   "u"
+0:21 - 0:25                   hex_lead_surrogate
+0:21 - 0:25                     hex4_digits
+0:21 - 0:22                       hex_digit `D`
+0:22 - 0:23                       hex_digit `8`
+0:23 - 0:24                       hex_digit `0`
+0:24 - 0:25                       hex_digit `1`
+0:25 - 0:27                   "\\u"
+0:27 - 0:31                   hex_trail_surrogate
+0:27 - 0:31                     hex4_digits
+0:27 - 0:28                       hex_digit `D`
+0:28 - 0:29                       hex_digit `C`
+0:29 - 0:30                       hex_digit `0`
+0:30 - 0:31                       hex_digit `0`
+0:31 - 0:37         term
+0:31 - 0:37           operand: atom
+0:31 - 0:32             "\\"
+0:32 - 0:37             atom_escape
+0:32 - 0:37               character_escape
+0:32 - 0:37                 reg_exp_unicode_escape_sequence
+0:32 - 0:33                   "u"
+0:33 - 0:37                   hex_trail_surrogate
+0:33 - 0:37                     hex4_digits
+0:33 - 0:34                       hex_digit `D`
+0:34 - 0:35                       hex_digit `C`
+0:35 - 0:36                       hex_digit `0`
+0:36 - 0:37                       hex_digit `0`
+0:37 - 0:49         term
+0:37 - 0:49           operand: atom
+0:37 - 0:38             "\\"
+0:38 - 0:49             atom_escape
+0:38 - 0:49               character_escape
+0:38 - 0:49                 reg_exp_unicode_escape_sequence
+0:38 - 0:39                   "u"
+0:39 - 0:43                   hex_lead_surrogate
+0:39 - 0:43                     hex4_digits
+0:39 - 0:40                       hex_digit `D`
+0:40 - 0:41                       hex_digit `b`
+0:41 - 0:42                       hex_digit `F`
+0:42 - 0:43                       hex_digit `f`
+0:43 - 0:45                   "\\u"
+0:45 - 0:49                   hex_trail_surrogate
+0:45 - 0:49                     hex4_digits
+0:45 - 0:46                       hex_digit `d`
+0:46 - 0:47                       hex_digit `F`
+0:47 - 0:48                       hex_digit `f`
+0:48 - 0:49                       hex_digit `f`
+
+==============================
+Ordinary mode keeps surrogate escapes separate and quantifies the trailing escape
+:language(javascript_regex)
+:cst
+==============================
+\uD800\uDC00+\uD800\uD801\uDC00\uDC00\uDbFf\udFff
+---
+0:0  - 0:49   pattern
+0:0  - 0:49     body: disjunction
+0:0  - 0:49       alternative
+0:0  - 0:6          term
+0:0  - 0:6            operand: extended_atom
+0:0  - 0:1              "\\"
+0:1  - 0:6              atom_escape
+0:1  - 0:6                character_escape
+0:1  - 0:6                  reg_exp_unicode_escape_sequence
+0:1  - 0:2                    "u"
+0:2  - 0:6                    hex4_digits
+0:2  - 0:3                      hex_digit `D`
+0:3  - 0:4                      hex_digit `8`
+0:4  - 0:5                      hex_digit `0`
+0:5  - 0:6                      hex_digit `0`
+0:6  - 0:13         term
+0:6  - 0:12           operand: extended_atom
+0:6  - 0:7              "\\"
+0:7  - 0:12             atom_escape
+0:7  - 0:12               character_escape
+0:7  - 0:12                 reg_exp_unicode_escape_sequence
+0:7  - 0:8                    "u"
+0:8  - 0:12                   hex4_digits
+0:8  - 0:9                      hex_digit `D`
+0:9  - 0:10                     hex_digit `C`
+0:10 - 0:11                     hex_digit `0`
+0:11 - 0:12                     hex_digit `0`
+0:12 - 0:13           quantifier: quantifier
+0:12 - 0:13             quantifier_prefix
+0:12 - 0:13               "+"
+0:13 - 0:19         term
+0:13 - 0:19           operand: extended_atom
+0:13 - 0:14             "\\"
+0:14 - 0:19             atom_escape
+0:14 - 0:19               character_escape
+0:14 - 0:19                 reg_exp_unicode_escape_sequence
+0:14 - 0:15                   "u"
+0:15 - 0:19                   hex4_digits
+0:15 - 0:16                     hex_digit `D`
+0:16 - 0:17                     hex_digit `8`
+0:17 - 0:18                     hex_digit `0`
+0:18 - 0:19                     hex_digit `0`
+0:19 - 0:25         term
+0:19 - 0:25           operand: extended_atom
+0:19 - 0:20             "\\"
+0:20 - 0:25             atom_escape
+0:20 - 0:25               character_escape
+0:20 - 0:25                 reg_exp_unicode_escape_sequence
+0:20 - 0:21                   "u"
+0:21 - 0:25                   hex4_digits
+0:21 - 0:22                     hex_digit `D`
+0:22 - 0:23                     hex_digit `8`
+0:23 - 0:24                     hex_digit `0`
+0:24 - 0:25                     hex_digit `1`
+0:25 - 0:31         term
+0:25 - 0:31           operand: extended_atom
+0:25 - 0:26             "\\"
+0:26 - 0:31             atom_escape
+0:26 - 0:31               character_escape
+0:26 - 0:31                 reg_exp_unicode_escape_sequence
+0:26 - 0:27                   "u"
+0:27 - 0:31                   hex4_digits
+0:27 - 0:28                     hex_digit `D`
+0:28 - 0:29                     hex_digit `C`
+0:29 - 0:30                     hex_digit `0`
+0:30 - 0:31                     hex_digit `0`
+0:31 - 0:37         term
+0:31 - 0:37           operand: extended_atom
+0:31 - 0:32             "\\"
+0:32 - 0:37             atom_escape
+0:32 - 0:37               character_escape
+0:32 - 0:37                 reg_exp_unicode_escape_sequence
+0:32 - 0:33                   "u"
+0:33 - 0:37                   hex4_digits
+0:33 - 0:34                     hex_digit `D`
+0:34 - 0:35                     hex_digit `C`
+0:35 - 0:36                     hex_digit `0`
+0:36 - 0:37                     hex_digit `0`
+0:37 - 0:43         term
+0:37 - 0:43           operand: extended_atom
+0:37 - 0:38             "\\"
+0:38 - 0:43             atom_escape
+0:38 - 0:43               character_escape
+0:38 - 0:43                 reg_exp_unicode_escape_sequence
+0:38 - 0:39                   "u"
+0:39 - 0:43                   hex4_digits
+0:39 - 0:40                     hex_digit `D`
+0:40 - 0:41                     hex_digit `b`
+0:41 - 0:42                     hex_digit `F`
+0:42 - 0:43                     hex_digit `f`
+0:43 - 0:49         term
+0:43 - 0:49           operand: extended_atom
+0:43 - 0:44             "\\"
+0:44 - 0:49             atom_escape
+0:44 - 0:49               character_escape
+0:44 - 0:49                 reg_exp_unicode_escape_sequence
+0:44 - 0:45                   "u"
+0:45 - 0:49                   hex4_digits
+0:45 - 0:46                     hex_digit `d`
+0:46 - 0:47                     hex_digit `F`
+0:47 - 0:48                     hex_digit `f`
+0:48 - 0:49                     hex_digit `f`
+
+==============================
+Braced and reversed surrogate spellings do not combine
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==============================
+\uDC00\uD800\u{DC00}\u{D800}\uDC00
+---
+0:0  - 0:34   pattern
+0:0  - 0:34     body: disjunction
+0:0  - 0:34       alternative
+0:0  - 0:6          term
+0:0  - 0:6            operand: atom
+0:0  - 0:1              "\\"
+0:1  - 0:6              atom_escape
+0:1  - 0:6                character_escape
+0:1  - 0:6                  reg_exp_unicode_escape_sequence
+0:1  - 0:2                    "u"
+0:2  - 0:6                    hex_trail_surrogate
+0:2  - 0:6                      hex4_digits
+0:2  - 0:3                        hex_digit `D`
+0:3  - 0:4                        hex_digit `C`
+0:4  - 0:5                        hex_digit `0`
+0:5  - 0:6                        hex_digit `0`
+0:6  - 0:12         term
+0:6  - 0:12           operand: atom
+0:6  - 0:7              "\\"
+0:7  - 0:12             atom_escape
+0:7  - 0:12               character_escape
+0:7  - 0:12                 reg_exp_unicode_escape_sequence
+0:7  - 0:8                    "u"
+0:8  - 0:12                   hex_lead_surrogate
+0:8  - 0:12                     hex4_digits
+0:8  - 0:9                        hex_digit `D`
+0:9  - 0:10                       hex_digit `8`
+0:10 - 0:11                       hex_digit `0`
+0:11 - 0:12                       hex_digit `0`
+0:12 - 0:20         term
+0:12 - 0:20           operand: atom
+0:12 - 0:13             "\\"
+0:13 - 0:20             atom_escape
+0:13 - 0:20               character_escape
+0:13 - 0:20                 reg_exp_unicode_escape_sequence
+0:13 - 0:14                   "u"
+0:14 - 0:15                   "{"
+0:15 - 0:19                   code_point
+0:15 - 0:19                     hex_digits
+0:15 - 0:16                       hex_digit `D`
+0:16 - 0:17                       hex_digit `C`
+0:17 - 0:18                       hex_digit `0`
+0:18 - 0:19                       hex_digit `0`
+0:19 - 0:20                   "}"
+0:20 - 0:28         term
+0:20 - 0:28           operand: atom
+0:20 - 0:21             "\\"
+0:21 - 0:28             atom_escape
+0:21 - 0:28               character_escape
+0:21 - 0:28                 reg_exp_unicode_escape_sequence
+0:21 - 0:22                   "u"
+0:22 - 0:23                   "{"
+0:23 - 0:27                   code_point
+0:23 - 0:27                     hex_digits
+0:23 - 0:24                       hex_digit `D`
+0:24 - 0:25                       hex_digit `8`
+0:25 - 0:26                       hex_digit `0`
+0:26 - 0:27                       hex_digit `0`
+0:27 - 0:28                   "}"
+0:28 - 0:34         term
+0:28 - 0:34           operand: atom
+0:28 - 0:29             "\\"
+0:29 - 0:34             atom_escape
+0:29 - 0:34               character_escape
+0:29 - 0:34                 reg_exp_unicode_escape_sequence
+0:29 - 0:30                   "u"
+0:30 - 0:34                   hex_trail_surrogate
+0:30 - 0:34                     hex4_digits
+0:30 - 0:31                       hex_digit `D`
+0:31 - 0:32                       hex_digit `C`
+0:32 - 0:33                       hex_digit `0`
+0:33 - 0:34                       hex_digit `0`
+
+==============================
+Property escapes retain lone and assigned property spellings
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==============================
+\p{ASCII}\P{General_Category=Lu}\p{Script_Extensions=Hiragana}\p{sc=Latn}
+---
+0:0  - 0:73   pattern
+0:0  - 0:73     body: disjunction
+0:0  - 0:73       alternative
+0:0  - 0:9          term
+0:0  - 0:9            operand: atom
+0:0  - 0:1              "\\"
+0:1  - 0:9              atom_escape
+0:1  - 0:9                character_class_escape
+0:1  - 0:2                  "p"
+0:2  - 0:3                  "{"
+0:3  - 0:8                  unicode_property_value_expression
+0:3  - 0:8                    lone_unicode_property_name_or_value
+0:3  - 0:8                      unicode_property_value_characters
+0:3  - 0:4                        unicode_property_value_character
+0:3  - 0:4                          unicode_property_name_character
+0:3  - 0:4                            ascii_letter `A`
+0:4  - 0:5                        unicode_property_value_character
+0:4  - 0:5                          unicode_property_name_character
+0:4  - 0:5                            ascii_letter `S`
+0:5  - 0:6                        unicode_property_value_character
+0:5  - 0:6                          unicode_property_name_character
+0:5  - 0:6                            ascii_letter `C`
+0:6  - 0:7                        unicode_property_value_character
+0:6  - 0:7                          unicode_property_name_character
+0:6  - 0:7                            ascii_letter `I`
+0:7  - 0:8                        unicode_property_value_character
+0:7  - 0:8                          unicode_property_name_character
+0:7  - 0:8                            ascii_letter `I`
+0:8  - 0:9                  "}"
+0:9  - 0:32         term
+0:9  - 0:32           operand: atom
+0:9  - 0:10             "\\"
+0:10 - 0:32             atom_escape
+0:10 - 0:32               character_class_escape
+0:10 - 0:11                 "P"
+0:11 - 0:12                 "{"
+0:12 - 0:31                 unicode_property_value_expression
+0:12 - 0:28                   unicode_property_name
+0:12 - 0:28                     unicode_property_name_characters
+0:12 - 0:13                       unicode_property_name_character
+0:12 - 0:13                         ascii_letter `G`
+0:13 - 0:14                       unicode_property_name_character
+0:13 - 0:14                         ascii_letter `e`
+0:14 - 0:15                       unicode_property_name_character
+0:14 - 0:15                         ascii_letter `n`
+0:15 - 0:16                       unicode_property_name_character
+0:15 - 0:16                         ascii_letter `e`
+0:16 - 0:17                       unicode_property_name_character
+0:16 - 0:17                         ascii_letter `r`
+0:17 - 0:18                       unicode_property_name_character
+0:17 - 0:18                         ascii_letter `a`
+0:18 - 0:19                       unicode_property_name_character
+0:18 - 0:19                         ascii_letter `l`
+0:19 - 0:20                       unicode_property_name_character
+0:19 - 0:20                         "_"
+0:20 - 0:21                       unicode_property_name_character
+0:20 - 0:21                         ascii_letter `C`
+0:21 - 0:22                       unicode_property_name_character
+0:21 - 0:22                         ascii_letter `a`
+0:22 - 0:23                       unicode_property_name_character
+0:22 - 0:23                         ascii_letter `t`
+0:23 - 0:24                       unicode_property_name_character
+0:23 - 0:24                         ascii_letter `e`
+0:24 - 0:25                       unicode_property_name_character
+0:24 - 0:25                         ascii_letter `g`
+0:25 - 0:26                       unicode_property_name_character
+0:25 - 0:26                         ascii_letter `o`
+0:26 - 0:27                       unicode_property_name_character
+0:26 - 0:27                         ascii_letter `r`
+0:27 - 0:28                       unicode_property_name_character
+0:27 - 0:28                         ascii_letter `y`
+0:28 - 0:29                   "="
+0:29 - 0:31                   unicode_property_value
+0:29 - 0:31                     unicode_property_value_characters
+0:29 - 0:30                       unicode_property_value_character
+0:29 - 0:30                         unicode_property_name_character
+0:29 - 0:30                           ascii_letter `L`
+0:30 - 0:31                       unicode_property_value_character
+0:30 - 0:31                         unicode_property_name_character
+0:30 - 0:31                           ascii_letter `u`
+0:31 - 0:32                 "}"
+0:32 - 0:62         term
+0:32 - 0:62           operand: atom
+0:32 - 0:33             "\\"
+0:33 - 0:62             atom_escape
+0:33 - 0:62               character_class_escape
+0:33 - 0:34                 "p"
+0:34 - 0:35                 "{"
+0:35 - 0:61                 unicode_property_value_expression
+0:35 - 0:52                   unicode_property_name
+0:35 - 0:52                     unicode_property_name_characters
+0:35 - 0:36                       unicode_property_name_character
+0:35 - 0:36                         ascii_letter `S`
+0:36 - 0:37                       unicode_property_name_character
+0:36 - 0:37                         ascii_letter `c`
+0:37 - 0:38                       unicode_property_name_character
+0:37 - 0:38                         ascii_letter `r`
+0:38 - 0:39                       unicode_property_name_character
+0:38 - 0:39                         ascii_letter `i`
+0:39 - 0:40                       unicode_property_name_character
+0:39 - 0:40                         ascii_letter `p`
+0:40 - 0:41                       unicode_property_name_character
+0:40 - 0:41                         ascii_letter `t`
+0:41 - 0:42                       unicode_property_name_character
+0:41 - 0:42                         "_"
+0:42 - 0:43                       unicode_property_name_character
+0:42 - 0:43                         ascii_letter `E`
+0:43 - 0:44                       unicode_property_name_character
+0:43 - 0:44                         ascii_letter `x`
+0:44 - 0:45                       unicode_property_name_character
+0:44 - 0:45                         ascii_letter `t`
+0:45 - 0:46                       unicode_property_name_character
+0:45 - 0:46                         ascii_letter `e`
+0:46 - 0:47                       unicode_property_name_character
+0:46 - 0:47                         ascii_letter `n`
+0:47 - 0:48                       unicode_property_name_character
+0:47 - 0:48                         ascii_letter `s`
+0:48 - 0:49                       unicode_property_name_character
+0:48 - 0:49                         ascii_letter `i`
+0:49 - 0:50                       unicode_property_name_character
+0:49 - 0:50                         ascii_letter `o`
+0:50 - 0:51                       unicode_property_name_character
+0:50 - 0:51                         ascii_letter `n`
+0:51 - 0:52                       unicode_property_name_character
+0:51 - 0:52                         ascii_letter `s`
+0:52 - 0:53                   "="
+0:53 - 0:61                   unicode_property_value
+0:53 - 0:61                     unicode_property_value_characters
+0:53 - 0:54                       unicode_property_value_character
+0:53 - 0:54                         unicode_property_name_character
+0:53 - 0:54                           ascii_letter `H`
+0:54 - 0:55                       unicode_property_value_character
+0:54 - 0:55                         unicode_property_name_character
+0:54 - 0:55                           ascii_letter `i`
+0:55 - 0:56                       unicode_property_value_character
+0:55 - 0:56                         unicode_property_name_character
+0:55 - 0:56                           ascii_letter `r`
+0:56 - 0:57                       unicode_property_value_character
+0:56 - 0:57                         unicode_property_name_character
+0:56 - 0:57                           ascii_letter `a`
+0:57 - 0:58                       unicode_property_value_character
+0:57 - 0:58                         unicode_property_name_character
+0:57 - 0:58                           ascii_letter `g`
+0:58 - 0:59                       unicode_property_value_character
+0:58 - 0:59                         unicode_property_name_character
+0:58 - 0:59                           ascii_letter `a`
+0:59 - 0:60                       unicode_property_value_character
+0:59 - 0:60                         unicode_property_name_character
+0:59 - 0:60                           ascii_letter `n`
+0:60 - 0:61                       unicode_property_value_character
+0:60 - 0:61                         unicode_property_name_character
+0:60 - 0:61                           ascii_letter `a`
+0:61 - 0:62                 "}"
+0:62 - 0:73         term
+0:62 - 0:73           operand: atom
+0:62 - 0:63             "\\"
+0:63 - 0:73             atom_escape
+0:63 - 0:73               character_class_escape
+0:63 - 0:64                 "p"
+0:64 - 0:65                 "{"
+0:65 - 0:72                 unicode_property_value_expression
+0:65 - 0:67                   unicode_property_name
+0:65 - 0:67                     unicode_property_name_characters
+0:65 - 0:66                       unicode_property_name_character
+0:65 - 0:66                         ascii_letter `s`
+0:66 - 0:67                       unicode_property_name_character
+0:66 - 0:67                         ascii_letter `c`
+0:67 - 0:68                   "="
+0:68 - 0:72                   unicode_property_value
+0:68 - 0:72                     unicode_property_value_characters
+0:68 - 0:69                       unicode_property_value_character
+0:68 - 0:69                         unicode_property_name_character
+0:68 - 0:69                           ascii_letter `L`
+0:69 - 0:70                       unicode_property_value_character
+0:69 - 0:70                         unicode_property_name_character
+0:69 - 0:70                           ascii_letter `a`
+0:70 - 0:71                       unicode_property_value_character
+0:70 - 0:71                         unicode_property_name_character
+0:70 - 0:71                           ascii_letter `t`
+0:71 - 0:72                       unicode_property_value_character
+0:71 - 0:72                         unicode_property_name_character
+0:71 - 0:72                           ascii_letter `n`
+0:72 - 0:73                 "}"
+
+==============================
+Property existence and string set restrictions are left to the consumer
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==============================
+\p{Not_A_Property}\p{1}\P{RGI_Emoji}\p{Age=V15_0}
+---
+0:0  - 0:49   pattern
+0:0  - 0:49     body: disjunction
+0:0  - 0:49       alternative
+0:0  - 0:18         term
+0:0  - 0:18           operand: atom
+0:0  - 0:1              "\\"
+0:1  - 0:18             atom_escape
+0:1  - 0:18               character_class_escape
+0:1  - 0:2                  "p"
+0:2  - 0:3                  "{"
+0:3  - 0:17                 unicode_property_value_expression
+0:3  - 0:17                   lone_unicode_property_name_or_value
+0:3  - 0:17                     unicode_property_value_characters
+0:3  - 0:4                        unicode_property_value_character
+0:3  - 0:4                          unicode_property_name_character
+0:3  - 0:4                            ascii_letter `N`
+0:4  - 0:5                        unicode_property_value_character
+0:4  - 0:5                          unicode_property_name_character
+0:4  - 0:5                            ascii_letter `o`
+0:5  - 0:6                        unicode_property_value_character
+0:5  - 0:6                          unicode_property_name_character
+0:5  - 0:6                            ascii_letter `t`
+0:6  - 0:7                        unicode_property_value_character
+0:6  - 0:7                          unicode_property_name_character
+0:6  - 0:7                            "_"
+0:7  - 0:8                        unicode_property_value_character
+0:7  - 0:8                          unicode_property_name_character
+0:7  - 0:8                            ascii_letter `A`
+0:8  - 0:9                        unicode_property_value_character
+0:8  - 0:9                          unicode_property_name_character
+0:8  - 0:9                            "_"
+0:9  - 0:10                       unicode_property_value_character
+0:9  - 0:10                         unicode_property_name_character
+0:9  - 0:10                           ascii_letter `P`
+0:10 - 0:11                       unicode_property_value_character
+0:10 - 0:11                         unicode_property_name_character
+0:10 - 0:11                           ascii_letter `r`
+0:11 - 0:12                       unicode_property_value_character
+0:11 - 0:12                         unicode_property_name_character
+0:11 - 0:12                           ascii_letter `o`
+0:12 - 0:13                       unicode_property_value_character
+0:12 - 0:13                         unicode_property_name_character
+0:12 - 0:13                           ascii_letter `p`
+0:13 - 0:14                       unicode_property_value_character
+0:13 - 0:14                         unicode_property_name_character
+0:13 - 0:14                           ascii_letter `e`
+0:14 - 0:15                       unicode_property_value_character
+0:14 - 0:15                         unicode_property_name_character
+0:14 - 0:15                           ascii_letter `r`
+0:15 - 0:16                       unicode_property_value_character
+0:15 - 0:16                         unicode_property_name_character
+0:15 - 0:16                           ascii_letter `t`
+0:16 - 0:17                       unicode_property_value_character
+0:16 - 0:17                         unicode_property_name_character
+0:16 - 0:17                           ascii_letter `y`
+0:17 - 0:18                 "}"
+0:18 - 0:23         term
+0:18 - 0:23           operand: atom
+0:18 - 0:19             "\\"
+0:19 - 0:23             atom_escape
+0:19 - 0:23               character_class_escape
+0:19 - 0:20                 "p"
+0:20 - 0:21                 "{"
+0:21 - 0:22                 unicode_property_value_expression
+0:21 - 0:22                   lone_unicode_property_name_or_value
+0:21 - 0:22                     unicode_property_value_characters
+0:21 - 0:22                       unicode_property_value_character
+0:21 - 0:22                         decimal_digit `1`
+0:22 - 0:23                 "}"
+0:23 - 0:36         term
+0:23 - 0:36           operand: atom
+0:23 - 0:24             "\\"
+0:24 - 0:36             atom_escape
+0:24 - 0:36               character_class_escape
+0:24 - 0:25                 "P"
+0:25 - 0:26                 "{"
+0:26 - 0:35                 unicode_property_value_expression
+0:26 - 0:35                   lone_unicode_property_name_or_value
+0:26 - 0:35                     unicode_property_value_characters
+0:26 - 0:27                       unicode_property_value_character
+0:26 - 0:27                         unicode_property_name_character
+0:26 - 0:27                           ascii_letter `R`
+0:27 - 0:28                       unicode_property_value_character
+0:27 - 0:28                         unicode_property_name_character
+0:27 - 0:28                           ascii_letter `G`
+0:28 - 0:29                       unicode_property_value_character
+0:28 - 0:29                         unicode_property_name_character
+0:28 - 0:29                           ascii_letter `I`
+0:29 - 0:30                       unicode_property_value_character
+0:29 - 0:30                         unicode_property_name_character
+0:29 - 0:30                           "_"
+0:30 - 0:31                       unicode_property_value_character
+0:30 - 0:31                         unicode_property_name_character
+0:30 - 0:31                           ascii_letter `E`
+0:31 - 0:32                       unicode_property_value_character
+0:31 - 0:32                         unicode_property_name_character
+0:31 - 0:32                           ascii_letter `m`
+0:32 - 0:33                       unicode_property_value_character
+0:32 - 0:33                         unicode_property_name_character
+0:32 - 0:33                           ascii_letter `o`
+0:33 - 0:34                       unicode_property_value_character
+0:33 - 0:34                         unicode_property_name_character
+0:33 - 0:34                           ascii_letter `j`
+0:34 - 0:35                       unicode_property_value_character
+0:34 - 0:35                         unicode_property_name_character
+0:34 - 0:35                           ascii_letter `i`
+0:35 - 0:36                 "}"
+0:36 - 0:49         term
+0:36 - 0:49           operand: atom
+0:36 - 0:37             "\\"
+0:37 - 0:49             atom_escape
+0:37 - 0:49               character_class_escape
+0:37 - 0:38                 "p"
+0:38 - 0:39                 "{"
+0:39 - 0:48                 unicode_property_value_expression
+0:39 - 0:42                   unicode_property_name
+0:39 - 0:42                     unicode_property_name_characters
+0:39 - 0:40                       unicode_property_name_character
+0:39 - 0:40                         ascii_letter `A`
+0:40 - 0:41                       unicode_property_name_character
+0:40 - 0:41                         ascii_letter `g`
+0:41 - 0:42                       unicode_property_name_character
+0:41 - 0:42                         ascii_letter `e`
+0:42 - 0:43                   "="
+0:43 - 0:48                   unicode_property_value
+0:43 - 0:48                     unicode_property_value_characters
+0:43 - 0:44                       unicode_property_value_character
+0:43 - 0:44                         unicode_property_name_character
+0:43 - 0:44                           ascii_letter `V`
+0:44 - 0:45                       unicode_property_value_character
+0:44 - 0:45                         decimal_digit `1`
+0:45 - 0:46                       unicode_property_value_character
+0:45 - 0:46                         decimal_digit `5`
+0:46 - 0:47                       unicode_property_value_character
+0:46 - 0:47                         unicode_property_name_character
+0:46 - 0:47                           "_"
+0:47 - 0:48                       unicode_property_value_character
+0:47 - 0:48                         decimal_digit `0`
+0:48 - 0:49                 "}"

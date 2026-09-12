@@ -1,0 +1,1199 @@
+==============================
+Nested classes remain separate operands of an implicit union
+:language(javascript_regex_v)
+:cst
+==============================
+[[a][b]c]
+---
+0:0 - 0:9   pattern
+0:0 - 0:9     body: disjunction
+0:0 - 0:9       alternative
+0:0 - 0:9         term
+0:0 - 0:9           operand: atom
+0:0 - 0:9             character_class
+0:0 - 0:1               "["
+0:1 - 0:8               class_set_expression
+0:1 - 0:8                 class_union
+0:1 - 0:4                   class_set_operand
+0:1 - 0:4                     nested_class
+0:1 - 0:2                       "["
+0:2 - 0:3                       class_set_expression
+0:2 - 0:3                         class_union
+0:2 - 0:3                           class_set_operand
+0:2 - 0:3                             class_set_character
+0:2 - 0:3                               source_character `a`
+0:3 - 0:4                       "]"
+0:4 - 0:7                   class_set_operand
+0:4 - 0:7                     nested_class
+0:4 - 0:5                       "["
+0:5 - 0:6                       class_set_expression
+0:5 - 0:6                         class_union
+0:5 - 0:6                           class_set_operand
+0:5 - 0:6                             class_set_character
+0:5 - 0:6                               source_character `b`
+0:6 - 0:7                       "]"
+0:7 - 0:8                   class_set_operand
+0:7 - 0:8                     class_set_character
+0:7 - 0:8                       source_character `c`
+0:8 - 0:9               "]"
+
+==============================
+Intersection retains a source ordered sequence of operands
+:language(javascript_regex_v)
+:cst
+==============================
+[a&&b&&c]
+---
+0:0 - 0:9   pattern
+0:0 - 0:9     body: disjunction
+0:0 - 0:9       alternative
+0:0 - 0:9         term
+0:0 - 0:9           operand: atom
+0:0 - 0:9             character_class
+0:0 - 0:1               "["
+0:1 - 0:8               class_set_expression
+0:1 - 0:8                 class_intersection
+0:1 - 0:2                   class_set_operand
+0:1 - 0:2                     class_set_character
+0:1 - 0:2                       source_character `a`
+0:2 - 0:4                   "&&"
+0:4 - 0:5                   class_set_operand
+0:4 - 0:5                     class_set_character
+0:4 - 0:5                       source_character `b`
+0:5 - 0:7                   "&&"
+0:7 - 0:8                   class_set_operand
+0:7 - 0:8                     class_set_character
+0:7 - 0:8                       source_character `c`
+0:8 - 0:9               "]"
+
+==============================
+Subtraction retains the minuend followed by each successive subtrahend
+:language(javascript_regex_v)
+:cst
+==============================
+[a--b--c]
+---
+0:0 - 0:9   pattern
+0:0 - 0:9     body: disjunction
+0:0 - 0:9       alternative
+0:0 - 0:9         term
+0:0 - 0:9           operand: atom
+0:0 - 0:9             character_class
+0:0 - 0:1               "["
+0:1 - 0:8               class_set_expression
+0:1 - 0:8                 class_subtraction
+0:1 - 0:2                   class_set_operand
+0:1 - 0:2                     class_set_character
+0:1 - 0:2                       source_character `a`
+0:2 - 0:4                   "--"
+0:4 - 0:5                   class_set_operand
+0:4 - 0:5                     class_set_character
+0:4 - 0:5                       source_character `b`
+0:5 - 0:7                   "--"
+0:7 - 0:8                   class_set_operand
+0:7 - 0:8                     class_set_character
+0:7 - 0:8                       source_character `c`
+0:8 - 0:9               "]"
+
+==============================
+Nested classes combine range union intersection and subtraction without implicit precedence
+:language(javascript_regex_v)
+:cst
+==============================
+[[[a-z]&&\p{ASCII}]--[aeiou]]
+---
+0:0  - 0:29   pattern
+0:0  - 0:29     body: disjunction
+0:0  - 0:29       alternative
+0:0  - 0:29         term
+0:0  - 0:29           operand: atom
+0:0  - 0:29             character_class
+0:0  - 0:1                "["
+0:1  - 0:28               class_set_expression
+0:1  - 0:28                 class_subtraction
+0:1  - 0:19                   class_set_operand
+0:1  - 0:19                     nested_class
+0:1  - 0:2                        "["
+0:2  - 0:18                       class_set_expression
+0:2  - 0:18                         class_intersection
+0:2  - 0:7                            class_set_operand
+0:2  - 0:7                              nested_class
+0:2  - 0:3                                "["
+0:3  - 0:6                                class_set_expression
+0:3  - 0:6                                  class_union
+0:3  - 0:6                                    class_set_range
+0:3  - 0:4                                      start: class_set_character
+0:3  - 0:4                                        source_character `a`
+0:4  - 0:5                                      "-"
+0:5  - 0:6                                      end: class_set_character
+0:5  - 0:6                                        source_character `z`
+0:6  - 0:7                                "]"
+0:7  - 0:9                            "&&"
+0:9  - 0:18                           class_set_operand
+0:9  - 0:18                             nested_class
+0:9  - 0:10                               "\\"
+0:10 - 0:18                               character_class_escape
+0:10 - 0:11                                 "p"
+0:11 - 0:12                                 "{"
+0:12 - 0:17                                 unicode_property_value_expression
+0:12 - 0:17                                   lone_unicode_property_name_or_value
+0:12 - 0:17                                     unicode_property_value_characters
+0:12 - 0:13                                       unicode_property_value_character
+0:12 - 0:13                                         unicode_property_name_character
+0:12 - 0:13                                           ascii_letter `A`
+0:13 - 0:14                                       unicode_property_value_character
+0:13 - 0:14                                         unicode_property_name_character
+0:13 - 0:14                                           ascii_letter `S`
+0:14 - 0:15                                       unicode_property_value_character
+0:14 - 0:15                                         unicode_property_name_character
+0:14 - 0:15                                           ascii_letter `C`
+0:15 - 0:16                                       unicode_property_value_character
+0:15 - 0:16                                         unicode_property_name_character
+0:15 - 0:16                                           ascii_letter `I`
+0:16 - 0:17                                       unicode_property_value_character
+0:16 - 0:17                                         unicode_property_name_character
+0:16 - 0:17                                           ascii_letter `I`
+0:17 - 0:18                                 "}"
+0:18 - 0:19                       "]"
+0:19 - 0:21                   "--"
+0:21 - 0:28                   class_set_operand
+0:21 - 0:28                     nested_class
+0:21 - 0:22                       "["
+0:22 - 0:27                       class_set_expression
+0:22 - 0:27                         class_union
+0:22 - 0:23                           class_set_operand
+0:22 - 0:23                             class_set_character
+0:22 - 0:23                               source_character `a`
+0:23 - 0:24                           class_set_operand
+0:23 - 0:24                             class_set_character
+0:23 - 0:24                               source_character `e`
+0:24 - 0:25                           class_set_operand
+0:24 - 0:25                             class_set_character
+0:24 - 0:25                               source_character `i`
+0:25 - 0:26                           class_set_operand
+0:25 - 0:26                             class_set_character
+0:25 - 0:26                               source_character `o`
+0:26 - 0:27                           class_set_operand
+0:26 - 0:27                             class_set_character
+0:26 - 0:27                               source_character `u`
+0:27 - 0:28                       "]"
+0:28 - 0:29               "]"
+
+==============================
+Class escapes properties and string disjunctions can be intersection operands
+:language(javascript_regex_v)
+:cst
+==============================
+[\d&&\p{ASCII}&&\q{0|1}]
+---
+0:0  - 0:24   pattern
+0:0  - 0:24     body: disjunction
+0:0  - 0:24       alternative
+0:0  - 0:24         term
+0:0  - 0:24           operand: atom
+0:0  - 0:24             character_class
+0:0  - 0:1                "["
+0:1  - 0:23               class_set_expression
+0:1  - 0:23                 class_intersection
+0:1  - 0:3                    class_set_operand
+0:1  - 0:3                      nested_class
+0:1  - 0:2                        "\\"
+0:2  - 0:3                        character_class_escape `d`
+0:3  - 0:5                    "&&"
+0:5  - 0:14                   class_set_operand
+0:5  - 0:14                     nested_class
+0:5  - 0:6                        "\\"
+0:6  - 0:14                       character_class_escape
+0:6  - 0:7                          "p"
+0:7  - 0:8                          "{"
+0:8  - 0:13                         unicode_property_value_expression
+0:8  - 0:13                           lone_unicode_property_name_or_value
+0:8  - 0:13                             unicode_property_value_characters
+0:8  - 0:9                                unicode_property_value_character
+0:8  - 0:9                                  unicode_property_name_character
+0:8  - 0:9                                    ascii_letter `A`
+0:9  - 0:10                               unicode_property_value_character
+0:9  - 0:10                                 unicode_property_name_character
+0:9  - 0:10                                   ascii_letter `S`
+0:10 - 0:11                               unicode_property_value_character
+0:10 - 0:11                                 unicode_property_name_character
+0:10 - 0:11                                   ascii_letter `C`
+0:11 - 0:12                               unicode_property_value_character
+0:11 - 0:12                                 unicode_property_name_character
+0:11 - 0:12                                   ascii_letter `I`
+0:12 - 0:13                               unicode_property_value_character
+0:12 - 0:13                                 unicode_property_name_character
+0:12 - 0:13                                   ascii_letter `I`
+0:13 - 0:14                         "}"
+0:14 - 0:16                   "&&"
+0:16 - 0:23                   class_set_operand
+0:16 - 0:23                     class_string_disjunction
+0:16 - 0:18                       "\\q"
+0:18 - 0:19                       "{"
+0:19 - 0:22                       class_string_disjunction_contents
+0:19 - 0:20                         non_empty_class_string
+0:19 - 0:20                           class_set_character
+0:19 - 0:20                             source_character `0`
+0:20 - 0:21                         "|"
+0:21 - 0:22                         non_empty_class_string
+0:21 - 0:22                           class_set_character
+0:21 - 0:22                             source_character `1`
+0:22 - 0:23                       "}"
+0:23 - 0:24               "]"
+
+==============================
+An implicit union can contain characters properties strings and empty classes
+:language(javascript_regex_v)
+:cst
+==============================
+[a\p{RGI_Emoji}\q{ab|cd}[]]
+---
+0:0  - 0:27   pattern
+0:0  - 0:27     body: disjunction
+0:0  - 0:27       alternative
+0:0  - 0:27         term
+0:0  - 0:27           operand: atom
+0:0  - 0:27             character_class
+0:0  - 0:1                "["
+0:1  - 0:26               class_set_expression
+0:1  - 0:26                 class_union
+0:1  - 0:2                    class_set_operand
+0:1  - 0:2                      class_set_character
+0:1  - 0:2                        source_character `a`
+0:2  - 0:15                   class_set_operand
+0:2  - 0:15                     nested_class
+0:2  - 0:3                        "\\"
+0:3  - 0:15                       character_class_escape
+0:3  - 0:4                          "p"
+0:4  - 0:5                          "{"
+0:5  - 0:14                         unicode_property_value_expression
+0:5  - 0:14                           lone_unicode_property_name_or_value
+0:5  - 0:14                             unicode_property_value_characters
+0:5  - 0:6                                unicode_property_value_character
+0:5  - 0:6                                  unicode_property_name_character
+0:5  - 0:6                                    ascii_letter `R`
+0:6  - 0:7                                unicode_property_value_character
+0:6  - 0:7                                  unicode_property_name_character
+0:6  - 0:7                                    ascii_letter `G`
+0:7  - 0:8                                unicode_property_value_character
+0:7  - 0:8                                  unicode_property_name_character
+0:7  - 0:8                                    ascii_letter `I`
+0:8  - 0:9                                unicode_property_value_character
+0:8  - 0:9                                  unicode_property_name_character
+0:8  - 0:9                                    "_"
+0:9  - 0:10                               unicode_property_value_character
+0:9  - 0:10                                 unicode_property_name_character
+0:9  - 0:10                                   ascii_letter `E`
+0:10 - 0:11                               unicode_property_value_character
+0:10 - 0:11                                 unicode_property_name_character
+0:10 - 0:11                                   ascii_letter `m`
+0:11 - 0:12                               unicode_property_value_character
+0:11 - 0:12                                 unicode_property_name_character
+0:11 - 0:12                                   ascii_letter `o`
+0:12 - 0:13                               unicode_property_value_character
+0:12 - 0:13                                 unicode_property_name_character
+0:12 - 0:13                                   ascii_letter `j`
+0:13 - 0:14                               unicode_property_value_character
+0:13 - 0:14                                 unicode_property_name_character
+0:13 - 0:14                                   ascii_letter `i`
+0:14 - 0:15                         "}"
+0:15 - 0:24                   class_set_operand
+0:15 - 0:24                     class_string_disjunction
+0:15 - 0:17                       "\\q"
+0:17 - 0:18                       "{"
+0:18 - 0:23                       class_string_disjunction_contents
+0:18 - 0:20                         non_empty_class_string
+0:18 - 0:19                           class_set_character
+0:18 - 0:19                             source_character `a`
+0:19 - 0:20                           class_set_character
+0:19 - 0:20                             source_character `b`
+0:20 - 0:21                         "|"
+0:21 - 0:23                         non_empty_class_string
+0:21 - 0:22                           class_set_character
+0:21 - 0:22                             source_character `c`
+0:22 - 0:23                           class_set_character
+0:22 - 0:23                             source_character `d`
+0:23 - 0:24                       "}"
+0:24 - 0:26                   class_set_operand
+0:24 - 0:26                     nested_class
+0:24 - 0:25                       "["
+0:25 - 0:26                       "]"
+0:26 - 0:27               "]"
+
+==============================
+Negation and property restrictions on string sets remain consumer checks
+:language(javascript_regex_v)
+:cst
+==============================
+[^\q{ab}][\w&&[^\P{RGI_Emoji}]]
+---
+0:0  - 0:31   pattern
+0:0  - 0:31     body: disjunction
+0:0  - 0:31       alternative
+0:0  - 0:9          term
+0:0  - 0:9            operand: atom
+0:0  - 0:9              character_class
+0:0  - 0:1                "["
+0:1  - 0:2                "^"
+0:2  - 0:8                class_set_expression
+0:2  - 0:8                  class_union
+0:2  - 0:8                    class_set_operand
+0:2  - 0:8                      class_string_disjunction
+0:2  - 0:4                        "\\q"
+0:4  - 0:5                        "{"
+0:5  - 0:7                        class_string_disjunction_contents
+0:5  - 0:7                          non_empty_class_string
+0:5  - 0:6                            class_set_character
+0:5  - 0:6                              source_character `a`
+0:6  - 0:7                            class_set_character
+0:6  - 0:7                              source_character `b`
+0:7  - 0:8                        "}"
+0:8  - 0:9                "]"
+0:9  - 0:31         term
+0:9  - 0:31           operand: atom
+0:9  - 0:31             character_class
+0:9  - 0:10               "["
+0:10 - 0:30               class_set_expression
+0:10 - 0:30                 class_intersection
+0:10 - 0:12                   class_set_operand
+0:10 - 0:12                     nested_class
+0:10 - 0:11                       "\\"
+0:11 - 0:12                       character_class_escape `w`
+0:12 - 0:14                   "&&"
+0:14 - 0:30                   class_set_operand
+0:14 - 0:30                     nested_class
+0:14 - 0:15                       "["
+0:15 - 0:16                       "^"
+0:16 - 0:29                       class_set_expression
+0:16 - 0:29                         class_union
+0:16 - 0:29                           class_set_operand
+0:16 - 0:29                             nested_class
+0:16 - 0:17                               "\\"
+0:17 - 0:29                               character_class_escape
+0:17 - 0:18                                 "P"
+0:18 - 0:19                                 "{"
+0:19 - 0:28                                 unicode_property_value_expression
+0:19 - 0:28                                   lone_unicode_property_name_or_value
+0:19 - 0:28                                     unicode_property_value_characters
+0:19 - 0:20                                       unicode_property_value_character
+0:19 - 0:20                                         unicode_property_name_character
+0:19 - 0:20                                           ascii_letter `R`
+0:20 - 0:21                                       unicode_property_value_character
+0:20 - 0:21                                         unicode_property_name_character
+0:20 - 0:21                                           ascii_letter `G`
+0:21 - 0:22                                       unicode_property_value_character
+0:21 - 0:22                                         unicode_property_name_character
+0:21 - 0:22                                           ascii_letter `I`
+0:22 - 0:23                                       unicode_property_value_character
+0:22 - 0:23                                         unicode_property_name_character
+0:22 - 0:23                                           "_"
+0:23 - 0:24                                       unicode_property_value_character
+0:23 - 0:24                                         unicode_property_name_character
+0:23 - 0:24                                           ascii_letter `E`
+0:24 - 0:25                                       unicode_property_value_character
+0:24 - 0:25                                         unicode_property_name_character
+0:24 - 0:25                                           ascii_letter `m`
+0:25 - 0:26                                       unicode_property_value_character
+0:25 - 0:26                                         unicode_property_name_character
+0:25 - 0:26                                           ascii_letter `o`
+0:26 - 0:27                                       unicode_property_value_character
+0:26 - 0:27                                         unicode_property_name_character
+0:26 - 0:27                                           ascii_letter `j`
+0:27 - 0:28                                       unicode_property_value_character
+0:27 - 0:28                                         unicode_property_name_character
+0:27 - 0:28                                           ascii_letter `i`
+0:28 - 0:29                                 "}"
+0:29 - 0:30                       "]"
+0:30 - 0:31               "]"
+
+==============================
+Ranges can use escaped reserved punctuation and ordinary single punctuation as endpoints
+:language(javascript_regex_v)
+:cst
+==============================
+[\&-\~!-?]
+---
+0:0  - 0:10   pattern
+0:0  - 0:10     body: disjunction
+0:0  - 0:10       alternative
+0:0  - 0:10         term
+0:0  - 0:10           operand: atom
+0:0  - 0:10             character_class
+0:0  - 0:1                "["
+0:1  - 0:9                class_set_expression
+0:1  - 0:9                  class_union
+0:1  - 0:6                    class_set_range
+0:1  - 0:3                      start: class_set_character
+0:1  - 0:2                        "\\"
+0:2  - 0:3                        class_set_reserved_punctuator `&`
+0:3  - 0:4                      "-"
+0:4  - 0:6                      end: class_set_character
+0:4  - 0:5                        "\\"
+0:5  - 0:6                        class_set_reserved_punctuator `~`
+0:6  - 0:9                    class_set_range
+0:6  - 0:7                      start: class_set_character
+0:6  - 0:7                        source_character `!`
+0:7  - 0:8                      "-"
+0:8  - 0:9                      end: class_set_character
+0:8  - 0:9                        source_character `?`
+0:9  - 0:10               "]"
+
+==============================
+Every doubled reserved punctuation remains a character when it occurs singly
+:language(javascript_regex_v)
+:cst
+==============================
+[&!#$%*+,.:;<=>?@^`~]
+---
+0:0  - 0:21   pattern
+0:0  - 0:21     body: disjunction
+0:0  - 0:21       alternative
+0:0  - 0:21         term
+0:0  - 0:21           operand: atom
+0:0  - 0:21             character_class
+0:0  - 0:1                "["
+0:1  - 0:20               class_set_expression
+0:1  - 0:20                 class_union
+0:1  - 0:2                    class_set_operand
+0:1  - 0:2                      class_set_character
+0:1  - 0:2                        source_character `&`
+0:2  - 0:3                    class_set_operand
+0:2  - 0:3                      class_set_character
+0:2  - 0:3                        source_character `!`
+0:3  - 0:4                    class_set_operand
+0:3  - 0:4                      class_set_character
+0:3  - 0:4                        source_character `#`
+0:4  - 0:5                    class_set_operand
+0:4  - 0:5                      class_set_character
+0:4  - 0:5                        source_character `$`
+0:5  - 0:6                    class_set_operand
+0:5  - 0:6                      class_set_character
+0:5  - 0:6                        source_character `%`
+0:6  - 0:7                    class_set_operand
+0:6  - 0:7                      class_set_character
+0:6  - 0:7                        source_character `*`
+0:7  - 0:8                    class_set_operand
+0:7  - 0:8                      class_set_character
+0:7  - 0:8                        source_character `+`
+0:8  - 0:9                    class_set_operand
+0:8  - 0:9                      class_set_character
+0:8  - 0:9                        source_character `,`
+0:9  - 0:10                   class_set_operand
+0:9  - 0:10                     class_set_character
+0:9  - 0:10                       source_character `.`
+0:10 - 0:11                   class_set_operand
+0:10 - 0:11                     class_set_character
+0:10 - 0:11                       source_character `:`
+0:11 - 0:12                   class_set_operand
+0:11 - 0:12                     class_set_character
+0:11 - 0:12                       source_character `;`
+0:12 - 0:13                   class_set_operand
+0:12 - 0:13                     class_set_character
+0:12 - 0:13                       source_character `<`
+0:13 - 0:14                   class_set_operand
+0:13 - 0:14                     class_set_character
+0:13 - 0:14                       source_character `=`
+0:14 - 0:15                   class_set_operand
+0:14 - 0:15                     class_set_character
+0:14 - 0:15                       source_character `>`
+0:15 - 0:16                   class_set_operand
+0:15 - 0:16                     class_set_character
+0:15 - 0:16                       source_character `?`
+0:16 - 0:17                   class_set_operand
+0:16 - 0:17                     class_set_character
+0:16 - 0:17                       source_character `@`
+0:17 - 0:18                   class_set_operand
+0:17 - 0:18                     class_set_character
+0:17 - 0:18                       source_character `^`
+0:18 - 0:19                   class_set_operand
+0:18 - 0:19                     class_set_character
+0:18 - 0:19                       source_character `\``
+0:19 - 0:20                   class_set_operand
+0:19 - 0:20                     class_set_character
+0:19 - 0:20                       source_character `~`
+0:20 - 0:21               "]"
+
+==============================
+Every reserved punctuator can be escaped in a Unicode set
+:language(javascript_regex_v)
+:cst
+==============================
+[\&\-\!\#\%\,\:\;\<\=\>\@\`\~]
+---
+0:0  - 0:30   pattern
+0:0  - 0:30     body: disjunction
+0:0  - 0:30       alternative
+0:0  - 0:30         term
+0:0  - 0:30           operand: atom
+0:0  - 0:30             character_class
+0:0  - 0:1                "["
+0:1  - 0:29               class_set_expression
+0:1  - 0:29                 class_union
+0:1  - 0:3                    class_set_operand
+0:1  - 0:3                      class_set_character
+0:1  - 0:2                        "\\"
+0:2  - 0:3                        class_set_reserved_punctuator `&`
+0:3  - 0:5                    class_set_operand
+0:3  - 0:5                      class_set_character
+0:3  - 0:4                        "\\"
+0:4  - 0:5                        class_set_reserved_punctuator `-`
+0:5  - 0:7                    class_set_operand
+0:5  - 0:7                      class_set_character
+0:5  - 0:6                        "\\"
+0:6  - 0:7                        class_set_reserved_punctuator `!`
+0:7  - 0:9                    class_set_operand
+0:7  - 0:9                      class_set_character
+0:7  - 0:8                        "\\"
+0:8  - 0:9                        class_set_reserved_punctuator `#`
+0:9  - 0:11                   class_set_operand
+0:9  - 0:11                     class_set_character
+0:9  - 0:10                       "\\"
+0:10 - 0:11                       class_set_reserved_punctuator `%`
+0:11 - 0:13                   class_set_operand
+0:11 - 0:13                     class_set_character
+0:11 - 0:12                       "\\"
+0:12 - 0:13                       class_set_reserved_punctuator `,`
+0:13 - 0:15                   class_set_operand
+0:13 - 0:15                     class_set_character
+0:13 - 0:14                       "\\"
+0:14 - 0:15                       class_set_reserved_punctuator `:`
+0:15 - 0:17                   class_set_operand
+0:15 - 0:17                     class_set_character
+0:15 - 0:16                       "\\"
+0:16 - 0:17                       class_set_reserved_punctuator `;`
+0:17 - 0:19                   class_set_operand
+0:17 - 0:19                     class_set_character
+0:17 - 0:18                       "\\"
+0:18 - 0:19                       class_set_reserved_punctuator `<`
+0:19 - 0:21                   class_set_operand
+0:19 - 0:21                     class_set_character
+0:19 - 0:20                       "\\"
+0:20 - 0:21                       class_set_reserved_punctuator `=`
+0:21 - 0:23                   class_set_operand
+0:21 - 0:23                     class_set_character
+0:21 - 0:22                       "\\"
+0:22 - 0:23                       class_set_reserved_punctuator `>`
+0:23 - 0:25                   class_set_operand
+0:23 - 0:25                     class_set_character
+0:23 - 0:24                       "\\"
+0:24 - 0:25                       class_set_reserved_punctuator `@`
+0:25 - 0:27                   class_set_operand
+0:25 - 0:27                     class_set_character
+0:25 - 0:26                       "\\"
+0:26 - 0:27                       class_set_reserved_punctuator `\``
+0:27 - 0:29                   class_set_operand
+0:27 - 0:29                     class_set_character
+0:27 - 0:28                       "\\"
+0:28 - 0:29                       class_set_reserved_punctuator `~`
+0:29 - 0:30               "]"
+
+==============================
+Escaping either adjacent punctuation prevents a reserved doubled spelling
+:language(javascript_regex_v)
+:cst
+==============================
+[!\!!][\!!\!]
+---
+0:0  - 0:13   pattern
+0:0  - 0:13     body: disjunction
+0:0  - 0:13       alternative
+0:0  - 0:6          term
+0:0  - 0:6            operand: atom
+0:0  - 0:6              character_class
+0:0  - 0:1                "["
+0:1  - 0:5                class_set_expression
+0:1  - 0:5                  class_union
+0:1  - 0:2                    class_set_operand
+0:1  - 0:2                      class_set_character
+0:1  - 0:2                        source_character `!`
+0:2  - 0:4                    class_set_operand
+0:2  - 0:4                      class_set_character
+0:2  - 0:3                        "\\"
+0:3  - 0:4                        class_set_reserved_punctuator `!`
+0:4  - 0:5                    class_set_operand
+0:4  - 0:5                      class_set_character
+0:4  - 0:5                        source_character `!`
+0:5  - 0:6                "]"
+0:6  - 0:13         term
+0:6  - 0:13           operand: atom
+0:6  - 0:13             character_class
+0:6  - 0:7                "["
+0:7  - 0:12               class_set_expression
+0:7  - 0:12                 class_union
+0:7  - 0:9                    class_set_operand
+0:7  - 0:9                      class_set_character
+0:7  - 0:8                        "\\"
+0:8  - 0:9                        class_set_reserved_punctuator `!`
+0:9  - 0:10                   class_set_operand
+0:9  - 0:10                     class_set_character
+0:9  - 0:10                       source_character `!`
+0:10 - 0:12                   class_set_operand
+0:10 - 0:12                     class_set_character
+0:10 - 0:11                       "\\"
+0:11 - 0:12                       class_set_reserved_punctuator `!`
+0:12 - 0:13               "]"
+
+==============================
+Escaped ampersands remain distinct from the intersection operator
+:language(javascript_regex_v)
+:cst
+==============================
+[&\&][a&&\&][a\&&b][\&&&b]
+---
+0:0  - 0:26   pattern
+0:0  - 0:26     body: disjunction
+0:0  - 0:26       alternative
+0:0  - 0:5          term
+0:0  - 0:5            operand: atom
+0:0  - 0:5              character_class
+0:0  - 0:1                "["
+0:1  - 0:4                class_set_expression
+0:1  - 0:4                  class_union
+0:1  - 0:2                    class_set_operand
+0:1  - 0:2                      class_set_character
+0:1  - 0:2                        source_character `&`
+0:2  - 0:4                    class_set_operand
+0:2  - 0:4                      class_set_character
+0:2  - 0:3                        "\\"
+0:3  - 0:4                        class_set_reserved_punctuator `&`
+0:4  - 0:5                "]"
+0:5  - 0:12         term
+0:5  - 0:12           operand: atom
+0:5  - 0:12             character_class
+0:5  - 0:6                "["
+0:6  - 0:11               class_set_expression
+0:6  - 0:11                 class_intersection
+0:6  - 0:7                    class_set_operand
+0:6  - 0:7                      class_set_character
+0:6  - 0:7                        source_character `a`
+0:7  - 0:9                    "&&"
+0:9  - 0:11                   class_set_operand
+0:9  - 0:11                     class_set_character
+0:9  - 0:10                       "\\"
+0:10 - 0:11                       class_set_reserved_punctuator `&`
+0:11 - 0:12               "]"
+0:12 - 0:19         term
+0:12 - 0:19           operand: atom
+0:12 - 0:19             character_class
+0:12 - 0:13               "["
+0:13 - 0:18               class_set_expression
+0:13 - 0:18                 class_union
+0:13 - 0:14                   class_set_operand
+0:13 - 0:14                     class_set_character
+0:13 - 0:14                       source_character `a`
+0:14 - 0:16                   class_set_operand
+0:14 - 0:16                     class_set_character
+0:14 - 0:15                       "\\"
+0:15 - 0:16                       class_set_reserved_punctuator `&`
+0:16 - 0:17                   class_set_operand
+0:16 - 0:17                     class_set_character
+0:16 - 0:17                       source_character `&`
+0:17 - 0:18                   class_set_operand
+0:17 - 0:18                     class_set_character
+0:17 - 0:18                       source_character `b`
+0:18 - 0:19               "]"
+0:19 - 0:26         term
+0:19 - 0:26           operand: atom
+0:19 - 0:26             character_class
+0:19 - 0:20               "["
+0:20 - 0:25               class_set_expression
+0:20 - 0:25                 class_intersection
+0:20 - 0:22                   class_set_operand
+0:20 - 0:22                     class_set_character
+0:20 - 0:21                       "\\"
+0:21 - 0:22                       class_set_reserved_punctuator `&`
+0:22 - 0:24                   "&&"
+0:24 - 0:25                   class_set_operand
+0:24 - 0:25                     class_set_character
+0:24 - 0:25                       source_character `b`
+0:25 - 0:26               "]"
+
+==============================
+Repeated nonreserved characters stay ordinary including spaces and non-BMP characters
+:language(javascript_regex_v)
+:cst
+==============================
+[aa00__  "'😀😀]
+---
+0:0  - 0:20   pattern
+0:0  - 0:20     body: disjunction
+0:0  - 0:20       alternative
+0:0  - 0:20         term
+0:0  - 0:20           operand: atom
+0:0  - 0:20             character_class
+0:0  - 0:1                "["
+0:1  - 0:19               class_set_expression
+0:1  - 0:19                 class_union
+0:1  - 0:2                    class_set_operand
+0:1  - 0:2                      class_set_character
+0:1  - 0:2                        source_character `a`
+0:2  - 0:3                    class_set_operand
+0:2  - 0:3                      class_set_character
+0:2  - 0:3                        source_character `a`
+0:3  - 0:4                    class_set_operand
+0:3  - 0:4                      class_set_character
+0:3  - 0:4                        source_character `0`
+0:4  - 0:5                    class_set_operand
+0:4  - 0:5                      class_set_character
+0:4  - 0:5                        source_character `0`
+0:5  - 0:6                    class_set_operand
+0:5  - 0:6                      class_set_character
+0:5  - 0:6                        source_character `_`
+0:6  - 0:7                    class_set_operand
+0:6  - 0:7                      class_set_character
+0:6  - 0:7                        source_character `_`
+0:7  - 0:8                    class_set_operand
+0:7  - 0:8                      class_set_character
+0:7  - 0:8                        source_character ` `
+0:8  - 0:9                    class_set_operand
+0:8  - 0:9                      class_set_character
+0:8  - 0:9                        source_character ` `
+0:9  - 0:10                   class_set_operand
+0:9  - 0:10                     class_set_character
+0:9  - 0:10                       source_character `\"`
+0:10 - 0:11                   class_set_operand
+0:10 - 0:11                     class_set_character
+0:10 - 0:11                       source_character `'`
+0:11 - 0:15                   class_set_operand
+0:11 - 0:15                     class_set_character
+0:11 - 0:15                       source_character `😀`
+0:15 - 0:19                   class_set_operand
+0:15 - 0:19                     class_set_character
+0:15 - 0:19                       source_character `😀`
+0:19 - 0:20               "]"
+
+==============================
+Empty string alternatives retain delimiters without zero width string nodes
+:language(javascript_regex_v)
+:cst
+==============================
+[\q{}][\q{|}][\q{a||b|}]
+---
+0:0  - 0:24   pattern
+0:0  - 0:24     body: disjunction
+0:0  - 0:24       alternative
+0:0  - 0:6          term
+0:0  - 0:6            operand: atom
+0:0  - 0:6              character_class
+0:0  - 0:1                "["
+0:1  - 0:5                class_set_expression
+0:1  - 0:5                  class_union
+0:1  - 0:5                    class_set_operand
+0:1  - 0:5                      class_string_disjunction
+0:1  - 0:3                        "\\q"
+0:3  - 0:4                        "{"
+0:4  - 0:5                        "}"
+0:5  - 0:6                "]"
+0:6  - 0:13         term
+0:6  - 0:13           operand: atom
+0:6  - 0:13             character_class
+0:6  - 0:7                "["
+0:7  - 0:12               class_set_expression
+0:7  - 0:12                 class_union
+0:7  - 0:12                   class_set_operand
+0:7  - 0:12                     class_string_disjunction
+0:7  - 0:9                        "\\q"
+0:9  - 0:10                       "{"
+0:10 - 0:11                       class_string_disjunction_contents
+0:10 - 0:11                         "|"
+0:11 - 0:12                       "}"
+0:12 - 0:13               "]"
+0:13 - 0:24         term
+0:13 - 0:24           operand: atom
+0:13 - 0:24             character_class
+0:13 - 0:14               "["
+0:14 - 0:23               class_set_expression
+0:14 - 0:23                 class_union
+0:14 - 0:23                   class_set_operand
+0:14 - 0:23                     class_string_disjunction
+0:14 - 0:16                       "\\q"
+0:16 - 0:17                       "{"
+0:17 - 0:22                       class_string_disjunction_contents
+0:17 - 0:18                         non_empty_class_string
+0:17 - 0:18                           class_set_character
+0:17 - 0:18                             source_character `a`
+0:18 - 0:19                         "|"
+0:19 - 0:20                         "|"
+0:20 - 0:21                         non_empty_class_string
+0:20 - 0:21                           class_set_character
+0:20 - 0:21                             source_character `b`
+0:21 - 0:22                         "|"
+0:22 - 0:23                       "}"
+0:23 - 0:24               "]"
+
+==============================
+Pattern operators are characters within class strings and quantifiers remain outside the class
+:language(javascript_regex_v)
+:cst
+==============================
+[\q{a.b*+?^$}]+
+---
+0:0  - 0:15   pattern
+0:0  - 0:15     body: disjunction
+0:0  - 0:15       alternative
+0:0  - 0:15         term
+0:0  - 0:14           operand: atom
+0:0  - 0:14             character_class
+0:0  - 0:1                "["
+0:1  - 0:13               class_set_expression
+0:1  - 0:13                 class_union
+0:1  - 0:13                   class_set_operand
+0:1  - 0:13                     class_string_disjunction
+0:1  - 0:3                        "\\q"
+0:3  - 0:4                        "{"
+0:4  - 0:12                       class_string_disjunction_contents
+0:4  - 0:12                         non_empty_class_string
+0:4  - 0:5                            class_set_character
+0:4  - 0:5                              source_character `a`
+0:5  - 0:6                            class_set_character
+0:5  - 0:6                              source_character `.`
+0:6  - 0:7                            class_set_character
+0:6  - 0:7                              source_character `b`
+0:7  - 0:8                            class_set_character
+0:7  - 0:8                              source_character `*`
+0:8  - 0:9                            class_set_character
+0:8  - 0:9                              source_character `+`
+0:9  - 0:10                           class_set_character
+0:9  - 0:10                             source_character `?`
+0:10 - 0:11                           class_set_character
+0:10 - 0:11                             source_character `^`
+0:11 - 0:12                           class_set_character
+0:11 - 0:12                             source_character `$`
+0:12 - 0:13                       "}"
+0:13 - 0:14               "]"
+0:14 - 0:15           quantifier: quantifier
+0:14 - 0:15             quantifier_prefix
+0:14 - 0:15               "+"
+
+==============================
+Character escapes inside class strings retain their classifications and escaped delimiters
+:language(javascript_regex_v)
+:cst
+==============================
+[\q{\|\}\]\\\b\cA\x42\u0043\uD83D\uDE00\u{1F600}\0}]
+---
+0:0  - 0:52   pattern
+0:0  - 0:52     body: disjunction
+0:0  - 0:52       alternative
+0:0  - 0:52         term
+0:0  - 0:52           operand: atom
+0:0  - 0:52             character_class
+0:0  - 0:1                "["
+0:1  - 0:51               class_set_expression
+0:1  - 0:51                 class_union
+0:1  - 0:51                   class_set_operand
+0:1  - 0:51                     class_string_disjunction
+0:1  - 0:3                        "\\q"
+0:3  - 0:4                        "{"
+0:4  - 0:50                       class_string_disjunction_contents
+0:4  - 0:50                         non_empty_class_string
+0:4  - 0:6                            class_set_character
+0:4  - 0:5                              "\\"
+0:5  - 0:6                              character_escape
+0:5  - 0:6                                identity_escape
+0:5  - 0:6                                  syntax_character `|`
+0:6  - 0:8                            class_set_character
+0:6  - 0:7                              "\\"
+0:7  - 0:8                              character_escape
+0:7  - 0:8                                identity_escape
+0:7  - 0:8                                  syntax_character `}`
+0:8  - 0:10                           class_set_character
+0:8  - 0:9                              "\\"
+0:9  - 0:10                             character_escape
+0:9  - 0:10                               identity_escape
+0:9  - 0:10                                 syntax_character `]`
+0:10 - 0:12                           class_set_character
+0:10 - 0:11                             "\\"
+0:11 - 0:12                             character_escape
+0:11 - 0:12                               identity_escape
+0:11 - 0:12                                 syntax_character `\\`
+0:12 - 0:14                           class_set_character
+0:12 - 0:14                             "\\b"
+0:14 - 0:17                           class_set_character
+0:14 - 0:15                             "\\"
+0:15 - 0:17                             character_escape
+0:15 - 0:16                               "c"
+0:16 - 0:17                               ascii_letter `A`
+0:17 - 0:21                           class_set_character
+0:17 - 0:18                             "\\"
+0:18 - 0:21                             character_escape
+0:18 - 0:21                               hex_escape_sequence
+0:18 - 0:19                                 "x"
+0:19 - 0:20                                 hex_digit `4`
+0:20 - 0:21                                 hex_digit `2`
+0:21 - 0:27                           class_set_character
+0:21 - 0:22                             "\\"
+0:22 - 0:27                             character_escape
+0:22 - 0:27                               reg_exp_unicode_escape_sequence
+0:22 - 0:23                                 "u"
+0:23 - 0:27                                 hex_non_surrogate
+0:23 - 0:27                                   hex4_digits
+0:23 - 0:24                                     hex_digit `0`
+0:24 - 0:25                                     hex_digit `0`
+0:25 - 0:26                                     hex_digit `4`
+0:26 - 0:27                                     hex_digit `3`
+0:27 - 0:39                           class_set_character
+0:27 - 0:28                             "\\"
+0:28 - 0:39                             character_escape
+0:28 - 0:39                               reg_exp_unicode_escape_sequence
+0:28 - 0:29                                 "u"
+0:29 - 0:33                                 hex_lead_surrogate
+0:29 - 0:33                                   hex4_digits
+0:29 - 0:30                                     hex_digit `D`
+0:30 - 0:31                                     hex_digit `8`
+0:31 - 0:32                                     hex_digit `3`
+0:32 - 0:33                                     hex_digit `D`
+0:33 - 0:35                                 "\\u"
+0:35 - 0:39                                 hex_trail_surrogate
+0:35 - 0:39                                   hex4_digits
+0:35 - 0:36                                     hex_digit `D`
+0:36 - 0:37                                     hex_digit `E`
+0:37 - 0:38                                     hex_digit `0`
+0:38 - 0:39                                     hex_digit `0`
+0:39 - 0:48                           class_set_character
+0:39 - 0:40                             "\\"
+0:40 - 0:48                             character_escape
+0:40 - 0:48                               reg_exp_unicode_escape_sequence
+0:40 - 0:41                                 "u"
+0:41 - 0:42                                 "{"
+0:42 - 0:47                                 code_point
+0:42 - 0:47                                   hex_digits
+0:42 - 0:43                                     hex_digit `1`
+0:43 - 0:44                                     hex_digit `F`
+0:44 - 0:45                                     hex_digit `6`
+0:45 - 0:46                                     hex_digit `0`
+0:46 - 0:47                                     hex_digit `0`
+0:47 - 0:48                                 "}"
+0:48 - 0:50                           class_set_character
+0:48 - 0:49                             "\\"
+0:49 - 0:50                             character_escape
+0:49 - 0:50                               "0"
+0:50 - 0:51                       "}"
+0:51 - 0:52               "]"
+
+==============================
+Class strings allow the extra reserved punctuation escapes
+:language(javascript_regex_v)
+:cst
+==============================
+[\q{\&\-\!\#\%\,\:\;\<\=\>\@\`\~}]
+---
+0:0  - 0:34   pattern
+0:0  - 0:34     body: disjunction
+0:0  - 0:34       alternative
+0:0  - 0:34         term
+0:0  - 0:34           operand: atom
+0:0  - 0:34             character_class
+0:0  - 0:1                "["
+0:1  - 0:33               class_set_expression
+0:1  - 0:33                 class_union
+0:1  - 0:33                   class_set_operand
+0:1  - 0:33                     class_string_disjunction
+0:1  - 0:3                        "\\q"
+0:3  - 0:4                        "{"
+0:4  - 0:32                       class_string_disjunction_contents
+0:4  - 0:32                         non_empty_class_string
+0:4  - 0:6                            class_set_character
+0:4  - 0:5                              "\\"
+0:5  - 0:6                              class_set_reserved_punctuator `&`
+0:6  - 0:8                            class_set_character
+0:6  - 0:7                              "\\"
+0:7  - 0:8                              class_set_reserved_punctuator `-`
+0:8  - 0:10                           class_set_character
+0:8  - 0:9                              "\\"
+0:9  - 0:10                             class_set_reserved_punctuator `!`
+0:10 - 0:12                           class_set_character
+0:10 - 0:11                             "\\"
+0:11 - 0:12                             class_set_reserved_punctuator `#`
+0:12 - 0:14                           class_set_character
+0:12 - 0:13                             "\\"
+0:13 - 0:14                             class_set_reserved_punctuator `%`
+0:14 - 0:16                           class_set_character
+0:14 - 0:15                             "\\"
+0:15 - 0:16                             class_set_reserved_punctuator `,`
+0:16 - 0:18                           class_set_character
+0:16 - 0:17                             "\\"
+0:17 - 0:18                             class_set_reserved_punctuator `:`
+0:18 - 0:20                           class_set_character
+0:18 - 0:19                             "\\"
+0:19 - 0:20                             class_set_reserved_punctuator `;`
+0:20 - 0:22                           class_set_character
+0:20 - 0:21                             "\\"
+0:21 - 0:22                             class_set_reserved_punctuator `<`
+0:22 - 0:24                           class_set_character
+0:22 - 0:23                             "\\"
+0:23 - 0:24                             class_set_reserved_punctuator `=`
+0:24 - 0:26                           class_set_character
+0:24 - 0:25                             "\\"
+0:25 - 0:26                             class_set_reserved_punctuator `>`
+0:26 - 0:28                           class_set_character
+0:26 - 0:27                             "\\"
+0:27 - 0:28                             class_set_reserved_punctuator `@`
+0:28 - 0:30                           class_set_character
+0:28 - 0:29                             "\\"
+0:29 - 0:30                             class_set_reserved_punctuator `\``
+0:30 - 0:32                           class_set_character
+0:30 - 0:31                             "\\"
+0:31 - 0:32                             class_set_reserved_punctuator `~`
+0:32 - 0:33                       "}"
+0:33 - 0:34               "]"
+
+==============================
+Single reserved punctuation remains literal within class strings
+:language(javascript_regex_v)
+:cst
+==============================
+[\q{&!#$%*+,.:;<=>?@^`~}]
+---
+0:0  - 0:25   pattern
+0:0  - 0:25     body: disjunction
+0:0  - 0:25       alternative
+0:0  - 0:25         term
+0:0  - 0:25           operand: atom
+0:0  - 0:25             character_class
+0:0  - 0:1                "["
+0:1  - 0:24               class_set_expression
+0:1  - 0:24                 class_union
+0:1  - 0:24                   class_set_operand
+0:1  - 0:24                     class_string_disjunction
+0:1  - 0:3                        "\\q"
+0:3  - 0:4                        "{"
+0:4  - 0:23                       class_string_disjunction_contents
+0:4  - 0:23                         non_empty_class_string
+0:4  - 0:5                            class_set_character
+0:4  - 0:5                              source_character `&`
+0:5  - 0:6                            class_set_character
+0:5  - 0:6                              source_character `!`
+0:6  - 0:7                            class_set_character
+0:6  - 0:7                              source_character `#`
+0:7  - 0:8                            class_set_character
+0:7  - 0:8                              source_character `$`
+0:8  - 0:9                            class_set_character
+0:8  - 0:9                              source_character `%`
+0:9  - 0:10                           class_set_character
+0:9  - 0:10                             source_character `*`
+0:10 - 0:11                           class_set_character
+0:10 - 0:11                             source_character `+`
+0:11 - 0:12                           class_set_character
+0:11 - 0:12                             source_character `,`
+0:12 - 0:13                           class_set_character
+0:12 - 0:13                             source_character `.`
+0:13 - 0:14                           class_set_character
+0:13 - 0:14                             source_character `:`
+0:14 - 0:15                           class_set_character
+0:14 - 0:15                             source_character `;`
+0:15 - 0:16                           class_set_character
+0:15 - 0:16                             source_character `<`
+0:16 - 0:17                           class_set_character
+0:16 - 0:17                             source_character `=`
+0:17 - 0:18                           class_set_character
+0:17 - 0:18                             source_character `>`
+0:18 - 0:19                           class_set_character
+0:18 - 0:19                             source_character `?`
+0:19 - 0:20                           class_set_character
+0:19 - 0:20                             source_character `@`
+0:20 - 0:21                           class_set_character
+0:20 - 0:21                             source_character `^`
+0:21 - 0:22                           class_set_character
+0:21 - 0:22                             source_character `\``
+0:22 - 0:23                           class_set_character
+0:22 - 0:23                             source_character `~`
+0:23 - 0:24                       "}"
+0:24 - 0:25               "]"
+
+==============================
+Nested negated classes own separate brackets and carets and an intersection owns both ampersands
+:language(javascript_regex_v)
+:cst
+==============================
+[^[^a]&&[\q{b|😀}]]
+---
+0:0  - 0:21   pattern
+0:0  - 0:21     body: disjunction
+0:0  - 0:21       alternative
+0:0  - 0:21         term
+0:0  - 0:21           operand: atom
+0:0  - 0:21             character_class
+0:0  - 0:1                "["
+0:1  - 0:2                "^"
+0:2  - 0:20               class_set_expression
+0:2  - 0:20                 class_intersection
+0:2  - 0:6                    class_set_operand
+0:2  - 0:6                      nested_class
+0:2  - 0:3                        "["
+0:3  - 0:4                        "^"
+0:4  - 0:5                        class_set_expression
+0:4  - 0:5                          class_union
+0:4  - 0:5                            class_set_operand
+0:4  - 0:5                              class_set_character
+0:4  - 0:5                                source_character `a`
+0:5  - 0:6                        "]"
+0:6  - 0:8                    "&&"
+0:8  - 0:20                   class_set_operand
+0:8  - 0:20                     nested_class
+0:8  - 0:9                        "["
+0:9  - 0:19                       class_set_expression
+0:9  - 0:19                         class_union
+0:9  - 0:19                           class_set_operand
+0:9  - 0:19                             class_string_disjunction
+0:9  - 0:11                               "\\q"
+0:11 - 0:12                               "{"
+0:12 - 0:18                               class_string_disjunction_contents
+0:12 - 0:13                                 non_empty_class_string
+0:12 - 0:13                                   class_set_character
+0:12 - 0:13                                     source_character `b`
+0:13 - 0:14                                 "|"
+0:14 - 0:18                                 non_empty_class_string
+0:14 - 0:18                                   class_set_character
+0:14 - 0:18                                     source_character `😀`
+0:18 - 0:19                               "}"
+0:19 - 0:20                       "]"
+0:20 - 0:21               "]"
+
+==============================
+Escaped string separators and closers keep their complete source ranges
+:language(javascript_regex_v)
+:cst
+==============================
+[\q{a\|b\}c\]d}]
+---
+0:0  - 0:16   pattern
+0:0  - 0:16     body: disjunction
+0:0  - 0:16       alternative
+0:0  - 0:16         term
+0:0  - 0:16           operand: atom
+0:0  - 0:16             character_class
+0:0  - 0:1                "["
+0:1  - 0:15               class_set_expression
+0:1  - 0:15                 class_union
+0:1  - 0:15                   class_set_operand
+0:1  - 0:15                     class_string_disjunction
+0:1  - 0:3                        "\\q"
+0:3  - 0:4                        "{"
+0:4  - 0:14                       class_string_disjunction_contents
+0:4  - 0:14                         non_empty_class_string
+0:4  - 0:5                            class_set_character
+0:4  - 0:5                              source_character `a`
+0:5  - 0:7                            class_set_character
+0:5  - 0:6                              "\\"
+0:6  - 0:7                              character_escape
+0:6  - 0:7                                identity_escape
+0:6  - 0:7                                  syntax_character `|`
+0:7  - 0:8                            class_set_character
+0:7  - 0:8                              source_character `b`
+0:8  - 0:10                           class_set_character
+0:8  - 0:9                              "\\"
+0:9  - 0:10                             character_escape
+0:9  - 0:10                               identity_escape
+0:9  - 0:10                                 syntax_character `}`
+0:10 - 0:11                           class_set_character
+0:10 - 0:11                             source_character `c`
+0:11 - 0:13                           class_set_character
+0:11 - 0:12                             "\\"
+0:12 - 0:13                             character_escape
+0:12 - 0:13                               identity_escape
+0:12 - 0:13                                 syntax_character `]`
+0:13 - 0:14                           class_set_character
+0:13 - 0:14                             source_character `d`
+0:14 - 0:15                       "}"
+0:15 - 0:16               "]"

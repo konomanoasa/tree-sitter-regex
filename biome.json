@@ -1,0 +1,22 @@
+{
+  "files": {
+    "includes": [
+      "**",
+      "!**/src/grammar.json",
+      "!**/src/node-types.json",
+      "!common/javascript/unicode.js"
+    ]
+  },
+  "javascript": {
+    "formatter": {
+      "indentStyle": "space",
+      "indentWidth": 2
+    }
+  },
+  "json": {
+    "formatter": {
+      "indentStyle": "space",
+      "indentWidth": 2
+    }
+  }
+}

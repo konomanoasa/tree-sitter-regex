@@ -1,0 +1,160 @@
+==================
+nested groups share the expression hierarchy
+:language(python_re)
+:language(python_re_verbose)
+==================
+(a|(?:b|c))(?P<name>d)\
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character))
+          (concatenation
+            (non_capturing_group
+              body: (alternation
+                (concatenation
+                  (literal_character))
+                (concatenation
+                  (literal_character)))))))
+      (named_capturing_group
+        name: (group_name)
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (literal_escape))))
+
+==================
+empty bodies preserve each group category
+:language(python_re)
+:language(python_re_verbose)
+==================
+()(?:)(?P<n>)\
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (capturing_group)
+      (non_capturing_group)
+      (named_capturing_group
+        name: (group_name))
+      (literal_escape))))
+
+==================
+all consuming group categories can be quantified
+:language(python_re)
+:language(python_re_verbose)
+==================
+(a)*(?:b){2}(?P<n>c)+\
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (repetition
+        operand: (capturing_group
+          body: (alternation
+            (concatenation
+              (literal_character))))
+        quantifier: (quantifier))
+      (repetition
+        operand: (non_capturing_group
+          body: (alternation
+            (concatenation
+              (literal_character))))
+        quantifier: (quantifier
+          count: (decimal_digits)))
+      (repetition
+        operand: (named_capturing_group
+          name: (group_name)
+          body: (alternation
+            (concatenation
+              (literal_character))))
+        quantifier: (quantifier))
+      (literal_escape))))
+
+==================
+group names retain source spelling without semantic validation
+:language(python_re)
+:language(python_re_verbose)
+==================
+(?P<a-b>x)(?P<a b>y)\
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (named_capturing_group
+        name: (group_name)
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (named_capturing_group
+        name: (group_name)
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (literal_escape))))
+
+==================
+comment content skips an escaped parenthesis
+:language(python_re)
+:language(python_re_verbose)
+==================
+(?#\)a)b\
+
+---
+
+(pattern
+  (comment_group)
+  body: (alternation
+    (concatenation
+      (literal_character)
+      (literal_escape))))
+
+==================
+comment content can begin with a brace
+:language(python_re)
+:language(python_re_verbose)
+==================
+(?#{} )a\
+
+---
+
+(pattern
+  (comment_group)
+  body: (alternation
+    (concatenation
+      (literal_character)
+      (literal_escape))))
+
+==================
+verbose comment skips an escaped newline
+:language(python_re)
+:language(python_re_verbose)
+==================
+(?x:#a\
+b
+z)\
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (scoped_flags_group
+        enable: (flag_set)
+        body: (alternation
+          (concatenation
+            (verbose_comment)
+            (verbose_whitespace)
+            (literal_character))))
+      (literal_escape))))

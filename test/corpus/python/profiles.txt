@@ -1,0 +1,201 @@
+==================
+normal mode retains spaces comments and newlines
+:language(python_re)
+==================
+a b#c
+d
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character))))
+
+==================
+initial verbose mode retains ignored source as layout
+:language(python_re_verbose)
+==================
+a b#c
+d
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (literal_character)
+      (verbose_whitespace)
+      (literal_character)
+      (verbose_comment)
+      (verbose_whitespace)
+      (literal_character)
+      (verbose_whitespace))))
+
+==================
+completed global flags change the remaining prefix mode
+:language(python_re)
+:language(python_re_verbose)
+==================
+(?#p)(?i)(?x) a#c
+d
+
+---
+
+(pattern
+  (comment_group)
+  (global_flags
+    flags: (flag_set))
+  (global_flags
+    flags: (flag_set))
+  (verbose_whitespace)
+  body: (alternation
+    (concatenation
+      (literal_character)
+      (verbose_comment)
+      (verbose_whitespace)
+      (literal_character)
+      (verbose_whitespace))))
+
+==================
+scoped x enable restores normal mode
+:language(python_re)
+==================
+(?x:a b#c
+d)e #f
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (scoped_flags_group
+        enable: (flag_set)
+        body: (alternation
+          (concatenation
+            (literal_character)
+            (verbose_whitespace)
+            (literal_character)
+            (verbose_comment)
+            (verbose_whitespace)
+            (literal_character))))
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character))))
+
+==================
+scoped x disable restores verbose mode
+:language(python_re_verbose)
+==================
+(?-x:a b#c)d #e
+f
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (scoped_flags_group
+        disable: (flag_set)
+        body: (alternation
+          (concatenation
+            (literal_character)
+            (literal_character)
+            (literal_character)
+            (literal_character)
+            (literal_character))))
+      (literal_character)
+      (verbose_whitespace)
+      (verbose_comment)
+      (verbose_whitespace)
+      (literal_character)
+      (verbose_whitespace))))
+
+==================
+x enabled and disabled together keeps normal mode
+:language(python_re)
+==================
+(?x-x:a b)c
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (scoped_flags_group
+        enable: (flag_set)
+        disable: (flag_set)
+        body: (alternation
+          (concatenation
+            (literal_character)
+            (literal_character)
+            (literal_character))))
+      (literal_character)
+      (literal_character))))
+
+==================
+x enabled and disabled together keeps verbose mode
+:language(python_re_verbose)
+==================
+(?x-x:a b)c
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (scoped_flags_group
+        enable: (flag_set)
+        disable: (flag_set)
+        body: (alternation
+          (concatenation
+            (literal_character)
+            (verbose_whitespace)
+            (literal_character))))
+      (literal_character)
+      (verbose_whitespace))))
+
+==================
+nested scoped modes restore in stack order
+:language(python_re)
+==================
+(?x:a(?-x:b c#d)e #f
+)g #h
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (scoped_flags_group
+        enable: (flag_set)
+        body: (alternation
+          (concatenation
+            (literal_character)
+            (scoped_flags_group
+              disable: (flag_set)
+              body: (alternation
+                (concatenation
+                  (literal_character)
+                  (literal_character)
+                  (literal_character)
+                  (literal_character)
+                  (literal_character))))
+            (literal_character)
+            (verbose_whitespace)
+            (verbose_comment)
+            (verbose_whitespace))))
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character))))

@@ -1,0 +1,186 @@
+==================
+fixed escapes remain atoms across profiles
+:language(python_re)
+:language(python_re_verbose)
+==================
+\ \#\!\a\f\n\r\t\v\d\D\s\S\w\W\A\z\Z\b\B\
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (literal_escape)
+      (literal_escape)
+      (literal_escape)
+      (control_escape)
+      (control_escape)
+      (control_escape)
+      (control_escape)
+      (control_escape)
+      (control_escape)
+      (character_class_escape)
+      (character_class_escape)
+      (character_class_escape)
+      (character_class_escape)
+      (character_class_escape)
+      (character_class_escape)
+      (anchor_escape)
+      (anchor_escape)
+      (anchor_escape)
+      (word_boundary_escape)
+      (word_boundary_escape)
+      (literal_escape))))
+
+==================
+hex escapes expose their digits across profiles
+:language(python_re)
+:language(python_re_verbose)
+==================
+\x00|\xAf\
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (hex_escape
+        digits: (hexadecimal_digits)))
+    (concatenation
+      (hex_escape
+        digits: (hexadecimal_digits))
+      (literal_escape))))
+
+==================
+numeric escapes follow octal and backreference boundaries
+:language(python_re)
+:language(python_re_verbose)
+==================
+\0|\00|\000|\0000|\08|\1234|\128|\400|\777|\1|\12|\8|\99|\999\
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (octal_escape
+        digits: (octal_digits)))
+    (concatenation
+      (octal_escape
+        digits: (octal_digits)))
+    (concatenation
+      (octal_escape
+        digits: (octal_digits)))
+    (concatenation
+      (octal_escape
+        digits: (octal_digits))
+      (literal_character))
+    (concatenation
+      (octal_escape
+        digits: (octal_digits))
+      (literal_character))
+    (concatenation
+      (octal_escape
+        digits: (octal_digits))
+      (literal_character))
+    (concatenation
+      (numeric_backreference
+        group: (group_id))
+      (literal_character))
+    (concatenation
+      (octal_escape
+        digits: (octal_digits)))
+    (concatenation
+      (octal_escape
+        digits: (octal_digits)))
+    (concatenation
+      (numeric_backreference
+        group: (group_id)))
+    (concatenation
+      (numeric_backreference
+        group: (group_id)))
+    (concatenation
+      (numeric_backreference
+        group: (group_id)))
+    (concatenation
+      (numeric_backreference
+        group: (group_id)))
+    (concatenation
+      (numeric_backreference
+        group: (group_id))
+      (literal_character)
+      (literal_escape))))
+
+==================
+Unicode escapes expose their fields
+:language(python_re)
+:language(python_re_verbose)
+==================
+\u0041|\U00000042|\N{LATIN CAPITAL LETTER A}\
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (unicode_escape
+        digits: (hexadecimal_digits)))
+    (concatenation
+      (unicode_escape
+        digits: (hexadecimal_digits)))
+    (concatenation
+      (named_unicode_escape
+        name: (unicode_character_name))
+      (literal_escape))))
+
+==================
+complete named Unicode escape owns an internal newline
+:language(python_re)
+:language(python_re_verbose)
+==================
+\N{A
+B}\
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (named_unicode_escape
+        name: (unicode_character_name))
+      (literal_escape))))
+
+==================
+named Unicode payload can begin with a brace
+:language(python_re)
+:language(python_re_verbose)
+==================
+\N{{}}\
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (named_unicode_escape
+        name: (unicode_character_name))
+      (literal_character)
+      (literal_escape))))
+
+==================
+named Unicode payload owns separators through its closing brace
+:language(python_re)
+:language(python_re_verbose)
+==================
+\N{A|B}|z\
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (named_unicode_escape
+        name: (unicode_character_name)))
+    (concatenation
+      (literal_character)
+      (literal_escape))))

@@ -1,0 +1,832 @@
+==============================
+Anchors negated classes and lazy quantifiers share the same token ownership (javascript_regex)
+:language(javascript_regex)
+:cst
+==============================
+^[^a]+?$
+---
+0:0 - 0:8   pattern
+0:0 - 0:8     body: disjunction
+0:0 - 0:8       alternative
+0:0 - 0:1         term
+0:0 - 0:1           assertion
+0:0 - 0:1             "^"
+0:1 - 0:7         term
+0:1 - 0:5           operand: extended_atom
+0:1 - 0:5             character_class
+0:1 - 0:2               "["
+0:2 - 0:3               "^"
+0:3 - 0:4               nonempty_class_ranges
+0:3 - 0:4                 class_atom
+0:3 - 0:4                   class_atom_no_dash
+0:3 - 0:4                     source_character `a`
+0:4 - 0:5               "]"
+0:5 - 0:7           quantifier: quantifier
+0:5 - 0:6             quantifier_prefix
+0:5 - 0:6               "+"
+0:6 - 0:7             "?"
+0:7 - 0:8         term
+0:7 - 0:8           assertion
+0:7 - 0:8             "$"
+
+==============================
+Anchors negated classes and lazy quantifiers share the same token ownership (javascript_regex_u)
+:language(javascript_regex_u)
+:cst
+==============================
+^[^a]+?$
+---
+0:0 - 0:8   pattern
+0:0 - 0:8     body: disjunction
+0:0 - 0:8       alternative
+0:0 - 0:1         term
+0:0 - 0:1           assertion
+0:0 - 0:1             "^"
+0:1 - 0:7         term
+0:1 - 0:5           operand: atom
+0:1 - 0:5             character_class
+0:1 - 0:2               "["
+0:2 - 0:3               "^"
+0:3 - 0:4               nonempty_class_ranges
+0:3 - 0:4                 class_atom
+0:3 - 0:4                   class_atom_no_dash
+0:3 - 0:4                     source_character `a`
+0:4 - 0:5               "]"
+0:5 - 0:7           quantifier: quantifier
+0:5 - 0:6             quantifier_prefix
+0:5 - 0:6               "+"
+0:6 - 0:7             "?"
+0:7 - 0:8         term
+0:7 - 0:8           assertion
+0:7 - 0:8             "$"
+
+==============================
+Anchors negated classes and lazy quantifiers share the same token ownership (javascript_regex_v)
+:language(javascript_regex_v)
+:cst
+==============================
+^[^a]+?$
+---
+0:0 - 0:8   pattern
+0:0 - 0:8     body: disjunction
+0:0 - 0:8       alternative
+0:0 - 0:1         term
+0:0 - 0:1           assertion
+0:0 - 0:1             "^"
+0:1 - 0:7         term
+0:1 - 0:5           operand: atom
+0:1 - 0:5             character_class
+0:1 - 0:2               "["
+0:2 - 0:3               "^"
+0:3 - 0:4               class_set_expression
+0:3 - 0:4                 class_union
+0:3 - 0:4                   class_set_operand
+0:3 - 0:4                     class_set_character
+0:3 - 0:4                       source_character `a`
+0:4 - 0:5               "]"
+0:5 - 0:7           quantifier: quantifier
+0:5 - 0:6             quantifier_prefix
+0:5 - 0:6               "+"
+0:6 - 0:7             "?"
+0:7 - 0:8         term
+0:7 - 0:8           assertion
+0:7 - 0:8             "$"
+
+==============================
+Empty input has no body or zero-width children
+:language(javascript_regex)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==============================
+
+---
+0:0 - 0:0   pattern
+
+==============================
+Empty alternatives retain separators without empty concatenations (javascript_regex)
+:language(javascript_regex)
+:cst
+==============================
+|a||
+---
+0:0 - 0:4   pattern
+0:0 - 0:4     body: disjunction
+0:0 - 0:1       "|"
+0:1 - 0:2       alternative
+0:1 - 0:2         term
+0:1 - 0:2           operand: extended_atom
+0:1 - 0:2             extended_pattern_character
+0:1 - 0:2               source_character `a`
+0:2 - 0:3       "|"
+0:3 - 0:4       "|"
+
+==============================
+Empty alternatives retain separators without empty concatenations (javascript_regex_u, javascript_regex_v)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==============================
+|a||
+---
+0:0 - 0:4   pattern
+0:0 - 0:4     body: disjunction
+0:0 - 0:1       "|"
+0:1 - 0:2       alternative
+0:1 - 0:2         term
+0:1 - 0:2           operand: atom
+0:1 - 0:2             pattern_character
+0:1 - 0:2               source_character `a`
+0:2 - 0:3       "|"
+0:3 - 0:4       "|"
+
+==============================
+Empty groups and lookarounds own their introducers and closers (javascript_regex)
+:language(javascript_regex)
+:cst
+==============================
+()(?:)(?=)(?!)(?<=)(?<!)
+---
+0:0  - 0:24   pattern
+0:0  - 0:24     body: disjunction
+0:0  - 0:24       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: extended_atom
+0:0  - 0:1              "("
+0:1  - 0:2              ")"
+0:2  - 0:6          term
+0:2  - 0:6            operand: extended_atom
+0:2  - 0:3              "("
+0:3  - 0:4              "?"
+0:4  - 0:5              ":"
+0:5  - 0:6              ")"
+0:6  - 0:10         term
+0:6  - 0:10           assertion
+0:6  - 0:10             quantifiable_assertion
+0:6  - 0:7                "("
+0:7  - 0:8                "?"
+0:8  - 0:9                "="
+0:9  - 0:10               ")"
+0:10 - 0:14         term
+0:10 - 0:14           assertion
+0:10 - 0:14             quantifiable_assertion
+0:10 - 0:11               "("
+0:11 - 0:12               "?"
+0:12 - 0:13               "!"
+0:13 - 0:14               ")"
+0:14 - 0:19         term
+0:14 - 0:19           assertion
+0:14 - 0:15             "("
+0:15 - 0:16             "?"
+0:16 - 0:18             "<="
+0:18 - 0:19             ")"
+0:19 - 0:24         term
+0:19 - 0:24           assertion
+0:19 - 0:20             "("
+0:20 - 0:21             "?"
+0:21 - 0:23             "<!"
+0:23 - 0:24             ")"
+
+==============================
+Empty groups and lookarounds own their introducers and closers (javascript_regex_u, javascript_regex_v)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==============================
+()(?:)(?=)(?!)(?<=)(?<!)
+---
+0:0  - 0:24   pattern
+0:0  - 0:24     body: disjunction
+0:0  - 0:24       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: atom
+0:0  - 0:1              "("
+0:1  - 0:2              ")"
+0:2  - 0:6          term
+0:2  - 0:6            operand: atom
+0:2  - 0:3              "("
+0:3  - 0:4              "?"
+0:4  - 0:5              ":"
+0:5  - 0:6              ")"
+0:6  - 0:10         term
+0:6  - 0:10           assertion
+0:6  - 0:7              "("
+0:7  - 0:8              "?"
+0:8  - 0:9              "="
+0:9  - 0:10             ")"
+0:10 - 0:14         term
+0:10 - 0:14           assertion
+0:10 - 0:11             "("
+0:11 - 0:12             "?"
+0:12 - 0:13             "!"
+0:13 - 0:14             ")"
+0:14 - 0:19         term
+0:14 - 0:19           assertion
+0:14 - 0:15             "("
+0:15 - 0:16             "?"
+0:16 - 0:18             "<="
+0:18 - 0:19             ")"
+0:19 - 0:24         term
+0:19 - 0:24           assertion
+0:19 - 0:20             "("
+0:20 - 0:21             "?"
+0:21 - 0:23             "<!"
+0:23 - 0:24             ")"
+
+==============================
+Groups and lookarounds retain body fields and literal boundaries (javascript_regex)
+:language(javascript_regex)
+:cst
+==============================
+(a|b)(?:c)(?=d)(?!e)(?<=f)(?<!g)
+---
+0:0  - 0:32   pattern
+0:0  - 0:32     body: disjunction
+0:0  - 0:32       alternative
+0:0  - 0:5          term
+0:0  - 0:5            operand: extended_atom
+0:0  - 0:1              "("
+0:1  - 0:4              body: disjunction
+0:1  - 0:2                alternative
+0:1  - 0:2                  term
+0:1  - 0:2                    operand: extended_atom
+0:1  - 0:2                      extended_pattern_character
+0:1  - 0:2                        source_character `a`
+0:2  - 0:3                "|"
+0:3  - 0:4                alternative
+0:3  - 0:4                  term
+0:3  - 0:4                    operand: extended_atom
+0:3  - 0:4                      extended_pattern_character
+0:3  - 0:4                        source_character `b`
+0:4  - 0:5              ")"
+0:5  - 0:10         term
+0:5  - 0:10           operand: extended_atom
+0:5  - 0:6              "("
+0:6  - 0:7              "?"
+0:7  - 0:8              ":"
+0:8  - 0:9              body: disjunction
+0:8  - 0:9                alternative
+0:8  - 0:9                  term
+0:8  - 0:9                    operand: extended_atom
+0:8  - 0:9                      extended_pattern_character
+0:8  - 0:9                        source_character `c`
+0:9  - 0:10             ")"
+0:10 - 0:15         term
+0:10 - 0:15           assertion
+0:10 - 0:15             quantifiable_assertion
+0:10 - 0:11               "("
+0:11 - 0:12               "?"
+0:12 - 0:13               "="
+0:13 - 0:14               body: disjunction
+0:13 - 0:14                 alternative
+0:13 - 0:14                   term
+0:13 - 0:14                     operand: extended_atom
+0:13 - 0:14                       extended_pattern_character
+0:13 - 0:14                         source_character `d`
+0:14 - 0:15               ")"
+0:15 - 0:20         term
+0:15 - 0:20           assertion
+0:15 - 0:20             quantifiable_assertion
+0:15 - 0:16               "("
+0:16 - 0:17               "?"
+0:17 - 0:18               "!"
+0:18 - 0:19               body: disjunction
+0:18 - 0:19                 alternative
+0:18 - 0:19                   term
+0:18 - 0:19                     operand: extended_atom
+0:18 - 0:19                       extended_pattern_character
+0:18 - 0:19                         source_character `e`
+0:19 - 0:20               ")"
+0:20 - 0:26         term
+0:20 - 0:26           assertion
+0:20 - 0:21             "("
+0:21 - 0:22             "?"
+0:22 - 0:24             "<="
+0:24 - 0:25             body: disjunction
+0:24 - 0:25               alternative
+0:24 - 0:25                 term
+0:24 - 0:25                   operand: extended_atom
+0:24 - 0:25                     extended_pattern_character
+0:24 - 0:25                       source_character `f`
+0:25 - 0:26             ")"
+0:26 - 0:32         term
+0:26 - 0:32           assertion
+0:26 - 0:27             "("
+0:27 - 0:28             "?"
+0:28 - 0:30             "<!"
+0:30 - 0:31             body: disjunction
+0:30 - 0:31               alternative
+0:30 - 0:31                 term
+0:30 - 0:31                   operand: extended_atom
+0:30 - 0:31                     extended_pattern_character
+0:30 - 0:31                       source_character `g`
+0:31 - 0:32             ")"
+
+==============================
+Groups and lookarounds retain body fields and literal boundaries (javascript_regex_u, javascript_regex_v)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==============================
+(a|b)(?:c)(?=d)(?!e)(?<=f)(?<!g)
+---
+0:0  - 0:32   pattern
+0:0  - 0:32     body: disjunction
+0:0  - 0:32       alternative
+0:0  - 0:5          term
+0:0  - 0:5            operand: atom
+0:0  - 0:1              "("
+0:1  - 0:4              body: disjunction
+0:1  - 0:2                alternative
+0:1  - 0:2                  term
+0:1  - 0:2                    operand: atom
+0:1  - 0:2                      pattern_character
+0:1  - 0:2                        source_character `a`
+0:2  - 0:3                "|"
+0:3  - 0:4                alternative
+0:3  - 0:4                  term
+0:3  - 0:4                    operand: atom
+0:3  - 0:4                      pattern_character
+0:3  - 0:4                        source_character `b`
+0:4  - 0:5              ")"
+0:5  - 0:10         term
+0:5  - 0:10           operand: atom
+0:5  - 0:6              "("
+0:6  - 0:7              "?"
+0:7  - 0:8              ":"
+0:8  - 0:9              body: disjunction
+0:8  - 0:9                alternative
+0:8  - 0:9                  term
+0:8  - 0:9                    operand: atom
+0:8  - 0:9                      pattern_character
+0:8  - 0:9                        source_character `c`
+0:9  - 0:10             ")"
+0:10 - 0:15         term
+0:10 - 0:15           assertion
+0:10 - 0:11             "("
+0:11 - 0:12             "?"
+0:12 - 0:13             "="
+0:13 - 0:14             body: disjunction
+0:13 - 0:14               alternative
+0:13 - 0:14                 term
+0:13 - 0:14                   operand: atom
+0:13 - 0:14                     pattern_character
+0:13 - 0:14                       source_character `d`
+0:14 - 0:15             ")"
+0:15 - 0:20         term
+0:15 - 0:20           assertion
+0:15 - 0:16             "("
+0:16 - 0:17             "?"
+0:17 - 0:18             "!"
+0:18 - 0:19             body: disjunction
+0:18 - 0:19               alternative
+0:18 - 0:19                 term
+0:18 - 0:19                   operand: atom
+0:18 - 0:19                     pattern_character
+0:18 - 0:19                       source_character `e`
+0:19 - 0:20             ")"
+0:20 - 0:26         term
+0:20 - 0:26           assertion
+0:20 - 0:21             "("
+0:21 - 0:22             "?"
+0:22 - 0:24             "<="
+0:24 - 0:25             body: disjunction
+0:24 - 0:25               alternative
+0:24 - 0:25                 term
+0:24 - 0:25                   operand: atom
+0:24 - 0:25                     pattern_character
+0:24 - 0:25                       source_character `f`
+0:25 - 0:26             ")"
+0:26 - 0:32         term
+0:26 - 0:32           assertion
+0:26 - 0:27             "("
+0:27 - 0:28             "?"
+0:28 - 0:30             "<!"
+0:30 - 0:31             body: disjunction
+0:30 - 0:31               alternative
+0:30 - 0:31                 term
+0:30 - 0:31                   operand: atom
+0:30 - 0:31                     pattern_character
+0:30 - 0:31                       source_character `g`
+0:31 - 0:32             ")"
+
+==============================
+Quantifiers own count bounds punctuation and lazy modifiers (javascript_regex)
+:language(javascript_regex)
+:cst
+==============================
+a{2}b{3,}c{4,5}?d*e+?f??
+---
+0:0  - 0:24   pattern
+0:0  - 0:24     body: disjunction
+0:0  - 0:24       alternative
+0:0  - 0:4          term
+0:0  - 0:1            operand: extended_atom
+0:0  - 0:1              extended_pattern_character
+0:0  - 0:1                source_character `a`
+0:1  - 0:4            quantifier: quantifier
+0:1  - 0:4              quantifier_prefix
+0:1  - 0:2                "{"
+0:2  - 0:3                count: decimal_digits
+0:2  - 0:3                  decimal_digit `2`
+0:3  - 0:4                "}"
+0:4  - 0:9          term
+0:4  - 0:5            operand: extended_atom
+0:4  - 0:5              extended_pattern_character
+0:4  - 0:5                source_character `b`
+0:5  - 0:9            quantifier: quantifier
+0:5  - 0:9              quantifier_prefix
+0:5  - 0:6                "{"
+0:6  - 0:7                minimum: decimal_digits
+0:6  - 0:7                  decimal_digit `3`
+0:7  - 0:8                ","
+0:8  - 0:9                "}"
+0:9  - 0:16         term
+0:9  - 0:10           operand: extended_atom
+0:9  - 0:10             extended_pattern_character
+0:9  - 0:10               source_character `c`
+0:10 - 0:16           quantifier: quantifier
+0:10 - 0:15             quantifier_prefix
+0:10 - 0:11               "{"
+0:11 - 0:12               minimum: decimal_digits
+0:11 - 0:12                 decimal_digit `4`
+0:12 - 0:13               ","
+0:13 - 0:14               maximum: decimal_digits
+0:13 - 0:14                 decimal_digit `5`
+0:14 - 0:15               "}"
+0:15 - 0:16             "?"
+0:16 - 0:18         term
+0:16 - 0:17           operand: extended_atom
+0:16 - 0:17             extended_pattern_character
+0:16 - 0:17               source_character `d`
+0:17 - 0:18           quantifier: quantifier
+0:17 - 0:18             quantifier_prefix
+0:17 - 0:18               "*"
+0:18 - 0:21         term
+0:18 - 0:19           operand: extended_atom
+0:18 - 0:19             extended_pattern_character
+0:18 - 0:19               source_character `e`
+0:19 - 0:21           quantifier: quantifier
+0:19 - 0:20             quantifier_prefix
+0:19 - 0:20               "+"
+0:20 - 0:21             "?"
+0:21 - 0:24         term
+0:21 - 0:22           operand: extended_atom
+0:21 - 0:22             extended_pattern_character
+0:21 - 0:22               source_character `f`
+0:22 - 0:24           quantifier: quantifier
+0:22 - 0:23             quantifier_prefix
+0:22 - 0:23               "?"
+0:23 - 0:24             "?"
+
+==============================
+Quantifiers own count bounds punctuation and lazy modifiers (javascript_regex_u, javascript_regex_v)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==============================
+a{2}b{3,}c{4,5}?d*e+?f??
+---
+0:0  - 0:24   pattern
+0:0  - 0:24     body: disjunction
+0:0  - 0:24       alternative
+0:0  - 0:4          term
+0:0  - 0:1            operand: atom
+0:0  - 0:1              pattern_character
+0:0  - 0:1                source_character `a`
+0:1  - 0:4            quantifier: quantifier
+0:1  - 0:4              quantifier_prefix
+0:1  - 0:2                "{"
+0:2  - 0:3                count: decimal_digits
+0:2  - 0:3                  decimal_digit `2`
+0:3  - 0:4                "}"
+0:4  - 0:9          term
+0:4  - 0:5            operand: atom
+0:4  - 0:5              pattern_character
+0:4  - 0:5                source_character `b`
+0:5  - 0:9            quantifier: quantifier
+0:5  - 0:9              quantifier_prefix
+0:5  - 0:6                "{"
+0:6  - 0:7                minimum: decimal_digits
+0:6  - 0:7                  decimal_digit `3`
+0:7  - 0:8                ","
+0:8  - 0:9                "}"
+0:9  - 0:16         term
+0:9  - 0:10           operand: atom
+0:9  - 0:10             pattern_character
+0:9  - 0:10               source_character `c`
+0:10 - 0:16           quantifier: quantifier
+0:10 - 0:15             quantifier_prefix
+0:10 - 0:11               "{"
+0:11 - 0:12               minimum: decimal_digits
+0:11 - 0:12                 decimal_digit `4`
+0:12 - 0:13               ","
+0:13 - 0:14               maximum: decimal_digits
+0:13 - 0:14                 decimal_digit `5`
+0:14 - 0:15               "}"
+0:15 - 0:16             "?"
+0:16 - 0:18         term
+0:16 - 0:17           operand: atom
+0:16 - 0:17             pattern_character
+0:16 - 0:17               source_character `d`
+0:17 - 0:18           quantifier: quantifier
+0:17 - 0:18             quantifier_prefix
+0:17 - 0:18               "*"
+0:18 - 0:21         term
+0:18 - 0:19           operand: atom
+0:18 - 0:19             pattern_character
+0:18 - 0:19               source_character `e`
+0:19 - 0:21           quantifier: quantifier
+0:19 - 0:20             quantifier_prefix
+0:19 - 0:20               "+"
+0:20 - 0:21             "?"
+0:21 - 0:24         term
+0:21 - 0:22           operand: atom
+0:21 - 0:22             pattern_character
+0:21 - 0:22               source_character `f`
+0:22 - 0:24           quantifier: quantifier
+0:22 - 0:23             quantifier_prefix
+0:22 - 0:23               "?"
+0:23 - 0:24             "?"
+
+==============================
+Class ranges own literal and escaped endpoints (javascript_regex)
+:language(javascript_regex)
+:cst
+==============================
+[a-z\x41-\u005A]
+---
+0:0  - 0:16   pattern
+0:0  - 0:16     body: disjunction
+0:0  - 0:16       alternative
+0:0  - 0:16         term
+0:0  - 0:16           operand: extended_atom
+0:0  - 0:16             character_class
+0:0  - 0:1                "["
+0:1  - 0:15               nonempty_class_ranges
+0:1  - 0:2                  start: class_atom
+0:1  - 0:2                    class_atom_no_dash
+0:1  - 0:2                      source_character `a`
+0:2  - 0:3                  "-"
+0:3  - 0:4                  end: class_atom
+0:3  - 0:4                    class_atom_no_dash
+0:3  - 0:4                      source_character `z`
+0:4  - 0:8                  start: class_atom
+0:4  - 0:8                    class_atom_no_dash
+0:4  - 0:5                      "\\"
+0:5  - 0:8                      class_escape
+0:5  - 0:8                        character_escape
+0:5  - 0:8                          hex_escape_sequence
+0:5  - 0:6                            "x"
+0:6  - 0:7                            hex_digit `4`
+0:7  - 0:8                            hex_digit `1`
+0:8  - 0:9                  "-"
+0:9  - 0:15                 end: class_atom
+0:9  - 0:15                   class_atom_no_dash
+0:9  - 0:10                     "\\"
+0:10 - 0:15                     class_escape
+0:10 - 0:15                       character_escape
+0:10 - 0:15                         reg_exp_unicode_escape_sequence
+0:10 - 0:11                           "u"
+0:11 - 0:15                           hex4_digits
+0:11 - 0:12                             hex_digit `0`
+0:12 - 0:13                             hex_digit `0`
+0:13 - 0:14                             hex_digit `5`
+0:14 - 0:15                             hex_digit `A`
+0:15 - 0:16               "]"
+
+==============================
+Class ranges own literal and escaped endpoints (javascript_regex_u)
+:language(javascript_regex_u)
+:cst
+==============================
+[a-z\x41-\u005A]
+---
+0:0  - 0:16   pattern
+0:0  - 0:16     body: disjunction
+0:0  - 0:16       alternative
+0:0  - 0:16         term
+0:0  - 0:16           operand: atom
+0:0  - 0:16             character_class
+0:0  - 0:1                "["
+0:1  - 0:15               nonempty_class_ranges
+0:1  - 0:2                  start: class_atom
+0:1  - 0:2                    class_atom_no_dash
+0:1  - 0:2                      source_character `a`
+0:2  - 0:3                  "-"
+0:3  - 0:4                  end: class_atom
+0:3  - 0:4                    class_atom_no_dash
+0:3  - 0:4                      source_character `z`
+0:4  - 0:8                  start: class_atom
+0:4  - 0:8                    class_atom_no_dash
+0:4  - 0:5                      "\\"
+0:5  - 0:8                      class_escape
+0:5  - 0:8                        character_escape
+0:5  - 0:8                          hex_escape_sequence
+0:5  - 0:6                            "x"
+0:6  - 0:7                            hex_digit `4`
+0:7  - 0:8                            hex_digit `1`
+0:8  - 0:9                  "-"
+0:9  - 0:15                 end: class_atom
+0:9  - 0:15                   class_atom_no_dash
+0:9  - 0:10                     "\\"
+0:10 - 0:15                     class_escape
+0:10 - 0:15                       character_escape
+0:10 - 0:15                         reg_exp_unicode_escape_sequence
+0:10 - 0:11                           "u"
+0:11 - 0:15                           hex_non_surrogate
+0:11 - 0:15                             hex4_digits
+0:11 - 0:12                               hex_digit `0`
+0:12 - 0:13                               hex_digit `0`
+0:13 - 0:14                               hex_digit `5`
+0:14 - 0:15                               hex_digit `A`
+0:15 - 0:16               "]"
+
+==============================
+Class ranges own literal and escaped endpoints (javascript_regex_v)
+:language(javascript_regex_v)
+:cst
+==============================
+[a-z\x41-\u005A]
+---
+0:0  - 0:16   pattern
+0:0  - 0:16     body: disjunction
+0:0  - 0:16       alternative
+0:0  - 0:16         term
+0:0  - 0:16           operand: atom
+0:0  - 0:16             character_class
+0:0  - 0:1                "["
+0:1  - 0:15               class_set_expression
+0:1  - 0:15                 class_union
+0:1  - 0:4                    class_set_range
+0:1  - 0:2                      start: class_set_character
+0:1  - 0:2                        source_character `a`
+0:2  - 0:3                      "-"
+0:3  - 0:4                      end: class_set_character
+0:3  - 0:4                        source_character `z`
+0:4  - 0:15                   class_set_range
+0:4  - 0:8                      start: class_set_character
+0:4  - 0:5                        "\\"
+0:5  - 0:8                        character_escape
+0:5  - 0:8                          hex_escape_sequence
+0:5  - 0:6                            "x"
+0:6  - 0:7                            hex_digit `4`
+0:7  - 0:8                            hex_digit `1`
+0:8  - 0:9                      "-"
+0:9  - 0:15                     end: class_set_character
+0:9  - 0:10                       "\\"
+0:10 - 0:15                       character_escape
+0:10 - 0:15                         reg_exp_unicode_escape_sequence
+0:10 - 0:11                           "u"
+0:11 - 0:15                           hex_non_surrogate
+0:11 - 0:15                             hex4_digits
+0:11 - 0:12                               hex_digit `0`
+0:12 - 0:13                               hex_digit `0`
+0:13 - 0:14                               hex_digit `5`
+0:14 - 0:15                               hex_digit `A`
+0:15 - 0:16               "]"
+
+==============================
+Hexadecimal and Unicode escapes own fixed introducers and digit fields (javascript_regex)
+:language(javascript_regex)
+:cst
+==============================
+\x41\u0042
+---
+0:0  - 0:10   pattern
+0:0  - 0:10     body: disjunction
+0:0  - 0:10       alternative
+0:0  - 0:4          term
+0:0  - 0:4            operand: extended_atom
+0:0  - 0:1              "\\"
+0:1  - 0:4              atom_escape
+0:1  - 0:4                character_escape
+0:1  - 0:4                  hex_escape_sequence
+0:1  - 0:2                    "x"
+0:2  - 0:3                    hex_digit `4`
+0:3  - 0:4                    hex_digit `1`
+0:4  - 0:10         term
+0:4  - 0:10           operand: extended_atom
+0:4  - 0:5              "\\"
+0:5  - 0:10             atom_escape
+0:5  - 0:10               character_escape
+0:5  - 0:10                 reg_exp_unicode_escape_sequence
+0:5  - 0:6                    "u"
+0:6  - 0:10                   hex4_digits
+0:6  - 0:7                      hex_digit `0`
+0:7  - 0:8                      hex_digit `0`
+0:8  - 0:9                      hex_digit `4`
+0:9  - 0:10                     hex_digit `2`
+
+==============================
+Hexadecimal and Unicode escapes own fixed introducers and digit fields (javascript_regex_u, javascript_regex_v)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==============================
+\x41\u0042
+---
+0:0  - 0:10   pattern
+0:0  - 0:10     body: disjunction
+0:0  - 0:10       alternative
+0:0  - 0:4          term
+0:0  - 0:4            operand: atom
+0:0  - 0:1              "\\"
+0:1  - 0:4              atom_escape
+0:1  - 0:4                character_escape
+0:1  - 0:4                  hex_escape_sequence
+0:1  - 0:2                    "x"
+0:2  - 0:3                    hex_digit `4`
+0:3  - 0:4                    hex_digit `1`
+0:4  - 0:10         term
+0:4  - 0:10           operand: atom
+0:4  - 0:5              "\\"
+0:5  - 0:10             atom_escape
+0:5  - 0:10               character_escape
+0:5  - 0:10                 reg_exp_unicode_escape_sequence
+0:5  - 0:6                    "u"
+0:6  - 0:10                   hex_non_surrogate
+0:6  - 0:10                     hex4_digits
+0:6  - 0:7                        hex_digit `0`
+0:7  - 0:8                        hex_digit `0`
+0:8  - 0:9                        hex_digit `4`
+0:9  - 0:10                       hex_digit `2`
+
+==============================
+Unicode group alternatives and repetition retain complete byte ranges (javascript_regex)
+:language(javascript_regex)
+:cst
+==============================
+(?:é|😀){2,3}?
+---
+0:0  - 0:17   pattern
+0:0  - 0:17     body: disjunction
+0:0  - 0:17       alternative
+0:0  - 0:17         term
+0:0  - 0:11           operand: extended_atom
+0:0  - 0:1              "("
+0:1  - 0:2              "?"
+0:2  - 0:3              ":"
+0:3  - 0:10             body: disjunction
+0:3  - 0:5                alternative
+0:3  - 0:5                  term
+0:3  - 0:5                    operand: extended_atom
+0:3  - 0:5                      extended_pattern_character
+0:3  - 0:5                        source_character `é`
+0:5  - 0:6                "|"
+0:6  - 0:10               alternative
+0:6  - 0:10                 term
+0:6  - 0:10                   operand: extended_atom
+0:6  - 0:10                     extended_pattern_character
+0:6  - 0:10                       source_character `😀`
+0:10 - 0:11             ")"
+0:11 - 0:17           quantifier: quantifier
+0:11 - 0:16             quantifier_prefix
+0:11 - 0:12               "{"
+0:12 - 0:13               minimum: decimal_digits
+0:12 - 0:13                 decimal_digit `2`
+0:13 - 0:14               ","
+0:14 - 0:15               maximum: decimal_digits
+0:14 - 0:15                 decimal_digit `3`
+0:15 - 0:16               "}"
+0:16 - 0:17             "?"
+
+==============================
+Unicode group alternatives and repetition retain complete byte ranges (javascript_regex_u, javascript_regex_v)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==============================
+(?:é|😀){2,3}?
+---
+0:0  - 0:17   pattern
+0:0  - 0:17     body: disjunction
+0:0  - 0:17       alternative
+0:0  - 0:17         term
+0:0  - 0:11           operand: atom
+0:0  - 0:1              "("
+0:1  - 0:2              "?"
+0:2  - 0:3              ":"
+0:3  - 0:10             body: disjunction
+0:3  - 0:5                alternative
+0:3  - 0:5                  term
+0:3  - 0:5                    operand: atom
+0:3  - 0:5                      pattern_character
+0:3  - 0:5                        source_character `é`
+0:5  - 0:6                "|"
+0:6  - 0:10               alternative
+0:6  - 0:10                 term
+0:6  - 0:10                   operand: atom
+0:6  - 0:10                     pattern_character
+0:6  - 0:10                       source_character `😀`
+0:10 - 0:11             ")"
+0:11 - 0:17           quantifier: quantifier
+0:11 - 0:16             quantifier_prefix
+0:11 - 0:12               "{"
+0:12 - 0:13               minimum: decimal_digits
+0:12 - 0:13                 decimal_digit `2`
+0:13 - 0:14               ","
+0:14 - 0:15               maximum: decimal_digits
+0:14 - 0:15                 decimal_digit `3`
+0:15 - 0:16               "}"
+0:16 - 0:17             "?"

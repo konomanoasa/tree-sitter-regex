@@ -1,0 +1,164 @@
+==================
+lookaround direction polarity and atomic groups have distinct public nodes
+:language(python_re)
+:language(python_re_verbose)
+==================
+(?=a)(?!b)(?<=c)(?<!d)(?>e)\
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (positive_lookahead_assertion
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (negative_lookahead_assertion
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (positive_lookbehind_assertion
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (negative_lookbehind_assertion
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (atomic_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (literal_escape))))
+
+==================
+empty bodies preserve every assertion and atomic category
+:language(python_re)
+:language(python_re_verbose)
+==================
+(?=)(?!)(?<=)(?<!)(?>)\
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (positive_lookahead_assertion)
+      (negative_lookahead_assertion)
+      (positive_lookbehind_assertion)
+      (negative_lookbehind_assertion)
+      (atomic_group)
+      (literal_escape))))
+
+==================
+assertions and atomic groups can be repetition operands
+:language(python_re)
+:language(python_re_verbose)
+==================
+(?=a)*(?!b)+(?<=c)?(?<!d){2}(?>e)*\
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (repetition
+        operand: (positive_lookahead_assertion
+          body: (alternation
+            (concatenation
+              (literal_character))))
+        quantifier: (quantifier))
+      (repetition
+        operand: (negative_lookahead_assertion
+          body: (alternation
+            (concatenation
+              (literal_character))))
+        quantifier: (quantifier))
+      (repetition
+        operand: (positive_lookbehind_assertion
+          body: (alternation
+            (concatenation
+              (literal_character))))
+        quantifier: (quantifier))
+      (repetition
+        operand: (negative_lookbehind_assertion
+          body: (alternation
+            (concatenation
+              (literal_character))))
+        quantifier: (quantifier
+          count: (decimal_digits)))
+      (repetition
+        operand: (atomic_group
+          body: (alternation
+            (concatenation
+              (literal_character))))
+        quantifier: (quantifier))
+      (literal_escape))))
+
+==================
+lookbehind length and atomic matching semantics remain outside the CST
+:language(python_re)
+:language(python_re_verbose)
+==================
+(?<=a*)(?<!a|bc)(?>a|b)\
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (positive_lookbehind_assertion
+        body: (alternation
+          (concatenation
+            (repetition
+              operand: (literal_character)
+              quantifier: (quantifier)))))
+      (negative_lookbehind_assertion
+        body: (alternation
+          (concatenation
+            (literal_character))
+          (concatenation
+            (literal_character)
+            (literal_character))))
+      (atomic_group
+        body: (alternation
+          (concatenation
+            (literal_character))
+          (concatenation
+            (literal_character))))
+      (literal_escape))))
+
+==================
+scoped verbose mode flows through assertion and atomic bodies
+:language(python_re)
+:language(python_re_verbose)
+==================
+(?x:(?= a # gap
+ b)(?> c ))\
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (scoped_flags_group
+        enable: (flag_set)
+        body: (alternation
+          (concatenation
+            (positive_lookahead_assertion
+              body: (alternation
+                (concatenation
+                  (verbose_whitespace)
+                  (literal_character)
+                  (verbose_whitespace)
+                  (verbose_comment)
+                  (verbose_whitespace)
+                  (literal_character))))
+            (atomic_group
+              body: (alternation
+                (concatenation
+                  (verbose_whitespace)
+                  (literal_character)
+                  (verbose_whitespace)))))))
+      (literal_escape))))

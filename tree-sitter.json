@@ -1,0 +1,69 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
+  "grammars": [
+    {
+      "name": "javascript_regex",
+      "title": "JavaScript regex literal body",
+      "scope": "source.javascript-regex",
+      "path": "javascript_regex",
+      "highlights": "javascript_regex/queries/highlights.scm",
+      "injection-regex": "^javascript_regex$",
+      "external-files": ["common/scanner.h", "common/javascript/scanner.h"]
+    },
+    {
+      "name": "javascript_regex_u",
+      "title": "JavaScript regex literal body (u)",
+      "scope": "source.javascript-regex.u",
+      "path": "javascript_regex_u",
+      "highlights": "javascript_regex_u/queries/highlights.scm",
+      "external-files": ["common/scanner.h", "common/javascript/scanner.h"]
+    },
+    {
+      "name": "javascript_regex_v",
+      "title": "JavaScript regex literal body (v)",
+      "scope": "source.javascript-regex.v",
+      "path": "javascript_regex_v",
+      "highlights": "javascript_regex_v/queries/highlights.scm",
+      "external-files": ["common/scanner.h", "common/javascript/scanner.h"]
+    },
+    {
+      "name": "python_re",
+      "title": "Python re",
+      "scope": "source.python-re",
+      "path": "python_re",
+      "highlights": "python_re/queries/highlights.scm",
+      "injection-regex": "^python_re$",
+      "external-files": ["common/scanner.h", "common/python/scanner.h"]
+    },
+    {
+      "name": "python_re_verbose",
+      "title": "Python re (VERBOSE)",
+      "scope": "source.python-re.verbose",
+      "path": "python_re_verbose",
+      "highlights": "python_re_verbose/queries/highlights.scm",
+      "injection-regex": "^python_re_verbose$",
+      "external-files": ["common/scanner.h", "common/python/scanner.h"]
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "Tree-sitter grammars for ECMAScript 2026 regular expression literal bodies and Python 3.14 re patterns.",
+    "authors": [
+      {
+        "name": "konomanoasa"
+      }
+    ],
+    "links": {
+      "repository": "https://github.com/konomanoasa/tree-sitter-regex"
+    }
+  },
+  "bindings": {
+    "c": false,
+    "go": false,
+    "node": false,
+    "python": false,
+    "rust": false,
+    "swift": false
+  }
+}
