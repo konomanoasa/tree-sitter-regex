@@ -21,6 +21,8 @@
 #define PYTHON_RE_LANGUAGE python_re_test
 #endif
 #include "../common/python/scanner.h"
+#define SCANNER(name) tree_sitter_python_re_test_external_scanner_##name
+#define LAST_TOKEN LITERAL_CHARACTER_VERBOSE
 #endif
 
 typedef struct {
@@ -63,6 +65,52 @@ static MockLexer make_lexer(const char *source, size_t length) {
   };
 }
 
+static unsigned serialize_state(void *scanner, char *buffer) {
+  char guarded[TREE_SITTER_SERIALIZATION_BUFFER_SIZE + 2];
+  memset(guarded, 0x5a, sizeof(guarded));
+  unsigned length = SCANNER(serialize)(scanner, guarded + 1);
+  assert(length <= TREE_SITTER_SERIALIZATION_BUFFER_SIZE);
+  assert(guarded[0] == 0x5a);
+  for (size_t index = length + 1; index < sizeof(guarded); index++) {
+    assert(guarded[index] == 0x5a);
+  }
+  memcpy(buffer, guarded + 1, length);
+  return length;
+}
+
+static void test_disabled_tokens_preserve_state(void) {
+  void *scanner = SCANNER(create)();
+#if defined(JAVASCRIPT_REGEX_MODE) && JAVASCRIPT_REGEX_MODE == 0
+  *(Scanner *)scanner =
+    (Scanner){.capture_count = 2, .has_named_capture = true};
+#endif
+  char before[TREE_SITTER_SERIALIZATION_BUFFER_SIZE];
+  unsigned before_length = serialize_state(scanner, before);
+  const struct {
+    const char *source;
+    size_t length;
+  } inputs[] = {
+    {"(?<x>a)", 7},
+    {"3", 1},
+    {"u0041", 5},
+    {"#comment", 8},
+    {"[", 1},
+    {" ", 1},
+    {"", 0},
+    {"\0", 1},
+  };
+  const bool valid_symbols[LAST_TOKEN + 1] = {false};
+  for (size_t index = 0; index < sizeof(inputs) / sizeof(inputs[0]); index++) {
+    MockLexer mock = make_lexer(inputs[index].source, inputs[index].length);
+    assert(!SCANNER(scan)(scanner, &mock.lexer, valid_symbols));
+    char after[TREE_SITTER_SERIALIZATION_BUFFER_SIZE];
+    unsigned after_length = serialize_state(scanner, after);
+    assert(after_length == before_length);
+    assert(memcmp(before, after, before_length) == 0);
+  }
+  SCANNER(destroy)(scanner);
+}
+
 #if defined(JAVASCRIPT_REGEX_MODE)
 static void check_token(
   void *scanner,
@@ -83,7 +131,7 @@ static void check_token(
 }
 
 #if JAVASCRIPT_REGEX_MODE == 0
-static void check_serialization_and_reset(void) {
+static void test_serialization_and_reset(void) {
   Scanner *scanner = SCANNER(create)();
   assert(scanner != NULL);
   const uint32_t counts[] = {0, 1, 255, 256, 65535, 65536, UINT32_MAX};
@@ -93,13 +141,11 @@ static void check_serialization_and_reset(void) {
         .capture_count = counts[index],
         .has_named_capture = flags != 0
       };
-      char buffer[TREE_SITTER_SERIALIZATION_BUFFER_SIZE + 2];
-      memset(buffer, 0x5a, sizeof(buffer));
-      unsigned length = SCANNER(serialize)(scanner, buffer + 1);
+      char buffer[TREE_SITTER_SERIALIZATION_BUFFER_SIZE];
+      unsigned length = serialize_state(scanner, buffer);
       assert(length == 5);
-      assert(buffer[0] == 0x5a && buffer[length + 1] == 0x5a);
       Scanner restored = {0};
-      SCANNER(deserialize)(&restored, buffer + 1, length);
+      SCANNER(deserialize)(&restored, buffer, length);
       assert(restored.capture_count == counts[index]);
       assert(restored.has_named_capture == scanner->has_named_capture);
     }
@@ -109,7 +155,7 @@ static void check_serialization_and_reset(void) {
   SCANNER(destroy)(scanner);
 }
 
-static void check_capture_context_and_failed_scan(void) {
+static void test_capture_context_and_failed_scan(void) {
   Scanner scanner = {0};
   const char source[] = "\\1[(a)](?<x>b)(?:c)(?<=d)(e)";
   check_token(&scanner, source, sizeof(source) - 1, PATTERN_START, true, 0);
@@ -123,7 +169,7 @@ static void check_capture_context_and_failed_scan(void) {
   assert(scanner.capture_count == 0 && !scanner.has_named_capture);
 }
 
-static void check_capture_context_stops_at_the_lexer_boundary(void) {
+static void test_capture_context_stops_at_the_lexer_boundary(void) {
   Scanner scanner = {0};
   const struct {
     const char *source;
@@ -132,6 +178,8 @@ static void check_capture_context_stops_at_the_lexer_boundary(void) {
     bool named;
   } cases[] = {
     {"\\1/; /(?<outside>a)/", 2, 0, false},
+    {"\0(?<x>a)", 8, 1, true},
+    {"\0(?<x>a)", 0, 0, false},
     {"(?<x>a)/; /(b)/", 7, 1, true},
     {"\\1()/; /(?<outside>a)/", 4, 1, false},
     {"\\1/; /(?<outside>a)/", 2, 0, false},
@@ -150,12 +198,11 @@ static void check_capture_context_stops_at_the_lexer_boundary(void) {
   }
 }
 #else
-static void check_stateless_lifecycle_and_unicode_tokens(void) {
+static void test_stateless_lifecycle_and_unicode_tokens(void) {
   void *scanner = SCANNER(create)();
   char buffer[TREE_SITTER_SERIALIZATION_BUFFER_SIZE];
   memset(buffer, 0x5a, sizeof(buffer));
-  assert(SCANNER(serialize)(scanner, buffer) == 0);
-  assert(buffer[0] == 0x5a);
+  assert(serialize_state(scanner, buffer) == 0);
   SCANNER(deserialize)(scanner, NULL, 0);
   check_token(scanner, "0", 1, NULL_ZERO, true, 1);
   check_token(scanner, "01", 2, NULL_ZERO, false, 0);
@@ -202,14 +249,12 @@ static void assert_token(const char *source, TSSymbol token, size_t length) {
   assert(mock.mark == length);
 }
 
-static void check_stateless_lifecycle_and_serialization(void) {
+static void test_stateless_lifecycle_and_serialization(void) {
   void *scanner = tree_sitter_python_re_test_external_scanner_create();
   assert(scanner == NULL);
   char buffer[TREE_SITTER_SERIALIZATION_BUFFER_SIZE];
   memset(buffer, 0x5a, sizeof(buffer));
-  assert(
-    tree_sitter_python_re_test_external_scanner_serialize(scanner, buffer) == 0
-  );
+  assert(serialize_state(scanner, buffer) == 0);
   for (unsigned index = 0; index < sizeof(buffer); index += 1) {
     assert(buffer[index] == 0x5a);
   }
@@ -222,7 +267,7 @@ static void check_stateless_lifecycle_and_serialization(void) {
   tree_sitter_python_re_test_external_scanner_destroy(scanner);
 }
 
-static void check_token_ranges_follow_the_grammar_context(void) {
+static void test_token_ranges_follow_the_grammar_context(void) {
   static const struct {
     const char *source;
     TSSymbol token;
@@ -276,7 +321,7 @@ static void check_token_ranges_follow_the_grammar_context(void) {
   }
 }
 
-static void check_invalid_tokens_are_not_emitted(void) {
+static void test_invalid_tokens_are_not_emitted(void) {
   static const struct {
     const char *source;
     TSSymbol token;
@@ -323,21 +368,38 @@ static void check_invalid_tokens_are_not_emitted(void) {
   ));
 }
 
+static void test_nul_and_eof_are_distinct(void) {
+  const TSSymbol tokens[] =
+    {LITERAL_CHARACTER_NORMAL, LITERAL_CHARACTER_VERBOSE, CLASS_CHARACTER};
+  for (size_t index = 0; index < sizeof(tokens) / sizeof(tokens[0]); index++) {
+    bool valid_symbols[LAST_TOKEN + 1] = {false};
+    valid_symbols[tokens[index]] = true;
+    MockLexer nul = make_lexer("\0", 1);
+    assert(SCANNER(scan)(NULL, &nul.lexer, valid_symbols));
+    assert(nul.lexer.result_symbol == tokens[index]);
+    assert(nul.mark == 1);
+    MockLexer eof = make_lexer("", 0);
+    assert(!SCANNER(scan)(NULL, &eof.lexer, valid_symbols));
+  }
+}
+
 #endif
 
 int main(void) {
+  test_disabled_tokens_preserve_state();
 #if defined(JAVASCRIPT_REGEX_MODE)
 #if JAVASCRIPT_REGEX_MODE == 0
-  check_serialization_and_reset();
-  check_capture_context_and_failed_scan();
-  check_capture_context_stops_at_the_lexer_boundary();
+  test_serialization_and_reset();
+  test_capture_context_and_failed_scan();
+  test_capture_context_stops_at_the_lexer_boundary();
 #else
-  check_stateless_lifecycle_and_unicode_tokens();
+  test_stateless_lifecycle_and_unicode_tokens();
 #endif
 #else
-  check_stateless_lifecycle_and_serialization();
-  check_token_ranges_follow_the_grammar_context();
-  check_invalid_tokens_are_not_emitted();
+  test_stateless_lifecycle_and_serialization();
+  test_token_ranges_follow_the_grammar_context();
+  test_invalid_tokens_are_not_emitted();
+  test_nul_and_eof_are_distinct();
 #endif
   return 0;
 }

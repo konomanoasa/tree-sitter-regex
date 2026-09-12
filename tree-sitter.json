@@ -6,8 +6,8 @@
       "title": "JavaScript regex literal body",
       "scope": "source.javascript-regex",
       "path": "javascript_regex",
-      "highlights": "javascript_regex/queries/highlights.scm",
       "injection-regex": "^javascript_regex$",
+      "highlights": "javascript_regex/queries/highlights.scm",
       "external-files": ["common/scanner.h", "common/javascript/scanner.h"]
     },
     {
@@ -31,8 +31,8 @@
       "title": "Python re",
       "scope": "source.python-re",
       "path": "python_re",
-      "highlights": "python_re/queries/highlights.scm",
       "injection-regex": "^python_re$",
+      "highlights": "python_re/queries/highlights.scm",
       "external-files": ["common/scanner.h", "common/python/scanner.h"]
     },
     {
@@ -40,8 +40,8 @@
       "title": "Python re (VERBOSE)",
       "scope": "source.python-re.verbose",
       "path": "python_re_verbose",
-      "highlights": "python_re_verbose/queries/highlights.scm",
       "injection-regex": "^python_re_verbose$",
+      "highlights": "python_re_verbose/queries/highlights.scm",
       "external-files": ["common/scanner.h", "common/python/scanner.h"]
     }
   ],

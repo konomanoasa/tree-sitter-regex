@@ -1,0 +1,484 @@
+==================
+normal mode retains spaces comments and newlines
+:language(python_re)
+==================
+a b#c
+d
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character))))
+
+==================
+initial verbose mode retains ignored source as layout
+:language(python_re_verbose)
+==================
+a b#c
+d
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (literal_character)
+      (verbose_whitespace)
+      (literal_character)
+      (verbose_comment)
+      (verbose_whitespace)
+      (literal_character)
+      (verbose_whitespace))))
+
+==================
+completed global flags change the remaining prefix mode
+:language(python_re)
+:language(python_re_verbose)
+==================
+(?#p)(?i)(?x) a#c
+d
+
+---
+
+(pattern
+  (comment_group)
+  (global_flags
+    flags: (flag_set))
+  (global_flags
+    flags: (flag_set))
+  (verbose_whitespace)
+  body: (alternation
+    (concatenation
+      (literal_character)
+      (verbose_comment)
+      (verbose_whitespace)
+      (literal_character)
+      (verbose_whitespace))))
+
+==================
+scoped x enable restores normal mode
+:language(python_re)
+==================
+(?x:a b#c
+d)e #f
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (scoped_flags_group
+        enable: (flag_set)
+        body: (alternation
+          (concatenation
+            (literal_character)
+            (verbose_whitespace)
+            (literal_character)
+            (verbose_comment)
+            (verbose_whitespace)
+            (literal_character))))
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character))))
+
+==================
+scoped x disable restores verbose mode
+:language(python_re_verbose)
+==================
+(?-x:a b#c)d #e
+f
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (scoped_flags_group
+        disable: (flag_set)
+        body: (alternation
+          (concatenation
+            (literal_character)
+            (literal_character)
+            (literal_character)
+            (literal_character)
+            (literal_character))))
+      (literal_character)
+      (verbose_whitespace)
+      (verbose_comment)
+      (verbose_whitespace)
+      (literal_character)
+      (verbose_whitespace))))
+
+==================
+nested modifier groups preserve enable disable and body fields
+:language(javascript_regex)
+:cst
+==================
+(?im-s:a(?s-i:b)c)
+---
+
+0:0  - 0:18   pattern
+0:0  - 0:18     body: disjunction
+0:0  - 0:18       alternative
+0:0  - 0:18         term
+0:0  - 0:18           operand: extended_atom
+0:0  - 0:1              "("
+0:1  - 0:2              "?"
+0:2  - 0:4              enable: regular_expression_modifiers
+0:2  - 0:3                regular_expression_modifier `i`
+0:3  - 0:4                regular_expression_modifier `m`
+0:4  - 0:5              "-"
+0:5  - 0:6              disable: regular_expression_modifiers
+0:5  - 0:6                regular_expression_modifier `s`
+0:6  - 0:7              ":"
+0:7  - 0:17             body: disjunction
+0:7  - 0:17               alternative
+0:7  - 0:8                  term
+0:7  - 0:8                    operand: extended_atom
+0:7  - 0:8                      extended_pattern_character
+0:7  - 0:8                        source_character `a`
+0:8  - 0:16                 term
+0:8  - 0:16                   operand: extended_atom
+0:8  - 0:9                      "("
+0:9  - 0:10                     "?"
+0:10 - 0:11                     enable: regular_expression_modifiers
+0:10 - 0:11                       regular_expression_modifier `s`
+0:11 - 0:12                     "-"
+0:12 - 0:13                     disable: regular_expression_modifiers
+0:12 - 0:13                       regular_expression_modifier `i`
+0:13 - 0:14                     ":"
+0:14 - 0:15                     body: disjunction
+0:14 - 0:15                       alternative
+0:14 - 0:15                         term
+0:14 - 0:15                           operand: extended_atom
+0:14 - 0:15                             extended_pattern_character
+0:14 - 0:15                               source_character `b`
+0:15 - 0:16                     ")"
+0:16 - 0:17                 term
+0:16 - 0:17                   operand: extended_atom
+0:16 - 0:17                     extended_pattern_character
+0:16 - 0:17                       source_character `c`
+0:17 - 0:18             ")"
+
+==================
+nested modifier groups preserve enable disable and body fields
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==================
+(?im-s:a(?s-i:b)c)
+---
+
+0:0  - 0:18   pattern
+0:0  - 0:18     body: disjunction
+0:0  - 0:18       alternative
+0:0  - 0:18         term
+0:0  - 0:18           operand: atom
+0:0  - 0:1              "("
+0:1  - 0:2              "?"
+0:2  - 0:4              enable: regular_expression_modifiers
+0:2  - 0:3                regular_expression_modifier `i`
+0:3  - 0:4                regular_expression_modifier `m`
+0:4  - 0:5              "-"
+0:5  - 0:6              disable: regular_expression_modifiers
+0:5  - 0:6                regular_expression_modifier `s`
+0:6  - 0:7              ":"
+0:7  - 0:17             body: disjunction
+0:7  - 0:17               alternative
+0:7  - 0:8                  term
+0:7  - 0:8                    operand: atom
+0:7  - 0:8                      pattern_character
+0:7  - 0:8                        source_character `a`
+0:8  - 0:16                 term
+0:8  - 0:16                   operand: atom
+0:8  - 0:9                      "("
+0:9  - 0:10                     "?"
+0:10 - 0:11                     enable: regular_expression_modifiers
+0:10 - 0:11                       regular_expression_modifier `s`
+0:11 - 0:12                     "-"
+0:12 - 0:13                     disable: regular_expression_modifiers
+0:12 - 0:13                       regular_expression_modifier `i`
+0:13 - 0:14                     ":"
+0:14 - 0:15                     body: disjunction
+0:14 - 0:15                       alternative
+0:14 - 0:15                         term
+0:14 - 0:15                           operand: atom
+0:14 - 0:15                             pattern_character
+0:14 - 0:15                               source_character `b`
+0:15 - 0:16                     ")"
+0:16 - 0:17                 term
+0:16 - 0:17                   operand: atom
+0:16 - 0:17                     pattern_character
+0:16 - 0:17                       source_character `c`
+0:17 - 0:18             ")"
+
+==================
+nested scoped modes restore in stack order
+:language(python_re)
+==================
+(?x:a(?-x:b c#d)e #f
+)g #h
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (scoped_flags_group
+        enable: (flag_set)
+        body: (alternation
+          (concatenation
+            (literal_character)
+            (scoped_flags_group
+              disable: (flag_set)
+              body: (alternation
+                (concatenation
+                  (literal_character)
+                  (literal_character)
+                  (literal_character)
+                  (literal_character)
+                  (literal_character))))
+            (literal_character)
+            (verbose_whitespace)
+            (verbose_comment)
+            (verbose_whitespace))))
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character))))
+
+==================
+modifier consistency is left to the consumer
+:language(javascript_regex)
+:cst
+==================
+(?ii-i:a)(?-:)
+---
+
+0:0  - 0:14   pattern
+0:0  - 0:14     body: disjunction
+0:0  - 0:14       alternative
+0:0  - 0:9          term
+0:0  - 0:9            operand: extended_atom
+0:0  - 0:1              "("
+0:1  - 0:2              "?"
+0:2  - 0:4              enable: regular_expression_modifiers
+0:2  - 0:3                regular_expression_modifier `i`
+0:3  - 0:4                regular_expression_modifier `i`
+0:4  - 0:5              "-"
+0:5  - 0:6              disable: regular_expression_modifiers
+0:5  - 0:6                regular_expression_modifier `i`
+0:6  - 0:7              ":"
+0:7  - 0:8              body: disjunction
+0:7  - 0:8                alternative
+0:7  - 0:8                  term
+0:7  - 0:8                    operand: extended_atom
+0:7  - 0:8                      extended_pattern_character
+0:7  - 0:8                        source_character `a`
+0:8  - 0:9              ")"
+0:9  - 0:14         term
+0:9  - 0:14           operand: extended_atom
+0:9  - 0:10             "("
+0:10 - 0:11             "?"
+0:11 - 0:12             "-"
+0:12 - 0:13             ":"
+0:13 - 0:14             ")"
+
+==================
+modifier consistency is left to the consumer
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==================
+(?ii-i:a)(?-:)
+---
+
+0:0  - 0:14   pattern
+0:0  - 0:14     body: disjunction
+0:0  - 0:14       alternative
+0:0  - 0:9          term
+0:0  - 0:9            operand: atom
+0:0  - 0:1              "("
+0:1  - 0:2              "?"
+0:2  - 0:4              enable: regular_expression_modifiers
+0:2  - 0:3                regular_expression_modifier `i`
+0:3  - 0:4                regular_expression_modifier `i`
+0:4  - 0:5              "-"
+0:5  - 0:6              disable: regular_expression_modifiers
+0:5  - 0:6                regular_expression_modifier `i`
+0:6  - 0:7              ":"
+0:7  - 0:8              body: disjunction
+0:7  - 0:8                alternative
+0:7  - 0:8                  term
+0:7  - 0:8                    operand: atom
+0:7  - 0:8                      pattern_character
+0:7  - 0:8                        source_character `a`
+0:8  - 0:9              ")"
+0:9  - 0:14         term
+0:9  - 0:14           operand: atom
+0:9  - 0:10             "("
+0:10 - 0:11             "?"
+0:11 - 0:12             "-"
+0:12 - 0:13             ":"
+0:13 - 0:14             ")"
+
+==================
+modifier spelling remains structural before flag validity checks
+:language(javascript_regex)
+:cst
+==================
+(?ii-m:x)(?-:)
+---
+
+0:0  - 0:14   pattern
+0:0  - 0:14     body: disjunction
+0:0  - 0:14       alternative
+0:0  - 0:9          term
+0:0  - 0:9            operand: extended_atom
+0:0  - 0:1              "("
+0:1  - 0:2              "?"
+0:2  - 0:4              enable: regular_expression_modifiers
+0:2  - 0:3                regular_expression_modifier `i`
+0:3  - 0:4                regular_expression_modifier `i`
+0:4  - 0:5              "-"
+0:5  - 0:6              disable: regular_expression_modifiers
+0:5  - 0:6                regular_expression_modifier `m`
+0:6  - 0:7              ":"
+0:7  - 0:8              body: disjunction
+0:7  - 0:8                alternative
+0:7  - 0:8                  term
+0:7  - 0:8                    operand: extended_atom
+0:7  - 0:8                      extended_pattern_character
+0:7  - 0:8                        source_character `x`
+0:8  - 0:9              ")"
+0:9  - 0:14         term
+0:9  - 0:14           operand: extended_atom
+0:9  - 0:10             "("
+0:10 - 0:11             "?"
+0:11 - 0:12             "-"
+0:12 - 0:13             ":"
+0:13 - 0:14             ")"
+
+==================
+modifier spelling remains structural before flag validity checks
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==================
+(?ii-m:x)(?-:)
+---
+
+0:0  - 0:14   pattern
+0:0  - 0:14     body: disjunction
+0:0  - 0:14       alternative
+0:0  - 0:9          term
+0:0  - 0:9            operand: atom
+0:0  - 0:1              "("
+0:1  - 0:2              "?"
+0:2  - 0:4              enable: regular_expression_modifiers
+0:2  - 0:3                regular_expression_modifier `i`
+0:3  - 0:4                regular_expression_modifier `i`
+0:4  - 0:5              "-"
+0:5  - 0:6              disable: regular_expression_modifiers
+0:5  - 0:6                regular_expression_modifier `m`
+0:6  - 0:7              ":"
+0:7  - 0:8              body: disjunction
+0:7  - 0:8                alternative
+0:7  - 0:8                  term
+0:7  - 0:8                    operand: atom
+0:7  - 0:8                      pattern_character
+0:7  - 0:8                        source_character `x`
+0:8  - 0:9              ")"
+0:9  - 0:14         term
+0:9  - 0:14           operand: atom
+0:9  - 0:10             "("
+0:10 - 0:11             "?"
+0:11 - 0:12             "-"
+0:12 - 0:13             ":"
+0:13 - 0:14             ")"
+
+==================
+x enabled and disabled together keeps normal mode
+:language(python_re)
+==================
+(?x-x:a b)c
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (scoped_flags_group
+        enable: (flag_set)
+        disable: (flag_set)
+        body: (alternation
+          (concatenation
+            (literal_character)
+            (literal_character)
+            (literal_character))))
+      (literal_character)
+      (literal_character))))
+
+==================
+x enabled and disabled together keeps verbose mode
+:language(python_re_verbose)
+==================
+(?x-x:a b)c
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (scoped_flags_group
+        enable: (flag_set)
+        disable: (flag_set)
+        body: (alternation
+          (concatenation
+            (literal_character)
+            (verbose_whitespace)
+            (literal_character))))
+      (literal_character)
+      (verbose_whitespace))))
+
+==================
+modifier groups accept only i m and s
+:language(javascript_regex)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:error
+==================
+(?x:a)
+---
+
+==================
+an incomplete modifier group requires recovery
+:language(javascript_regex)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:error
+==================
+(?i:
+---
+
+==================
+nested modifier groups require all closing parentheses
+:language(javascript_regex)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:error
+==================
+(?i:a(?-m:b)
+---

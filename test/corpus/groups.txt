@@ -1,0 +1,1406 @@
+==================
+groups and lookarounds retain body fields and literal boundaries
+:language(javascript_regex)
+:cst
+==================
+(a|b)(?:c)(?=d)(?!e)(?<=f)(?<!g)
+---
+
+0:0  - 0:32   pattern
+0:0  - 0:32     body: disjunction
+0:0  - 0:32       alternative
+0:0  - 0:5          term
+0:0  - 0:5            operand: extended_atom
+0:0  - 0:1              "("
+0:1  - 0:4              body: disjunction
+0:1  - 0:2                alternative
+0:1  - 0:2                  term
+0:1  - 0:2                    operand: extended_atom
+0:1  - 0:2                      extended_pattern_character
+0:1  - 0:2                        source_character `a`
+0:2  - 0:3                "|"
+0:3  - 0:4                alternative
+0:3  - 0:4                  term
+0:3  - 0:4                    operand: extended_atom
+0:3  - 0:4                      extended_pattern_character
+0:3  - 0:4                        source_character `b`
+0:4  - 0:5              ")"
+0:5  - 0:10         term
+0:5  - 0:10           operand: extended_atom
+0:5  - 0:6              "("
+0:6  - 0:7              "?"
+0:7  - 0:8              ":"
+0:8  - 0:9              body: disjunction
+0:8  - 0:9                alternative
+0:8  - 0:9                  term
+0:8  - 0:9                    operand: extended_atom
+0:8  - 0:9                      extended_pattern_character
+0:8  - 0:9                        source_character `c`
+0:9  - 0:10             ")"
+0:10 - 0:15         term
+0:10 - 0:15           assertion
+0:10 - 0:15             quantifiable_assertion
+0:10 - 0:11               "("
+0:11 - 0:12               "?"
+0:12 - 0:13               "="
+0:13 - 0:14               body: disjunction
+0:13 - 0:14                 alternative
+0:13 - 0:14                   term
+0:13 - 0:14                     operand: extended_atom
+0:13 - 0:14                       extended_pattern_character
+0:13 - 0:14                         source_character `d`
+0:14 - 0:15               ")"
+0:15 - 0:20         term
+0:15 - 0:20           assertion
+0:15 - 0:20             quantifiable_assertion
+0:15 - 0:16               "("
+0:16 - 0:17               "?"
+0:17 - 0:18               "!"
+0:18 - 0:19               body: disjunction
+0:18 - 0:19                 alternative
+0:18 - 0:19                   term
+0:18 - 0:19                     operand: extended_atom
+0:18 - 0:19                       extended_pattern_character
+0:18 - 0:19                         source_character `e`
+0:19 - 0:20               ")"
+0:20 - 0:26         term
+0:20 - 0:26           assertion
+0:20 - 0:21             "("
+0:21 - 0:22             "?"
+0:22 - 0:24             "<="
+0:24 - 0:25             body: disjunction
+0:24 - 0:25               alternative
+0:24 - 0:25                 term
+0:24 - 0:25                   operand: extended_atom
+0:24 - 0:25                     extended_pattern_character
+0:24 - 0:25                       source_character `f`
+0:25 - 0:26             ")"
+0:26 - 0:32         term
+0:26 - 0:32           assertion
+0:26 - 0:27             "("
+0:27 - 0:28             "?"
+0:28 - 0:30             "<!"
+0:30 - 0:31             body: disjunction
+0:30 - 0:31               alternative
+0:30 - 0:31                 term
+0:30 - 0:31                   operand: extended_atom
+0:30 - 0:31                     extended_pattern_character
+0:30 - 0:31                       source_character `g`
+0:31 - 0:32             ")"
+
+==================
+groups and lookarounds retain body fields and literal boundaries
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==================
+(a|b)(?:c)(?=d)(?!e)(?<=f)(?<!g)
+---
+
+0:0  - 0:32   pattern
+0:0  - 0:32     body: disjunction
+0:0  - 0:32       alternative
+0:0  - 0:5          term
+0:0  - 0:5            operand: atom
+0:0  - 0:1              "("
+0:1  - 0:4              body: disjunction
+0:1  - 0:2                alternative
+0:1  - 0:2                  term
+0:1  - 0:2                    operand: atom
+0:1  - 0:2                      pattern_character
+0:1  - 0:2                        source_character `a`
+0:2  - 0:3                "|"
+0:3  - 0:4                alternative
+0:3  - 0:4                  term
+0:3  - 0:4                    operand: atom
+0:3  - 0:4                      pattern_character
+0:3  - 0:4                        source_character `b`
+0:4  - 0:5              ")"
+0:5  - 0:10         term
+0:5  - 0:10           operand: atom
+0:5  - 0:6              "("
+0:6  - 0:7              "?"
+0:7  - 0:8              ":"
+0:8  - 0:9              body: disjunction
+0:8  - 0:9                alternative
+0:8  - 0:9                  term
+0:8  - 0:9                    operand: atom
+0:8  - 0:9                      pattern_character
+0:8  - 0:9                        source_character `c`
+0:9  - 0:10             ")"
+0:10 - 0:15         term
+0:10 - 0:15           assertion
+0:10 - 0:11             "("
+0:11 - 0:12             "?"
+0:12 - 0:13             "="
+0:13 - 0:14             body: disjunction
+0:13 - 0:14               alternative
+0:13 - 0:14                 term
+0:13 - 0:14                   operand: atom
+0:13 - 0:14                     pattern_character
+0:13 - 0:14                       source_character `d`
+0:14 - 0:15             ")"
+0:15 - 0:20         term
+0:15 - 0:20           assertion
+0:15 - 0:16             "("
+0:16 - 0:17             "?"
+0:17 - 0:18             "!"
+0:18 - 0:19             body: disjunction
+0:18 - 0:19               alternative
+0:18 - 0:19                 term
+0:18 - 0:19                   operand: atom
+0:18 - 0:19                     pattern_character
+0:18 - 0:19                       source_character `e`
+0:19 - 0:20             ")"
+0:20 - 0:26         term
+0:20 - 0:26           assertion
+0:20 - 0:21             "("
+0:21 - 0:22             "?"
+0:22 - 0:24             "<="
+0:24 - 0:25             body: disjunction
+0:24 - 0:25               alternative
+0:24 - 0:25                 term
+0:24 - 0:25                   operand: atom
+0:24 - 0:25                     pattern_character
+0:24 - 0:25                       source_character `f`
+0:25 - 0:26             ")"
+0:26 - 0:32         term
+0:26 - 0:32           assertion
+0:26 - 0:27             "("
+0:27 - 0:28             "?"
+0:28 - 0:30             "<!"
+0:30 - 0:31             body: disjunction
+0:30 - 0:31               alternative
+0:30 - 0:31                 term
+0:30 - 0:31                   operand: atom
+0:30 - 0:31                     pattern_character
+0:30 - 0:31                       source_character `g`
+0:31 - 0:32             ")"
+
+==================
+groups and lookarounds retain body fields and literal boundaries
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+(a|b)(?:c)(?=d)(?!e)(?<=f)(?<!g)
+---
+
+0:0  - 0:32   pattern
+0:0  - 0:32     body: alternation
+0:0  - 0:32       concatenation
+0:0  - 0:5          capturing_group
+0:0  - 0:1            "("
+0:1  - 0:4            body: alternation
+0:1  - 0:2              concatenation
+0:1  - 0:2                literal_character `a`
+0:2  - 0:3              "|"
+0:3  - 0:4              concatenation
+0:3  - 0:4                literal_character `b`
+0:4  - 0:5            ")"
+0:5  - 0:10         non_capturing_group
+0:5  - 0:6            "("
+0:6  - 0:7            "?"
+0:7  - 0:8            ":"
+0:8  - 0:9            body: alternation
+0:8  - 0:9              concatenation
+0:8  - 0:9                literal_character `c`
+0:9  - 0:10           ")"
+0:10 - 0:15         positive_lookahead_assertion
+0:10 - 0:11           "("
+0:11 - 0:12           "?"
+0:12 - 0:13           "="
+0:13 - 0:14           body: alternation
+0:13 - 0:14             concatenation
+0:13 - 0:14               literal_character `d`
+0:14 - 0:15           ")"
+0:15 - 0:20         negative_lookahead_assertion
+0:15 - 0:16           "("
+0:16 - 0:17           "?"
+0:17 - 0:18           "!"
+0:18 - 0:19           body: alternation
+0:18 - 0:19             concatenation
+0:18 - 0:19               literal_character `e`
+0:19 - 0:20           ")"
+0:20 - 0:26         positive_lookbehind_assertion
+0:20 - 0:21           "("
+0:21 - 0:22           "?"
+0:22 - 0:24           "<="
+0:24 - 0:25           body: alternation
+0:24 - 0:25             concatenation
+0:24 - 0:25               literal_character `f`
+0:25 - 0:26           ")"
+0:26 - 0:32         negative_lookbehind_assertion
+0:26 - 0:27           "("
+0:27 - 0:28           "?"
+0:28 - 0:30           "<!"
+0:30 - 0:31           body: alternation
+0:30 - 0:31             concatenation
+0:30 - 0:31               literal_character `g`
+0:31 - 0:32           ")"
+
+==================
+unescaped group names accept Unicode identifiers and dollar underscore
+:language(javascript_regex)
+:cst
+==================
+(?<名>a)(?<𐐀x>b)(?<$_0>c)
+---
+
+0:0  - 0:29   pattern
+0:0  - 0:29     body: disjunction
+0:0  - 0:29       alternative
+0:0  - 0:9          term
+0:0  - 0:9            operand: extended_atom
+0:0  - 0:1              "("
+0:1  - 0:7              group_specifier
+0:1  - 0:2                "?"
+0:2  - 0:7                group_name
+0:2  - 0:3                  "<"
+0:3  - 0:6                  name: reg_exp_identifier_name
+0:3  - 0:6                    reg_exp_identifier_start
+0:3  - 0:6                      identifier_start_char
+0:3  - 0:6                        unicode_id_start `名`
+0:6  - 0:7                  ">"
+0:7  - 0:8              body: disjunction
+0:7  - 0:8                alternative
+0:7  - 0:8                  term
+0:7  - 0:8                    operand: extended_atom
+0:7  - 0:8                      extended_pattern_character
+0:7  - 0:8                        source_character `a`
+0:8  - 0:9              ")"
+0:9  - 0:20         term
+0:9  - 0:20           operand: extended_atom
+0:9  - 0:10             "("
+0:10 - 0:18             group_specifier
+0:10 - 0:11               "?"
+0:11 - 0:18               group_name
+0:11 - 0:12                 "<"
+0:12 - 0:17                 name: reg_exp_identifier_name
+0:12 - 0:16                   reg_exp_identifier_start
+0:12 - 0:16                     identifier_start_char
+0:12 - 0:16                       unicode_id_start `𐐀`
+0:16 - 0:17                   reg_exp_identifier_part
+0:16 - 0:17                     identifier_part_char
+0:16 - 0:17                       unicode_id_continue `x`
+0:17 - 0:18                 ">"
+0:18 - 0:19             body: disjunction
+0:18 - 0:19               alternative
+0:18 - 0:19                 term
+0:18 - 0:19                   operand: extended_atom
+0:18 - 0:19                     extended_pattern_character
+0:18 - 0:19                       source_character `b`
+0:19 - 0:20             ")"
+0:20 - 0:29         term
+0:20 - 0:29           operand: extended_atom
+0:20 - 0:21             "("
+0:21 - 0:27             group_specifier
+0:21 - 0:22               "?"
+0:22 - 0:27               group_name
+0:22 - 0:23                 "<"
+0:23 - 0:26                 name: reg_exp_identifier_name
+0:23 - 0:24                   reg_exp_identifier_start
+0:23 - 0:24                     identifier_start_char
+0:23 - 0:24                       "$"
+0:24 - 0:25                   reg_exp_identifier_part
+0:24 - 0:25                     identifier_part_char
+0:24 - 0:25                       unicode_id_continue `_`
+0:25 - 0:26                   reg_exp_identifier_part
+0:25 - 0:26                     identifier_part_char
+0:25 - 0:26                       unicode_id_continue `0`
+0:26 - 0:27                 ">"
+0:27 - 0:28             body: disjunction
+0:27 - 0:28               alternative
+0:27 - 0:28                 term
+0:27 - 0:28                   operand: extended_atom
+0:27 - 0:28                     extended_pattern_character
+0:27 - 0:28                       source_character `c`
+0:28 - 0:29             ")"
+
+==================
+unescaped group names accept Unicode identifiers and dollar underscore
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==================
+(?<名>a)(?<𐐀x>b)(?<$_0>c)
+---
+
+0:0  - 0:29   pattern
+0:0  - 0:29     body: disjunction
+0:0  - 0:29       alternative
+0:0  - 0:9          term
+0:0  - 0:9            operand: atom
+0:0  - 0:1              "("
+0:1  - 0:7              group_specifier
+0:1  - 0:2                "?"
+0:2  - 0:7                group_name
+0:2  - 0:3                  "<"
+0:3  - 0:6                  name: reg_exp_identifier_name
+0:3  - 0:6                    reg_exp_identifier_start
+0:3  - 0:6                      identifier_start_char
+0:3  - 0:6                        unicode_id_start `名`
+0:6  - 0:7                  ">"
+0:7  - 0:8              body: disjunction
+0:7  - 0:8                alternative
+0:7  - 0:8                  term
+0:7  - 0:8                    operand: atom
+0:7  - 0:8                      pattern_character
+0:7  - 0:8                        source_character `a`
+0:8  - 0:9              ")"
+0:9  - 0:20         term
+0:9  - 0:20           operand: atom
+0:9  - 0:10             "("
+0:10 - 0:18             group_specifier
+0:10 - 0:11               "?"
+0:11 - 0:18               group_name
+0:11 - 0:12                 "<"
+0:12 - 0:17                 name: reg_exp_identifier_name
+0:12 - 0:16                   reg_exp_identifier_start
+0:12 - 0:16                     identifier_start_char
+0:12 - 0:16                       unicode_id_start `𐐀`
+0:16 - 0:17                   reg_exp_identifier_part
+0:16 - 0:17                     identifier_part_char
+0:16 - 0:17                       unicode_id_continue `x`
+0:17 - 0:18                 ">"
+0:18 - 0:19             body: disjunction
+0:18 - 0:19               alternative
+0:18 - 0:19                 term
+0:18 - 0:19                   operand: atom
+0:18 - 0:19                     pattern_character
+0:18 - 0:19                       source_character `b`
+0:19 - 0:20             ")"
+0:20 - 0:29         term
+0:20 - 0:29           operand: atom
+0:20 - 0:21             "("
+0:21 - 0:27             group_specifier
+0:21 - 0:22               "?"
+0:22 - 0:27               group_name
+0:22 - 0:23                 "<"
+0:23 - 0:26                 name: reg_exp_identifier_name
+0:23 - 0:24                   reg_exp_identifier_start
+0:23 - 0:24                     identifier_start_char
+0:23 - 0:24                       "$"
+0:24 - 0:25                   reg_exp_identifier_part
+0:24 - 0:25                     identifier_part_char
+0:24 - 0:25                       unicode_id_continue `_`
+0:25 - 0:26                   reg_exp_identifier_part
+0:25 - 0:26                     identifier_part_char
+0:25 - 0:26                       unicode_id_continue `0`
+0:26 - 0:27                 ">"
+0:27 - 0:28             body: disjunction
+0:27 - 0:28               alternative
+0:27 - 0:28                 term
+0:27 - 0:28                   operand: atom
+0:27 - 0:28                     pattern_character
+0:27 - 0:28                       source_character `c`
+0:28 - 0:29             ")"
+
+==================
+group names accept braced escapes and surrogate pairs in every JavaScript mode
+:language(javascript_regex)
+:cst
+==================
+(?<\u0061\u{62}_0>c)(?<\uD801\uDC00>d)
+---
+
+0:0  - 0:38   pattern
+0:0  - 0:38     body: disjunction
+0:0  - 0:38       alternative
+0:0  - 0:20         term
+0:0  - 0:20           operand: extended_atom
+0:0  - 0:1              "("
+0:1  - 0:18             group_specifier
+0:1  - 0:2                "?"
+0:2  - 0:18               group_name
+0:2  - 0:3                  "<"
+0:3  - 0:17                 name: reg_exp_identifier_name
+0:3  - 0:9                    reg_exp_identifier_start
+0:3  - 0:4                      "\\"
+0:4  - 0:9                      reg_exp_unicode_escape_sequence
+0:4  - 0:5                        "u"
+0:5  - 0:9                        hex_non_surrogate
+0:5  - 0:9                          hex4_digits
+0:5  - 0:6                            hex_digit `0`
+0:6  - 0:7                            hex_digit `0`
+0:7  - 0:8                            hex_digit `6`
+0:8  - 0:9                            hex_digit `1`
+0:9  - 0:15                   reg_exp_identifier_part
+0:9  - 0:10                     "\\"
+0:10 - 0:15                     reg_exp_unicode_escape_sequence
+0:10 - 0:11                       "u"
+0:11 - 0:12                       "{"
+0:12 - 0:14                       code_point
+0:12 - 0:14                         hex_digits
+0:12 - 0:13                           hex_digit `6`
+0:13 - 0:14                           hex_digit `2`
+0:14 - 0:15                       "}"
+0:15 - 0:16                   reg_exp_identifier_part
+0:15 - 0:16                     identifier_part_char
+0:15 - 0:16                       unicode_id_continue `_`
+0:16 - 0:17                   reg_exp_identifier_part
+0:16 - 0:17                     identifier_part_char
+0:16 - 0:17                       unicode_id_continue `0`
+0:17 - 0:18                 ">"
+0:18 - 0:19             body: disjunction
+0:18 - 0:19               alternative
+0:18 - 0:19                 term
+0:18 - 0:19                   operand: extended_atom
+0:18 - 0:19                     extended_pattern_character
+0:18 - 0:19                       source_character `c`
+0:19 - 0:20             ")"
+0:20 - 0:38         term
+0:20 - 0:38           operand: extended_atom
+0:20 - 0:21             "("
+0:21 - 0:36             group_specifier
+0:21 - 0:22               "?"
+0:22 - 0:36               group_name
+0:22 - 0:23                 "<"
+0:23 - 0:35                 name: reg_exp_identifier_name
+0:23 - 0:35                   reg_exp_identifier_start
+0:23 - 0:24                     "\\"
+0:24 - 0:35                     reg_exp_unicode_escape_sequence
+0:24 - 0:25                       "u"
+0:25 - 0:29                       hex_lead_surrogate
+0:25 - 0:29                         hex4_digits
+0:25 - 0:26                           hex_digit `D`
+0:26 - 0:27                           hex_digit `8`
+0:27 - 0:28                           hex_digit `0`
+0:28 - 0:29                           hex_digit `1`
+0:29 - 0:31                       "\\u"
+0:31 - 0:35                       hex_trail_surrogate
+0:31 - 0:35                         hex4_digits
+0:31 - 0:32                           hex_digit `D`
+0:32 - 0:33                           hex_digit `C`
+0:33 - 0:34                           hex_digit `0`
+0:34 - 0:35                           hex_digit `0`
+0:35 - 0:36                 ">"
+0:36 - 0:37             body: disjunction
+0:36 - 0:37               alternative
+0:36 - 0:37                 term
+0:36 - 0:37                   operand: extended_atom
+0:36 - 0:37                     extended_pattern_character
+0:36 - 0:37                       source_character `d`
+0:37 - 0:38             ")"
+
+==================
+group names accept braced escapes and surrogate pairs in every JavaScript mode
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==================
+(?<\u0061\u{62}_0>c)(?<\uD801\uDC00>d)
+---
+
+0:0  - 0:38   pattern
+0:0  - 0:38     body: disjunction
+0:0  - 0:38       alternative
+0:0  - 0:20         term
+0:0  - 0:20           operand: atom
+0:0  - 0:1              "("
+0:1  - 0:18             group_specifier
+0:1  - 0:2                "?"
+0:2  - 0:18               group_name
+0:2  - 0:3                  "<"
+0:3  - 0:17                 name: reg_exp_identifier_name
+0:3  - 0:9                    reg_exp_identifier_start
+0:3  - 0:4                      "\\"
+0:4  - 0:9                      reg_exp_unicode_escape_sequence
+0:4  - 0:5                        "u"
+0:5  - 0:9                        hex_non_surrogate
+0:5  - 0:9                          hex4_digits
+0:5  - 0:6                            hex_digit `0`
+0:6  - 0:7                            hex_digit `0`
+0:7  - 0:8                            hex_digit `6`
+0:8  - 0:9                            hex_digit `1`
+0:9  - 0:15                   reg_exp_identifier_part
+0:9  - 0:10                     "\\"
+0:10 - 0:15                     reg_exp_unicode_escape_sequence
+0:10 - 0:11                       "u"
+0:11 - 0:12                       "{"
+0:12 - 0:14                       code_point
+0:12 - 0:14                         hex_digits
+0:12 - 0:13                           hex_digit `6`
+0:13 - 0:14                           hex_digit `2`
+0:14 - 0:15                       "}"
+0:15 - 0:16                   reg_exp_identifier_part
+0:15 - 0:16                     identifier_part_char
+0:15 - 0:16                       unicode_id_continue `_`
+0:16 - 0:17                   reg_exp_identifier_part
+0:16 - 0:17                     identifier_part_char
+0:16 - 0:17                       unicode_id_continue `0`
+0:17 - 0:18                 ">"
+0:18 - 0:19             body: disjunction
+0:18 - 0:19               alternative
+0:18 - 0:19                 term
+0:18 - 0:19                   operand: atom
+0:18 - 0:19                     pattern_character
+0:18 - 0:19                       source_character `c`
+0:19 - 0:20             ")"
+0:20 - 0:38         term
+0:20 - 0:38           operand: atom
+0:20 - 0:21             "("
+0:21 - 0:36             group_specifier
+0:21 - 0:22               "?"
+0:22 - 0:36               group_name
+0:22 - 0:23                 "<"
+0:23 - 0:35                 name: reg_exp_identifier_name
+0:23 - 0:35                   reg_exp_identifier_start
+0:23 - 0:24                     "\\"
+0:24 - 0:35                     reg_exp_unicode_escape_sequence
+0:24 - 0:25                       "u"
+0:25 - 0:29                       hex_lead_surrogate
+0:25 - 0:29                         hex4_digits
+0:25 - 0:26                           hex_digit `D`
+0:26 - 0:27                           hex_digit `8`
+0:27 - 0:28                           hex_digit `0`
+0:28 - 0:29                           hex_digit `1`
+0:29 - 0:31                       "\\u"
+0:31 - 0:35                       hex_trail_surrogate
+0:31 - 0:35                         hex4_digits
+0:31 - 0:32                           hex_digit `D`
+0:32 - 0:33                           hex_digit `C`
+0:33 - 0:34                           hex_digit `0`
+0:34 - 0:35                           hex_digit `0`
+0:35 - 0:36                 ">"
+0:36 - 0:37             body: disjunction
+0:36 - 0:37               alternative
+0:36 - 0:37                 term
+0:36 - 0:37                   operand: atom
+0:36 - 0:37                     pattern_character
+0:36 - 0:37                       source_character `d`
+0:37 - 0:38             ")"
+
+==================
+nested groups retain their own alternatives
+:language(javascript_regex)
+:cst
+==================
+(a(?:b|c))
+---
+
+0:0  - 0:10   pattern
+0:0  - 0:10     body: disjunction
+0:0  - 0:10       alternative
+0:0  - 0:10         term
+0:0  - 0:10           operand: extended_atom
+0:0  - 0:1              "("
+0:1  - 0:9              body: disjunction
+0:1  - 0:9                alternative
+0:1  - 0:2                  term
+0:1  - 0:2                    operand: extended_atom
+0:1  - 0:2                      extended_pattern_character
+0:1  - 0:2                        source_character `a`
+0:2  - 0:9                  term
+0:2  - 0:9                    operand: extended_atom
+0:2  - 0:3                      "("
+0:3  - 0:4                      "?"
+0:4  - 0:5                      ":"
+0:5  - 0:8                      body: disjunction
+0:5  - 0:6                        alternative
+0:5  - 0:6                          term
+0:5  - 0:6                            operand: extended_atom
+0:5  - 0:6                              extended_pattern_character
+0:5  - 0:6                                source_character `b`
+0:6  - 0:7                        "|"
+0:7  - 0:8                        alternative
+0:7  - 0:8                          term
+0:7  - 0:8                            operand: extended_atom
+0:7  - 0:8                              extended_pattern_character
+0:7  - 0:8                                source_character `c`
+0:8  - 0:9                      ")"
+0:9  - 0:10             ")"
+
+==================
+nested groups retain their own alternatives
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==================
+(a(?:b|c))
+---
+
+0:0  - 0:10   pattern
+0:0  - 0:10     body: disjunction
+0:0  - 0:10       alternative
+0:0  - 0:10         term
+0:0  - 0:10           operand: atom
+0:0  - 0:1              "("
+0:1  - 0:9              body: disjunction
+0:1  - 0:9                alternative
+0:1  - 0:2                  term
+0:1  - 0:2                    operand: atom
+0:1  - 0:2                      pattern_character
+0:1  - 0:2                        source_character `a`
+0:2  - 0:9                  term
+0:2  - 0:9                    operand: atom
+0:2  - 0:3                      "("
+0:3  - 0:4                      "?"
+0:4  - 0:5                      ":"
+0:5  - 0:8                      body: disjunction
+0:5  - 0:6                        alternative
+0:5  - 0:6                          term
+0:5  - 0:6                            operand: atom
+0:5  - 0:6                              pattern_character
+0:5  - 0:6                                source_character `b`
+0:6  - 0:7                        "|"
+0:7  - 0:8                        alternative
+0:7  - 0:8                          term
+0:7  - 0:8                            operand: atom
+0:7  - 0:8                              pattern_character
+0:7  - 0:8                                source_character `c`
+0:8  - 0:9                      ")"
+0:9  - 0:10             ")"
+
+==================
+nested groups share the expression hierarchy
+:language(python_re)
+:language(python_re_verbose)
+==================
+(a|(?:b|c))(?P<name>d)\
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character))
+          (concatenation
+            (non_capturing_group
+              body: (alternation
+                (concatenation
+                  (literal_character))
+                (concatenation
+                  (literal_character)))))))
+      (named_capturing_group
+        name: (group_name)
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (literal_escape))))
+
+==================
+all consuming group categories can be quantified
+:language(python_re)
+:language(python_re_verbose)
+==================
+(a)*(?:b){2}(?P<n>c)+\
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (repetition
+        operand: (capturing_group
+          body: (alternation
+            (concatenation
+              (literal_character))))
+        quantifier: (quantifier))
+      (repetition
+        operand: (non_capturing_group
+          body: (alternation
+            (concatenation
+              (literal_character))))
+        quantifier: (quantifier
+          count: (decimal_digits)))
+      (repetition
+        operand: (named_capturing_group
+          name: (group_name)
+          body: (alternation
+            (concatenation
+              (literal_character))))
+        quantifier: (quantifier))
+      (literal_escape))))
+
+==================
+named identifiers support Unicode 17 start and continuation code points
+:language(javascript_regex)
+:cst
+==================
+(?<𑶰𑷠>x)
+---
+
+0:0  - 0:14   pattern
+0:0  - 0:14     body: disjunction
+0:0  - 0:14       alternative
+0:0  - 0:14         term
+0:0  - 0:14           operand: extended_atom
+0:0  - 0:1              "("
+0:1  - 0:12             group_specifier
+0:1  - 0:2                "?"
+0:2  - 0:12               group_name
+0:2  - 0:3                  "<"
+0:3  - 0:11                 name: reg_exp_identifier_name
+0:3  - 0:7                    reg_exp_identifier_start
+0:3  - 0:7                      identifier_start_char
+0:3  - 0:7                        unicode_id_start `𑶰`
+0:7  - 0:11                   reg_exp_identifier_part
+0:7  - 0:11                     identifier_part_char
+0:7  - 0:11                       unicode_id_continue `𑷠`
+0:11 - 0:12                 ">"
+0:12 - 0:13             body: disjunction
+0:12 - 0:13               alternative
+0:12 - 0:13                 term
+0:12 - 0:13                   operand: extended_atom
+0:12 - 0:13                     extended_pattern_character
+0:12 - 0:13                       source_character `x`
+0:13 - 0:14             ")"
+
+==================
+named identifiers support Unicode 17 start and continuation code points
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==================
+(?<𑶰𑷠>x)
+---
+
+0:0  - 0:14   pattern
+0:0  - 0:14     body: disjunction
+0:0  - 0:14       alternative
+0:0  - 0:14         term
+0:0  - 0:14           operand: atom
+0:0  - 0:1              "("
+0:1  - 0:12             group_specifier
+0:1  - 0:2                "?"
+0:2  - 0:12               group_name
+0:2  - 0:3                  "<"
+0:3  - 0:11                 name: reg_exp_identifier_name
+0:3  - 0:7                    reg_exp_identifier_start
+0:3  - 0:7                      identifier_start_char
+0:3  - 0:7                        unicode_id_start `𑶰`
+0:7  - 0:11                   reg_exp_identifier_part
+0:7  - 0:11                     identifier_part_char
+0:7  - 0:11                       unicode_id_continue `𑷠`
+0:11 - 0:12                 ">"
+0:12 - 0:13             body: disjunction
+0:12 - 0:13               alternative
+0:12 - 0:13                 term
+0:12 - 0:13                   operand: atom
+0:12 - 0:13                     pattern_character
+0:12 - 0:13                       source_character `x`
+0:13 - 0:14             ")"
+
+==================
+group names allow join control characters after the first character
+:language(javascript_regex)
+:cst
+==================
+(?<a‌‍b>c)
+---
+
+0:0  - 0:14   pattern
+0:0  - 0:14     body: disjunction
+0:0  - 0:14       alternative
+0:0  - 0:14         term
+0:0  - 0:14           operand: extended_atom
+0:0  - 0:1              "("
+0:1  - 0:12             group_specifier
+0:1  - 0:2                "?"
+0:2  - 0:12               group_name
+0:2  - 0:3                  "<"
+0:3  - 0:11                 name: reg_exp_identifier_name
+0:3  - 0:4                    reg_exp_identifier_start
+0:3  - 0:4                      identifier_start_char
+0:3  - 0:4                        unicode_id_start `a`
+0:4  - 0:7                    reg_exp_identifier_part
+0:4  - 0:7                      identifier_part_char
+0:4  - 0:7                        unicode_id_continue `‌`
+0:7  - 0:10                   reg_exp_identifier_part
+0:7  - 0:10                     identifier_part_char
+0:7  - 0:10                       unicode_id_continue `‍`
+0:10 - 0:11                   reg_exp_identifier_part
+0:10 - 0:11                     identifier_part_char
+0:10 - 0:11                       unicode_id_continue `b`
+0:11 - 0:12                 ">"
+0:12 - 0:13             body: disjunction
+0:12 - 0:13               alternative
+0:12 - 0:13                 term
+0:12 - 0:13                   operand: extended_atom
+0:12 - 0:13                     extended_pattern_character
+0:12 - 0:13                       source_character `c`
+0:13 - 0:14             ")"
+
+==================
+group names allow join control characters after the first character
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==================
+(?<a‌‍b>c)
+---
+
+0:0  - 0:14   pattern
+0:0  - 0:14     body: disjunction
+0:0  - 0:14       alternative
+0:0  - 0:14         term
+0:0  - 0:14           operand: atom
+0:0  - 0:1              "("
+0:1  - 0:12             group_specifier
+0:1  - 0:2                "?"
+0:2  - 0:12               group_name
+0:2  - 0:3                  "<"
+0:3  - 0:11                 name: reg_exp_identifier_name
+0:3  - 0:4                    reg_exp_identifier_start
+0:3  - 0:4                      identifier_start_char
+0:3  - 0:4                        unicode_id_start `a`
+0:4  - 0:7                    reg_exp_identifier_part
+0:4  - 0:7                      identifier_part_char
+0:4  - 0:7                        unicode_id_continue `‌`
+0:7  - 0:10                   reg_exp_identifier_part
+0:7  - 0:10                     identifier_part_char
+0:7  - 0:10                       unicode_id_continue `‍`
+0:10 - 0:11                   reg_exp_identifier_part
+0:10 - 0:11                     identifier_part_char
+0:10 - 0:11                       unicode_id_continue `b`
+0:11 - 0:12                 ">"
+0:12 - 0:13             body: disjunction
+0:12 - 0:13               alternative
+0:12 - 0:13                 term
+0:12 - 0:13                   operand: atom
+0:12 - 0:13                     pattern_character
+0:12 - 0:13                       source_character `c`
+0:13 - 0:14             ")"
+
+==================
+escaped identifier code points preserve syntax before identifier validity checks
+:language(javascript_regex)
+:cst
+==================
+(?<\u0030>x)
+---
+
+0:0  - 0:12   pattern
+0:0  - 0:12     body: disjunction
+0:0  - 0:12       alternative
+0:0  - 0:12         term
+0:0  - 0:12           operand: extended_atom
+0:0  - 0:1              "("
+0:1  - 0:10             group_specifier
+0:1  - 0:2                "?"
+0:2  - 0:10               group_name
+0:2  - 0:3                  "<"
+0:3  - 0:9                  name: reg_exp_identifier_name
+0:3  - 0:9                    reg_exp_identifier_start
+0:3  - 0:4                      "\\"
+0:4  - 0:9                      reg_exp_unicode_escape_sequence
+0:4  - 0:5                        "u"
+0:5  - 0:9                        hex_non_surrogate
+0:5  - 0:9                          hex4_digits
+0:5  - 0:6                            hex_digit `0`
+0:6  - 0:7                            hex_digit `0`
+0:7  - 0:8                            hex_digit `3`
+0:8  - 0:9                            hex_digit `0`
+0:9  - 0:10                 ">"
+0:10 - 0:11             body: disjunction
+0:10 - 0:11               alternative
+0:10 - 0:11                 term
+0:10 - 0:11                   operand: extended_atom
+0:10 - 0:11                     extended_pattern_character
+0:10 - 0:11                       source_character `x`
+0:11 - 0:12             ")"
+
+==================
+escaped identifier code points preserve syntax before identifier validity checks
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==================
+(?<\u0030>x)
+---
+
+0:0  - 0:12   pattern
+0:0  - 0:12     body: disjunction
+0:0  - 0:12       alternative
+0:0  - 0:12         term
+0:0  - 0:12           operand: atom
+0:0  - 0:1              "("
+0:1  - 0:10             group_specifier
+0:1  - 0:2                "?"
+0:2  - 0:10               group_name
+0:2  - 0:3                  "<"
+0:3  - 0:9                  name: reg_exp_identifier_name
+0:3  - 0:9                    reg_exp_identifier_start
+0:3  - 0:4                      "\\"
+0:4  - 0:9                      reg_exp_unicode_escape_sequence
+0:4  - 0:5                        "u"
+0:5  - 0:9                        hex_non_surrogate
+0:5  - 0:9                          hex4_digits
+0:5  - 0:6                            hex_digit `0`
+0:6  - 0:7                            hex_digit `0`
+0:7  - 0:8                            hex_digit `3`
+0:8  - 0:9                            hex_digit `0`
+0:9  - 0:10                 ">"
+0:10 - 0:11             body: disjunction
+0:10 - 0:11               alternative
+0:10 - 0:11                 term
+0:10 - 0:11                   operand: atom
+0:10 - 0:11                     pattern_character
+0:10 - 0:11                       source_character `x`
+0:11 - 0:12             ")"
+
+==================
+group names retain source spelling without semantic validation
+:language(python_re)
+:language(python_re_verbose)
+==================
+(?P<a-b>x)(?P<a b>y)\
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (named_capturing_group
+        name: (group_name)
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (named_capturing_group
+        name: (group_name)
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (literal_escape))))
+
+==================
+empty groups and lookarounds own their introducers and closers
+:language(javascript_regex)
+:cst
+==================
+()(?:)(?=)(?!)(?<=)(?<!)
+---
+
+0:0  - 0:24   pattern
+0:0  - 0:24     body: disjunction
+0:0  - 0:24       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: extended_atom
+0:0  - 0:1              "("
+0:1  - 0:2              ")"
+0:2  - 0:6          term
+0:2  - 0:6            operand: extended_atom
+0:2  - 0:3              "("
+0:3  - 0:4              "?"
+0:4  - 0:5              ":"
+0:5  - 0:6              ")"
+0:6  - 0:10         term
+0:6  - 0:10           assertion
+0:6  - 0:10             quantifiable_assertion
+0:6  - 0:7                "("
+0:7  - 0:8                "?"
+0:8  - 0:9                "="
+0:9  - 0:10               ")"
+0:10 - 0:14         term
+0:10 - 0:14           assertion
+0:10 - 0:14             quantifiable_assertion
+0:10 - 0:11               "("
+0:11 - 0:12               "?"
+0:12 - 0:13               "!"
+0:13 - 0:14               ")"
+0:14 - 0:19         term
+0:14 - 0:19           assertion
+0:14 - 0:15             "("
+0:15 - 0:16             "?"
+0:16 - 0:18             "<="
+0:18 - 0:19             ")"
+0:19 - 0:24         term
+0:19 - 0:24           assertion
+0:19 - 0:20             "("
+0:20 - 0:21             "?"
+0:21 - 0:23             "<!"
+0:23 - 0:24             ")"
+
+==================
+empty groups and lookarounds own their introducers and closers
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==================
+()(?:)(?=)(?!)(?<=)(?<!)
+---
+
+0:0  - 0:24   pattern
+0:0  - 0:24     body: disjunction
+0:0  - 0:24       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: atom
+0:0  - 0:1              "("
+0:1  - 0:2              ")"
+0:2  - 0:6          term
+0:2  - 0:6            operand: atom
+0:2  - 0:3              "("
+0:3  - 0:4              "?"
+0:4  - 0:5              ":"
+0:5  - 0:6              ")"
+0:6  - 0:10         term
+0:6  - 0:10           assertion
+0:6  - 0:7              "("
+0:7  - 0:8              "?"
+0:8  - 0:9              "="
+0:9  - 0:10             ")"
+0:10 - 0:14         term
+0:10 - 0:14           assertion
+0:10 - 0:11             "("
+0:11 - 0:12             "?"
+0:12 - 0:13             "!"
+0:13 - 0:14             ")"
+0:14 - 0:19         term
+0:14 - 0:19           assertion
+0:14 - 0:15             "("
+0:15 - 0:16             "?"
+0:16 - 0:18             "<="
+0:18 - 0:19             ")"
+0:19 - 0:24         term
+0:19 - 0:24           assertion
+0:19 - 0:20             "("
+0:20 - 0:21             "?"
+0:21 - 0:23             "<!"
+0:23 - 0:24             ")"
+
+==================
+empty groups and lookarounds own their introducers and closers
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+()(?:)(?=)(?!)(?<=)(?<!)
+---
+
+0:0  - 0:24   pattern
+0:0  - 0:24     body: alternation
+0:0  - 0:24       concatenation
+0:0  - 0:2          capturing_group
+0:0  - 0:1            "("
+0:1  - 0:2            ")"
+0:2  - 0:6          non_capturing_group
+0:2  - 0:3            "("
+0:3  - 0:4            "?"
+0:4  - 0:5            ":"
+0:5  - 0:6            ")"
+0:6  - 0:10         positive_lookahead_assertion
+0:6  - 0:7            "("
+0:7  - 0:8            "?"
+0:8  - 0:9            "="
+0:9  - 0:10           ")"
+0:10 - 0:14         negative_lookahead_assertion
+0:10 - 0:11           "("
+0:11 - 0:12           "?"
+0:12 - 0:13           "!"
+0:13 - 0:14           ")"
+0:14 - 0:19         positive_lookbehind_assertion
+0:14 - 0:15           "("
+0:15 - 0:16           "?"
+0:16 - 0:18           "<="
+0:18 - 0:19           ")"
+0:19 - 0:24         negative_lookbehind_assertion
+0:19 - 0:20           "("
+0:20 - 0:21           "?"
+0:21 - 0:23           "<!"
+0:23 - 0:24           ")"
+
+==================
+empty group bodies are absent in every group form
+:language(javascript_regex)
+:cst
+==================
+()(?:)(?<name>)(?ims:)(?-im:)
+---
+
+0:0  - 0:29   pattern
+0:0  - 0:29     body: disjunction
+0:0  - 0:29       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: extended_atom
+0:0  - 0:1              "("
+0:1  - 0:2              ")"
+0:2  - 0:6          term
+0:2  - 0:6            operand: extended_atom
+0:2  - 0:3              "("
+0:3  - 0:4              "?"
+0:4  - 0:5              ":"
+0:5  - 0:6              ")"
+0:6  - 0:15         term
+0:6  - 0:15           operand: extended_atom
+0:6  - 0:7              "("
+0:7  - 0:14             group_specifier
+0:7  - 0:8                "?"
+0:8  - 0:14               group_name
+0:8  - 0:9                  "<"
+0:9  - 0:13                 name: reg_exp_identifier_name
+0:9  - 0:10                   reg_exp_identifier_start
+0:9  - 0:10                     identifier_start_char
+0:9  - 0:10                       unicode_id_start `n`
+0:10 - 0:11                   reg_exp_identifier_part
+0:10 - 0:11                     identifier_part_char
+0:10 - 0:11                       unicode_id_continue `a`
+0:11 - 0:12                   reg_exp_identifier_part
+0:11 - 0:12                     identifier_part_char
+0:11 - 0:12                       unicode_id_continue `m`
+0:12 - 0:13                   reg_exp_identifier_part
+0:12 - 0:13                     identifier_part_char
+0:12 - 0:13                       unicode_id_continue `e`
+0:13 - 0:14                 ">"
+0:14 - 0:15             ")"
+0:15 - 0:22         term
+0:15 - 0:22           operand: extended_atom
+0:15 - 0:16             "("
+0:16 - 0:17             "?"
+0:17 - 0:20             enable: regular_expression_modifiers
+0:17 - 0:18               regular_expression_modifier `i`
+0:18 - 0:19               regular_expression_modifier `m`
+0:19 - 0:20               regular_expression_modifier `s`
+0:20 - 0:21             ":"
+0:21 - 0:22             ")"
+0:22 - 0:29         term
+0:22 - 0:29           operand: extended_atom
+0:22 - 0:23             "("
+0:23 - 0:24             "?"
+0:24 - 0:25             "-"
+0:25 - 0:27             disable: regular_expression_modifiers
+0:25 - 0:26               regular_expression_modifier `i`
+0:26 - 0:27               regular_expression_modifier `m`
+0:27 - 0:28             ":"
+0:28 - 0:29             ")"
+
+==================
+empty group bodies are absent in every group form
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==================
+()(?:)(?<name>)(?ims:)(?-im:)
+---
+
+0:0  - 0:29   pattern
+0:0  - 0:29     body: disjunction
+0:0  - 0:29       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: atom
+0:0  - 0:1              "("
+0:1  - 0:2              ")"
+0:2  - 0:6          term
+0:2  - 0:6            operand: atom
+0:2  - 0:3              "("
+0:3  - 0:4              "?"
+0:4  - 0:5              ":"
+0:5  - 0:6              ")"
+0:6  - 0:15         term
+0:6  - 0:15           operand: atom
+0:6  - 0:7              "("
+0:7  - 0:14             group_specifier
+0:7  - 0:8                "?"
+0:8  - 0:14               group_name
+0:8  - 0:9                  "<"
+0:9  - 0:13                 name: reg_exp_identifier_name
+0:9  - 0:10                   reg_exp_identifier_start
+0:9  - 0:10                     identifier_start_char
+0:9  - 0:10                       unicode_id_start `n`
+0:10 - 0:11                   reg_exp_identifier_part
+0:10 - 0:11                     identifier_part_char
+0:10 - 0:11                       unicode_id_continue `a`
+0:11 - 0:12                   reg_exp_identifier_part
+0:11 - 0:12                     identifier_part_char
+0:11 - 0:12                       unicode_id_continue `m`
+0:12 - 0:13                   reg_exp_identifier_part
+0:12 - 0:13                     identifier_part_char
+0:12 - 0:13                       unicode_id_continue `e`
+0:13 - 0:14                 ">"
+0:14 - 0:15             ")"
+0:15 - 0:22         term
+0:15 - 0:22           operand: atom
+0:15 - 0:16             "("
+0:16 - 0:17             "?"
+0:17 - 0:20             enable: regular_expression_modifiers
+0:17 - 0:18               regular_expression_modifier `i`
+0:18 - 0:19               regular_expression_modifier `m`
+0:19 - 0:20               regular_expression_modifier `s`
+0:20 - 0:21             ":"
+0:21 - 0:22             ")"
+0:22 - 0:29         term
+0:22 - 0:29           operand: atom
+0:22 - 0:23             "("
+0:23 - 0:24             "?"
+0:24 - 0:25             "-"
+0:25 - 0:27             disable: regular_expression_modifiers
+0:25 - 0:26               regular_expression_modifier `i`
+0:26 - 0:27               regular_expression_modifier `m`
+0:27 - 0:28             ":"
+0:28 - 0:29             ")"
+
+==================
+empty bodies preserve each group category
+:language(python_re)
+:language(python_re_verbose)
+==================
+()(?:)(?P<n>)\
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (capturing_group)
+      (non_capturing_group)
+      (named_capturing_group
+        name: (group_name))
+      (literal_escape))))
+
+==================
+comment content skips an escaped parenthesis
+:language(python_re)
+:language(python_re_verbose)
+==================
+(?#\)a)b\
+
+---
+
+(pattern
+  (comment_group)
+  body: (alternation
+    (concatenation
+      (literal_character)
+      (literal_escape))))
+
+==================
+comment content can begin with a brace
+:language(python_re)
+:language(python_re_verbose)
+==================
+(?#{} )a\
+
+---
+
+(pattern
+  (comment_group)
+  body: (alternation
+    (concatenation
+      (literal_character)
+      (literal_escape))))
+
+==================
+verbose comment skips an escaped newline
+:language(python_re)
+:language(python_re_verbose)
+==================
+(?x:#a\
+b
+z)\
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (scoped_flags_group
+        enable: (flag_set)
+        body: (alternation
+          (concatenation
+            (verbose_comment)
+            (verbose_whitespace)
+            (literal_character))))
+      (literal_escape))))
+
+==================
+an unescaped group name cannot start with an ASCII digit
+:language(javascript_regex)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:error
+==================
+(?<0>a)
+---
+
+==================
+group names cannot use hexadecimal character escapes
+:language(javascript_regex)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:error
+==================
+(?<\x61>a)
+---
+
+==================
+out-of-range code point escapes in group names require recovery
+:language(javascript_regex)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:error
+==================
+(?<\u0030>x)(?<\u{110000}>y)
+---
+
+==================
+an extra closing parenthesis requires recovery before following text
+:language(javascript_regex)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:error
+==================
+(a))b
+---
+
+==================
+an opening parenthesis alone remains an incomplete construct
+:language(javascript_regex)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:error
+==================
+(
+---
+
+==================
+an unterminated capturing group requires recovery
+:language(javascript_regex)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:error
+==================
+(ab
+---
+
+==================
+a named group without its closing parenthesis requires recovery
+:language(javascript_regex)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:error
+==================
+(?<x>a
+---
+
+==================
+a named group without its name terminator requires recovery
+:language(javascript_regex)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:error
+==================
+(?<x)a|b
+---
+
+==================
+an incomplete Unicode escape in a group name remains erroneous
+:language(javascript_regex)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:error
+==================
+(?<\u12>a)
+---
+
+==================
+the real closer belongs to the inner group and the missing closer to the outer group
+:language(javascript_regex)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:error
+==================
+((a)
+---

@@ -130,6 +130,7 @@ function createTreeSitter(environment = {}) {
           LOCALAPPDATA: cacheDirectory,
           TREE_SITTER_DIR: treeSitterConfigDirectory,
           TREE_SITTER_LIBDIR: libraryDirectory,
+          TREE_SITTER_SEED: process.env.TREE_SITTER_SEED ?? "1",
           XDG_CACHE_HOME: cacheDirectory,
           XDG_CONFIG_HOME: configDirectory,
           ...environment,
@@ -228,15 +229,27 @@ function fuzzParsers(runner, arguments_) {
         library,
       ]);
       if (buildStatus !== 0) return buildStatus;
-      const status = runChecked(runner, [
-        "fuzz",
-        "--lib-path",
-        library,
-        "--lang-name",
-        name,
-        ...arguments_,
-      ]);
+      const result = runner.run(
+        ["fuzz", "--lib-path", library, "--lang-name", name, ...arguments_],
+        {
+          encoding: "utf8",
+          env: { NO_COLOR: "1" },
+          maxBuffer: 16 * 1024 * 1024,
+          timeout: 600_000,
+          killSignal: "SIGKILL",
+        },
+      );
+      const status = resultStatus(result);
+      process.stdout.write(result.stdout);
+      process.stderr.write(result.stderr);
       if (status !== 0) return status;
+      // The CLI can report failed fuzz cases while returning exit status zero.
+      if (
+        /^[1-9][0-9]* .+ corpus tests failed fuzzing$/m.test(
+          result.stdout + result.stderr,
+        )
+      )
+        return 1;
     }
     return 0;
   } finally {

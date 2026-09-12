@@ -5,9 +5,11 @@ import {
   accessSync,
   constants,
   mkdtempSync,
+  readFileSync,
   realpathSync,
   rmSync,
   statSync,
+  writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { delimiter, dirname, isAbsolute, join } from "node:path";
@@ -111,7 +113,11 @@ function versionMajor(command) {
 }
 
 function run(command, arguments_) {
-  const result = spawnSync(command, arguments_, { stdio: "inherit" });
+  const result = spawnSync(command, arguments_, {
+    stdio: "inherit",
+    timeout: 60_000,
+    killSignal: "SIGKILL",
+  });
   if (result.error) {
     throw result.error;
   }
@@ -149,6 +155,29 @@ function llvmCommands() {
     ),
     clangFormat,
   };
+}
+
+function checkExternalTokenOrder(clang, compilerArguments, variant, directory) {
+  const grammar = JSON.parse(
+    readFileSync(join(variant.includeDirectory, "grammar.json"), "utf8"),
+  );
+  const assertions = grammar.externals.map(({ name }, index) => {
+    const enumerator = name.replace(/^_/, "").toUpperCase();
+    return `typedef char external_${index}[${enumerator} == ${index} ? 1 : -1];`;
+  });
+  const count =
+    variant.family === "python"
+      ? "LITERAL_CHARACTER_VERBOSE + 1"
+      : "TOKEN_COUNT";
+  assertions.push(
+    `typedef char external_count[${count} == ${grammar.externals.length} ? 1 : -1];`,
+  );
+  const source = join(directory, `scanner-indices-${variant.name}.c`);
+  writeFileSync(
+    source,
+    `#include ${JSON.stringify(variant.source.replaceAll("\\", "/"))}\n${assertions.join("\n")}\n`,
+  );
+  run(clang, [...compilerArguments, "-fsyntax-only", source]);
 }
 
 function main() {
@@ -202,36 +231,45 @@ function main() {
     join(tmpdir(), "tree-sitter-regex-scanner."),
   );
   try {
-    for (const variant of scannerVariants) {
-      const compilerArguments = [
-        ...sanitizerArguments,
-        "-std=c17",
-        "-Wall",
-        "-Wextra",
-        "-Werror",
-        "-pedantic",
-        "-I",
-        variant.includeDirectory,
-      ];
-      run(clang, [...compilerArguments, "-fsyntax-only", variant.source]);
+    for (const standard of ["c99", "c17"]) {
+      for (const variant of scannerVariants) {
+        const compilerArguments = [
+          ...sanitizerArguments,
+          `-std=${standard}`,
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-pedantic",
+          "-I",
+          variant.includeDirectory,
+        ];
+        checkExternalTokenOrder(
+          clang,
+          compilerArguments,
+          variant,
+          testDirectory,
+        );
 
-      const executableSuffix = process.platform === "win32" ? ".exe" : "";
-      const testBinary = join(
-        testDirectory,
-        `scanner-${variant.name}${executableSuffix}`,
-      );
-      run(clang, [
-        ...compilerArguments,
-        variant.modeArgument,
-        ...(variant.family === "python"
-          ? ["-DPYTHON_RE_LANGUAGE=python_re_test"]
-          : []),
-        variant.contract,
-        "-o",
-        testBinary,
-      ]);
-      run(testBinary, []);
-      process.stdout.write(`${variant.name}: scanner tests passed (C17)\n`);
+        const executableSuffix = process.platform === "win32" ? ".exe" : "";
+        const testBinary = join(
+          testDirectory,
+          `scanner-${variant.name}-${standard}${executableSuffix}`,
+        );
+        run(clang, [
+          ...compilerArguments,
+          variant.modeArgument,
+          ...(variant.family === "python"
+            ? ["-DPYTHON_RE_LANGUAGE=python_re_test"]
+            : []),
+          variant.contract,
+          "-o",
+          testBinary,
+        ]);
+        run(testBinary, []);
+        process.stdout.write(
+          `${variant.name}: scanner tests passed (${standard.toUpperCase()})\n`,
+        );
+      }
     }
   } finally {
     rmSync(testDirectory, { force: true, recursive: true });
