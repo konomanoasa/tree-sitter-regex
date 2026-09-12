@@ -1,10 +1,9 @@
-#!/usr/bin/env node
-
 import { readFileSync, writeFileSync } from "node:fs";
 import idContinue from "@unicode/unicode-17.0.0/Binary_Property/ID_Continue/code-points.js";
 import idStart from "@unicode/unicode-17.0.0/Binary_Property/ID_Start/code-points.js";
 
-const output = new URL("../common/javascript/unicode.js", import.meta.url);
+const outputPath = new URL("../common/javascript/unicode.js", import.meta.url);
+
 function characterClass(codePoints) {
   const ranges = [];
   for (const codePoint of codePoints.toSorted((left, right) => left - right)) {
@@ -32,29 +31,34 @@ function generateUnicode() {
   ].join("\n");
 }
 
-function main() {
-  const args = process.argv.slice(2);
-  if (args.length > 1 || (args.length === 1 && args[0] !== "--check"))
+function main(arguments_) {
+  if (
+    arguments_.length > 1 ||
+    (arguments_.length === 1 && arguments_[0] !== "--check")
+  ) {
     throw new Error("Usage: node scripts/generate-unicode.js [--check]");
+  }
   const generated = generateUnicode();
-  if (args.length === 0) {
-    writeFileSync(output, generated);
-    return;
+  if (arguments_.length === 0) {
+    writeFileSync(outputPath, generated);
+    return 0;
   }
   let actual;
   try {
-    actual = readFileSync(output, "utf8");
+    actual = readFileSync(outputPath, "utf8");
   } catch (error) {
     if (error.code !== "ENOENT") throw error;
   }
-  if (actual !== generated)
+  if (actual !== generated) {
     throw new Error(
       "Generated Unicode classes are stale or missing; run node scripts/generate-unicode.js",
     );
+  }
+  return 0;
 }
 
 try {
-  main();
+  process.exitCode = main(process.argv.slice(2));
 } catch (error) {
   console.error(error.message);
   process.exitCode = 1;
