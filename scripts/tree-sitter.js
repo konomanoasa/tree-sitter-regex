@@ -154,6 +154,8 @@ function generateParsers(outputRoot = root) {
         [
           "generate",
           join(root, grammar.path, "grammar.js"),
+          "--abi",
+          "latest",
           "--output",
           output,
         ],
@@ -168,6 +170,17 @@ function generateParsers(outputRoot = root) {
 }
 
 function testCorpus(arguments_) {
+  if (
+    arguments_.some(
+      (argument) =>
+        ["--update", "--debug-graph", "--open-log"].includes(argument) ||
+        /^-[d0rh]*[uD]/.test(argument),
+    )
+  ) {
+    throw new Error(
+      "test-corpus deletes its isolated copy; --update, --debug-graph, and --open-log would lose their output.",
+    );
+  }
   const testRoot = mkdtempSync(join(root, ".tree-sitter-regex-test-"));
   let runner;
 

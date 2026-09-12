@@ -7,6 +7,7 @@ import {
   mkdtempSync,
   realpathSync,
   rmSync,
+  statSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { delimiter, dirname, isAbsolute, join } from "node:path";
@@ -53,13 +54,16 @@ function executableCandidates(name) {
   const extensions = (process.env.PATHEXT ?? ".EXE;.CMD;.BAT")
     .split(";")
     .filter(Boolean);
-  return extensions.map((extension) => name + extension.toLowerCase());
+  return [
+    name,
+    ...extensions.map((extension) => name + extension.toLowerCase()),
+  ];
 }
 
 function isExecutable(path) {
   try {
     accessSync(path, constants.X_OK);
-    return true;
+    return statSync(path).isFile();
   } catch {
     return false;
   }
