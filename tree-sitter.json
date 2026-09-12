@@ -48,7 +48,7 @@
   "metadata": {
     "version": "0.1.0",
     "license": "MIT",
-    "description": "Tree-sitter grammars for ECMAScript 2026 regular expression literal bodies and Python 3.14 re patterns.",
+    "description": "Tree-sitter grammars for JavaScript regex and Python re.",
     "authors": [
       {
         "name": "konomanoasa"

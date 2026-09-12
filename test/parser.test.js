@@ -4,6 +4,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
+import { pathToFileURL } from "node:url";
 import {
   unicodeIdContinue,
   unicodeIdStart,
@@ -609,7 +610,7 @@ for (const grammar of grammars) {
 }
 
 test("regex: corpus fuzz propagates CLI failures even when its exit status is zero", () => {
-  const directory = mkdtempSync(join(tmpdir(), "tree-sitter-fuzz-exit-"));
+  const directory = mkdtempSync(join(tmpdir(), "tree-sitter-fuzz-exit-#-"));
   const preload = join(directory, "cli.mjs");
   const script = join(import.meta.dirname, "..", "scripts", "tree-sitter.js");
   const fixtures = [
@@ -653,7 +654,7 @@ syncBuiltinESMExports();
       );
       const result = spawnSync(
         process.execPath,
-        ["--import", preload, script, "fuzz-all"],
+        ["--import", pathToFileURL(preload).href, script, "fuzz-all"],
         {
           encoding: "utf8",
           timeout: 60_000,

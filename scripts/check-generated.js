@@ -1,10 +1,17 @@
-#!/usr/bin/env node
-
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, readdirSync, readFileSync, rmSync } from "node:fs";
+import {
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  statSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join, relative } from "node:path";
-import { generateParsers, grammars, root } from "./tree-sitter.js";
+import { generateParsers, grammars, packageName, root } from "./tree-sitter.js";
+
+const parserBudgets = {};
+const prerequisiteScripts = ["generate-unicode.js"];
 
 const generatedPaths = [
   "grammar.json",
@@ -13,82 +20,216 @@ const generatedPaths = [
   join("tree_sitter", "alloc.h"),
   join("tree_sitter", "array.h"),
   join("tree_sitter", "parser.h"),
-].sort((left, right) => left.localeCompare(right));
+].sort();
 
-function files(directory, prefix = "") {
+function listFiles(directory, prefix = "") {
   const paths = [];
   for (const entry of readdirSync(join(directory, prefix), {
     withFileTypes: true,
   })) {
     const path = join(prefix, entry.name);
-    if (entry.isDirectory()) paths.push(...files(directory, path));
-    else if (entry.isFile()) paths.push(path);
+    if (entry.isDirectory()) {
+      paths.push(...listFiles(directory, path));
+    } else {
+      paths.push(path);
+    }
   }
-  return paths.sort((left, right) => left.localeCompare(right));
+  return paths.sort();
 }
 
 function different(left, right) {
   try {
     return !readFileSync(left).equals(readFileSync(right));
   } catch (error) {
-    if (error && error.code === "ENOENT") return true;
+    if (error.code === "ENOENT") return true;
     throw error;
   }
 }
 
-function main() {
-  const unicode = spawnSync(
-    process.execPath,
-    [join(root, "scripts", "generate-unicode.js"), "--check"],
-    { stdio: "inherit" },
+function readDefinition(parser, name, path) {
+  const match = parser.match(new RegExp(`^#define ${name} ([0-9]+)$`, "m"));
+  if (match === null) {
+    throw new Error(`${path} does not define ${name} as an integer`);
+  }
+  return Number(match[1]);
+}
+
+function maximumActionIndex(parser, path) {
+  let maximum;
+  for (const match of parser.matchAll(/ACTIONS\(([0-9]+)\)/g)) {
+    const value = Number(match[1]);
+    maximum = maximum === undefined ? value : Math.max(maximum, value);
+  }
+  if (maximum === undefined) {
+    throw new Error(`${path} contains no ACTIONS index`);
+  }
+  return maximum;
+}
+
+function smallParseTableWordCount(parser, path) {
+  const declaration = "static const uint16_t ts_small_parse_table[] = {\n";
+  const start = parser.indexOf(declaration);
+  if (start === -1) {
+    throw new Error(`${path} contains no small parse table`);
+  }
+  const initializerStart = start + declaration.length;
+  const initializerEnd = parser.indexOf("\n};", initializerStart);
+  if (initializerEnd === -1) {
+    throw new Error(`${path} contains an unterminated small parse table`);
+  }
+  const initializer = parser.slice(initializerStart, initializerEnd);
+
+  let finalIndex;
+  let finalOffset;
+  for (const match of initializer.matchAll(/^ {2}\[([0-9]+)\] =/gm)) {
+    finalIndex = Number(match[1]);
+    finalOffset = match.index;
+  }
+  if (finalIndex === undefined || finalOffset === undefined) {
+    throw new Error(`${path} small parse table has no indexed row`);
+  }
+
+  const finalRowWordCount =
+    initializer.slice(finalOffset).match(/,/g)?.length ?? 0;
+  if (finalRowWordCount === 0) {
+    throw new Error(`${path} small parse table has an empty final row`);
+  }
+  return finalIndex + finalRowWordCount;
+}
+
+function parseTableStorageBytes(parser, metrics, path) {
+  const smallStateCount = metrics.STATE_COUNT - metrics.LARGE_STATE_COUNT;
+  if (smallStateCount < 0) {
+    throw new Error(`${path} has more large states than total states`);
+  }
+  return (
+    metrics.LARGE_STATE_COUNT * metrics.SYMBOL_COUNT * 2 +
+    smallParseTableWordCount(parser, path) * 2 +
+    smallStateCount * 4
   );
-  if (unicode.error) throw unicode.error;
-  if (unicode.status !== 0) return 1;
+}
+
+function checkParser(grammar, generatedRoot) {
+  const budget = parserBudgets[grammar.name];
+  if (Object.keys(parserBudgets).length > 0 && budget === undefined) {
+    throw new Error(`Missing parser budget for ${grammar.name}`);
+  }
+
+  const parserPath = join(generatedRoot, grammar.path, "src", "parser.c");
+  const displayPath = relative(generatedRoot, parserPath);
+  const parser = readFileSync(parserPath, "utf8");
+  const metrics = {
+    LANGUAGE_VERSION: readDefinition(parser, "LANGUAGE_VERSION", displayPath),
+    STATE_COUNT: readDefinition(parser, "STATE_COUNT", displayPath),
+    LARGE_STATE_COUNT: readDefinition(parser, "LARGE_STATE_COUNT", displayPath),
+    SYMBOL_COUNT: readDefinition(parser, "SYMBOL_COUNT", displayPath),
+    EXTERNAL_TOKEN_COUNT: readDefinition(
+      parser,
+      "EXTERNAL_TOKEN_COUNT",
+      displayPath,
+    ),
+    parser_bytes: statSync(parserPath).size,
+    maximum_ACTIONS_index: maximumActionIndex(parser, displayPath),
+  };
+  metrics.parse_table_storage_bytes = parseTableStorageBytes(
+    parser,
+    metrics,
+    displayPath,
+  );
+
+  console.log(`${grammar.name}:`);
+  console.log("Metric                           Actual      Maximum");
+  let failed = false;
+  for (const [name, value] of Object.entries(metrics)) {
+    const maximum = budget?.[name];
+    console.log(
+      `${name.padEnd(28)} ${String(value).padStart(12)} ${String(maximum ?? "-").padStart(12)}`,
+    );
+    if (maximum !== undefined && value > maximum) {
+      console.error(
+        `${displayPath}: ${name} exceeds its parser budget: ${value} > ${maximum}`,
+      );
+      failed = true;
+    }
+  }
+  return { failed, languageVersion: metrics.LANGUAGE_VERSION };
+}
+
+function main(arguments_) {
+  if (arguments_.length !== 0) {
+    throw new Error("Usage: node scripts/check-generated.js");
+  }
+  for (const script of prerequisiteScripts) {
+    const result = spawnSync(
+      process.execPath,
+      [join(root, "scripts", script), "--check"],
+      {
+        cwd: root,
+        stdio: "inherit",
+        timeout: 60_000,
+        killSignal: "SIGKILL",
+      },
+    );
+    if (result.error) throw result.error;
+    if (result.status !== 0) return 1;
+  }
+
   const generatedRoot = mkdtempSync(
-    join(tmpdir(), "tree-sitter-regex-generated-"),
+    join(tmpdir(), `${packageName}-generated-`),
   );
   try {
-    const status = generateParsers(generatedRoot);
-    if (status !== 0) return status;
+    if (generateParsers(generatedRoot) !== 0) return 1;
+
+    let failed = false;
     const stale = [];
-    const languageVersions = new Map();
     for (const grammar of grammars) {
-      const directory = join(generatedRoot, grammar.path, "src");
-      const actualPaths = files(directory);
+      const generatedDirectory = join(generatedRoot, grammar.path, "src");
+      const actualPaths = listFiles(generatedDirectory);
       if (JSON.stringify(actualPaths) !== JSON.stringify(generatedPaths)) {
-        throw new Error(
-          `${grammar.path}: unexpected generated files ${JSON.stringify(actualPaths)}`,
-        );
+        console.error(`${grammar.name}: generated file manifest differs.`);
+        console.error(`Expected:\n${generatedPaths.join("\n")}`);
+        console.error(`Actual:\n${actualPaths.join("\n")}`);
+        failed = true;
       }
       for (const path of generatedPaths) {
+        const generatedPath = join(generatedDirectory, path);
         const repositoryPath = join(root, grammar.path, "src", path);
-        if (different(join(directory, path), repositoryPath))
+        if (different(generatedPath, repositoryPath)) {
           stale.push(relative(root, repositoryPath));
+        }
       }
-      const parser = readFileSync(join(directory, "parser.c"), "utf8");
-      const version = parser.match(/^#define LANGUAGE_VERSION ([0-9]+)$/m);
-      if (version === null)
-        throw new Error(`${grammar.name}: missing Tree-sitter ABI version`);
-      languageVersions.set(grammar.name, Number(version[1]));
     }
     if (stale.length > 0) {
       console.error("Generated parser files are stale or missing:");
       for (const path of stale) console.error(`  ${path}`);
       console.error("Run npm run generate and review the results.");
-      return 1;
+      failed = true;
+    }
+
+    const languageVersions = new Map();
+    for (const grammar of grammars) {
+      const result = checkParser(grammar, generatedRoot);
+      failed = result.failed || failed;
+      languageVersions.set(grammar.name, result.languageVersion);
     }
     if (new Set(languageVersions.values()).size !== 1) {
       console.error(
         "Generated parsers use different Tree-sitter ABI versions:",
       );
-      for (const [name, version] of languageVersions)
+      for (const [name, version] of languageVersions) {
         console.error(`  ${name}: ${version}`);
-      return 1;
+      }
+      failed = true;
     }
-    return 0;
+    return failed ? 1 : 0;
   } finally {
     rmSync(generatedRoot, { recursive: true, force: true });
   }
 }
 
-process.exitCode = main();
+try {
+  process.exitCode = main(process.argv.slice(2));
+} catch (error) {
+  console.error(error.message);
+  process.exitCode = 1;
+}
