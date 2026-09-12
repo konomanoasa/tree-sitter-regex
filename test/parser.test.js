@@ -784,35 +784,30 @@ for (const profile of profiles) {
 }
 
 for (const language of allLanguages) {
-  test(`${language}: fixed-seed generated histories preserve incremental CST`, () => {
+  test(`${language}: replacing every fragment at every position preserves incremental CST`, () => {
     const fragments = ["a", "b", "(c)", "[d-f]", String.raw`\d`, "x?"];
-    let seed = 1;
-    const next = (limit) => {
-      seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
-      return seed % limit;
-    };
     const parts = ["a", "b", "(c)"];
     const beforePath = join(cache, "generated-before.txt");
     const afterPath = join(cache, "generated-after.txt");
     writeFileSync(beforePath, parts.join(""));
     const edits = [];
-    for (let step = 0; step < 30; step++) {
-      const index = next(parts.length);
-      const insert = fragments[next(fragments.length)];
-      edits.push({
-        start: parts.slice(0, index).join("").length,
-        delete: parts[index].length,
-        insert,
-      });
-      parts[index] = insert;
-      writeFileSync(afterPath, parts.join(""));
-      const fresh = parseFile(afterPath, language);
-      assert.equal(fresh.status, 0);
-      assert.deepEqual(
-        parseFile(beforePath, language, edits),
-        fresh,
-        `seed 1, step ${step}`,
-      );
+    for (const insert of fragments) {
+      for (let index = 0; index < parts.length; index++) {
+        edits.push({
+          start: parts.slice(0, index).join("").length,
+          delete: parts[index].length,
+          insert,
+        });
+        parts[index] = insert;
+        writeFileSync(afterPath, parts.join(""));
+        const fresh = parseFile(afterPath, language);
+        assert.equal(fresh.status, 0);
+        assert.deepEqual(
+          parseFile(beforePath, language, edits),
+          fresh,
+          `${JSON.stringify(insert)} at position ${index}`,
+        );
+      }
     }
   });
 }
