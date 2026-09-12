@@ -7,16 +7,8 @@
       "!common/javascript/unicode.js"
     ]
   },
-  "javascript": {
-    "formatter": {
-      "indentStyle": "space",
-      "indentWidth": 2
-    }
-  },
-  "json": {
-    "formatter": {
-      "indentStyle": "space",
-      "indentWidth": 2
-    }
+  "formatter": {
+    "indentStyle": "space",
+    "indentWidth": 2
   }
 }

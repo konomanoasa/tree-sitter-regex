@@ -1,0 +1,1716 @@
+==================
+numeric references use the total capture count including later captures
+:language(javascript_regex)
+:cst
+==================
+\2(a)(b)\1
+---
+
+0:0  - 0:10   pattern
+0:0  - 0:10     body: disjunction
+0:0  - 0:10       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: extended_atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                decimal_escape
+0:1  - 0:2                  non_zero_digit `2`
+0:2  - 0:5          term
+0:2  - 0:5            operand: extended_atom
+0:2  - 0:3              "("
+0:3  - 0:4              body: disjunction
+0:3  - 0:4                alternative
+0:3  - 0:4                  term
+0:3  - 0:4                    operand: extended_atom
+0:3  - 0:4                      extended_pattern_character
+0:3  - 0:4                        source_character `a`
+0:4  - 0:5              ")"
+0:5  - 0:8          term
+0:5  - 0:8            operand: extended_atom
+0:5  - 0:6              "("
+0:6  - 0:7              body: disjunction
+0:6  - 0:7                alternative
+0:6  - 0:7                  term
+0:6  - 0:7                    operand: extended_atom
+0:6  - 0:7                      extended_pattern_character
+0:6  - 0:7                        source_character `b`
+0:7  - 0:8              ")"
+0:8  - 0:10         term
+0:8  - 0:10           operand: extended_atom
+0:8  - 0:9              "\\"
+0:9  - 0:10             atom_escape
+0:9  - 0:10               decimal_escape
+0:9  - 0:10                 non_zero_digit `1`
+
+==================
+numeric references use the total capture count including later captures
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==================
+\2(a)(b)\1
+---
+
+0:0  - 0:10   pattern
+0:0  - 0:10     body: disjunction
+0:0  - 0:10       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                decimal_escape
+0:1  - 0:2                  non_zero_digit `2`
+0:2  - 0:5          term
+0:2  - 0:5            operand: atom
+0:2  - 0:3              "("
+0:3  - 0:4              body: disjunction
+0:3  - 0:4                alternative
+0:3  - 0:4                  term
+0:3  - 0:4                    operand: atom
+0:3  - 0:4                      pattern_character
+0:3  - 0:4                        source_character `a`
+0:4  - 0:5              ")"
+0:5  - 0:8          term
+0:5  - 0:8            operand: atom
+0:5  - 0:6              "("
+0:6  - 0:7              body: disjunction
+0:6  - 0:7                alternative
+0:6  - 0:7                  term
+0:6  - 0:7                    operand: atom
+0:6  - 0:7                      pattern_character
+0:6  - 0:7                        source_character `b`
+0:7  - 0:8              ")"
+0:8  - 0:10         term
+0:8  - 0:10           operand: atom
+0:8  - 0:9              "\\"
+0:9  - 0:10             atom_escape
+0:9  - 0:10               decimal_escape
+0:9  - 0:10                 non_zero_digit `1`
+
+==================
+named references keep the same delimiter ownership in all JavaScript modes
+:language(javascript_regex)
+:cst
+==================
+\k<x>(?<x>a)
+---
+
+0:0  - 0:12   pattern
+0:0  - 0:12     body: disjunction
+0:0  - 0:12       alternative
+0:0  - 0:5          term
+0:0  - 0:5            operand: extended_atom
+0:0  - 0:1              "\\"
+0:1  - 0:5              atom_escape
+0:1  - 0:2                "k"
+0:2  - 0:5                group_name
+0:2  - 0:3                  "<"
+0:3  - 0:4                  name: reg_exp_identifier_name
+0:3  - 0:4                    reg_exp_identifier_start
+0:3  - 0:4                      identifier_start_char
+0:3  - 0:4                        unicode_id_start `x`
+0:4  - 0:5                  ">"
+0:5  - 0:12         term
+0:5  - 0:12           operand: extended_atom
+0:5  - 0:6              "("
+0:6  - 0:10             group_specifier
+0:6  - 0:7                "?"
+0:7  - 0:10               group_name
+0:7  - 0:8                  "<"
+0:8  - 0:9                  name: reg_exp_identifier_name
+0:8  - 0:9                    reg_exp_identifier_start
+0:8  - 0:9                      identifier_start_char
+0:8  - 0:9                        unicode_id_start `x`
+0:9  - 0:10                 ">"
+0:10 - 0:11             body: disjunction
+0:10 - 0:11               alternative
+0:10 - 0:11                 term
+0:10 - 0:11                   operand: extended_atom
+0:10 - 0:11                     extended_pattern_character
+0:10 - 0:11                       source_character `a`
+0:11 - 0:12             ")"
+
+==================
+named references keep the same delimiter ownership in all JavaScript modes
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==================
+\k<x>(?<x>a)
+---
+
+0:0  - 0:12   pattern
+0:0  - 0:12     body: disjunction
+0:0  - 0:12       alternative
+0:0  - 0:5          term
+0:0  - 0:5            operand: atom
+0:0  - 0:1              "\\"
+0:1  - 0:5              atom_escape
+0:1  - 0:2                "k"
+0:2  - 0:5                group_name
+0:2  - 0:3                  "<"
+0:3  - 0:4                  name: reg_exp_identifier_name
+0:3  - 0:4                    reg_exp_identifier_start
+0:3  - 0:4                      identifier_start_char
+0:3  - 0:4                        unicode_id_start `x`
+0:4  - 0:5                  ">"
+0:5  - 0:12         term
+0:5  - 0:12           operand: atom
+0:5  - 0:6              "("
+0:6  - 0:10             group_specifier
+0:6  - 0:7                "?"
+0:7  - 0:10               group_name
+0:7  - 0:8                  "<"
+0:8  - 0:9                  name: reg_exp_identifier_name
+0:8  - 0:9                    reg_exp_identifier_start
+0:8  - 0:9                      identifier_start_char
+0:8  - 0:9                        unicode_id_start `x`
+0:9  - 0:10                 ">"
+0:10 - 0:11             body: disjunction
+0:10 - 0:11               alternative
+0:10 - 0:11                 term
+0:10 - 0:11                   operand: atom
+0:10 - 0:11                     pattern_character
+0:10 - 0:11                       source_character `a`
+0:11 - 0:12             ")"
+
+==================
+named reference introducer and operator own separate source ranges
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+(?P=name)
+---
+
+0:0 - 0:9   pattern
+0:0 - 0:9     body: alternation
+0:0 - 0:9       concatenation
+0:0 - 0:9         named_backreference
+0:0 - 0:1           "("
+0:1 - 0:3           "?P"
+0:3 - 0:4           "="
+0:4 - 0:8           name: group_name `name`
+0:8 - 0:9           ")"
+
+==================
+named references preserve forward and escaped names
+:language(javascript_regex)
+:cst
+==================
+\k<x>(?<x>a)\k<\u0078>?
+---
+
+0:0  - 0:23   pattern
+0:0  - 0:23     body: disjunction
+0:0  - 0:23       alternative
+0:0  - 0:5          term
+0:0  - 0:5            operand: extended_atom
+0:0  - 0:1              "\\"
+0:1  - 0:5              atom_escape
+0:1  - 0:2                "k"
+0:2  - 0:5                group_name
+0:2  - 0:3                  "<"
+0:3  - 0:4                  name: reg_exp_identifier_name
+0:3  - 0:4                    reg_exp_identifier_start
+0:3  - 0:4                      identifier_start_char
+0:3  - 0:4                        unicode_id_start `x`
+0:4  - 0:5                  ">"
+0:5  - 0:12         term
+0:5  - 0:12           operand: extended_atom
+0:5  - 0:6              "("
+0:6  - 0:10             group_specifier
+0:6  - 0:7                "?"
+0:7  - 0:10               group_name
+0:7  - 0:8                  "<"
+0:8  - 0:9                  name: reg_exp_identifier_name
+0:8  - 0:9                    reg_exp_identifier_start
+0:8  - 0:9                      identifier_start_char
+0:8  - 0:9                        unicode_id_start `x`
+0:9  - 0:10                 ">"
+0:10 - 0:11             body: disjunction
+0:10 - 0:11               alternative
+0:10 - 0:11                 term
+0:10 - 0:11                   operand: extended_atom
+0:10 - 0:11                     extended_pattern_character
+0:10 - 0:11                       source_character `a`
+0:11 - 0:12             ")"
+0:12 - 0:23         term
+0:12 - 0:22           operand: extended_atom
+0:12 - 0:13             "\\"
+0:13 - 0:22             atom_escape
+0:13 - 0:14               "k"
+0:14 - 0:22               group_name
+0:14 - 0:15                 "<"
+0:15 - 0:21                 name: reg_exp_identifier_name
+0:15 - 0:21                   reg_exp_identifier_start
+0:15 - 0:16                     "\\"
+0:16 - 0:21                     reg_exp_unicode_escape_sequence
+0:16 - 0:17                       "u"
+0:17 - 0:21                       hex_non_surrogate
+0:17 - 0:21                         hex4_digits
+0:17 - 0:18                           hex_digit `0`
+0:18 - 0:19                           hex_digit `0`
+0:19 - 0:20                           hex_digit `7`
+0:20 - 0:21                           hex_digit `8`
+0:21 - 0:22                 ">"
+0:22 - 0:23           quantifier: quantifier
+0:22 - 0:23             quantifier_prefix
+0:22 - 0:23               "?"
+
+==================
+named references preserve forward and escaped names
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==================
+\k<x>(?<x>a)\k<\u0078>?
+---
+
+0:0  - 0:23   pattern
+0:0  - 0:23     body: disjunction
+0:0  - 0:23       alternative
+0:0  - 0:5          term
+0:0  - 0:5            operand: atom
+0:0  - 0:1              "\\"
+0:1  - 0:5              atom_escape
+0:1  - 0:2                "k"
+0:2  - 0:5                group_name
+0:2  - 0:3                  "<"
+0:3  - 0:4                  name: reg_exp_identifier_name
+0:3  - 0:4                    reg_exp_identifier_start
+0:3  - 0:4                      identifier_start_char
+0:3  - 0:4                        unicode_id_start `x`
+0:4  - 0:5                  ">"
+0:5  - 0:12         term
+0:5  - 0:12           operand: atom
+0:5  - 0:6              "("
+0:6  - 0:10             group_specifier
+0:6  - 0:7                "?"
+0:7  - 0:10               group_name
+0:7  - 0:8                  "<"
+0:8  - 0:9                  name: reg_exp_identifier_name
+0:8  - 0:9                    reg_exp_identifier_start
+0:8  - 0:9                      identifier_start_char
+0:8  - 0:9                        unicode_id_start `x`
+0:9  - 0:10                 ">"
+0:10 - 0:11             body: disjunction
+0:10 - 0:11               alternative
+0:10 - 0:11                 term
+0:10 - 0:11                   operand: atom
+0:10 - 0:11                     pattern_character
+0:10 - 0:11                       source_character `a`
+0:11 - 0:12             ")"
+0:12 - 0:23         term
+0:12 - 0:22           operand: atom
+0:12 - 0:13             "\\"
+0:13 - 0:22             atom_escape
+0:13 - 0:14               "k"
+0:14 - 0:22               group_name
+0:14 - 0:15                 "<"
+0:15 - 0:21                 name: reg_exp_identifier_name
+0:15 - 0:21                   reg_exp_identifier_start
+0:15 - 0:16                     "\\"
+0:16 - 0:21                     reg_exp_unicode_escape_sequence
+0:16 - 0:17                       "u"
+0:17 - 0:21                       hex_non_surrogate
+0:17 - 0:21                         hex4_digits
+0:17 - 0:18                           hex_digit `0`
+0:18 - 0:19                           hex_digit `0`
+0:19 - 0:20                           hex_digit `7`
+0:20 - 0:21                           hex_digit `8`
+0:21 - 0:22                 ">"
+0:22 - 0:23           quantifier: quantifier
+0:22 - 0:23             quantifier_prefix
+0:22 - 0:23               "?"
+
+==================
+escaped group names and named references retain their own delimiters
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==================
+(?<\u{61}>a)\k<a>
+---
+
+0:0  - 0:17   pattern
+0:0  - 0:17     body: disjunction
+0:0  - 0:17       alternative
+0:0  - 0:12         term
+0:0  - 0:12           operand: atom
+0:0  - 0:1              "("
+0:1  - 0:10             group_specifier
+0:1  - 0:2                "?"
+0:2  - 0:10               group_name
+0:2  - 0:3                  "<"
+0:3  - 0:9                  name: reg_exp_identifier_name
+0:3  - 0:9                    reg_exp_identifier_start
+0:3  - 0:4                      "\\"
+0:4  - 0:9                      reg_exp_unicode_escape_sequence
+0:4  - 0:5                        "u"
+0:5  - 0:6                        "{"
+0:6  - 0:8                        code_point
+0:6  - 0:8                          hex_digits
+0:6  - 0:7                            hex_digit `6`
+0:7  - 0:8                            hex_digit `1`
+0:8  - 0:9                        "}"
+0:9  - 0:10                 ">"
+0:10 - 0:11             body: disjunction
+0:10 - 0:11               alternative
+0:10 - 0:11                 term
+0:10 - 0:11                   operand: atom
+0:10 - 0:11                     pattern_character
+0:10 - 0:11                       source_character `a`
+0:11 - 0:12             ")"
+0:12 - 0:17         term
+0:12 - 0:17           operand: atom
+0:12 - 0:13             "\\"
+0:13 - 0:17             atom_escape
+0:13 - 0:14               "k"
+0:14 - 0:17               group_name
+0:14 - 0:15                 "<"
+0:15 - 0:16                 name: reg_exp_identifier_name
+0:15 - 0:16                   reg_exp_identifier_start
+0:15 - 0:16                     identifier_start_char
+0:15 - 0:16                       unicode_id_start `a`
+0:16 - 0:17                 ">"
+
+==================
+lookarounds noncapturing groups and modifier groups do not increase the capture count
+:language(javascript_regex)
+:cst
+==================
+\1(?:)(?=)(?!)(?<=)(?<!)(?i:)
+---
+
+0:0  - 0:29   pattern
+0:0  - 0:29     body: disjunction
+0:0  - 0:29       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: extended_atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                character_escape
+0:1  - 0:2                  legacy_octal_escape_sequence
+0:1  - 0:2                    non_zero_octal_digit
+0:1  - 0:2                      octal_digit `1`
+0:2  - 0:6          term
+0:2  - 0:6            operand: extended_atom
+0:2  - 0:3              "("
+0:3  - 0:4              "?"
+0:4  - 0:5              ":"
+0:5  - 0:6              ")"
+0:6  - 0:10         term
+0:6  - 0:10           assertion
+0:6  - 0:10             quantifiable_assertion
+0:6  - 0:7                "("
+0:7  - 0:8                "?"
+0:8  - 0:9                "="
+0:9  - 0:10               ")"
+0:10 - 0:14         term
+0:10 - 0:14           assertion
+0:10 - 0:14             quantifiable_assertion
+0:10 - 0:11               "("
+0:11 - 0:12               "?"
+0:12 - 0:13               "!"
+0:13 - 0:14               ")"
+0:14 - 0:19         term
+0:14 - 0:19           assertion
+0:14 - 0:15             "("
+0:15 - 0:16             "?"
+0:16 - 0:18             "<="
+0:18 - 0:19             ")"
+0:19 - 0:24         term
+0:19 - 0:24           assertion
+0:19 - 0:20             "("
+0:20 - 0:21             "?"
+0:21 - 0:23             "<!"
+0:23 - 0:24             ")"
+0:24 - 0:29         term
+0:24 - 0:29           operand: extended_atom
+0:24 - 0:25             "("
+0:25 - 0:26             "?"
+0:26 - 0:27             enable: regular_expression_modifiers
+0:26 - 0:27               regular_expression_modifier `i`
+0:27 - 0:28             ":"
+0:28 - 0:29             ")"
+
+==================
+captures inside every lookaround and modifier body contribute to the total
+:language(javascript_regex)
+:cst
+==================
+\5\6(?=(a))(?!(b))(?<=(c))(?<!(d))(?i:(e))
+---
+
+0:0  - 0:42   pattern
+0:0  - 0:42     body: disjunction
+0:0  - 0:42       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: extended_atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                decimal_escape
+0:1  - 0:2                  non_zero_digit `5`
+0:2  - 0:4          term
+0:2  - 0:4            operand: extended_atom
+0:2  - 0:3              "\\"
+0:3  - 0:4              atom_escape
+0:3  - 0:4                character_escape
+0:3  - 0:4                  legacy_octal_escape_sequence
+0:3  - 0:4                    non_zero_octal_digit
+0:3  - 0:4                      octal_digit `6`
+0:4  - 0:11         term
+0:4  - 0:11           assertion
+0:4  - 0:11             quantifiable_assertion
+0:4  - 0:5                "("
+0:5  - 0:6                "?"
+0:6  - 0:7                "="
+0:7  - 0:10               body: disjunction
+0:7  - 0:10                 alternative
+0:7  - 0:10                   term
+0:7  - 0:10                     operand: extended_atom
+0:7  - 0:8                        "("
+0:8  - 0:9                        body: disjunction
+0:8  - 0:9                          alternative
+0:8  - 0:9                            term
+0:8  - 0:9                              operand: extended_atom
+0:8  - 0:9                                extended_pattern_character
+0:8  - 0:9                                  source_character `a`
+0:9  - 0:10                       ")"
+0:10 - 0:11               ")"
+0:11 - 0:18         term
+0:11 - 0:18           assertion
+0:11 - 0:18             quantifiable_assertion
+0:11 - 0:12               "("
+0:12 - 0:13               "?"
+0:13 - 0:14               "!"
+0:14 - 0:17               body: disjunction
+0:14 - 0:17                 alternative
+0:14 - 0:17                   term
+0:14 - 0:17                     operand: extended_atom
+0:14 - 0:15                       "("
+0:15 - 0:16                       body: disjunction
+0:15 - 0:16                         alternative
+0:15 - 0:16                           term
+0:15 - 0:16                             operand: extended_atom
+0:15 - 0:16                               extended_pattern_character
+0:15 - 0:16                                 source_character `b`
+0:16 - 0:17                       ")"
+0:17 - 0:18               ")"
+0:18 - 0:26         term
+0:18 - 0:26           assertion
+0:18 - 0:19             "("
+0:19 - 0:20             "?"
+0:20 - 0:22             "<="
+0:22 - 0:25             body: disjunction
+0:22 - 0:25               alternative
+0:22 - 0:25                 term
+0:22 - 0:25                   operand: extended_atom
+0:22 - 0:23                     "("
+0:23 - 0:24                     body: disjunction
+0:23 - 0:24                       alternative
+0:23 - 0:24                         term
+0:23 - 0:24                           operand: extended_atom
+0:23 - 0:24                             extended_pattern_character
+0:23 - 0:24                               source_character `c`
+0:24 - 0:25                     ")"
+0:25 - 0:26             ")"
+0:26 - 0:34         term
+0:26 - 0:34           assertion
+0:26 - 0:27             "("
+0:27 - 0:28             "?"
+0:28 - 0:30             "<!"
+0:30 - 0:33             body: disjunction
+0:30 - 0:33               alternative
+0:30 - 0:33                 term
+0:30 - 0:33                   operand: extended_atom
+0:30 - 0:31                     "("
+0:31 - 0:32                     body: disjunction
+0:31 - 0:32                       alternative
+0:31 - 0:32                         term
+0:31 - 0:32                           operand: extended_atom
+0:31 - 0:32                             extended_pattern_character
+0:31 - 0:32                               source_character `d`
+0:32 - 0:33                     ")"
+0:33 - 0:34             ")"
+0:34 - 0:42         term
+0:34 - 0:42           operand: extended_atom
+0:34 - 0:35             "("
+0:35 - 0:36             "?"
+0:36 - 0:37             enable: regular_expression_modifiers
+0:36 - 0:37               regular_expression_modifier `i`
+0:37 - 0:38             ":"
+0:38 - 0:41             body: disjunction
+0:38 - 0:41               alternative
+0:38 - 0:41                 term
+0:38 - 0:41                   operand: extended_atom
+0:38 - 0:39                     "("
+0:39 - 0:40                     body: disjunction
+0:39 - 0:40                       alternative
+0:39 - 0:40                         term
+0:39 - 0:40                           operand: extended_atom
+0:39 - 0:40                             extended_pattern_character
+0:39 - 0:40                               source_character `e`
+0:40 - 0:41                     ")"
+0:41 - 0:42             ")"
+
+==================
+named captures in separate alternatives also contribute to numeric classification
+:language(javascript_regex)
+:cst
+==================
+\2(?<x>a)|(?<x>b)
+---
+
+0:0  - 0:17   pattern
+0:0  - 0:17     body: disjunction
+0:0  - 0:9        alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: extended_atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                decimal_escape
+0:1  - 0:2                  non_zero_digit `2`
+0:2  - 0:9          term
+0:2  - 0:9            operand: extended_atom
+0:2  - 0:3              "("
+0:3  - 0:7              group_specifier
+0:3  - 0:4                "?"
+0:4  - 0:7                group_name
+0:4  - 0:5                  "<"
+0:5  - 0:6                  name: reg_exp_identifier_name
+0:5  - 0:6                    reg_exp_identifier_start
+0:5  - 0:6                      identifier_start_char
+0:5  - 0:6                        unicode_id_start `x`
+0:6  - 0:7                  ">"
+0:7  - 0:8              body: disjunction
+0:7  - 0:8                alternative
+0:7  - 0:8                  term
+0:7  - 0:8                    operand: extended_atom
+0:7  - 0:8                      extended_pattern_character
+0:7  - 0:8                        source_character `a`
+0:8  - 0:9              ")"
+0:9  - 0:10       "|"
+0:10 - 0:17       alternative
+0:10 - 0:17         term
+0:10 - 0:17           operand: extended_atom
+0:10 - 0:11             "("
+0:11 - 0:15             group_specifier
+0:11 - 0:12               "?"
+0:12 - 0:15               group_name
+0:12 - 0:13                 "<"
+0:13 - 0:14                 name: reg_exp_identifier_name
+0:13 - 0:14                   reg_exp_identifier_start
+0:13 - 0:14                     identifier_start_char
+0:13 - 0:14                       unicode_id_start `x`
+0:14 - 0:15                 ">"
+0:15 - 0:16             body: disjunction
+0:15 - 0:16               alternative
+0:15 - 0:16                 term
+0:15 - 0:16                   operand: extended_atom
+0:15 - 0:16                     extended_pattern_character
+0:15 - 0:16                       source_character `b`
+0:16 - 0:17             ")"
+
+==================
+named captures in separate alternatives also contribute to numeric classification
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==================
+\2(?<x>a)|(?<x>b)
+---
+
+0:0  - 0:17   pattern
+0:0  - 0:17     body: disjunction
+0:0  - 0:9        alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                decimal_escape
+0:1  - 0:2                  non_zero_digit `2`
+0:2  - 0:9          term
+0:2  - 0:9            operand: atom
+0:2  - 0:3              "("
+0:3  - 0:7              group_specifier
+0:3  - 0:4                "?"
+0:4  - 0:7                group_name
+0:4  - 0:5                  "<"
+0:5  - 0:6                  name: reg_exp_identifier_name
+0:5  - 0:6                    reg_exp_identifier_start
+0:5  - 0:6                      identifier_start_char
+0:5  - 0:6                        unicode_id_start `x`
+0:6  - 0:7                  ">"
+0:7  - 0:8              body: disjunction
+0:7  - 0:8                alternative
+0:7  - 0:8                  term
+0:7  - 0:8                    operand: atom
+0:7  - 0:8                      pattern_character
+0:7  - 0:8                        source_character `a`
+0:8  - 0:9              ")"
+0:9  - 0:10       "|"
+0:10 - 0:17       alternative
+0:10 - 0:17         term
+0:10 - 0:17           operand: atom
+0:10 - 0:11             "("
+0:11 - 0:15             group_specifier
+0:11 - 0:12               "?"
+0:12 - 0:15               group_name
+0:12 - 0:13                 "<"
+0:13 - 0:14                 name: reg_exp_identifier_name
+0:13 - 0:14                   reg_exp_identifier_start
+0:13 - 0:14                     identifier_start_char
+0:13 - 0:14                       unicode_id_start `x`
+0:14 - 0:15                 ">"
+0:15 - 0:16             body: disjunction
+0:15 - 0:16               alternative
+0:15 - 0:16                 term
+0:15 - 0:16                   operand: atom
+0:15 - 0:16                     pattern_character
+0:15 - 0:16                       source_character `b`
+0:16 - 0:17             ")"
+
+==================
+without named captures k is an identity escape inside and outside classes
+:language(javascript_regex)
+:cst
+==================
+\k<x>[\k]\k
+---
+
+0:0  - 0:11   pattern
+0:0  - 0:11     body: disjunction
+0:0  - 0:11       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: extended_atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                character_escape
+0:1  - 0:2                  identity_escape
+0:1  - 0:2                    source_character_identity_escape
+0:1  - 0:2                      source_character `k`
+0:2  - 0:3          term
+0:2  - 0:3            operand: extended_atom
+0:2  - 0:3              extended_pattern_character
+0:2  - 0:3                source_character `<`
+0:3  - 0:4          term
+0:3  - 0:4            operand: extended_atom
+0:3  - 0:4              extended_pattern_character
+0:3  - 0:4                source_character `x`
+0:4  - 0:5          term
+0:4  - 0:5            operand: extended_atom
+0:4  - 0:5              extended_pattern_character
+0:4  - 0:5                source_character `>`
+0:5  - 0:9          term
+0:5  - 0:9            operand: extended_atom
+0:5  - 0:9              character_class
+0:5  - 0:6                "["
+0:6  - 0:8                nonempty_class_ranges
+0:6  - 0:8                  class_atom
+0:6  - 0:8                    class_atom_no_dash
+0:6  - 0:7                      "\\"
+0:7  - 0:8                      class_escape
+0:7  - 0:8                        character_escape
+0:7  - 0:8                          identity_escape
+0:7  - 0:8                            source_character_identity_escape
+0:7  - 0:8                              source_character `k`
+0:8  - 0:9                "]"
+0:9  - 0:11         term
+0:9  - 0:11           operand: extended_atom
+0:9  - 0:10             "\\"
+0:10 - 0:11             atom_escape
+0:10 - 0:11               character_escape
+0:10 - 0:11                 identity_escape
+0:10 - 0:11                   source_character_identity_escape
+0:10 - 0:11                     source_character `k`
+
+==================
+a named group spelling in a class cannot enable named references
+:language(javascript_regex)
+:cst
+==================
+\k<x>[(?<x>)]
+---
+
+0:0  - 0:13   pattern
+0:0  - 0:13     body: disjunction
+0:0  - 0:13       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: extended_atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                character_escape
+0:1  - 0:2                  identity_escape
+0:1  - 0:2                    source_character_identity_escape
+0:1  - 0:2                      source_character `k`
+0:2  - 0:3          term
+0:2  - 0:3            operand: extended_atom
+0:2  - 0:3              extended_pattern_character
+0:2  - 0:3                source_character `<`
+0:3  - 0:4          term
+0:3  - 0:4            operand: extended_atom
+0:3  - 0:4              extended_pattern_character
+0:3  - 0:4                source_character `x`
+0:4  - 0:5          term
+0:4  - 0:5            operand: extended_atom
+0:4  - 0:5              extended_pattern_character
+0:4  - 0:5                source_character `>`
+0:5  - 0:13         term
+0:5  - 0:13           operand: extended_atom
+0:5  - 0:13             character_class
+0:5  - 0:6                "["
+0:6  - 0:12               nonempty_class_ranges
+0:6  - 0:7                  class_atom
+0:6  - 0:7                    class_atom_no_dash
+0:6  - 0:7                      source_character `(`
+0:7  - 0:12                 nonempty_class_ranges_no_dash
+0:7  - 0:8                    class_atom_no_dash
+0:7  - 0:8                      source_character `?`
+0:8  - 0:9                    class_atom_no_dash
+0:8  - 0:9                      source_character `<`
+0:9  - 0:10                   class_atom_no_dash
+0:9  - 0:10                     source_character `x`
+0:10 - 0:11                   class_atom_no_dash
+0:10 - 0:11                     source_character `>`
+0:11 - 0:12                   class_atom
+0:11 - 0:12                     class_atom_no_dash
+0:11 - 0:12                       source_character `)`
+0:12 - 0:13               "]"
+
+==================
+an escaped named group spelling cannot enable named references
+:language(javascript_regex)
+:cst
+==================
+\k<x>\(\?<x>\)
+---
+
+0:0  - 0:14   pattern
+0:0  - 0:14     body: disjunction
+0:0  - 0:14       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: extended_atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                character_escape
+0:1  - 0:2                  identity_escape
+0:1  - 0:2                    source_character_identity_escape
+0:1  - 0:2                      source_character `k`
+0:2  - 0:3          term
+0:2  - 0:3            operand: extended_atom
+0:2  - 0:3              extended_pattern_character
+0:2  - 0:3                source_character `<`
+0:3  - 0:4          term
+0:3  - 0:4            operand: extended_atom
+0:3  - 0:4              extended_pattern_character
+0:3  - 0:4                source_character `x`
+0:4  - 0:5          term
+0:4  - 0:5            operand: extended_atom
+0:4  - 0:5              extended_pattern_character
+0:4  - 0:5                source_character `>`
+0:5  - 0:7          term
+0:5  - 0:7            operand: extended_atom
+0:5  - 0:6              "\\"
+0:6  - 0:7              atom_escape
+0:6  - 0:7                character_escape
+0:6  - 0:7                  identity_escape
+0:6  - 0:7                    source_character_identity_escape
+0:6  - 0:7                      source_character `(`
+0:7  - 0:9          term
+0:7  - 0:9            operand: extended_atom
+0:7  - 0:8              "\\"
+0:8  - 0:9              atom_escape
+0:8  - 0:9                character_escape
+0:8  - 0:9                  identity_escape
+0:8  - 0:9                    source_character_identity_escape
+0:8  - 0:9                      source_character `?`
+0:9  - 0:10         term
+0:9  - 0:10           operand: extended_atom
+0:9  - 0:10             extended_pattern_character
+0:9  - 0:10               source_character `<`
+0:10 - 0:11         term
+0:10 - 0:11           operand: extended_atom
+0:10 - 0:11             extended_pattern_character
+0:10 - 0:11               source_character `x`
+0:11 - 0:12         term
+0:11 - 0:12           operand: extended_atom
+0:11 - 0:12             extended_pattern_character
+0:11 - 0:12               source_character `>`
+0:12 - 0:14         term
+0:12 - 0:14           operand: extended_atom
+0:12 - 0:13             "\\"
+0:13 - 0:14             atom_escape
+0:13 - 0:14               character_escape
+0:13 - 0:14                 identity_escape
+0:13 - 0:14                   source_character_identity_escape
+0:13 - 0:14                     source_character `)`
+
+==================
+escaped parentheses do not create captures
+:language(javascript_regex)
+:cst
+==================
+\1\(a\)
+---
+
+0:0 - 0:7   pattern
+0:0 - 0:7     body: disjunction
+0:0 - 0:7       alternative
+0:0 - 0:2         term
+0:0 - 0:2           operand: extended_atom
+0:0 - 0:1             "\\"
+0:1 - 0:2             atom_escape
+0:1 - 0:2               character_escape
+0:1 - 0:2                 legacy_octal_escape_sequence
+0:1 - 0:2                   non_zero_octal_digit
+0:1 - 0:2                     octal_digit `1`
+0:2 - 0:4         term
+0:2 - 0:4           operand: extended_atom
+0:2 - 0:3             "\\"
+0:3 - 0:4             atom_escape
+0:3 - 0:4               character_escape
+0:3 - 0:4                 identity_escape
+0:3 - 0:4                   source_character_identity_escape
+0:3 - 0:4                     source_character `(`
+0:4 - 0:5         term
+0:4 - 0:5           operand: extended_atom
+0:4 - 0:5             extended_pattern_character
+0:4 - 0:5               source_character `a`
+0:5 - 0:7         term
+0:5 - 0:7           operand: extended_atom
+0:5 - 0:6             "\\"
+0:6 - 0:7             atom_escape
+0:6 - 0:7               character_escape
+0:6 - 0:7                 identity_escape
+0:6 - 0:7                   source_character_identity_escape
+0:6 - 0:7                     source_character `)`
+
+==================
+parentheses inside a basic class do not create captures
+:language(javascript_regex)
+:cst
+==================
+\1[(a)]
+---
+
+0:0 - 0:7   pattern
+0:0 - 0:7     body: disjunction
+0:0 - 0:7       alternative
+0:0 - 0:2         term
+0:0 - 0:2           operand: extended_atom
+0:0 - 0:1             "\\"
+0:1 - 0:2             atom_escape
+0:1 - 0:2               character_escape
+0:1 - 0:2                 legacy_octal_escape_sequence
+0:1 - 0:2                   non_zero_octal_digit
+0:1 - 0:2                     octal_digit `1`
+0:2 - 0:7         term
+0:2 - 0:7           operand: extended_atom
+0:2 - 0:7             character_class
+0:2 - 0:3               "["
+0:3 - 0:6               nonempty_class_ranges
+0:3 - 0:4                 class_atom
+0:3 - 0:4                   class_atom_no_dash
+0:3 - 0:4                     source_character `(`
+0:4 - 0:6                 nonempty_class_ranges_no_dash
+0:4 - 0:5                   class_atom_no_dash
+0:4 - 0:5                     source_character `a`
+0:5 - 0:6                   class_atom
+0:5 - 0:6                     class_atom_no_dash
+0:5 - 0:6                       source_character `)`
+0:6 - 0:7               "]"
+
+==================
+encoded parentheses do not create source captures
+:language(javascript_regex)
+:cst
+==================
+\1\u0028\x28
+---
+
+0:0  - 0:12   pattern
+0:0  - 0:12     body: disjunction
+0:0  - 0:12       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: extended_atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                character_escape
+0:1  - 0:2                  legacy_octal_escape_sequence
+0:1  - 0:2                    non_zero_octal_digit
+0:1  - 0:2                      octal_digit `1`
+0:2  - 0:8          term
+0:2  - 0:8            operand: extended_atom
+0:2  - 0:3              "\\"
+0:3  - 0:8              atom_escape
+0:3  - 0:8                character_escape
+0:3  - 0:8                  reg_exp_unicode_escape_sequence
+0:3  - 0:4                    "u"
+0:4  - 0:8                    hex4_digits
+0:4  - 0:5                      hex_digit `0`
+0:5  - 0:6                      hex_digit `0`
+0:6  - 0:7                      hex_digit `2`
+0:7  - 0:8                      hex_digit `8`
+0:8  - 0:12         term
+0:8  - 0:12           operand: extended_atom
+0:8  - 0:9              "\\"
+0:9  - 0:12             atom_escape
+0:9  - 0:12               character_escape
+0:9  - 0:12                 hex_escape_sequence
+0:9  - 0:10                   "x"
+0:10 - 0:11                   hex_digit `2`
+0:11 - 0:12                   hex_digit `8`
+
+==================
+an escaped backslash leaves the following parenthesis available to open a capture
+:language(javascript_regex)
+:cst
+==================
+\1\\(a)
+---
+
+0:0 - 0:7   pattern
+0:0 - 0:7     body: disjunction
+0:0 - 0:7       alternative
+0:0 - 0:2         term
+0:0 - 0:2           operand: extended_atom
+0:0 - 0:1             "\\"
+0:1 - 0:2             atom_escape
+0:1 - 0:2               decimal_escape
+0:1 - 0:2                 non_zero_digit `1`
+0:2 - 0:4         term
+0:2 - 0:4           operand: extended_atom
+0:2 - 0:3             "\\"
+0:3 - 0:4             atom_escape
+0:3 - 0:4               character_escape
+0:3 - 0:4                 identity_escape
+0:3 - 0:4                   source_character_identity_escape
+0:3 - 0:4                     source_character `\\`
+0:4 - 0:7         term
+0:4 - 0:7           operand: extended_atom
+0:4 - 0:5             "("
+0:5 - 0:6             body: disjunction
+0:5 - 0:6               alternative
+0:5 - 0:6                 term
+0:5 - 0:6                   operand: extended_atom
+0:5 - 0:6                     extended_pattern_character
+0:5 - 0:6                       source_character `a`
+0:6 - 0:7             ")"
+
+==================
+an escaped backslash leaves the following parenthesis available to open a capture
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==================
+\1\\(a)
+---
+
+0:0 - 0:7   pattern
+0:0 - 0:7     body: disjunction
+0:0 - 0:7       alternative
+0:0 - 0:2         term
+0:0 - 0:2           operand: atom
+0:0 - 0:1             "\\"
+0:1 - 0:2             atom_escape
+0:1 - 0:2               decimal_escape
+0:1 - 0:2                 non_zero_digit `1`
+0:2 - 0:4         term
+0:2 - 0:4           operand: atom
+0:2 - 0:3             "\\"
+0:3 - 0:4             atom_escape
+0:3 - 0:4               character_escape
+0:3 - 0:4                 identity_escape
+0:3 - 0:4                   syntax_character `\\`
+0:4 - 0:7         term
+0:4 - 0:7           operand: atom
+0:4 - 0:5             "("
+0:5 - 0:6             body: disjunction
+0:5 - 0:6               alternative
+0:5 - 0:6                 term
+0:5 - 0:6                   operand: atom
+0:5 - 0:6                     pattern_character
+0:5 - 0:6                       source_character `a`
+0:6 - 0:7             ")"
+
+==================
+the entire decimal value is tested before falling back to octal
+:language(javascript_regex)
+:cst
+==================
+\11\18(a)
+---
+
+0:0 - 0:9   pattern
+0:0 - 0:9     body: disjunction
+0:0 - 0:9       alternative
+0:0 - 0:3         term
+0:0 - 0:3           operand: extended_atom
+0:0 - 0:1             "\\"
+0:1 - 0:3             atom_escape
+0:1 - 0:3               character_escape
+0:1 - 0:3                 legacy_octal_escape_sequence
+0:1 - 0:2                   zero_to_three `1`
+0:2 - 0:3                   octal_digit `1`
+0:3 - 0:5         term
+0:3 - 0:5           operand: extended_atom
+0:3 - 0:4             "\\"
+0:4 - 0:5             atom_escape
+0:4 - 0:5               character_escape
+0:4 - 0:5                 legacy_octal_escape_sequence
+0:4 - 0:5                   non_zero_octal_digit
+0:4 - 0:5                     octal_digit `1`
+0:5 - 0:6         term
+0:5 - 0:6           operand: extended_atom
+0:5 - 0:6             extended_pattern_character
+0:5 - 0:6               source_character `8`
+0:6 - 0:9         term
+0:6 - 0:9           operand: extended_atom
+0:6 - 0:7             "("
+0:7 - 0:8             body: disjunction
+0:7 - 0:8               alternative
+0:7 - 0:8                 term
+0:7 - 0:8                   operand: extended_atom
+0:7 - 0:8                     extended_pattern_character
+0:7 - 0:8                       source_character `a`
+0:8 - 0:9             ")"
+
+==================
+eight becomes a reference only when all digits fit the total capture count
+:language(javascript_regex)
+:cst
+==================
+\8\81\9()()()()()()()()
+---
+
+0:0  - 0:23   pattern
+0:0  - 0:23     body: disjunction
+0:0  - 0:23       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: extended_atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                decimal_escape
+0:1  - 0:2                  non_zero_digit `8`
+0:2  - 0:4          term
+0:2  - 0:4            operand: extended_atom
+0:2  - 0:3              "\\"
+0:3  - 0:4              atom_escape
+0:3  - 0:4                character_escape
+0:3  - 0:4                  identity_escape
+0:3  - 0:4                    source_character_identity_escape
+0:3  - 0:4                      source_character `8`
+0:4  - 0:5          term
+0:4  - 0:5            operand: extended_atom
+0:4  - 0:5              extended_pattern_character
+0:4  - 0:5                source_character `1`
+0:5  - 0:7          term
+0:5  - 0:7            operand: extended_atom
+0:5  - 0:6              "\\"
+0:6  - 0:7              atom_escape
+0:6  - 0:7                character_escape
+0:6  - 0:7                  identity_escape
+0:6  - 0:7                    source_character_identity_escape
+0:6  - 0:7                      source_character `9`
+0:7  - 0:9          term
+0:7  - 0:9            operand: extended_atom
+0:7  - 0:8              "("
+0:8  - 0:9              ")"
+0:9  - 0:11         term
+0:9  - 0:11           operand: extended_atom
+0:9  - 0:10             "("
+0:10 - 0:11             ")"
+0:11 - 0:13         term
+0:11 - 0:13           operand: extended_atom
+0:11 - 0:12             "("
+0:12 - 0:13             ")"
+0:13 - 0:15         term
+0:13 - 0:15           operand: extended_atom
+0:13 - 0:14             "("
+0:14 - 0:15             ")"
+0:15 - 0:17         term
+0:15 - 0:17           operand: extended_atom
+0:15 - 0:16             "("
+0:16 - 0:17             ")"
+0:17 - 0:19         term
+0:17 - 0:19           operand: extended_atom
+0:17 - 0:18             "("
+0:18 - 0:19             ")"
+0:19 - 0:21         term
+0:19 - 0:21           operand: extended_atom
+0:19 - 0:20             "("
+0:20 - 0:21             ")"
+0:21 - 0:23         term
+0:21 - 0:23           operand: extended_atom
+0:21 - 0:22             "("
+0:22 - 0:23             ")"
+
+==================
+nine and multidigit decimal references are recognized with enough captures
+:language(javascript_regex)
+:cst
+==================
+\9\10()()()()()()()()()()
+---
+
+0:0  - 0:25   pattern
+0:0  - 0:25     body: disjunction
+0:0  - 0:25       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: extended_atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                decimal_escape
+0:1  - 0:2                  non_zero_digit `9`
+0:2  - 0:5          term
+0:2  - 0:5            operand: extended_atom
+0:2  - 0:3              "\\"
+0:3  - 0:5              atom_escape
+0:3  - 0:5                decimal_escape
+0:3  - 0:4                  non_zero_digit `1`
+0:4  - 0:5                  decimal_digits
+0:4  - 0:5                    decimal_digit `0`
+0:5  - 0:7          term
+0:5  - 0:7            operand: extended_atom
+0:5  - 0:6              "("
+0:6  - 0:7              ")"
+0:7  - 0:9          term
+0:7  - 0:9            operand: extended_atom
+0:7  - 0:8              "("
+0:8  - 0:9              ")"
+0:9  - 0:11         term
+0:9  - 0:11           operand: extended_atom
+0:9  - 0:10             "("
+0:10 - 0:11             ")"
+0:11 - 0:13         term
+0:11 - 0:13           operand: extended_atom
+0:11 - 0:12             "("
+0:12 - 0:13             ")"
+0:13 - 0:15         term
+0:13 - 0:15           operand: extended_atom
+0:13 - 0:14             "("
+0:14 - 0:15             ")"
+0:15 - 0:17         term
+0:15 - 0:17           operand: extended_atom
+0:15 - 0:16             "("
+0:16 - 0:17             ")"
+0:17 - 0:19         term
+0:17 - 0:19           operand: extended_atom
+0:17 - 0:18             "("
+0:18 - 0:19             ")"
+0:19 - 0:21         term
+0:19 - 0:21           operand: extended_atom
+0:19 - 0:20             "("
+0:20 - 0:21             ")"
+0:21 - 0:23         term
+0:21 - 0:23           operand: extended_atom
+0:21 - 0:22             "("
+0:22 - 0:23             ")"
+0:23 - 0:25         term
+0:23 - 0:25           operand: extended_atom
+0:23 - 0:24             "("
+0:24 - 0:25             ")"
+
+==================
+references octal prefixes and remaining digits own distinct source ranges
+:language(javascript_regex)
+:cst
+==================
+\1(a)\1234\8
+---
+
+0:0  - 0:12   pattern
+0:0  - 0:12     body: disjunction
+0:0  - 0:12       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: extended_atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                decimal_escape
+0:1  - 0:2                  non_zero_digit `1`
+0:2  - 0:5          term
+0:2  - 0:5            operand: extended_atom
+0:2  - 0:3              "("
+0:3  - 0:4              body: disjunction
+0:3  - 0:4                alternative
+0:3  - 0:4                  term
+0:3  - 0:4                    operand: extended_atom
+0:3  - 0:4                      extended_pattern_character
+0:3  - 0:4                        source_character `a`
+0:4  - 0:5              ")"
+0:5  - 0:9          term
+0:5  - 0:9            operand: extended_atom
+0:5  - 0:6              "\\"
+0:6  - 0:9              atom_escape
+0:6  - 0:9                character_escape
+0:6  - 0:9                  legacy_octal_escape_sequence
+0:6  - 0:7                    zero_to_three `1`
+0:7  - 0:8                    octal_digit `2`
+0:8  - 0:9                    octal_digit `3`
+0:9  - 0:10         term
+0:9  - 0:10           operand: extended_atom
+0:9  - 0:10             extended_pattern_character
+0:9  - 0:10               source_character `4`
+0:10 - 0:12         term
+0:10 - 0:12           operand: extended_atom
+0:10 - 0:11             "\\"
+0:11 - 0:12             atom_escape
+0:11 - 0:12               character_escape
+0:11 - 0:12                 identity_escape
+0:11 - 0:12                   source_character_identity_escape
+0:11 - 0:12                     source_character `8`
+
+==================
+numeric references retain maximal digits without resolving captures in Unicode modes
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==================
+\1(a)\1234+
+---
+
+0:0  - 0:11   pattern
+0:0  - 0:11     body: disjunction
+0:0  - 0:11       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                decimal_escape
+0:1  - 0:2                  non_zero_digit `1`
+0:2  - 0:5          term
+0:2  - 0:5            operand: atom
+0:2  - 0:3              "("
+0:3  - 0:4              body: disjunction
+0:3  - 0:4                alternative
+0:3  - 0:4                  term
+0:3  - 0:4                    operand: atom
+0:3  - 0:4                      pattern_character
+0:3  - 0:4                        source_character `a`
+0:4  - 0:5              ")"
+0:5  - 0:11         term
+0:5  - 0:10           operand: atom
+0:5  - 0:6              "\\"
+0:6  - 0:10             atom_escape
+0:6  - 0:10               decimal_escape
+0:6  - 0:7                  non_zero_digit `1`
+0:7  - 0:10                 decimal_digits
+0:7  - 0:8                    decimal_digit `2`
+0:8  - 0:9                    decimal_digit `3`
+0:9  - 0:10                   decimal_digit `4`
+0:10 - 0:11           quantifier: quantifier
+0:10 - 0:11             quantifier_prefix
+0:10 - 0:11               "+"
+
+==================
+named reference classification does not resolve the requested name
+:language(javascript_regex)
+:cst
+==================
+\k<other>(?<x>a)
+---
+
+0:0  - 0:16   pattern
+0:0  - 0:16     body: disjunction
+0:0  - 0:16       alternative
+0:0  - 0:9          term
+0:0  - 0:9            operand: extended_atom
+0:0  - 0:1              "\\"
+0:1  - 0:9              atom_escape
+0:1  - 0:2                "k"
+0:2  - 0:9                group_name
+0:2  - 0:3                  "<"
+0:3  - 0:8                  name: reg_exp_identifier_name
+0:3  - 0:4                    reg_exp_identifier_start
+0:3  - 0:4                      identifier_start_char
+0:3  - 0:4                        unicode_id_start `o`
+0:4  - 0:5                    reg_exp_identifier_part
+0:4  - 0:5                      identifier_part_char
+0:4  - 0:5                        unicode_id_continue `t`
+0:5  - 0:6                    reg_exp_identifier_part
+0:5  - 0:6                      identifier_part_char
+0:5  - 0:6                        unicode_id_continue `h`
+0:6  - 0:7                    reg_exp_identifier_part
+0:6  - 0:7                      identifier_part_char
+0:6  - 0:7                        unicode_id_continue `e`
+0:7  - 0:8                    reg_exp_identifier_part
+0:7  - 0:8                      identifier_part_char
+0:7  - 0:8                        unicode_id_continue `r`
+0:8  - 0:9                  ">"
+0:9  - 0:16         term
+0:9  - 0:16           operand: extended_atom
+0:9  - 0:10             "("
+0:10 - 0:14             group_specifier
+0:10 - 0:11               "?"
+0:11 - 0:14               group_name
+0:11 - 0:12                 "<"
+0:12 - 0:13                 name: reg_exp_identifier_name
+0:12 - 0:13                   reg_exp_identifier_start
+0:12 - 0:13                     identifier_start_char
+0:12 - 0:13                       unicode_id_start `x`
+0:13 - 0:14                 ">"
+0:14 - 0:15             body: disjunction
+0:14 - 0:15               alternative
+0:14 - 0:15                 term
+0:14 - 0:15                   operand: extended_atom
+0:14 - 0:15                     extended_pattern_character
+0:14 - 0:15                       source_character `a`
+0:15 - 0:16             ")"
+
+==================
+named reference classification does not resolve the requested name
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==================
+\k<other>(?<x>a)
+---
+
+0:0  - 0:16   pattern
+0:0  - 0:16     body: disjunction
+0:0  - 0:16       alternative
+0:0  - 0:9          term
+0:0  - 0:9            operand: atom
+0:0  - 0:1              "\\"
+0:1  - 0:9              atom_escape
+0:1  - 0:2                "k"
+0:2  - 0:9                group_name
+0:2  - 0:3                  "<"
+0:3  - 0:8                  name: reg_exp_identifier_name
+0:3  - 0:4                    reg_exp_identifier_start
+0:3  - 0:4                      identifier_start_char
+0:3  - 0:4                        unicode_id_start `o`
+0:4  - 0:5                    reg_exp_identifier_part
+0:4  - 0:5                      identifier_part_char
+0:4  - 0:5                        unicode_id_continue `t`
+0:5  - 0:6                    reg_exp_identifier_part
+0:5  - 0:6                      identifier_part_char
+0:5  - 0:6                        unicode_id_continue `h`
+0:6  - 0:7                    reg_exp_identifier_part
+0:6  - 0:7                      identifier_part_char
+0:6  - 0:7                        unicode_id_continue `e`
+0:7  - 0:8                    reg_exp_identifier_part
+0:7  - 0:8                      identifier_part_char
+0:7  - 0:8                        unicode_id_continue `r`
+0:8  - 0:9                  ">"
+0:9  - 0:16         term
+0:9  - 0:16           operand: atom
+0:9  - 0:10             "("
+0:10 - 0:14             group_specifier
+0:10 - 0:11               "?"
+0:11 - 0:14               group_name
+0:11 - 0:12                 "<"
+0:12 - 0:13                 name: reg_exp_identifier_name
+0:12 - 0:13                   reg_exp_identifier_start
+0:12 - 0:13                     identifier_start_char
+0:12 - 0:13                       unicode_id_start `x`
+0:13 - 0:14                 ">"
+0:14 - 0:15             body: disjunction
+0:14 - 0:15               alternative
+0:14 - 0:15                 term
+0:14 - 0:15                   operand: atom
+0:14 - 0:15                     pattern_character
+0:14 - 0:15                       source_character `a`
+0:15 - 0:16             ")"
+
+==================
+reference spelling remains structural without semantic validation
+:language(python_re)
+:language(python_re_verbose)
+==================
+(?P<a-b>x)(?P=a-b)(?(12x)y|z)(?(000)q)\
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (named_capturing_group
+        name: (group_name)
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (named_backreference
+        name: (group_name))
+      (conditional_group
+        condition: (group_name)
+        yes_pattern: (concatenation
+          (literal_character))
+        no_pattern: (concatenation
+          (literal_character)))
+      (conditional_group
+        condition: (group_id)
+        yes_pattern: (concatenation
+          (literal_character)))
+      (literal_escape))))
+
+==================
+group and reference payloads can begin with a brace
+:language(python_re)
+:language(python_re_verbose)
+==================
+(?P<{>a)(?P={})(?({)a|b)\
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (named_capturing_group
+        name: (group_name)
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (named_backreference
+        name: (group_name))
+      (conditional_group
+        condition: (group_name)
+        yes_pattern: (concatenation
+          (literal_character))
+        no_pattern: (concatenation
+          (literal_character)))
+      (literal_escape))))
+
+==================
+an escaped class closer keeps apparent captures inside the class
+:language(javascript_regex)
+:cst
+==================
+\1[^\](a)]
+---
+
+0:0  - 0:10   pattern
+0:0  - 0:10     body: disjunction
+0:0  - 0:10       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: extended_atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                character_escape
+0:1  - 0:2                  legacy_octal_escape_sequence
+0:1  - 0:2                    non_zero_octal_digit
+0:1  - 0:2                      octal_digit `1`
+0:2  - 0:10         term
+0:2  - 0:10           operand: extended_atom
+0:2  - 0:10             character_class
+0:2  - 0:3                "["
+0:3  - 0:4                "^"
+0:4  - 0:9                nonempty_class_ranges
+0:4  - 0:6                  class_atom
+0:4  - 0:6                    class_atom_no_dash
+0:4  - 0:5                      "\\"
+0:5  - 0:6                      class_escape
+0:5  - 0:6                        character_escape
+0:5  - 0:6                          identity_escape
+0:5  - 0:6                            source_character_identity_escape
+0:5  - 0:6                              source_character `]`
+0:6  - 0:9                  nonempty_class_ranges_no_dash
+0:6  - 0:7                    class_atom_no_dash
+0:6  - 0:7                      source_character `(`
+0:7  - 0:8                    class_atom_no_dash
+0:7  - 0:8                      source_character `a`
+0:8  - 0:9                    class_atom
+0:8  - 0:9                      class_atom_no_dash
+0:8  - 0:9                        source_character `)`
+0:9  - 0:10               "]"
+
+==================
+the first unescaped closer ends an empty class before a capture
+:language(javascript_regex)
+:cst
+==================
+\1[]()
+---
+
+0:0 - 0:6   pattern
+0:0 - 0:6     body: disjunction
+0:0 - 0:6       alternative
+0:0 - 0:2         term
+0:0 - 0:2           operand: extended_atom
+0:0 - 0:1             "\\"
+0:1 - 0:2             atom_escape
+0:1 - 0:2               decimal_escape
+0:1 - 0:2                 non_zero_digit `1`
+0:2 - 0:4         term
+0:2 - 0:4           operand: extended_atom
+0:2 - 0:4             character_class
+0:2 - 0:3               "["
+0:3 - 0:4               "]"
+0:4 - 0:6         term
+0:4 - 0:6           operand: extended_atom
+0:4 - 0:5             "("
+0:5 - 0:6             ")"
+
+==================
+the first unescaped closer ends an empty class before a capture
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:cst
+==================
+\1[]()
+---
+
+0:0 - 0:6   pattern
+0:0 - 0:6     body: disjunction
+0:0 - 0:6       alternative
+0:0 - 0:2         term
+0:0 - 0:2           operand: atom
+0:0 - 0:1             "\\"
+0:1 - 0:2             atom_escape
+0:1 - 0:2               decimal_escape
+0:1 - 0:2                 non_zero_digit `1`
+0:2 - 0:4         term
+0:2 - 0:4           operand: atom
+0:2 - 0:4             character_class
+0:2 - 0:3               "["
+0:3 - 0:4               "]"
+0:4 - 0:6         term
+0:4 - 0:6           operand: atom
+0:4 - 0:5             "("
+0:5 - 0:6             ")"
+
+==================
+an incomplete control escape does not hide the following capture
+:language(javascript_regex)
+:cst
+==================
+\1\c(a)
+---
+
+0:0 - 0:7   pattern
+0:0 - 0:7     body: disjunction
+0:0 - 0:7       alternative
+0:0 - 0:2         term
+0:0 - 0:2           operand: extended_atom
+0:0 - 0:1             "\\"
+0:1 - 0:2             atom_escape
+0:1 - 0:2               decimal_escape
+0:1 - 0:2                 non_zero_digit `1`
+0:2 - 0:3         term
+0:2 - 0:3           operand: extended_atom
+0:2 - 0:3             "\\"
+0:3 - 0:4         term
+0:3 - 0:4           operand: extended_atom
+0:3 - 0:4             extended_pattern_character
+0:3 - 0:4               source_character `c`
+0:4 - 0:7         term
+0:4 - 0:7           operand: extended_atom
+0:4 - 0:5             "("
+0:5 - 0:6             body: disjunction
+0:5 - 0:6               alternative
+0:5 - 0:6                 term
+0:5 - 0:6                   operand: extended_atom
+0:5 - 0:6                     extended_pattern_character
+0:5 - 0:6                       source_character `a`
+0:6 - 0:7             ")"
+
+==================
+numeric references require recovery in Unicode classes
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:error
+==================
+[\1]
+---
+
+==================
+named references require recovery in Unicode classes
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:error
+==================
+[\k<x>]
+---
+
+==================
+a named capture disables the k identity escape inside a class
+:language(javascript_regex)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:error
+==================
+[\k](?<x>a)
+---
+
+==================
+a named capture requires the body k escape to introduce a group name
+:language(javascript_regex)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:error
+==================
+\k(?<x>a)
+---
+
+==================
+an unexpected closer before a numeric reference requires recovery
+:language(javascript_regex)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:error
+==================
+)\1(a)
+---
+
+==================
+an unclosed named reference before an alternative requires recovery
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:error
+==================
+(\k<x)|b
+---
+
+==================
+a malformed reference before a complete named capture requires recovery
+:language(javascript_regex)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:error
+==================
+(\k<x)(?<x>a)
+---
+
+==================
+a numeric reference before an unclosed capture requires recovery
+:language(javascript_regex)
+:error
+==================
+\1(
+---
+
+==================
+a numeric reference before an incomplete group introducer requires recovery
+:language(javascript_regex)
+:error
+==================
+\1(?
+---
+
+==================
+a named reference before an incomplete named group requires recovery
+:language(javascript_regex)
+:error
+==================
+\k<x>(?<
+---
+
+==================
+a numeric reference before an unclosed named capture requires recovery
+:language(javascript_regex)
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:error
+==================
+\1(?<x>a
+---
+
+==================
+apparent captures inside an unclosed class require recovery
+:language(javascript_regex)
+:error
+==================
+\1[(a)
+---

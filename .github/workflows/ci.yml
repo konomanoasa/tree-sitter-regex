@@ -26,6 +26,8 @@ jobs:
           CFLAGS="-std=c17 -isysroot $(xcrun --sdk macosx --show-sdk-path)"
           export CC CFLAGS
           npm run check
+          npm run test:fuzz:corpus
+          npm run test:sanitize
 
   parser:
     name: Test all five regex parsers

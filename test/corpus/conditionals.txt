@@ -1,21 +1,3 @@
-==============================
-Named reference introducer and operator own separate source ranges
-:language(python_re)
-:language(python_re_verbose)
-:cst
-==============================
-(?P=name)
----
-0:0 - 0:9   pattern
-0:0 - 0:9     body: alternation
-0:0 - 0:9       concatenation
-0:0 - 0:9         named_backreference
-0:0 - 0:1           "("
-0:1 - 0:3           "?P"
-0:3 - 0:4           "="
-0:4 - 0:8           name: group_name `name`
-0:8 - 0:9           ")"
-
 ==================
 named references and both conditional condition categories expose shared leaves
 :language(python_re)
@@ -44,36 +26,6 @@ named references and both conditional condition categories expose shared leaves
       (conditional_group
         condition: (group_name)
         yes_pattern: (concatenation
-          (literal_character)))
-      (literal_escape))))
-
-==================
-conditional arms can be omitted independently
-:language(python_re)
-:language(python_re_verbose)
-==================
-(a)(?(1))(?(1)|)(?(1)a|)(?(1)|b)\
-
----
-
-(pattern
-  body: (alternation
-    (concatenation
-      (capturing_group
-        body: (alternation
-          (concatenation
-            (literal_character))))
-      (conditional_group
-        condition: (group_id))
-      (conditional_group
-        condition: (group_id))
-      (conditional_group
-        condition: (group_id)
-        yes_pattern: (concatenation
-          (literal_character)))
-      (conditional_group
-        condition: (group_id)
-        no_pattern: (concatenation
           (literal_character)))
       (literal_escape))))
 
@@ -141,64 +93,6 @@ conditional separator ownership excludes nested and outer alternatives
       (literal_escape))))
 
 ==================
-group and reference payloads can begin with a brace
-:language(python_re)
-:language(python_re_verbose)
-==================
-(?P<{>a)(?P={})(?({)a|b)\
-
----
-
-(pattern
-  body: (alternation
-    (concatenation
-      (named_capturing_group
-        name: (group_name)
-        body: (alternation
-          (concatenation
-            (literal_character))))
-      (named_backreference
-        name: (group_name))
-      (conditional_group
-        condition: (group_name)
-        yes_pattern: (concatenation
-          (literal_character))
-        no_pattern: (concatenation
-          (literal_character)))
-      (literal_escape))))
-
-==================
-reference spelling remains structural without semantic validation
-:language(python_re)
-:language(python_re_verbose)
-==================
-(?P<a-b>x)(?P=a-b)(?(12x)y|z)(?(000)q)\
-
----
-
-(pattern
-  body: (alternation
-    (concatenation
-      (named_capturing_group
-        name: (group_name)
-        body: (alternation
-          (concatenation
-            (literal_character))))
-      (named_backreference
-        name: (group_name))
-      (conditional_group
-        condition: (group_name)
-        yes_pattern: (concatenation
-          (literal_character))
-        no_pattern: (concatenation
-          (literal_character)))
-      (conditional_group
-        condition: (group_id)
-        yes_pattern: (concatenation
-          (literal_character)))
-      (literal_escape))))
-
-==================
 verbose layout belongs to conditional arms and cannot split the header
 :language(python_re)
 :language(python_re_verbose)
@@ -229,4 +123,34 @@ verbose layout belongs to conditional arms and cannot split the header
           (verbose_whitespace)
           (literal_character)
           (verbose_whitespace)))
+      (literal_escape))))
+
+==================
+conditional arms can be omitted independently
+:language(python_re)
+:language(python_re_verbose)
+==================
+(a)(?(1))(?(1)|)(?(1)a|)(?(1)|b)\
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (conditional_group
+        condition: (group_id))
+      (conditional_group
+        condition: (group_id))
+      (conditional_group
+        condition: (group_id)
+        yes_pattern: (concatenation
+          (literal_character)))
+      (conditional_group
+        condition: (group_id)
+        no_pattern: (concatenation
+          (literal_character)))
       (literal_escape))))

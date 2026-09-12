@@ -1,9 +1,135 @@
 import assert from "node:assert/strict";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  mkdirSync,
+  mkdtempSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { after, before, test } from "node:test";
-import { createTreeSitter, grammars } from "../scripts/tree-sitter.js";
+import { createTreeSitter, grammars, root } from "../scripts/tree-sitter.js";
+
+function decodeEntities(text) {
+  return text
+    .replaceAll("&lt;", "<")
+    .replaceAll("&gt;", ">")
+    .replaceAll("&quot;", '"')
+    .replaceAll("&#39;", "'")
+    .replaceAll("&amp;", "&");
+}
+
+function renderedCaptures(html, source) {
+  const start = html.indexOf("<pre><code>");
+  const end = html.indexOf("</code></pre>");
+  assert.ok(start >= 0 && end >= start, html);
+  const content = html.slice(start + "<pre><code>".length, end);
+  const stack = [];
+  const captures = [];
+  let text = "";
+  for (const part of content.matchAll(
+    /<span class='([^']*)'>|<\/span>|([^<]+)/g,
+  )) {
+    if (part[1] !== undefined) stack.push(part[1].replaceAll(" ", "."));
+    else if (part[0] === "</span>") assert.notEqual(stack.pop(), undefined);
+    else {
+      const decoded = decodeEntities(part[2]);
+      text += decoded;
+      captures.push(
+        ...Array(Buffer.byteLength(decoded)).fill(stack.at(-1) ?? ""),
+      );
+    }
+  }
+  assert.equal(stack.length, 0, "unclosed highlight span");
+  assert.equal(
+    text.replace(/\n$/, ""),
+    source.replace(/\n$/, ""),
+    "rendered source differs from the input",
+  );
+  return captures;
+}
+
+function createHighlighter({ directory, root, run, captureNames }) {
+  const parserDirectory = join(directory, "parsers");
+  mkdirSync(parserDirectory);
+  // CLI discovery requires a tree-sitter-* entry even when the checkout is renamed.
+  symlinkSync(root, join(parserDirectory, "tree-sitter-test"), "junction");
+  const configPath = join(directory, "highlight.json");
+  const capturePath = join(directory, "captures.txt");
+  writeFileSync(
+    configPath,
+    JSON.stringify({
+      "parser-directories": [parserDirectory],
+      theme: Object.fromEntries(
+        captureNames.map((name, index) => [name, index + 17]),
+      ),
+    }),
+  );
+  writeFileSync(capturePath, `${captureNames.join("\n")}\n`);
+
+  return (scope, source, valid = true) => {
+    const path = join(directory, "highlight.txt");
+    writeFileSync(path, source);
+    if (valid) {
+      const parsed = run(["parse", "--cst", "--scope", scope, path]);
+      assert.doesNotMatch(parsed, /^[0-9: \t-]+•/m, parsed);
+    }
+    const captures = renderedCaptures(
+      run([
+        "highlight",
+        "--check",
+        "--captures-path",
+        capturePath,
+        "--config-path",
+        configPath,
+        "--html",
+        "--layout",
+        "fragment",
+        "--style",
+        "classes",
+        "--scope",
+        scope,
+        path,
+      ]),
+      source,
+    );
+    for (const capture of captures) {
+      assert.ok(
+        capture === "" || captureNames.includes(capture),
+        `unexpected final capture: ${capture}`,
+      );
+    }
+    return captures;
+  };
+}
+
+function assertCaptures(source, actual, ranges) {
+  const bytes = Buffer.from(source);
+  const expected = Array(bytes.length).fill("");
+  let previousEnd = 0;
+  for (const [start, end, capture] of ranges) {
+    assert.ok(
+      Number.isSafeInteger(start) && start >= previousEnd,
+      "expected ranges must be ordered and disjoint",
+    );
+    assert.ok(
+      Number.isSafeInteger(end) && end > start && end <= bytes.length,
+      "expected range exceeds source bytes",
+    );
+    expected.fill(capture, start, end);
+    previousEnd = end;
+  }
+  // HTML emits line breaks outside spans; compare colors on source characters.
+  for (const [index, byte] of bytes.entries()) {
+    if (byte !== 10)
+      assert.equal(
+        actual[index],
+        expected[index],
+        `byte ${index} in ${JSON.stringify(source)}`,
+      );
+  }
+}
 
 const captureNames = [
   "character.special",
@@ -21,8 +147,15 @@ const captureNames = [
 
 const cases = [
   {
-    name: "Empty patterns have no captures",
-    languages: ["javascript_regex", "javascript_regex_u", "javascript_regex_v"],
+    name: "HTML-sensitive Unicode literals retain source bytes and captures",
+    languages: grammars.map(({ name }) => name),
+    source: `é😀<&>"'`,
+    captures: [[0, 11, "string.regexp"]],
+  },
+
+  {
+    name: "empty patterns have no captures",
+    languages: grammars.map(({ name }) => name),
     source: "",
     captures: [],
   },
@@ -33,7 +166,7 @@ const cases = [
     captures: [[0, 13, "string.regexp"]],
   },
   {
-    name: "Assertions differ from literal characters and wildcard",
+    name: "assertions differ from literal characters and wildcard",
     languages: ["javascript_regex", "javascript_regex_u", "javascript_regex_v"],
     source: String.raw`^a|.$\b\B`,
     captures: [
@@ -45,7 +178,7 @@ const cases = [
     ],
   },
   {
-    name: "Group punctuation is split by role for all lookarounds",
+    name: "group punctuation is split by role for all lookarounds",
     languages: ["javascript_regex", "javascript_regex_u", "javascript_regex_v"],
     source: "(a)(?:b)(?=c)(?!d)(?<=e)(?<!f)",
     captures: [
@@ -75,7 +208,7 @@ const cases = [
     ],
   },
   {
-    name: "Inline modifiers and quantifiers use their separate leaf roles",
+    name: "inline modifiers and quantifiers use their separate leaf roles",
     languages: ["javascript_regex", "javascript_regex_u", "javascript_regex_v"],
     source: "(?im-s:a+?b*?c??d{12,34}?e{2,}f{3})",
     captures: [
@@ -110,7 +243,7 @@ const cases = [
     ],
   },
   {
-    name: "Named groups and references preserve escaped UTF-8 identifier leaves",
+    name: "named groups and references preserve escaped UTF-8 identifier leaves",
     languages: ["javascript_regex", "javascript_regex_u", "javascript_regex_v"],
     source: String.raw`(?<$_é\u0061>x)\k<$_é\u0061>`,
     captures: [
@@ -130,7 +263,7 @@ const cases = [
     ],
   },
   {
-    name: "Braced Unicode identifier escapes retain their bracket captures",
+    name: "braced Unicode identifier escapes retain their bracket captures",
     languages: ["javascript_regex", "javascript_regex_u", "javascript_regex_v"],
     source: String.raw`(?<\u{61}>x)\k<a>`,
     captures: [
@@ -150,13 +283,13 @@ const cases = [
     ],
   },
   {
-    name: "Character escapes retain source leaves for prefixes and digits",
+    name: "character escapes retain source leaves for prefixes and digits",
     languages: ["javascript_regex", "javascript_regex_u", "javascript_regex_v"],
     source: String.raw`\n\r\t\f\v\cA\0\x41\u0041\/`,
     captures: [[0, 27, "string.escape"]],
   },
   {
-    name: "Numeric backreferences are escapes rather than repetition counts",
+    name: "numeric backreferences are escapes rather than repetition counts",
     languages: ["javascript_regex", "javascript_regex_u", "javascript_regex_v"],
     source: String.raw`(a)\1`,
     captures: [
@@ -167,13 +300,13 @@ const cases = [
     ],
   },
   {
-    name: "Escaped regex punctuation remains an escape",
+    name: "escaped regex punctuation remains an escape",
     languages: ["javascript_regex", "javascript_regex_u", "javascript_regex_v"],
     source: String.raw`\^\$\.\*\+\?\(\)\[\]\{\}\|`,
     captures: [[0, 26, "string.escape"]],
   },
   {
-    name: "Classic classes separate range operators and backspace escape leaves",
+    name: "classic classes separate range operators and backspace escape leaves",
     languages: ["javascript_regex", "javascript_regex_u"],
     source: String.raw`[a-z\d\b]`,
     captures: [
@@ -201,7 +334,7 @@ const cases = [
     ],
   },
   {
-    name: "All shorthand character classes keep special character captures",
+    name: "all shorthand character classes keep special character captures",
     languages: ["javascript_regex", "javascript_regex_u", "javascript_regex_v"],
     source: String.raw`\d\D\s\S\w\W[\D\s\S\w\W]`,
     captures: [
@@ -212,7 +345,7 @@ const cases = [
     ],
   },
   {
-    name: "Classic class hyphens remain literal at both edges",
+    name: "classic class hyphens remain literal at both edges",
     languages: ["javascript_regex", "javascript_regex_u"],
     source: "[-a-]",
     captures: [
@@ -305,7 +438,7 @@ const cases = [
     ],
   },
   {
-    name: "Property spelling is highlighted without validating Unicode names",
+    name: "property spelling is highlighted without validating Unicode names",
     languages: ["javascript_regex_u", "javascript_regex_v"],
     source: String.raw`\p{A_=B_2}`,
     captures: [
@@ -358,7 +491,7 @@ const cases = [
     ],
   },
   {
-    name: "Character class negation differs from a literal caret",
+    name: "character class negation differs from a literal caret",
     languages: ["javascript_regex", "javascript_regex_u", "javascript_regex_v"],
     source: "[^^]",
     captures: [
@@ -369,7 +502,7 @@ const cases = [
     ],
   },
   {
-    name: "Multi-digit backreferences keep every decimal leaf escaped",
+    name: "multi-digit backreferences keep every decimal leaf escaped",
     languages: ["javascript_regex", "javascript_regex_u", "javascript_regex_v"],
     source: String.raw`()()()()()()()()()()\10`,
     captures: [
@@ -407,7 +540,7 @@ const cases = [
     ],
   },
   {
-    name: "Empty class string alternatives retain only real separator leaves",
+    name: "empty class string alternatives retain only real separator leaves",
     languages: ["javascript_regex_v"],
     source: String.raw`[\q{|a||}]`,
     captures: [
@@ -761,18 +894,17 @@ const cases = [
 
 let runner;
 let directory;
-let capturePath;
+let highlight;
 
 before(() => {
   directory = mkdtempSync(join(tmpdir(), "regex-highlight-"));
   runner = createTreeSitter();
-  const config = JSON.parse(readFileSync(runner.configPath, "utf8"));
-  config.theme = Object.fromEntries(
-    captureNames.map((name, i) => [name, i + 17]),
-  );
-  writeFileSync(runner.configPath, JSON.stringify(config));
-  capturePath = join(directory, "captures.txt");
-  writeFileSync(capturePath, `${captureNames.join("\n")}\n`);
+  highlight = createHighlighter({
+    directory,
+    root,
+    run: checked,
+    captureNames,
+  });
 });
 
 after(() => {
@@ -781,72 +913,11 @@ after(() => {
 });
 
 function checked(arguments_) {
-  const result = runner.run(arguments_, { encoding: "utf8" });
+  const result = runner.run(arguments_, { encoding: "utf8", timeout: 60_000 });
   assert.ifError(result.error);
   assert.equal(result.status, 0, result.stdout + result.stderr);
   assert.doesNotMatch(result.stderr, /Non-standard highlight captures/);
   return result.stdout;
-}
-
-function decodeEntities(text) {
-  return text
-    .replaceAll("&lt;", "<")
-    .replaceAll("&gt;", ">")
-    .replaceAll("&quot;", '"')
-    .replaceAll("&#39;", "'")
-    .replaceAll("&amp;", "&");
-}
-
-function renderedCaptures(html, source) {
-  const start = html.indexOf("<pre><code>");
-  const end = html.indexOf("</code></pre>");
-  assert.ok(start >= 0 && end >= start);
-  const content = html.slice(start + "<pre><code>".length, end);
-  const stack = [];
-  const captures = [];
-  let text = "";
-  for (const part of content.matchAll(
-    /<span class='([^']*)'>|<\/span>|([^<]+)/g,
-  )) {
-    if (part[1] !== undefined) stack.push(part[1].replaceAll(" ", "."));
-    else if (part[0] === "</span>") assert.notEqual(stack.pop(), undefined);
-    else {
-      const decoded = decodeEntities(part[2]);
-      text += decoded;
-      captures.push(
-        ...Array(Buffer.byteLength(decoded)).fill(stack.at(-1) ?? ""),
-      );
-    }
-  }
-  assert.equal(stack.length, 0);
-  assert.equal(text.replace(/\n$/, ""), source.replace(/\n$/, ""));
-  return captures;
-}
-
-function highlight(grammar, source, valid) {
-  const path = join(directory, `${grammar.name}.txt`);
-  writeFileSync(path, source);
-  if (valid) {
-    const parsed = checked(["parse", "--cst", "--scope", grammar.scope, path]);
-    assert.doesNotMatch(parsed, /^[0-9: \t-]+•/m, parsed);
-  }
-  return renderedCaptures(
-    checked([
-      "highlight",
-      "--check",
-      "--captures-path",
-      capturePath,
-      "--html",
-      "--layout",
-      "fragment",
-      "--style",
-      "classes",
-      "--scope",
-      grammar.scope,
-      path,
-    ]),
-    source,
-  );
 }
 
 // Inspect rendered HTML because query assertions accept overridden captures too.
@@ -854,22 +925,7 @@ for (const { name, languages, source, captures } of cases) {
   for (const language of languages) {
     const grammar = grammars.find(({ name }) => name === language);
     test(`${language}: ${name}`, () => {
-      const actual = highlight(grammar, source, true);
-      const expected = Array(Buffer.byteLength(source)).fill("");
-      for (const [start, end, capture] of captures) {
-        assert.ok(captureNames.includes(capture));
-        expected.fill(capture, start, end);
-      }
-      // HTML emits line breaks outside spans; compare colors on source characters.
-      const bytes = Buffer.from(source);
-      for (const [index, byte] of bytes.entries()) {
-        if (byte !== 10)
-          assert.equal(
-            actual[index],
-            expected[index],
-            `byte ${index} in ${JSON.stringify(source)}`,
-          );
-      }
+      assertCaptures(source, highlight(grammar.scope, source), captures);
     });
   }
 }
@@ -877,7 +933,7 @@ for (const { name, languages, source, captures } of cases) {
 for (const grammar of grammars) {
   test(`${grammar.name}: incomplete patterns retain their source without error colors`, () => {
     for (const source of ["(", "[a", "a\\", "(?<"]) {
-      for (const capture of highlight(grammar, source, false)) {
+      for (const capture of highlight(grammar.scope, source, false)) {
         assert.ok(capture === "" || captureNames.includes(capture), capture);
       }
     }

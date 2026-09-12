@@ -7,6 +7,12 @@
 ECMAScript 2026 regular expression literal bodies (`/.../`) and Python 3.14
 `re` patterns in raw `str` literals.
 
+## Installation
+
+```sh
+npm install @konomanoasa/tree-sitter-regex
+```
+
 ## Grammars
 
 This repository contains the following five grammars.
@@ -18,12 +24,6 @@ This repository contains the following five grammars.
 | `javascript_regex_v` | `v` |
 | `python_re` | Initial `VERBOSE` disabled |
 | `python_re_verbose` | Initial `VERBOSE` enabled |
-
-## Installation
-
-```sh
-npm install @konomanoasa/tree-sitter-regex
-```
 
 ## Development
 
@@ -44,8 +44,7 @@ npm run parse:python:verbose -- pattern.txt
 - [Python 3.14 regular expression syntax](https://docs.python.org/3.14/library/re.html#regular-expression-syntax)
 - [Python 3.14 string and bytes literals](https://docs.python.org/3.14/reference/lexical_analysis.html#string-and-bytes-literals)
 
-## License
+## Licenses
 
-[MIT](LICENSE)
-
-Unicode data: [Unicode License V3](LICENSE-UNICODE)
+- [MIT](LICENSE)
+- [Unicode License V3](LICENSE-UNICODE) (Unicode data)
