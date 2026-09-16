@@ -1632,11 +1632,11 @@ nested-set warning spellings retain current class structure
       (literal_escape))))
 
 ==================
-set escapes do not become range endpoints
+hyphens beside class escapes remain members first, last, and after a range
 :language(python_re)
 :language(python_re_verbose)
 ==================
-[\d-a][a-\d]\
+[-\d][\d-][a-b-\d]\
 
 ---
 
@@ -1644,14 +1644,45 @@ set escapes do not become range endpoints
   body: (alternation
     (concatenation
       (character_class
-        (character_class_escape)
         (class_character)
+        (character_class_escape))
+      (character_class
+        (character_class_escape)
         (class_character))
       (character_class
-        (class_character)
+        (class_range
+          start: (class_character)
+          end: (class_character))
         (class_character)
         (character_class_escape))
       (literal_escape))))
+
+==================
+a class escape cannot begin a character range
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+[\d-a]
+---
+
+==================
+a class escape cannot end a character range
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+[a-\d]
+---
+
+==================
+a class escape cannot be either endpoint of a range starting with an escape or a hyphen
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+[\d-\w][\d--][a-b--\d]
+---
 
 ==================
 empty classes own separate bracket and negation tokens and a body caret stays an anchor

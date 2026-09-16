@@ -79,6 +79,7 @@ export default function defineGrammar(name, mode) {
       $._class_subtraction,
       $._class_negation,
       $._unicode_pair_separator,
+      $._error_sentinel,
     ],
     rules: {
       pattern: ($) =>

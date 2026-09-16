@@ -22,7 +22,6 @@ enum PythonReTokenType {
   PARENTHESIZED_GROUP_NAME,
   CONDITIONAL_GROUP_ID,
   COMMENT_GROUP_CONTENT,
-  VERBOSE_WHITESPACE,
   VERBOSE_COMMENT,
   LITERAL_ESCAPE,
   HEX_ESCAPE_START,
@@ -45,6 +44,7 @@ enum PythonReTokenType {
   OPEN_BRACE,
   LITERAL_CHARACTER_NORMAL,
   LITERAL_CHARACTER_VERBOSE,
+  ERROR_SENTINEL,
 };
 
 static bool python_re_is_enable_flag(int32_t character) {
@@ -321,7 +321,7 @@ python_re_scan_quantifier(TSLexer *lexer, const bool *valid_symbols) {
 }
 
 static bool python_re_scan(TSLexer *lexer, const bool *valid_symbols) {
-  if (lexer->eof(lexer)) {
+  if (valid_symbols[ERROR_SENTINEL] || lexer->eof(lexer)) {
     return false;
   }
   if (valid_symbols[UNICODE_CHARACTER_NAME]) {
@@ -433,15 +433,6 @@ static bool python_re_scan(TSLexer *lexer, const bool *valid_symbols) {
   if (valid_symbols[VERBOSE_COMMENT] && lexer->lookahead == '#') {
     return python_re_scan_comment(lexer, '\n', VERBOSE_COMMENT);
   }
-  if (
-    valid_symbols[VERBOSE_WHITESPACE] &&
-    python_re_is_whitespace(lexer->lookahead)
-  ) {
-    do {
-      lexer->advance(lexer, false);
-    } while (!lexer->eof(lexer) && python_re_is_whitespace(lexer->lookahead));
-    return python_re_emit(lexer, VERBOSE_WHITESPACE);
-  }
   if (lexer->lookahead == '\\') {
     return python_re_scan_escape(lexer, valid_symbols, false);
   }
@@ -461,24 +452,17 @@ static bool python_re_scan(TSLexer *lexer, const bool *valid_symbols) {
   return python_re_emit(lexer, token);
 }
 
-#define PYTHON_RE_CONCAT_INNER(left, right) left##right
-#define PYTHON_RE_CONCAT(left, right) PYTHON_RE_CONCAT_INNER(left, right)
-#define PYTHON_RE_LANGUAGE_PREFIX(language) \
-  PYTHON_RE_CONCAT(tree_sitter_, language)
-#define PYTHON_RE_SCANNER_PREFIX(language) \
-  PYTHON_RE_CONCAT(PYTHON_RE_LANGUAGE_PREFIX(language), _external_scanner)
-#define PYTHON_RE_SCANNER_FUNCTION(suffix) \
-  PYTHON_RE_CONCAT(PYTHON_RE_SCANNER_PREFIX(PYTHON_RE_LANGUAGE), suffix)
+#define REGEX_SCANNER(suffix) REGEX_SCANNER_ENTRY(PYTHON_RE_LANGUAGE, suffix)
 
-void *PYTHON_RE_SCANNER_FUNCTION(_create)(void) {
+void *REGEX_SCANNER(create)(void) {
   return NULL;
 }
 
-void PYTHON_RE_SCANNER_FUNCTION(_destroy)(void *payload) {
+void REGEX_SCANNER(destroy)(void *payload) {
   (void)payload;
 }
 
-bool PYTHON_RE_SCANNER_FUNCTION(_scan)(
+bool REGEX_SCANNER(scan)(
   void *payload,
   TSLexer *lexer,
   const bool *valid_symbols
@@ -487,13 +471,13 @@ bool PYTHON_RE_SCANNER_FUNCTION(_scan)(
   return python_re_scan(lexer, valid_symbols);
 }
 
-unsigned PYTHON_RE_SCANNER_FUNCTION(_serialize)(void *payload, char *buffer) {
+unsigned REGEX_SCANNER(serialize)(void *payload, char *buffer) {
   (void)payload;
   (void)buffer;
   return 0;
 }
 
-void PYTHON_RE_SCANNER_FUNCTION(_deserialize)(
+void REGEX_SCANNER(deserialize)(
   void *payload,
   const char *buffer,
   unsigned length
@@ -502,11 +486,5 @@ void PYTHON_RE_SCANNER_FUNCTION(_deserialize)(
   (void)buffer;
   (void)length;
 }
-
-#undef PYTHON_RE_SCANNER_FUNCTION
-#undef PYTHON_RE_SCANNER_PREFIX
-#undef PYTHON_RE_LANGUAGE_PREFIX
-#undef PYTHON_RE_CONCAT
-#undef PYTHON_RE_CONCAT_INNER
 
 #endif

@@ -3,30 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(JAVASCRIPT_REGEX_MODE)
-#if JAVASCRIPT_REGEX_MODE == 0
-#include "../javascript_regex/src/scanner.c"
-#define SCANNER(name) tree_sitter_javascript_regex_external_scanner_##name
-#define LAST_TOKEN (TOKEN_COUNT - 1)
-#elif JAVASCRIPT_REGEX_MODE == 1
-#include "../javascript_regex_u/src/scanner.c"
-#define SCANNER(name) tree_sitter_javascript_regex_u_external_scanner_##name
-#define LAST_TOKEN (TOKEN_COUNT - 1)
-#else
-#include "../javascript_regex_v/src/scanner.c"
-#define SCANNER(name) tree_sitter_javascript_regex_v_external_scanner_##name
-#define LAST_TOKEN (TOKEN_COUNT - 1)
-#endif
-#else
-#ifdef PYTHON_RE_VERBOSE
-#include "../python_re_verbose/src/scanner.c"
-#define SCANNER(name) tree_sitter_python_re_verbose_external_scanner_##name
-#else
-#include "../python_re/src/scanner.c"
-#define SCANNER(name) tree_sitter_python_re_external_scanner_##name
-#endif
-#define LAST_TOKEN LITERAL_CHARACTER_VERBOSE
-#endif
+#include REGEX_SCANNER_SOURCE
+
+#define TOKEN_COUNT (ERROR_SENTINEL + 1)
 
 #ifdef TREE_SITTER_REUSE_ALLOCATOR
 static size_t reuse_calloc_calls;
@@ -103,7 +82,7 @@ static MockLexer make_lexer(const char *source, size_t length) {
 static unsigned serialize_state(void *scanner, char *buffer) {
   char guarded[TREE_SITTER_SERIALIZATION_BUFFER_SIZE + 2];
   memset(guarded, 0x5a, sizeof(guarded));
-  unsigned length = SCANNER(serialize)(scanner, guarded + 1);
+  unsigned length = REGEX_SCANNER(serialize)(scanner, guarded + 1);
   assert(length <= TREE_SITTER_SERIALIZATION_BUFFER_SIZE);
   assert(guarded[0] == 0x5a);
   for (size_t index = length + 1; index < sizeof(guarded); index++) {
@@ -113,12 +92,7 @@ static unsigned serialize_state(void *scanner, char *buffer) {
   return length;
 }
 
-static void test_disabled_tokens_preserve_state(void) {
-  void *scanner = SCANNER(create)();
-#if defined(JAVASCRIPT_REGEX_MODE) && JAVASCRIPT_REGEX_MODE == 0
-  *(Scanner *)scanner =
-    (Scanner){.capture_count = 2, .has_named_capture = true};
-#endif
+static void assert_scans_decline(void *scanner, const bool *valid_symbols) {
   char before[TREE_SITTER_SERIALIZATION_BUFFER_SIZE];
   unsigned before_length = serialize_state(scanner, before);
   const struct {
@@ -126,24 +100,39 @@ static void test_disabled_tokens_preserve_state(void) {
     size_t length;
   } inputs[] = {
     {"(?<x>a)", 7},
+    {"(?i)a", 5},
     {"3", 1},
     {"u0041", 5},
     {"#comment", 8},
     {"[", 1},
+    {"*", 1},
     {" ", 1},
     {"", 0},
     {"\0", 1},
   };
-  const bool valid_symbols[LAST_TOKEN + 1] = {false};
   for (size_t index = 0; index < sizeof(inputs) / sizeof(inputs[0]); index++) {
     MockLexer mock = make_lexer(inputs[index].source, inputs[index].length);
-    assert(!SCANNER(scan)(scanner, &mock.lexer, valid_symbols));
+    assert(!REGEX_SCANNER(scan)(scanner, &mock.lexer, valid_symbols));
     char after[TREE_SITTER_SERIALIZATION_BUFFER_SIZE];
     unsigned after_length = serialize_state(scanner, after);
     assert(after_length == before_length);
     assert(memcmp(before, after, before_length) == 0);
   }
-  SCANNER(destroy)(scanner);
+}
+
+static void test_disabled_and_recovery_scans_preserve_state(void) {
+  void *scanner = REGEX_SCANNER(create)();
+#if defined(JAVASCRIPT_REGEX_MODE) && JAVASCRIPT_REGEX_MODE == 0
+  *(Scanner *)scanner =
+    (Scanner){.capture_count = 2, .has_named_capture = true};
+#endif
+  bool valid_symbols[TOKEN_COUNT] = {false};
+  assert_scans_decline(scanner, valid_symbols);
+  for (size_t index = 0; index < TOKEN_COUNT; index++) {
+    valid_symbols[index] = true;
+  }
+  assert_scans_decline(scanner, valid_symbols);
+  REGEX_SCANNER(destroy)(scanner);
 }
 
 #if defined(JAVASCRIPT_REGEX_MODE)
@@ -156,9 +145,9 @@ static void check_token(
   size_t end
 ) {
   MockLexer mock = make_lexer(source, length);
-  bool valid[LAST_TOKEN + 1] = {false};
+  bool valid[TOKEN_COUNT] = {false};
   valid[token] = true;
-  assert(SCANNER(scan)(scanner, &mock.lexer, valid) == accepted);
+  assert(REGEX_SCANNER(scan)(scanner, &mock.lexer, valid) == accepted);
   if (accepted) {
     assert(mock.lexer.result_symbol == token);
     assert((mock.mark == SIZE_MAX ? mock.offset : mock.mark) == end);
@@ -167,7 +156,7 @@ static void check_token(
 
 #if JAVASCRIPT_REGEX_MODE == 0
 static void test_serialization_and_reset(void) {
-  Scanner *scanner = SCANNER(create)();
+  Scanner *scanner = REGEX_SCANNER(create)();
   assert(scanner != NULL);
   const uint32_t counts[] = {0, 1, 255, 256, 65535, 65536, UINT32_MAX};
   for (size_t index = 0; index < sizeof(counts) / sizeof(counts[0]); index++) {
@@ -180,14 +169,14 @@ static void test_serialization_and_reset(void) {
       unsigned length = serialize_state(scanner, buffer);
       assert(length == 5);
       Scanner restored = {0};
-      SCANNER(deserialize)(&restored, buffer, length);
+      REGEX_SCANNER(deserialize)(&restored, buffer, length);
       assert(restored.capture_count == counts[index]);
       assert(restored.has_named_capture == scanner->has_named_capture);
     }
   }
-  SCANNER(deserialize)(scanner, NULL, 0);
+  REGEX_SCANNER(deserialize)(scanner, NULL, 0);
   assert(scanner->capture_count == 0 && !scanner->has_named_capture);
-  SCANNER(destroy)(scanner);
+  REGEX_SCANNER(destroy)(scanner);
 }
 
 static void test_capture_context_and_failed_scan(void) {
@@ -234,11 +223,11 @@ static void test_capture_context_stops_at_the_lexer_boundary(void) {
 }
 #else
 static void test_stateless_lifecycle_and_unicode_tokens(void) {
-  void *scanner = SCANNER(create)();
+  void *scanner = REGEX_SCANNER(create)();
   char buffer[TREE_SITTER_SERIALIZATION_BUFFER_SIZE];
   memset(buffer, 0x5a, sizeof(buffer));
   assert(serialize_state(scanner, buffer) == 0);
-  SCANNER(deserialize)(scanner, NULL, 0);
+  REGEX_SCANNER(deserialize)(scanner, NULL, 0);
   check_token(scanner, "0", 1, NULL_ZERO, true, 1);
   check_token(scanner, "01", 2, NULL_ZERO, false, 0);
   check_token(scanner, "x41", 3, HEX_START, true, 1);
@@ -266,22 +255,22 @@ static void test_stateless_lifecycle_and_unicode_tokens(void) {
   check_token(scanner, "\0", 1, CLASS_SET_RAW_CHARACTER, true, 1);
   check_token(scanner, "", 0, CLASS_SET_RAW_CHARACTER, false, 0);
 #endif
-  SCANNER(destroy)(scanner);
+  REGEX_SCANNER(destroy)(scanner);
 }
 #endif
 
 #else
 static void assert_token(const char *source, TSSymbol token, size_t length) {
   MockLexer mock = make_lexer(source, strlen(source));
-  bool valid_symbols[LITERAL_CHARACTER_VERBOSE + 1] = {false};
+  bool valid_symbols[TOKEN_COUNT] = {false};
   valid_symbols[token] = true;
-  assert(SCANNER(scan)(NULL, &mock.lexer, valid_symbols));
+  assert(REGEX_SCANNER(scan)(NULL, &mock.lexer, valid_symbols));
   assert(mock.lexer.result_symbol == token);
   assert(mock.mark == length);
 }
 
 static void test_stateless_lifecycle_and_serialization(void) {
-  void *scanner = SCANNER(create)();
+  void *scanner = REGEX_SCANNER(create)();
   assert(scanner == NULL);
   char buffer[TREE_SITTER_SERIALIZATION_BUFFER_SIZE];
   memset(buffer, 0x5a, sizeof(buffer));
@@ -289,9 +278,9 @@ static void test_stateless_lifecycle_and_serialization(void) {
   for (unsigned index = 0; index < sizeof(buffer); index += 1) {
     assert(buffer[index] == 0x5a);
   }
-  SCANNER(deserialize)(scanner, NULL, 0);
-  SCANNER(deserialize)(scanner, buffer, sizeof(buffer));
-  SCANNER(destroy)(scanner);
+  REGEX_SCANNER(deserialize)(scanner, NULL, 0);
+  REGEX_SCANNER(deserialize)(scanner, buffer, sizeof(buffer));
+  REGEX_SCANNER(destroy)(scanner);
 }
 
 static void test_token_ranges_follow_the_grammar_context(void) {
@@ -308,7 +297,6 @@ static void test_token_ranges_follow_the_grammar_context(void) {
     {"^", CLASS_NEGATION, 1},
     {"]", CLASS_LEADING_CLOSE, 1},
     {"]", CLASS_CLOSE, 1},
-    {" \t\n", VERBOSE_WHITESPACE, 3},
     {"a", LITERAL_CHARACTER_VERBOSE, 1},
     {"(?ix)", GLOBAL_FLAGS_START, 1},
     {"(?i-x:", SCOPED_FLAGS_START, 1},
@@ -370,35 +358,26 @@ static void test_invalid_tokens_are_not_emitted(void) {
   for (
     unsigned index = 0; index < sizeof(cases) / sizeof(cases[0]); index += 1
   ) {
-    bool valid_symbols[LITERAL_CHARACTER_VERBOSE + 1] = {false};
+    bool valid_symbols[TOKEN_COUNT] = {false};
     valid_symbols[cases[index].token] = true;
     MockLexer mock =
       make_lexer(cases[index].source, strlen(cases[index].source));
-    assert(!SCANNER(scan)(NULL, &mock.lexer, valid_symbols));
+    assert(!REGEX_SCANNER(scan)(NULL, &mock.lexer, valid_symbols));
   }
-  bool all_symbols[LITERAL_CHARACTER_VERBOSE + 1];
-  for (
-    unsigned index = 0; index < sizeof(all_symbols) / sizeof(all_symbols[0]);
-    index += 1
-  ) {
-    all_symbols[index] = true;
-  }
-  MockLexer eof = make_lexer("", 0);
-  assert(!SCANNER(scan)(NULL, &eof.lexer, all_symbols));
 }
 
 static void test_nul_and_eof_are_distinct(void) {
   const TSSymbol tokens[] =
     {LITERAL_CHARACTER_NORMAL, LITERAL_CHARACTER_VERBOSE, CLASS_CHARACTER};
   for (size_t index = 0; index < sizeof(tokens) / sizeof(tokens[0]); index++) {
-    bool valid_symbols[LAST_TOKEN + 1] = {false};
+    bool valid_symbols[TOKEN_COUNT] = {false};
     valid_symbols[tokens[index]] = true;
     MockLexer nul = make_lexer("\0", 1);
-    assert(SCANNER(scan)(NULL, &nul.lexer, valid_symbols));
+    assert(REGEX_SCANNER(scan)(NULL, &nul.lexer, valid_symbols));
     assert(nul.lexer.result_symbol == tokens[index]);
     assert(nul.mark == 1);
     MockLexer eof = make_lexer("", 0);
-    assert(!SCANNER(scan)(NULL, &eof.lexer, valid_symbols));
+    assert(!REGEX_SCANNER(scan)(NULL, &eof.lexer, valid_symbols));
   }
 }
 
@@ -409,7 +388,7 @@ static void test_reuse_allocator_contract(void) {
 #if JAVASCRIPT_REGEX_MODE == 0
   assert(reuse_calloc_calls > 0);
   reuse_fail_next_calloc = true;
-  assert(SCANNER(create)() == NULL);
+  assert(REGEX_SCANNER(create)() == NULL);
   assert(!reuse_fail_next_calloc);
 #else
   assert(reuse_calloc_calls == 0);
@@ -420,7 +399,7 @@ static void test_reuse_allocator_contract(void) {
 #endif
 
 int main(void) {
-  test_disabled_tokens_preserve_state();
+  test_disabled_and_recovery_scans_preserve_state();
 #if defined(JAVASCRIPT_REGEX_MODE)
 #if JAVASCRIPT_REGEX_MODE == 0
   test_serialization_and_reset();

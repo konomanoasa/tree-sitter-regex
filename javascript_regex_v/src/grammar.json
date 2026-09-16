@@ -1682,6 +1682,10 @@
     {
       "type": "SYMBOL",
       "name": "_unicode_pair_separator"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_error_sentinel"
     }
   ],
   "inline": [],

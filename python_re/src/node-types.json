@@ -52,7 +52,7 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": false,
+      "required": true,
       "types": [
         {
           "type": "backspace_escape",
@@ -828,11 +828,6 @@
     "fields": {}
   },
   {
-    "type": "verbose_whitespace",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "!",
     "named": false
   },
@@ -986,6 +981,10 @@
   },
   {
     "type": "unicode_character_name",
+    "named": true
+  },
+  {
+    "type": "verbose_whitespace",
     "named": true
   },
   {

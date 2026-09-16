@@ -1,3 +1,3 @@
-#include "../../common/javascript/scanner.h"
+#define JAVASCRIPT_REGEX_MODE 1
 
-DEFINE_SCANNER(javascript_regex_u, 1)
+#include "../../common/javascript/scanner.h"

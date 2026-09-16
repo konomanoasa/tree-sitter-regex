@@ -4,6 +4,21 @@
 #include "../scanner.h"
 #include "tree_sitter/alloc.h"
 
+#ifndef JAVASCRIPT_REGEX_MODE
+#error "JAVASCRIPT_REGEX_MODE must be 0 (ordinary), 1 (u), or 2 (v)"
+#elif JAVASCRIPT_REGEX_MODE == 0
+#define JAVASCRIPT_REGEX_LANGUAGE javascript_regex
+#elif JAVASCRIPT_REGEX_MODE == 1
+#define JAVASCRIPT_REGEX_LANGUAGE javascript_regex_u
+#elif JAVASCRIPT_REGEX_MODE == 2
+#define JAVASCRIPT_REGEX_LANGUAGE javascript_regex_v
+#else
+#error "JAVASCRIPT_REGEX_MODE must be 0 (ordinary), 1 (u), or 2 (v)"
+#endif
+
+#define REGEX_SCANNER(suffix) \
+  REGEX_SCANNER_ENTRY(JAVASCRIPT_REGEX_LANGUAGE, suffix)
+
 enum TokenType {
   PATTERN_START,
   DECIMAL_START,
@@ -34,7 +49,7 @@ enum TokenType {
   CLASS_SUBTRACTION,
   CLASS_NEGATION,
   UNICODE_PAIR_SEPARATOR,
-  TOKEN_COUNT,
+  ERROR_SENTINEL,
 };
 
 typedef struct {
@@ -259,16 +274,15 @@ static bool scan_set_character(TSLexer *lexer, const bool *valid) {
   }
 }
 
-static bool
-scan_regex(Scanner *scanner, TSLexer *lexer, const bool *valid, unsigned mode) {
-  if (valid[PATTERN_START] && valid[DECIMAL_START])
+static bool scan_regex(Scanner *scanner, TSLexer *lexer, const bool *valid) {
+  if (valid[ERROR_SENTINEL])
     return false;
-  if (mode == 0 && valid[PATTERN_START])
+  if (JAVASCRIPT_REGEX_MODE == 0 && valid[PATTERN_START])
     return scan_pattern_start(scanner, lexer);
   if (lexer->eof(lexer))
     return false;
   if (
-    mode ==
+    JAVASCRIPT_REGEX_MODE ==
     2 &&
     (valid[CLASS_SET_RAW_CHARACTER] ||
       valid[CLASS_NEGATION] ||
@@ -301,7 +315,7 @@ scan_regex(Scanner *scanner, TSLexer *lexer, const bool *valid, unsigned mode) {
       valid[IDENTITY_SOURCE] ||
       valid[CLASS_IDENTITY_SOURCE])
   ) {
-    return scan_digits(scanner, lexer, valid, mode != 0);
+    return scan_digits(scanner, lexer, valid, JAVASCRIPT_REGEX_MODE != 0);
   }
   if (
     c ==
@@ -358,7 +372,9 @@ scan_regex(Scanner *scanner, TSLexer *lexer, const bool *valid, unsigned mode) {
       if (regex_is_hexadecimal_digit(lexer->lookahead))
         return emit(lexer, valid, HEX_START);
     }
-  } else if (c == 'k' && (mode != 0 || scanner->has_named_capture)) {
+  } else if (
+    c == 'k' && (JAVASCRIPT_REGEX_MODE != 0 || scanner->has_named_capture)
+  ) {
     return lexer->lookahead == '<' && emit(lexer, valid, NAMED_REFERENCE_START);
   } else {
     switch (c) {
@@ -387,47 +403,42 @@ scan_regex(Scanner *scanner, TSLexer *lexer, const bool *valid, unsigned mode) {
   );
 }
 
-#define DEFINE_SCANNER(name, mode) \
-  void *tree_sitter_##name##_external_scanner_create(void) { \
-    return mode == 0 ? ts_calloc(1, sizeof(Scanner)) : NULL; \
-  } \
-  void tree_sitter_##name##_external_scanner_destroy(void *payload) { \
-    ts_free(payload); \
-  } \
-  unsigned tree_sitter_##name##_external_scanner_serialize( \
-    void *payload, \
-    char *buffer \
-  ) { \
-    if (mode != 0) \
-      return 0; \
-    const Scanner *scanner = payload; \
-    for (unsigned i = 0; i < 4; i++) \
-      buffer[i] = (char)(scanner->capture_count >> (8 * i)); \
-    buffer[4] = (char)scanner->has_named_capture; \
-    return 5; \
-  } \
-  void tree_sitter_##name##_external_scanner_deserialize( \
-    void *payload, \
-    const char *buffer, \
-    unsigned length \
-  ) { \
-    if (mode != 0) \
-      return; \
-    Scanner *scanner = payload; \
-    *scanner = (Scanner){0}; \
-    if (length == 5) { \
-      for (unsigned i = 0; i < 4; i++) \
-        scanner->capture_count |= (uint32_t)(unsigned char)buffer[i] \
-          << (8 * i); \
-      scanner->has_named_capture = buffer[4] != 0; \
-    } \
-  } \
-  bool tree_sitter_##name##_external_scanner_scan( \
-    void *payload, \
-    TSLexer *lexer, \
-    const bool *valid \
-  ) { \
-    return scan_regex(payload, lexer, valid, mode); \
+void *REGEX_SCANNER(create)(void) {
+  return JAVASCRIPT_REGEX_MODE == 0 ? ts_calloc(1, sizeof(Scanner)) : NULL;
+}
+
+void REGEX_SCANNER(destroy)(void *payload) {
+  ts_free(payload);
+}
+
+unsigned REGEX_SCANNER(serialize)(void *payload, char *buffer) {
+  if (JAVASCRIPT_REGEX_MODE != 0)
+    return 0;
+  const Scanner *scanner = payload;
+  for (unsigned i = 0; i < 4; i++)
+    buffer[i] = (char)(scanner->capture_count >> (8 * i));
+  buffer[4] = (char)scanner->has_named_capture;
+  return 5;
+}
+
+void REGEX_SCANNER(deserialize)(
+  void *payload,
+  const char *buffer,
+  unsigned length
+) {
+  if (JAVASCRIPT_REGEX_MODE != 0)
+    return;
+  Scanner *scanner = payload;
+  *scanner = (Scanner){0};
+  if (length == 5) {
+    for (unsigned i = 0; i < 4; i++)
+      scanner->capture_count |= (uint32_t)(unsigned char)buffer[i] << (8 * i);
+    scanner->has_named_capture = buffer[4] != 0;
   }
+}
+
+bool REGEX_SCANNER(scan)(void *payload, TSLexer *lexer, const bool *valid) {
+  return scan_regex(payload, lexer, valid);
+}
 
 #endif

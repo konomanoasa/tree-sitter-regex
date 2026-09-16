@@ -11,8 +11,8 @@ import {
 } from "../common/javascript/unicode.js";
 import { grammars, root } from "../scripts/tree-sitter.js";
 import {
-  allLanguages,
   cache,
+  javascriptLanguages,
   parse,
   parseFile,
   parseSummary,
@@ -20,7 +20,7 @@ import {
   selectNodes,
 } from "./support/parser.js";
 
-for (const language of allLanguages) {
+for (const language of javascriptLanguages) {
   test(`${language}: NUL, interior FEFF and non-BMP characters retain source byte ranges`, () => {
     const path = join(cache, "source-characters.txt");
     writeFileSync(path, "a\uFEFF\0[\0]😀");
@@ -183,32 +183,15 @@ for (const grammar of pythonGrammars) {
 }
 
 const profiles = [
-  {
-    name: "javascript_regex",
-    path: "javascript_regex",
-    scope: "source.javascript-regex",
-    unicode: false,
-    sets: false,
-  },
-  {
-    name: "javascript_regex_u",
-    path: "javascript_regex_u",
-    scope: "source.javascript-regex.u",
-    unicode: true,
-    sets: false,
-  },
-  {
-    name: "javascript_regex_v",
-    path: "javascript_regex_v",
-    scope: "source.javascript-regex.v",
-    unicode: true,
-    sets: true,
-  },
+  { name: "javascript_regex", unicode: false, sets: false },
+  { name: "javascript_regex_u", unicode: true, sets: false },
+  { name: "javascript_regex_v", unicode: true, sets: true },
 ];
 
 for (const profile of profiles) {
+  const grammar = grammars.find(({ name }) => name === profile.name);
   const nodes = JSON.parse(
-    readFileSync(join(root, profile.path, "src", "node-types.json"), "utf8"),
+    readFileSync(join(root, grammar.path, "src", "node-types.json"), "utf8"),
   );
   test(`${profile.name}: the root exposes an optional specification disjunction`, () => {
     assert.deepEqual(
@@ -592,6 +575,7 @@ for (const grammar of grammars) {
       ["long literal", "x".repeat(80_000)],
       ["wide alternatives", "a|".repeat(16_000)],
       ["deep groups", `${"(".repeat(2000)}a${")".repeat(2000)}`],
+      ["space-separated atoms", "a ".repeat(40_000)],
     ]) {
       assert.equal(parseSummary(grammar, source).successful, true, name);
     }

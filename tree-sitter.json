@@ -15,6 +15,7 @@
       "title": "JavaScript regex literal body (u)",
       "scope": "source.javascript-regex.u",
       "path": "javascript_regex_u",
+      "injection-regex": "^javascript_regex_u$",
       "highlights": "javascript_regex_u/queries/highlights.scm",
       "external-files": ["common/scanner.h", "common/javascript/scanner.h"]
     },
@@ -23,6 +24,7 @@
       "title": "JavaScript regex literal body (v)",
       "scope": "source.javascript-regex.v",
       "path": "javascript_regex_v",
+      "injection-regex": "^javascript_regex_v$",
       "highlights": "javascript_regex_v/queries/highlights.scm",
       "external-files": ["common/scanner.h", "common/javascript/scanner.h"]
     },

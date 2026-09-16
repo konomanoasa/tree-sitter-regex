@@ -25,6 +25,7 @@ If:
 CompileFlags:
   Add:
     - -xc
+    - -DJAVASCRIPT_REGEX_MODE=0
     - -I../../javascript_regex/src
 
 ---
@@ -41,4 +42,5 @@ If:
   PathMatch: test/scanner\.test\.c
 CompileFlags:
   Add:
+    - -DREGEX_SCANNER_SOURCE="../python_re/src/scanner.c"
     - -I../python_re/src

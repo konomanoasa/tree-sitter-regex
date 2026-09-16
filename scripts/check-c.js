@@ -16,31 +16,23 @@ import { grammars, packageName, root } from "./tree-sitter.js";
 
 const scannerConfigurations = {
   javascript_regex: {
-    externalCount: "TOKEN_COUNT",
-    contractArguments: ["-DJAVASCRIPT_REGEX_MODE=0"],
+    definitions: ["JAVASCRIPT_REGEX_MODE=0"],
     reuseAllocator: true,
   },
   javascript_regex_u: {
-    externalCount: "TOKEN_COUNT",
-    contractArguments: ["-DJAVASCRIPT_REGEX_MODE=1"],
+    definitions: ["JAVASCRIPT_REGEX_MODE=1"],
     reuseAllocator: true,
   },
   javascript_regex_v: {
-    externalCount: "TOKEN_COUNT",
-    contractArguments: ["-DJAVASCRIPT_REGEX_MODE=2"],
+    definitions: ["JAVASCRIPT_REGEX_MODE=2"],
     reuseAllocator: true,
   },
   python_re: {
-    externalCount: "LITERAL_CHARACTER_VERBOSE + 1",
-    contractArguments: ["-DPYTHON_RE_LANGUAGE=python_re"],
+    definitions: ["PYTHON_RE_LANGUAGE=python_re"],
     reuseAllocator: false,
   },
   python_re_verbose: {
-    externalCount: "LITERAL_CHARACTER_VERBOSE + 1",
-    contractArguments: [
-      "-DPYTHON_RE_VERBOSE",
-      "-DPYTHON_RE_LANGUAGE=python_re_verbose",
-    ],
+    definitions: ["PYTHON_RE_LANGUAGE=python_re_verbose"],
     reuseAllocator: false,
   },
 };
@@ -152,14 +144,21 @@ function scannerVariants() {
         `Scanner grammar ${grammar.name} must declare reuseAllocator.`,
       );
     const includeDirectory = join(root, grammar.path, "src");
+    const source = join(includeDirectory, "scanner.c");
     return {
-      ...configuration,
       name: grammar.name,
       includeDirectory,
-      source: join(includeDirectory, "scanner.c"),
+      source,
       headers: grammar.externalFiles
         .filter((file) => file.endsWith(".h"))
         .map((file) => join(root, file)),
+      // Standalone headers and the contract test need the definitions that
+      // the variant's scanner.c provides before including the header.
+      contractArguments: [
+        ...configuration.definitions.map((definition) => `-D${definition}`),
+        `-DREGEX_SCANNER_SOURCE="${source.replaceAll("\\", "/")}"`,
+      ],
+      reuseAllocator: configuration.reuseAllocator,
     };
   });
 }
@@ -169,12 +168,11 @@ function checkExternalTokenOrder(clang, compilerArguments, variant, directory) {
     readFileSync(join(variant.includeDirectory, "grammar.json"), "utf8"),
   );
   const assertions = grammar.externals.map(({ name }, index) => {
-    const enumerator =
-      variant.enumerators?.[name] ?? name.replace(/^_/, "").toUpperCase();
+    const enumerator = name.replace(/^_/, "").toUpperCase();
     return `typedef char external_${index}[${enumerator} == ${index} ? 1 : -1];`;
   });
   assertions.push(
-    `typedef char external_count[(${variant.externalCount}) == ${grammar.externals.length} ? 1 : -1];`,
+    `typedef char external_count[ERROR_SENTINEL + 1 == ${grammar.externals.length} ? 1 : -1];`,
   );
   const source = join(directory, `scanner-indices-${variant.name}.c`);
   writeFileSync(
@@ -202,7 +200,7 @@ function checkDiagnostics(clang, clangd, variants, directory) {
         // Clangd reports included helpers as unused, and standalone headers
         // lack their callers. Real compilation keeps all warnings enabled.
         "-Wno-unused-function",
-        ...(source === variant.source ? [] : (variant.contractArguments ?? [])),
+        ...(source === variant.source ? [] : variant.contractArguments),
         "-fsyntax-only",
         source,
       ],
@@ -305,7 +303,7 @@ function main(arguments_) {
           const binary = join(directory, `scanner-${name}${suffix}`);
           run(clang, [
             ...compilerArguments,
-            ...(variant.contractArguments ?? []),
+            ...variant.contractArguments,
             ...(reuse ? ["-DTREE_SITTER_REUSE_ALLOCATOR"] : []),
             scannerContract,
             "-o",

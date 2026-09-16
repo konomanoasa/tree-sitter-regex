@@ -4,9 +4,9 @@ import { join } from "node:path";
 import { test } from "node:test";
 import { grammars } from "../scripts/tree-sitter.js";
 import {
-  allLanguages,
   applyEdits,
   cache,
+  javascriptLanguages,
   parse,
   parseFile,
   pythonGrammars,
@@ -116,7 +116,7 @@ const cases = [
   },
   {
     name: "a second digit extends a reference when the full number has a capture",
-    languages: allLanguages,
+    languages: javascriptLanguages,
     before: String.raw`\1()()()()()()()()()()`,
     after: String.raw`\10()()()()()()()()()()`,
     byte: 2,
@@ -125,7 +125,7 @@ const cases = [
   },
   {
     name: "a third digit reclassifies a reference using the full number and mode",
-    languages: allLanguages,
+    languages: javascriptLanguages,
     before: String.raw`\10()()()()()()()()()()`,
     after: String.raw`\100()()()()()()()()()()`,
     byte: 3,
@@ -198,7 +198,7 @@ const cases = [
   },
   {
     name: "inserting an empty alternative preserves expression precedence",
-    languages: allLanguages,
+    languages: javascriptLanguages,
     before: "a|b",
     after: "a||b",
     byte: 2,
@@ -207,7 +207,7 @@ const cases = [
   },
   {
     name: "removing and restoring a group closer recovers the normal body",
-    languages: allLanguages,
+    languages: javascriptLanguages,
     before: "(a|b)c",
     after: "(a|bc",
     byte: 4,
@@ -217,7 +217,7 @@ const cases = [
   },
   {
     name: "adding a leading class caret inserts a separate negation token",
-    languages: allLanguages,
+    languages: javascriptLanguages,
     before: "[a]",
     after: "[^a]",
     byte: 1,
@@ -226,7 +226,7 @@ const cases = [
   },
   {
     name: "removing the first class member reclassifies a caret as negation",
-    languages: allLanguages,
+    languages: javascriptLanguages,
     before: "[a^]",
     after: "[^]",
     byte: 1,
@@ -235,7 +235,7 @@ const cases = [
   },
   {
     name: "editing a modifier preserves its scoped body",
-    languages: allLanguages,
+    languages: javascriptLanguages,
     before: "(?i:a)",
     after: "(?m:a)",
     byte: 2,
@@ -244,7 +244,7 @@ const cases = [
   },
   {
     name: "an identifier edit after a multibyte character preserves the group delimiters",
-    languages: allLanguages,
+    languages: javascriptLanguages,
     before: "(?<名>a)",
     after: "(?<名x>a)",
     byte: 6,
@@ -253,7 +253,7 @@ const cases = [
   },
   {
     name: "joining body surrogate escapes respects each language's character unit",
-    languages: allLanguages,
+    languages: javascriptLanguages,
     before: String.raw`\uD800x\uDC00+`,
     after: String.raw`\uD800\uDC00+`,
     byte: 6,
@@ -262,7 +262,7 @@ const cases = [
   },
   {
     name: "joining class surrogate escapes updates both their structure and ranges",
-    languages: allLanguages,
+    languages: javascriptLanguages,
     before: String.raw`[\uD800x\uDC00]`,
     after: String.raw`[\uD800\uDC00]`,
     byte: 7,
@@ -271,7 +271,7 @@ const cases = [
   },
   {
     name: "an edit on a later line preserves UTF-8 byte columns",
-    languages: allLanguages,
+    languages: javascriptLanguages,
     before: "a\nb",
     after: "a\n😀b",
     byte: 2,
@@ -280,7 +280,7 @@ const cases = [
   },
   {
     name: "a NUL source character does not terminate scanning before an edit",
-    languages: allLanguages,
+    languages: javascriptLanguages,
     before: "\0a",
     after: "\0😀a",
     byte: 1,
@@ -289,7 +289,7 @@ const cases = [
   },
   {
     name: "an interior U+FEFF source character remains a literal during edits",
-    languages: allLanguages,
+    languages: javascriptLanguages,
     before: "a\uFEFF",
     after: "a\uFEFFb",
     byte: 4,
@@ -495,7 +495,7 @@ for (const [index, scenario] of cases.entries()) {
 const histories = [
   {
     name: "a dangling backslash exposes its missing reference digit",
-    languages: allLanguages,
+    languages: javascriptLanguages,
     before: String.raw`()\1`,
     edits: [
       {
@@ -661,7 +661,7 @@ for (const [index, history] of histories.entries()) {
   }
 }
 
-for (const language of allLanguages) {
+for (const language of javascriptLanguages) {
   test(`${language}: replacing every fragment at every position preserves incremental CST`, () => {
     const fragments = ["a", "b", "(c)", "[d-f]", String.raw`\d`, "x?"];
     const parts = ["a", "b", "(c)"];

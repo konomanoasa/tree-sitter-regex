@@ -103,7 +103,7 @@ function parseFile(path, language, edits = []) {
   return { status: recovery ? 1 : result.status, cst, recovery };
 }
 
-const allLanguages = [
+const javascriptLanguages = [
   "javascript_regex",
   "javascript_regex_u",
   "javascript_regex_v",
@@ -191,10 +191,10 @@ function hasRecovery(cst) {
 }
 
 export {
-  allLanguages,
   applyEdits,
   cache,
   hasRecovery,
+  javascriptLanguages,
   parse,
   parseFile,
   parseSummary,

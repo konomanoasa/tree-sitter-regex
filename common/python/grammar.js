@@ -16,8 +16,13 @@ function body($, verbose) {
   return optional(field("body", modeNode($, "alternation", verbose)));
 }
 
-function classLiteralMember($, start) {
-  return seq(start, optional(alias("-", $.class_character)));
+function classMembers($, starts, ranges) {
+  const member = choice(starts, $.character_class_escape);
+  return choice(
+    seq(member, optional($._class_members_after_member)),
+    seq(ranges, optional($._class_members_after_range)),
+    seq(member, alias("-", $.class_character)),
+  );
 }
 
 function hexadecimalEscape($, prefix, digits) {
@@ -166,7 +171,6 @@ function defineGrammar(name, { verbose = false } = {}) {
       $._parenthesized_group_name,
       $._conditional_group_id,
       $._comment_group_content,
-      $._verbose_whitespace,
       $._verbose_comment,
       $._literal_escape,
       $._hex_escape_start,
@@ -189,6 +193,7 @@ function defineGrammar(name, { verbose = false } = {}) {
       $._open_brace,
       $._literal_character_normal,
       $._literal_character_verbose,
+      $._error_sentinel,
     ],
     conflicts: ($) => [
       [$._atom_normal, $._repetition_normal],
@@ -310,39 +315,46 @@ function defineGrammar(name, { verbose = false } = {}) {
           $._class_body,
           alias($._class_close, "]"),
         ),
+      // A hyphen after a member is a range operator, or a literal only when
+      // "]" follows; a fresh hyphen member exists only first or after a range.
       _class_body: ($) =>
-        choice(
-          seq($._class_leading_member, repeat($._class_member)),
-          repeat1($._class_member),
-        ),
-      _class_leading_member: ($) =>
-        choice(
-          alias($._leading_class_range, $.class_range),
-          classLiteralMember(
-            $,
+        classMembers(
+          $,
+          choice(
             alias($._class_leading_close, $.class_character),
+            alias("-", $.class_character),
+            $._class_endpoint,
+          ),
+          choice(
+            alias($._class_range_from_leading_close, $.class_range),
+            alias($._class_range_from_hyphen, $.class_range),
+            $.class_range,
           ),
         ),
-      _leading_class_range: ($) =>
-        prec(
-          1,
-          classRange(
-            alias($._class_leading_close, $.class_character),
-            $._class_range_endpoint,
+      _class_members_after_range: ($) =>
+        classMembers(
+          $,
+          choice(alias("-", $.class_character), $._class_endpoint),
+          choice(
+            alias($._class_range_from_hyphen, $.class_range),
+            $.class_range,
           ),
         ),
-      _class_member: ($) =>
-        choice(
-          $.class_range,
-          classLiteralMember($, $._class_range_endpoint),
-          $.character_class_escape,
+      _class_members_after_member: ($) =>
+        classMembers($, $._class_endpoint, $.class_range),
+      class_range: ($) => classRange($._class_endpoint, $._class_range_end),
+      _class_range_from_hyphen: ($) =>
+        classRange(alias("-", $.class_character), $._class_range_end),
+      _class_range_from_leading_close: ($) =>
+        classRange(
+          alias($._class_leading_close, $.class_character),
+          $._class_range_end,
         ),
-      class_range: ($) =>
-        prec(1, classRange($._class_range_endpoint, $._class_range_endpoint)),
-      _class_range_endpoint: ($) =>
+      _class_range_end: ($) =>
+        choice($._class_endpoint, alias("-", $.class_character)),
+      _class_endpoint: ($) =>
         choice(
           $.class_character,
-          alias("-", $.class_character),
           $.literal_escape,
           $.control_escape,
           $.backspace_escape,
@@ -415,7 +427,7 @@ function defineGrammar(name, { verbose = false } = {}) {
           optional(alias($._comment_group_content, "comment_content")),
           ")",
         ),
-      verbose_whitespace: ($) => $._verbose_whitespace,
+      verbose_whitespace: () => /[ \t\n\v\f\r]+/,
       verbose_comment: ($) => $._verbose_comment,
     },
   });

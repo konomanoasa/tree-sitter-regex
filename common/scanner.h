@@ -7,6 +7,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#define REGEX_CONCAT_INNER(left, right) left##right
+#define REGEX_CONCAT(left, right) REGEX_CONCAT_INNER(left, right)
+#define REGEX_SCANNER_ENTRY(language, suffix) \
+  REGEX_CONCAT( \
+    REGEX_CONCAT(tree_sitter_, language), \
+    REGEX_CONCAT(_external_scanner_, suffix) \
+  )
+
 static inline bool regex_is_ascii_digit(int32_t character) {
   return character >= '0' && character <= '9';
 }
