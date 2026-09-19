@@ -263,6 +263,22 @@ const cases = [
     ],
   },
   {
+    name: "ordinary surrogate-pair name leaves retain labels before identifier validation",
+    languages: ["javascript_regex"],
+    source: String.raw`(?<😀𐐀>)\k<😀𐐀>`,
+    captures: [
+      [0, 1, "punctuation.bracket"],
+      [1, 2, "punctuation.special"],
+      [2, 3, "punctuation.bracket"],
+      [3, 11, "label"],
+      [11, 13, "punctuation.bracket"],
+      [13, 15, "punctuation.special"],
+      [15, 16, "punctuation.bracket"],
+      [16, 24, "label"],
+      [24, 25, "punctuation.bracket"],
+    ],
+  },
+  {
     name: "braced Unicode identifier escapes retain their bracket captures",
     languages: ["javascript_regex", "javascript_regex_u", "javascript_regex_v"],
     source: String.raw`(?<\u{61}>x)\k<a>`,

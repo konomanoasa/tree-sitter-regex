@@ -604,7 +604,7 @@ static const TSSymbolMetadata ts_symbol_metadata[] = {
   },
   [sym__comment_group_content] = {
     .visible = true,
-    .named = false,
+    .named = true,
   },
   [sym__verbose_comment] = {
     .visible = false,

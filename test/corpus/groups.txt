@@ -278,8 +278,7 @@ unescaped group names accept Unicode identifiers and dollar underscore
 0:11 - 0:12                 "<"
 0:12 - 0:17                 name: reg_exp_identifier_name
 0:12 - 0:16                   reg_exp_identifier_start
-0:12 - 0:16                     identifier_start_char
-0:12 - 0:16                       unicode_id_start `𐐀`
+0:12 - 0:16                     unicode_surrogate_pair `𐐀`
 0:16 - 0:17                   reg_exp_identifier_part
 0:16 - 0:17                     identifier_part_char
 0:16 - 0:17                       unicode_id_continue `x`
@@ -717,7 +716,7 @@ all consuming group categories can be quantified
       (literal_escape))))
 
 ==================
-named identifiers support Unicode 17 start and continuation code points
+ordinary group names preserve supplementary start and continuation characters
 :language(javascript_regex)
 :cst
 ==================
@@ -736,11 +735,9 @@ named identifiers support Unicode 17 start and continuation code points
 0:2  - 0:3                  "<"
 0:3  - 0:11                 name: reg_exp_identifier_name
 0:3  - 0:7                    reg_exp_identifier_start
-0:3  - 0:7                      identifier_start_char
-0:3  - 0:7                        unicode_id_start `𑶰`
+0:3  - 0:7                      unicode_surrogate_pair `𑶰`
 0:7  - 0:11                   reg_exp_identifier_part
-0:7  - 0:11                     identifier_part_char
-0:7  - 0:11                       unicode_id_continue `𑷠`
+0:7  - 0:11                     unicode_surrogate_pair `𑷠`
 0:11 - 0:12                 ">"
 0:12 - 0:13             body: disjunction
 0:12 - 0:13               alternative
@@ -865,6 +862,63 @@ group names allow join control characters after the first character
 0:12 - 0:13                     pattern_character
 0:12 - 0:13                       source_character `c`
 0:13 - 0:14             ")"
+
+==================
+ordinary raw supplementary names preserve surrogate-pair syntax before early errors
+:language(javascript_regex)
+:cst
+==================
+(?<😀𐐀>)\k<😀𐐀>
+---
+
+0:0  - 0:25   pattern
+0:0  - 0:25     body: disjunction
+0:0  - 0:25       alternative
+0:0  - 0:13         term
+0:0  - 0:13           operand: extended_atom
+0:0  - 0:1              "("
+0:1  - 0:12             group_specifier
+0:1  - 0:2                "?"
+0:2  - 0:12               group_name
+0:2  - 0:3                  "<"
+0:3  - 0:11                 name: reg_exp_identifier_name
+0:3  - 0:7                    reg_exp_identifier_start
+0:3  - 0:7                      unicode_surrogate_pair `😀`
+0:7  - 0:11                   reg_exp_identifier_part
+0:7  - 0:11                     unicode_surrogate_pair `𐐀`
+0:11 - 0:12                 ">"
+0:12 - 0:13             ")"
+0:13 - 0:25         term
+0:13 - 0:25           operand: extended_atom
+0:13 - 0:14             "\\"
+0:14 - 0:25             atom_escape
+0:14 - 0:15               "k"
+0:15 - 0:25               group_name
+0:15 - 0:16                 "<"
+0:16 - 0:24                 name: reg_exp_identifier_name
+0:16 - 0:20                   reg_exp_identifier_start
+0:16 - 0:20                     unicode_surrogate_pair `😀`
+0:20 - 0:24                   reg_exp_identifier_part
+0:20 - 0:24                     unicode_surrogate_pair `𐐀`
+0:24 - 0:25                 ">"
+
+==================
+Unicode modes reject a raw supplementary non-identifier at the start of a name
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:error
+==================
+(?<😀>)
+---
+
+==================
+Unicode modes reject a raw supplementary non-identifier inside a name
+:language(javascript_regex_u)
+:language(javascript_regex_v)
+:error
+==================
+(?<a😀>)
+---
 
 ==================
 escaped identifier code points preserve syntax before identifier validity checks
@@ -1251,6 +1305,28 @@ empty bodies preserve each group category
       (literal_escape))))
 
 ==================
+comment groups expose named content with UTF-8 ranges and omit empty content
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+(?#é)(?#)
+---
+
+0:0  - 0:10   pattern
+0:0  - 0:6      comment_group
+0:0  - 0:1        "("
+0:1  - 0:2        "?"
+0:2  - 0:3        "#"
+0:3  - 0:5        comment_content `é`
+0:5  - 0:6        ")"
+0:6  - 0:10     comment_group
+0:6  - 0:7        "("
+0:7  - 0:8        "?"
+0:8  - 0:9        "#"
+0:9  - 0:10       ")"
+
+==================
 comment content skips an escaped parenthesis
 :language(python_re)
 :language(python_re_verbose)
@@ -1260,7 +1336,8 @@ comment content skips an escaped parenthesis
 ---
 
 (pattern
-  (comment_group)
+  (comment_group
+    (comment_content))
   body: (alternation
     (concatenation
       (literal_character)
@@ -1276,7 +1353,8 @@ comment content can begin with a brace
 ---
 
 (pattern
-  (comment_group)
+  (comment_group
+    (comment_content))
   body: (alternation
     (concatenation
       (literal_character)

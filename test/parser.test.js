@@ -217,6 +217,7 @@ for (const profile of profiles) {
     assert.equal(names.has("legacy_octal_escape_sequence"), !profile.unicode);
     assert.equal(names.has("extended_atom"), !profile.unicode);
     assert.equal(names.has("invalid_braced_quantifier"), !profile.unicode);
+    assert.equal(names.has("unicode_surrogate_pair"), !profile.unicode);
     assert.equal(
       names.has("unicode_property_value_expression"),
       profile.unicode,
@@ -225,6 +226,15 @@ for (const profile of profiles) {
     assert.equal(names.has("class_intersection"), profile.sets);
     assert.equal(names.has("class_subtraction"), profile.sets);
     assert.equal(names.has("class_string_disjunction"), profile.sets);
+  });
+  test(`${profile.name}: raw identifier characters respect the BMP boundary and supplementary extremes`, () => {
+    for (const [source, expected] of [
+      ["(?<\uffff>)(?<a\uffff>)", false],
+      ["(?<\u{10000}>)(?<a\u{10000}>)", true],
+      ["(?<\u{10ffff}>)(?<a\u{10ffff}>)", !profile.unicode],
+    ]) {
+      assert.equal(parseSummary(grammar, source).successful, expected, source);
+    }
   });
 }
 

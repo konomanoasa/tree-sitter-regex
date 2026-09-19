@@ -4088,7 +4088,7 @@
                 "type": "SYMBOL",
                 "name": "_comment_group_content"
               },
-              "named": false,
+              "named": true,
               "value": "comment_content"
             },
             {

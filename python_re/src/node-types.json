@@ -187,7 +187,17 @@
   {
     "type": "comment_group",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "comment_content",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "concatenation",
@@ -937,7 +947,7 @@
   },
   {
     "type": "comment_content",
-    "named": false
+    "named": true
   },
   {
     "type": "control_escape",

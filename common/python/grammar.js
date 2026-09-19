@@ -424,7 +424,7 @@ function defineGrammar(name, { verbose = false } = {}) {
           "(",
           "?",
           "#",
-          optional(alias($._comment_group_content, "comment_content")),
+          optional(alias($._comment_group_content, $.comment_content)),
           ")",
         ),
       verbose_whitespace: () => /[ \t\n\v\f\r]+/,

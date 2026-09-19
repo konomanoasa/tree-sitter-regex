@@ -745,7 +745,8 @@ comment group is normal-mode prefix layout
 ---
 
 (pattern
-  (comment_group)
+  (comment_group
+    (comment_content))
   body: (alternation
     (concatenation
       (literal_character)
@@ -760,7 +761,8 @@ comment group is verbose-mode prefix layout
 ---
 
 (pattern
-  (comment_group)
+  (comment_group
+    (comment_content))
   body: (alternation
     (concatenation
       (literal_character)

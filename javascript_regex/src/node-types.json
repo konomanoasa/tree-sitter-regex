@@ -776,6 +776,10 @@
         {
           "type": "reg_exp_unicode_escape_sequence",
           "named": true
+        },
+        {
+          "type": "unicode_surrogate_pair",
+          "named": true
         }
       ]
     }
@@ -794,6 +798,10 @@
         },
         {
           "type": "reg_exp_unicode_escape_sequence",
+          "named": true
+        },
+        {
+          "type": "unicode_surrogate_pair",
           "named": true
         }
       ]
@@ -1062,6 +1070,10 @@
   },
   {
     "type": "unicode_id_start",
+    "named": true
+  },
+  {
+    "type": "unicode_surrogate_pair",
     "named": true
   },
   {

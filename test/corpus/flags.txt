@@ -50,7 +50,8 @@ d
 ---
 
 (pattern
-  (comment_group)
+  (comment_group
+    (comment_content))
   (global_flags
     flags: (flag_set))
   (global_flags

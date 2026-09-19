@@ -29,9 +29,9 @@
 (flag_set) @keyword.modifier
 
 [
+  (comment_content)
   (verbose_comment)
   "#"
-  "comment_content"
 ] @comment
 
 [

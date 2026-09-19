@@ -627,10 +627,12 @@ a(?#gap)b(?#gap)*\
   body: (alternation
     (concatenation
       (literal_character)
-      (comment_group)
+      (comment_group
+        (comment_content))
       (repetition
         operand: (literal_character)
-        (comment_group)
+        (comment_group
+          (comment_content))
         quantifier: (quantifier))
       (literal_escape))))
 

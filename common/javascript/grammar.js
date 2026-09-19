@@ -35,6 +35,10 @@ export default function defineGrammar(name, mode) {
   const unicode = mode !== "ordinary";
   const sets = mode === "v";
   const atomName = unicode ? "atom" : "extended_atom";
+  const identifierCharacters = (characters) =>
+    new RustRegex(
+      unicode ? characters : String.raw`[${characters}&&[\u{0}-\u{ffff}]]`,
+    );
   return grammar({
     name,
     extras: () => [],
@@ -201,6 +205,7 @@ export default function defineGrammar(name, mode) {
       reg_exp_identifier_start: ($) =>
         choice(
           $.identifier_start_char,
+          ...(!unicode ? [$.unicode_surrogate_pair] : []),
           seq(
             "\\",
             unicode
@@ -214,6 +219,7 @@ export default function defineGrammar(name, mode) {
       reg_exp_identifier_part: ($) =>
         choice(
           $.identifier_part_char,
+          ...(!unicode ? [$.unicode_surrogate_pair] : []),
           seq(
             "\\",
             unicode
@@ -226,8 +232,11 @@ export default function defineGrammar(name, mode) {
         ),
       identifier_start_char: ($) => choice($.unicode_id_start, "$", "_"),
       identifier_part_char: ($) => choice($.unicode_id_continue, "$"),
-      unicode_id_start: () => new RustRegex(unicodeIdStart),
-      unicode_id_continue: () => new RustRegex(unicodeIdContinue),
+      unicode_id_start: () => identifierCharacters(unicodeIdStart),
+      unicode_id_continue: () => identifierCharacters(unicodeIdContinue),
+      ...(!unicode
+        ? { unicode_surrogate_pair: () => /[\u{10000}-\u{10ffff}]/u }
+        : {}),
       regular_expression_modifiers: ($) =>
         repeat1($.regular_expression_modifier),
       regular_expression_modifier: () => /[ims]/,

@@ -252,6 +252,23 @@ const cases = [
     insert: "x",
   },
   {
+    name: "replacing a BMP name start with a supplementary character changes its lexical branch",
+    languages: javascriptLanguages,
+    before: "(?<名>a)",
+    after: "(?<𐐀>a)",
+    byte: 3,
+    deleteBytes: 3,
+    insert: "𐐀",
+  },
+  {
+    name: "an ordinary supplementary name part stays syntax before identifier validation",
+    before: String.raw`(?<a𐐀>)\k<a𐐀>`,
+    after: String.raw`(?<a😀>)\k<a𐐀>`,
+    byte: 4,
+    deleteBytes: 4,
+    insert: "😀",
+  },
+  {
     name: "joining body surrogate escapes respects each language's character unit",
     languages: javascriptLanguages,
     before: String.raw`\uD800x\uDC00+`,

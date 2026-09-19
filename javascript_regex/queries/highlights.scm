@@ -41,6 +41,7 @@
 [
   (unicode_id_start)
   (unicode_id_continue)
+  (unicode_surrogate_pair)
 ] @label
 
 (identifier_start_char
