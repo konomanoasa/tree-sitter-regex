@@ -287,7 +287,7 @@ static void enable_compound_payload(bool *valid_symbols, bool collating) {
   }
 }
 
-static void test_compound_payloads_end_before_their_closing_delimiter(void) {
+static void test_compound_payloads_end_at_their_closer_or_the_input_end(void) {
   static const struct {
     const char *source;
     bool collating;
@@ -303,6 +303,14 @@ static void test_compound_payloads_end_before_their_closing_delimiter(void) {
     {"a=]", false, EQUIVALENCE_CLASS_SINGLE, 1},
     {"ch=]", false, EQUIVALENCE_CLASS_MULTI, 2},
     {"^=]", false, EQUIVALENCE_CLASS_SINGLE, 1},
+    {"a", true, COLLATING_SYMBOL_SINGLE, 1},
+    {"^", true, COLLATING_SYMBOL_META, 1},
+    {"abc", true, COLLATING_SYMBOL_MULTI, 3},
+    {"a.", true, COLLATING_SYMBOL_MULTI, 2},
+    {"a=]", true, COLLATING_SYMBOL_MULTI, 3},
+    {"^", false, EQUIVALENCE_CLASS_SINGLE, 1},
+    {"a=", false, EQUIVALENCE_CLASS_MULTI, 2},
+    {"a.]", false, EQUIVALENCE_CLASS_MULTI, 3},
   };
   for (
     unsigned index = 0; index < sizeof(cases) / sizeof(cases[0]); index += 1
@@ -317,18 +325,15 @@ static void test_compound_payloads_end_before_their_closing_delimiter(void) {
   }
 }
 
-static void test_empty_and_unterminated_payloads_are_not_emitted(void) {
+static void test_empty_payloads_are_not_emitted(void) {
   static const struct {
     const char *source;
     bool collating;
   } cases[] = {
     {".]", true},
     {"=]", false},
-    {"abc", true},
-    {"a.", true},
-    {"a=", false},
-    {"a=]", true},
-    {"a.]", false},
+    {"", true},
+    {"", false},
   };
   for (
     unsigned index = 0; index < sizeof(cases) / sizeof(cases[0]); index += 1
@@ -372,17 +377,17 @@ static void test_compound_payloads_respect_enabled_token_types(void) {
 }
 
 #if POSIX_REGEX_MODE == 0
-static void test_right_anchor_requires_a_branch_end(void) {
+static void test_right_anchor_requires_an_expression_end(void) {
   static const struct {
     const char *source;
     bool emitted;
   } cases[] = {
     {"$", true},
-    {"$\\)", true},
     {"$\\|", true},
     {"$a", false},
     {"$\\", false},
     {"$\\(", false},
+    {"$\\)", false},
     {"a$", false},
   };
   for (
@@ -603,13 +608,13 @@ int main(void) {
 #endif
 #elif defined(POSIX_REGEX_MODE)
   test_stateless_lifecycle_and_serialization();
-  test_compound_payloads_end_before_their_closing_delimiter();
-  test_empty_and_unterminated_payloads_are_not_emitted();
+  test_compound_payloads_end_at_their_closer_or_the_input_end();
+  test_empty_payloads_are_not_emitted();
   test_compound_payloads_respect_enabled_token_types();
   test_trailing_bracket_hyphen_requires_a_closing_bracket();
   test_literal_bracket_does_not_split_compound_openers();
 #if POSIX_REGEX_MODE == 0
-  test_right_anchor_requires_a_branch_end();
+  test_right_anchor_requires_an_expression_end();
 #endif
 #else
   test_stateless_lifecycle_and_serialization();

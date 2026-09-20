@@ -12,7 +12,6 @@ import {
 import { grammars, root } from "../scripts/tree-sitter.js";
 import {
   cache,
-  javascriptLanguages,
   parse,
   parseFile,
   parseSummary,
@@ -21,24 +20,64 @@ import {
   selectNodes,
 } from "./support/parser.js";
 
-for (const language of javascriptLanguages) {
-  test(`${language}: NUL, interior FEFF and non-BMP characters retain source byte ranges`, () => {
-    const path = join(cache, "source-characters.txt");
-    writeFileSync(path, "a\uFEFF\0[\0]😀");
-    const result = parseFile(path, language);
+const sourceCharacterLeaves = {
+  javascript_regex: Array(5).fill("source_character"),
+  javascript_regex_u: Array(5).fill("source_character"),
+  javascript_regex_v: Array(5).fill("source_character"),
+  python_re: [
+    "literal_character",
+    "literal_character",
+    "literal_character",
+    "class_character",
+    "literal_character",
+  ],
+  python_re_verbose: [
+    "literal_character",
+    "literal_character",
+    "literal_character",
+    "class_character",
+    "literal_character",
+  ],
+  posix_bre: [
+    "ordinary_character",
+    "ordinary_character",
+    "ordinary_character",
+    "collating_element_single",
+    "ordinary_character",
+  ],
+  posix_ere: [
+    "ordinary_character",
+    "ordinary_character",
+    "ordinary_character",
+    "collating_element_single",
+    "ordinary_character",
+  ],
+};
+
+const sourceCharacterRanges = [
+  ["0:0", "0:1"],
+  ["0:1", "0:4"],
+  ["0:4", "0:5"],
+  ["0:6", "0:7"],
+  ["0:8", "0:12"],
+];
+
+for (const grammar of grammars) {
+  test(`${grammar.name}: NUL, interior FEFF and non-BMP characters retain source byte ranges`, () => {
+    const leaves = sourceCharacterLeaves[grammar.name];
+    const pattern = new RegExp(
+      `^([0-9]+:[0-9]+) +- +([0-9]+:[0-9]+) +(${[...new Set(leaves)].join("|")}) \``,
+    );
+    const result = parse(grammar, "a\uFEFF\0[\0]😀");
     assert.equal(result.status, 0);
-    const ranges = [
-      ...result.cst.matchAll(
-        /^([0-9]+:[0-9]+) +- +([0-9]+:[0-9]+) +source_character `/gm,
-      ),
-    ].map((match) => [match[1], match[2]]);
-    assert.deepEqual(ranges, [
-      ["0:0", "0:1"],
-      ["0:1", "0:4"],
-      ["0:4", "0:5"],
-      ["0:6", "0:7"],
-      ["0:8", "0:12"],
-    ]);
+    const ranges = result.rows.flatMap((line) => {
+      const match = pattern.exec(line);
+      return match ? [[match[3], match[1], match[2]]] : [];
+    });
+    assert.deepEqual(
+      ranges,
+      leaves.map((leaf, index) => [leaf, ...sourceCharacterRanges[index]]),
+    );
   });
 }
 
@@ -154,25 +193,6 @@ for (const { name, expected } of initialLayoutCases) {
 }
 
 for (const grammar of pythonGrammars) {
-  test(`${grammar.name}: NUL, interior FEFF and non-BMP characters retain source byte ranges`, () => {
-    const result = parse(grammar, "a\uFEFF\0[\0]😀");
-    assert.equal(result.status, 0);
-    const ranges = result.rows.flatMap((line) => {
-      const match =
-        /^([0-9]+:[0-9]+) +- +([0-9]+:[0-9]+) +(literal_character|class_character) `/.exec(
-          line,
-        );
-      return match ? [[match[3], match[1], match[2]]] : [];
-    });
-    assert.deepEqual(ranges, [
-      ["literal_character", "0:0", "0:1"],
-      ["literal_character", "0:1", "0:4"],
-      ["literal_character", "0:4", "0:5"],
-      ["class_character", "0:6", "0:7"],
-      ["literal_character", "0:8", "0:12"],
-    ]);
-  });
-
   test(`${grammar.name}: scoped flags support 2048 nested alternating verbose modes`, () => {
     const depth = 2048;
     const headers = Array.from({ length: depth }, (_, index) =>
@@ -620,24 +640,6 @@ for (const grammar of posixGrammars) {
       assert.equal(parse(grammar, source).status, 0, source);
     }
   });
-
-  test(`${grammar.name}: interior FEFF and non-BMP characters retain source byte ranges`, () => {
-    const result = parse(grammar, "a\uFEFF[\u{1F600}]\u{1F600}");
-    assert.equal(result.status, 0);
-    const ranges = result.rows.flatMap((line) => {
-      const match =
-        /^([0-9]+:[0-9]+) +- +([0-9]+:[0-9]+) +(ordinary_character|collating_element_single) `/.exec(
-          line,
-        );
-      return match ? [[match[3], match[1], match[2]]] : [];
-    });
-    assert.deepEqual(ranges, [
-      ["ordinary_character", "0:0", "0:1"],
-      ["ordinary_character", "0:1", "0:4"],
-      ["collating_element_single", "0:5", "0:9"],
-      ["ordinary_character", "0:10", "0:14"],
-    ]);
-  });
 }
 
 function regexOperators({ name }) {
@@ -663,11 +665,12 @@ for (const grammar of grammars) {
     }
   });
 
-  test(`${grammar.name}: long unterminated groups parse through EOF with native recovery`, () => {
-    assert.equal(
-      parseSummary(grammar, `${open}${"x".repeat(80_000)}`).successful,
-      false,
-    );
+  test(`${grammar.name}: long unterminated constructs parse through EOF with native recovery`, () => {
+    const sources = [`${open}${"x".repeat(80_000)}`];
+    if (posixGrammars.includes(grammar)) sources.push("[[.".repeat(80_000));
+    for (const source of sources) {
+      assert.equal(parseSummary(grammar, source).successful, false);
+    }
   });
 
   test(`${grammar.name}: a parser timeout cannot pass as complete recovery`, () => {

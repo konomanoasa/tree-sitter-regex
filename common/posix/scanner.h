@@ -50,25 +50,24 @@ static bool posix_regex_is_meta_character(int32_t character) {
   return character == '^' || character == '-' || character == ']';
 }
 
+// An unterminated payload extends to the end of the input; declining after
+// scanning that far would make every later opener rescan the remainder.
 static bool
 posix_regex_scan_payload(TSLexer *lexer, const PosixRegexCompound *compound) {
   uint32_t count = 0;
   int32_t first = 0;
-  bool closed = false;
   lexer->mark_end(lexer);
   while (!lexer->eof(lexer)) {
     int32_t character = lexer->lookahead;
     lexer->advance(lexer, false);
-    if (character == compound->terminator && lexer->lookahead == ']') {
-      closed = true;
+    if (character == compound->terminator && lexer->lookahead == ']')
       break;
-    }
     if (count == 0)
       first = character;
     count += 1;
     lexer->mark_end(lexer);
   }
-  if (!closed || count == 0)
+  if (count == 0)
     return false;
   if (count > 1)
     lexer->result_symbol = compound->multi;
@@ -92,13 +91,13 @@ static bool posix_regex_scan_trailing_hyphen(TSLexer *lexer) {
 static bool posix_regex_scan_right_anchor(TSLexer *lexer) {
   lexer->advance(lexer, false);
   lexer->mark_end(lexer);
-  if (!lexer->eof(lexer)) {
-    if (lexer->lookahead != '\\')
-      return false;
+  bool ends = lexer->eof(lexer);
+  if (!ends && lexer->lookahead == '\\') {
     lexer->advance(lexer, false);
-    if (lexer->lookahead != ')' && lexer->lookahead != '|')
-      return false;
+    ends = lexer->lookahead == '|';
   }
+  if (!ends)
+    return false;
   lexer->result_symbol = BRE_RIGHT_ANCHOR;
   return true;
 }

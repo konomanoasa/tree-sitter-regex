@@ -433,9 +433,6 @@ static bool scan_regex(Scanner *scanner, TSLexer *lexer, const bool *valid) {
     case 't':
     case 'v':
       return false;
-    case 'B':
-      if (!valid[CLASS_CONTROL_START])
-        return false;
     }
   }
   return emit(lexer, valid, IDENTITY_SOURCE);

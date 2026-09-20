@@ -1297,6 +1297,56 @@ anchors attach to the expressions they bound
 0:3 - 0:4         "$"
 
 ==================
+anchors are ordinary characters inside a subexpression
+:language(posix_bre)
+:cst
+==================
+\(^a$\|^b$\)
+---
+
+0:0  - 0:12   basic_reg_exp
+0:0  - 0:12     bre_branch
+0:0  - 0:12       bre_expression
+0:0  - 0:12         simple_bre
+0:0  - 0:12           nondupl_bre
+0:0  - 0:2              "\\("
+0:2  - 0:10             basic_reg_exp
+0:2  - 0:5                bre_branch
+0:2  - 0:3                  bre_expression
+0:2  - 0:3                    simple_bre
+0:2  - 0:3                      nondupl_bre
+0:2  - 0:3                        one_char_or_coll_elem_bre
+0:2  - 0:3                          ordinary_character `^`
+0:3  - 0:4                  bre_expression
+0:3  - 0:4                    simple_bre
+0:3  - 0:4                      nondupl_bre
+0:3  - 0:4                        one_char_or_coll_elem_bre
+0:3  - 0:4                          ordinary_character `a`
+0:4  - 0:5                  bre_expression
+0:4  - 0:5                    simple_bre
+0:4  - 0:5                      nondupl_bre
+0:4  - 0:5                        one_char_or_coll_elem_bre
+0:4  - 0:5                          ordinary_character `$`
+0:5  - 0:7                "\\|"
+0:7  - 0:10               bre_branch
+0:7  - 0:8                  bre_expression
+0:7  - 0:8                    simple_bre
+0:7  - 0:8                      nondupl_bre
+0:7  - 0:8                        one_char_or_coll_elem_bre
+0:7  - 0:8                          ordinary_character `^`
+0:8  - 0:9                  bre_expression
+0:8  - 0:9                    simple_bre
+0:8  - 0:9                      nondupl_bre
+0:8  - 0:9                        one_char_or_coll_elem_bre
+0:8  - 0:9                          ordinary_character `b`
+0:9  - 0:10                 bre_expression
+0:9  - 0:10                   simple_bre
+0:9  - 0:10                     nondupl_bre
+0:9  - 0:10                       one_char_or_coll_elem_bre
+0:9  - 0:10                         ordinary_character `$`
+0:10 - 0:12             "\\)"
+
+==================
 a subexpression owns its delimiters and nested regular expression
 :language(posix_bre)
 :cst

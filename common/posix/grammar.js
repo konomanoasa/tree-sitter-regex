@@ -14,6 +14,21 @@ function leading($, name) {
   return alias($[`_leading_${name}`], $[name]);
 }
 
+// Negated classes exclude NUL, which is an ordinary source character.
+function nul($, name) {
+  return alias("\0", $[name]);
+}
+
+function oneCharOrCollElem($, ...ordinary) {
+  return choice(
+    ...ordinary,
+    nul($, "ordinary_character"),
+    $.quoted_character,
+    ".",
+    $.bracket_expression,
+  );
+}
+
 function rightAnchor($) {
   return alias($._bre_right_anchor, "$");
 }
@@ -49,6 +64,19 @@ function breRules() {
       prec.right(
         choice(seq($.simple_bre, optional(rightAnchor($))), rightAnchor($)),
       ),
+    // Subexpressions have no anchors (BOUNDARY.md).
+    _nested_basic_reg_exp: ($) =>
+      seq(
+        alias($._nested_bre_branch, $.bre_branch),
+        repeat(seq("\\|", alias($._nested_bre_branch, $.bre_branch))),
+      ),
+    _nested_bre_branch: ($) =>
+      seq(
+        alias($._nested_leading_bre_expression, $.bre_expression),
+        repeat(alias($._nested_bre_expression, $.bre_expression)),
+      ),
+    _nested_leading_bre_expression: ($) => leading($, "simple_bre"),
+    _nested_bre_expression: ($) => $.simple_bre,
     _leading_simple_bre: ($) =>
       seq(leading($, "nondupl_bre"), optional($.bre_dupl_symbol)),
     simple_bre: ($) => seq($.nondupl_bre, optional($.bre_dupl_symbol)),
@@ -64,21 +92,15 @@ function breRules() {
         $._bre_subexpression,
         $.backreference,
       ),
-    _bre_subexpression: ($) => seq("\\(", $.basic_reg_exp, "\\)"),
+    _bre_subexpression: ($) =>
+      seq("\\(", alias($._nested_basic_reg_exp, $.basic_reg_exp), "\\)"),
     _leading_one_char_or_coll_elem_bre: ($) =>
-      choice(
+      oneCharOrCollElem(
+        $,
         alias($._bre_leading_ordinary_character, $.ordinary_character),
-        $.quoted_character,
-        ".",
-        $.bracket_expression,
       ),
     one_char_or_coll_elem_bre: ($) =>
-      choice(
-        $.ordinary_character,
-        $.quoted_character,
-        ".",
-        $.bracket_expression,
-      ),
+      oneCharOrCollElem($, $.ordinary_character),
     bre_dupl_symbol: ($) =>
       choice("*", "\\?", "\\+", interval($, "\\{", "\\}")),
     backreference: () => BACKREFERENCE,
@@ -116,12 +138,10 @@ function ereRules() {
           repeat($.ere_dupl_symbol),
         ),
       [name("one_char_or_coll_elem_ere")]: ($) =>
-        choice(
+        oneCharOrCollElem(
+          $,
           $.ordinary_character,
-          ...(!nested ? [alias(")", $.ordinary_character)] : []),
-          $.quoted_character,
-          ".",
-          $.bracket_expression,
+          ...(nested ? [] : [alias(")", $.ordinary_character)]),
         ),
     });
   }
@@ -161,6 +181,7 @@ function sharedRules() {
     end_range: ($) =>
       choice(
         $.collating_element_single,
+        nul($, "collating_element_single"),
         alias($._bracket_open_character, $.collating_element_single),
         $.collating_symbol,
       ),
@@ -178,6 +199,7 @@ function sharedRules() {
     _leading_end_range: ($) =>
       choice(
         alias($._leading_bracket_character, $.collating_element_single),
+        nul($, "collating_element_single"),
         alias($._bracket_open_character, $.collating_element_single),
         $.collating_symbol,
       ),

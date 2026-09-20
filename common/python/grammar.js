@@ -172,7 +172,8 @@ function modeRules(verbose) {
   };
 }
 
-function defineGrammar(name, { verbose = false } = {}) {
+export default function defineGrammar(name, mode) {
+  const verbose = mode === "verbose";
   return grammar({
     name,
     externals: ($) => [
@@ -415,5 +416,3 @@ function defineGrammar(name, { verbose = false } = {}) {
     },
   });
 }
-
-export default defineGrammar;

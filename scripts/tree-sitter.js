@@ -117,8 +117,6 @@ function createTreeSitter(environment = {}) {
 
   let closed = false;
   return Object.freeze({
-    directory: temporaryDirectory,
-    configPath: join(treeSitterConfigDirectory, "config.json"),
     close() {
       if (!closed) {
         closed = true;

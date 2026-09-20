@@ -26,13 +26,14 @@
   "\\B"
   "*"
   "+"
-  "?"
   "-"
   "="
   "!"
   "<="
   "<!"
 ] @operator
+
+"?" @punctuation.special
 
 (decimal_digit) @number
 
@@ -69,14 +70,11 @@
   (decimal_digits
     (decimal_digit) @string.escape))
 
-(group_specifier
-  "?" @punctuation.special)
+(quantifier_prefix
+  "?" @operator)
 
-(assertion
-  "?" @punctuation.special)
-
-(atom
-  "?" @punctuation.special)
+(quantifier
+  "?" @operator)
 
 (atom_escape
   "k" @punctuation.special)

@@ -1466,6 +1466,31 @@ a\{3\}b\{2,\}c\{1,4\}
 0:19 - 0:21             "\\}"
 
 ==================
+an asterisk after a subexpression caret is a duplication symbol
+:language(posix_bre)
+:cst
+==================
+\(^*\)
+---
+
+0:0 - 0:6   basic_reg_exp
+0:0 - 0:6     bre_branch
+0:0 - 0:6       bre_expression
+0:0 - 0:6         simple_bre
+0:0 - 0:6           nondupl_bre
+0:0 - 0:2             "\\("
+0:2 - 0:4             basic_reg_exp
+0:2 - 0:4               bre_branch
+0:2 - 0:4                 bre_expression
+0:2 - 0:4                   simple_bre
+0:2 - 0:3                     nondupl_bre
+0:2 - 0:3                       one_char_or_coll_elem_bre
+0:2 - 0:3                         ordinary_character `^`
+0:3 - 0:4                     bre_dupl_symbol
+0:3 - 0:4                       "*"
+0:4 - 0:6             "\\)"
+
+==================
 an asterisk is ordinary at the start of a branch
 :language(posix_bre)
 :cst

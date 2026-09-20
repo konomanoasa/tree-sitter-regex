@@ -26,13 +26,14 @@
   "\\B"
   "*"
   "+"
-  "?"
   "-"
   "="
   "!"
   "<="
   "<!"
 ] @operator
+
+"?" @punctuation.special
 
 (decimal_digit) @number
 
@@ -72,12 +73,10 @@
 (extended_atom
   "\\" @string.escape
   (atom_escape
-    (character_escape)))
-
-(extended_atom
-  "\\" @string.escape
-  (atom_escape
-    (decimal_escape)))
+    [
+      (character_escape)
+      (decimal_escape)
+    ]))
 
 (class_atom_no_dash
   "\\" @string.regexp)
@@ -90,14 +89,11 @@
   (decimal_digits
     (decimal_digit) @string.escape))
 
-(group_specifier
-  "?" @punctuation.special)
+(quantifier_prefix
+  "?" @operator)
 
-(assertion
-  "?" @punctuation.special)
-
-(extended_atom
-  "?" @punctuation.special)
+(quantifier
+  "?" @operator)
 
 (atom_escape
   "k" @punctuation.special)
@@ -131,9 +127,6 @@
     "_"
     (decimal_digit)
   ] @string.escape)
-
-(quantifiable_assertion
-  "?" @punctuation.special)
 
 (class_atom
   "-" @string.regexp)

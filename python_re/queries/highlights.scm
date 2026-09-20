@@ -49,7 +49,10 @@
   ":"
 ] @punctuation.delimiter
 
-"?P" @punctuation.special
+[
+  "?"
+  "?P"
+] @punctuation.special
 
 [
   (start_anchor)
@@ -75,36 +78,6 @@
 
 (quantifier
   "?" @operator)
-
-(non_capturing_group
-  "?" @punctuation.special)
-
-(positive_lookahead_assertion
-  "?" @punctuation.special)
-
-(negative_lookahead_assertion
-  "?" @punctuation.special)
-
-(positive_lookbehind_assertion
-  "?" @punctuation.special)
-
-(negative_lookbehind_assertion
-  "?" @punctuation.special)
-
-(atomic_group
-  "?" @punctuation.special)
-
-(global_flags
-  "?" @punctuation.special)
-
-(scoped_flags_group
-  "?" @punctuation.special)
-
-(conditional_group
-  "?" @punctuation.special)
-
-(comment_group
-  "?" @punctuation.special)
 
 (conditional_group
   condition: (group_id) @label)
