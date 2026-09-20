@@ -1,4 +1,13 @@
-import { alternation, classRange } from "../grammar.js";
+function alternation(first, following = first) {
+  return choice(
+    first,
+    seq(optional(first), repeat1(seq("|", optional(following)))),
+  );
+}
+
+function classRange(start, end) {
+  return seq(field("start", start), "-", field("end", end));
+}
 
 const TWO_HEXADECIMAL_DIGITS = /[0-9A-Fa-f]{2}/;
 const FOUR_HEXADECIMAL_DIGITS = /[0-9A-Fa-f]{4}/;
@@ -25,10 +34,16 @@ function classMembers($, starts, ranges) {
   );
 }
 
-function hexadecimalEscape($, prefix, digits) {
+function digitsEscape(prefix, digits, kind) {
+  return seq(prefix, field("digits", alias(token(digits), kind)));
+}
+
+function globalFlags($, flags) {
   return seq(
-    prefix,
-    field("digits", alias(token(digits), $.hexadecimal_digits)),
+    alias($._global_flags_start, "("),
+    "?",
+    field("flags", alias(flags, $.flag_set)),
+    ")",
   );
 }
 
@@ -178,19 +193,12 @@ function defineGrammar(name, { verbose = false } = {}) {
       $._unicode_escape_long_start,
       $._named_unicode_escape_start,
       $._unicode_character_name,
-      $._outside_numeric_escape_start,
-      $._class_start,
-      $._class_numeric_escape_start,
+      $._numeric_escape_start,
       $._class_negation,
-      $._class_leading_close,
-      $._class_close,
       $._class_character,
-      $._quantifier_star,
-      $._quantifier_plus,
+      $._open_brace,
       $._quantifier_question,
       $._quantifier_lazy_suffix,
-      $._quantifier_possessive_suffix,
-      $._open_brace,
       $._literal_character_normal,
       $._literal_character_verbose,
       $._error_sentinel,
@@ -264,22 +272,22 @@ function defineGrammar(name, { verbose = false } = {}) {
       control_escape: () =>
         token(choice("\\a", "\\f", "\\n", "\\r", "\\t", "\\v")),
       hex_escape: ($) =>
-        hexadecimalEscape(
-          $,
+        digitsEscape(
           alias($._hex_escape_start, "\\x"),
           TWO_HEXADECIMAL_DIGITS,
+          $.hexadecimal_digits,
         ),
       unicode_escape: ($) =>
         choice(
-          hexadecimalEscape(
-            $,
+          digitsEscape(
             alias($._unicode_escape_short_start, "\\u"),
             FOUR_HEXADECIMAL_DIGITS,
+            $.hexadecimal_digits,
           ),
-          hexadecimalEscape(
-            $,
+          digitsEscape(
             alias($._unicode_escape_long_start, "\\U"),
             EIGHT_HEXADECIMAL_DIGITS,
+            $.hexadecimal_digits,
           ),
         ),
       named_unicode_escape: ($) =>
@@ -296,32 +304,25 @@ function defineGrammar(name, { verbose = false } = {}) {
       anchor_escape: () => token(choice("\\A", "\\z", "\\Z")),
       word_boundary_escape: () => token(choice("\\b", "\\B")),
       _outside_octal_escape: ($) =>
-        seq(
-          alias($._outside_numeric_escape_start, "\\"),
-          field(
-            "digits",
-            alias(token(/0[0-7]{0,2}|[1-7][0-7]{2}/), $.octal_digits),
-          ),
+        digitsEscape(
+          alias($._numeric_escape_start, "\\"),
+          /0[0-7]{0,2}|[1-7][0-7]{2}/,
+          $.octal_digits,
         ),
       _outside_numeric_backreference: ($) =>
         seq(
-          alias($._outside_numeric_escape_start, "\\"),
+          alias($._numeric_escape_start, "\\"),
           field("group", alias(token(/[1-9][0-9]?/), $.group_id)),
         ),
       character_class: ($) =>
-        seq(
-          alias($._class_start, "["),
-          optional(alias($._class_negation, "^")),
-          $._class_body,
-          alias($._class_close, "]"),
-        ),
+        seq("[", optional(alias($._class_negation, "^")), $._class_body, "]"),
       // A hyphen after a member is a range operator, or a literal only when
       // "]" follows; a fresh hyphen member exists only first or after a range.
       _class_body: ($) =>
         classMembers(
           $,
           choice(
-            alias($._class_leading_close, $.class_character),
+            alias("]", $.class_character),
             alias("-", $.class_character),
             $._class_endpoint,
           ),
@@ -346,10 +347,7 @@ function defineGrammar(name, { verbose = false } = {}) {
       _class_range_from_hyphen: ($) =>
         classRange(alias("-", $.class_character), $._class_range_end),
       _class_range_from_leading_close: ($) =>
-        classRange(
-          alias($._class_leading_close, $.class_character),
-          $._class_range_end,
-        ),
+        classRange(alias("]", $.class_character), $._class_range_end),
       _class_range_end: ($) =>
         choice($._class_endpoint, alias("-", $.class_character)),
       _class_endpoint: ($) =>
@@ -366,15 +364,17 @@ function defineGrammar(name, { verbose = false } = {}) {
       class_character: ($) => $._class_character,
       backspace_escape: () => "\\b",
       _class_octal_escape: ($) =>
-        seq(
-          alias($._class_numeric_escape_start, "\\"),
-          field("digits", alias(token(/[0-7]{1,3}/), $.octal_digits)),
+        digitsEscape(
+          alias($._numeric_escape_start, "\\"),
+          /[0-7]{1,3}/,
+          $.octal_digits,
         ),
+      // "?" stays external: the shared lexer would extend it to "?P".
       quantifier: ($) =>
         seq(
           choice(
-            alias($._quantifier_star, "*"),
-            alias($._quantifier_plus, "+"),
+            "*",
+            "+",
             alias($._quantifier_question, "?"),
             seq(
               alias($._open_brace, "{"),
@@ -389,12 +389,7 @@ function defineGrammar(name, { verbose = false } = {}) {
               "}",
             ),
           ),
-          optional(
-            choice(
-              alias($._quantifier_lazy_suffix, "?"),
-              alias($._quantifier_possessive_suffix, "+"),
-            ),
-          ),
+          optional(choice(alias($._quantifier_lazy_suffix, "?"), "+")),
         ),
       decimal_digits: () => /[0-9]+/,
       named_backreference: ($) =>
@@ -405,20 +400,8 @@ function defineGrammar(name, { verbose = false } = {}) {
           field("name", alias($._parenthesized_group_name, $.group_name)),
           ")",
         ),
-      _global_flags_with_x: ($) =>
-        seq(
-          alias($._global_flags_start, "("),
-          "?",
-          field("flags", alias($._enable_flags_with_x, $.flag_set)),
-          ")",
-        ),
-      _global_flags_without_x: ($) =>
-        seq(
-          alias($._global_flags_start, "("),
-          "?",
-          field("flags", alias($._enable_flags_without_x, $.flag_set)),
-          ")",
-        ),
+      _global_flags_with_x: ($) => globalFlags($, $._enable_flags_with_x),
+      _global_flags_without_x: ($) => globalFlags($, $._enable_flags_without_x),
       comment_group: ($) =>
         seq(
           "(",

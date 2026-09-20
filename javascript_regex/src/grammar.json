@@ -1238,81 +1238,6 @@
       "named": true,
       "value": "source_character"
     },
-    "_class_source_character_identity_escape": {
-      "type": "ALIAS",
-      "content": {
-        "type": "SYMBOL",
-        "name": "_class_identity_source"
-      },
-      "named": true,
-      "value": "source_character"
-    },
-    "_class_identity_escape": {
-      "type": "ALIAS",
-      "content": {
-        "type": "SYMBOL",
-        "name": "_class_source_character_identity_escape"
-      },
-      "named": true,
-      "value": "source_character_identity_escape"
-    },
-    "_class_character_escape": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "control_escape"
-        },
-        {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "ALIAS",
-              "content": {
-                "type": "SYMBOL",
-                "name": "_control_start"
-              },
-              "named": false,
-              "value": "c"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "ascii_letter"
-            }
-          ]
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "_null_zero"
-          },
-          "named": false,
-          "value": "0"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "hex_escape_sequence"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "reg_exp_unicode_escape_sequence"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "_class_identity_escape"
-          },
-          "named": true,
-          "value": "identity_escape"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "legacy_octal_escape_sequence"
-        }
-      ]
-    },
     "legacy_octal_escape_sequence": {
       "type": "CHOICE",
       "members": [
@@ -1655,13 +1580,8 @@
           "name": "character_class_escape"
         },
         {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "_class_character_escape"
-          },
-          "named": true,
-          "value": "character_escape"
+          "type": "SYMBOL",
+          "name": "character_escape"
         },
         {
           "type": "SEQ",
@@ -1736,10 +1656,6 @@
     {
       "type": "SYMBOL",
       "name": "_identity_source"
-    },
-    {
-      "type": "SYMBOL",
-      "name": "_class_identity_source"
     },
     {
       "type": "SYMBOL",

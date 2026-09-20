@@ -155,9 +155,18 @@ const cases = [
 
   {
     name: "empty patterns have no captures",
-    languages: grammars.map(({ name }) => name),
+    languages: grammars
+      .map(({ name }) => name)
+      .filter((name) => !name.startsWith("posix_")),
     source: "",
     captures: [],
+  },
+  {
+    name: "an empty regular expression has no captures",
+    languages: ["posix_bre", "posix_ere"],
+    source: "",
+    captures: [],
+    valid: false,
   },
   {
     name: "UTF-8 characters and literal punctuation retain literal captures",
@@ -906,6 +915,163 @@ const cases = [
       [12, 14, "operator"],
     ],
   },
+  {
+    name: "expression operators differ from literal characters and the wildcard",
+    languages: ["posix_ere"],
+    source: "^a.$|b*c+d?",
+    captures: [
+      [0, 1, "operator"],
+      [1, 2, "string.regexp"],
+      [2, 3, "character.special"],
+      [3, 5, "operator"],
+      [5, 6, "string.regexp"],
+      [6, 7, "operator"],
+      [7, 8, "string.regexp"],
+      [8, 9, "operator"],
+      [9, 10, "string.regexp"],
+      [10, 11, "operator"],
+    ],
+  },
+  {
+    name: "quoted characters are escapes",
+    languages: ["posix_ere"],
+    source: String.raw`\(\.\\`,
+    captures: [[0, 6, "string.escape"]],
+  },
+  {
+    name: "interval counts and the repetition modifier keep distinct roles",
+    languages: ["posix_ere"],
+    source: "a{1,2}?",
+    captures: [
+      [0, 1, "string.regexp"],
+      [1, 2, "punctuation.bracket"],
+      [2, 3, "number"],
+      [3, 4, "punctuation.delimiter"],
+      [4, 5, "number"],
+      [5, 6, "punctuation.bracket"],
+      [6, 7, "operator"],
+    ],
+  },
+  {
+    name: "groups own their delimiters",
+    languages: ["posix_ere"],
+    source: "(a|b)*",
+    captures: [
+      [0, 1, "punctuation.bracket"],
+      [1, 2, "string.regexp"],
+      [2, 3, "operator"],
+      [3, 4, "string.regexp"],
+      [4, 5, "punctuation.bracket"],
+      [5, 6, "operator"],
+    ],
+  },
+  {
+    name: "bracket expressions separate literal hyphens from the range operator",
+    languages: ["posix_bre", "posix_ere"],
+    source: "[^]a-z-]",
+    captures: [
+      [0, 1, "punctuation.bracket"],
+      [1, 2, "operator"],
+      [2, 4, "string.regexp"],
+      [4, 5, "operator"],
+      [5, 7, "string.regexp"],
+      [7, 8, "punctuation.bracket"],
+    ],
+  },
+  {
+    name: "compound bracket elements keep their delimiters and payload roles",
+    languages: ["posix_bre", "posix_ere"],
+    source: "[[.ch.][=a=][:alpha:]]",
+    captures: [
+      [0, 3, "punctuation.bracket"],
+      [3, 5, "string.regexp"],
+      [5, 9, "punctuation.bracket"],
+      [9, 10, "string.regexp"],
+      [10, 14, "punctuation.bracket"],
+      [14, 19, "character.special"],
+      [19, 22, "punctuation.bracket"],
+    ],
+  },
+  {
+    name: "expression operators differ from literal characters and the wildcard",
+    languages: ["posix_bre"],
+    source: String.raw`^a.$\|b*c\+d\?`,
+    captures: [
+      [0, 1, "operator"],
+      [1, 2, "string.regexp"],
+      [2, 3, "character.special"],
+      [3, 6, "operator"],
+      [6, 7, "string.regexp"],
+      [7, 8, "operator"],
+      [8, 9, "string.regexp"],
+      [9, 11, "operator"],
+      [11, 12, "string.regexp"],
+      [12, 14, "operator"],
+    ],
+  },
+  {
+    name: "quoted characters are escapes",
+    languages: ["posix_bre"],
+    source: String.raw`\^\.\\`,
+    captures: [[0, 6, "string.escape"]],
+  },
+  {
+    name: "interval counts keep distinct roles",
+    languages: ["posix_bre"],
+    source: String.raw`a\{1,2\}`,
+    captures: [
+      [0, 1, "string.regexp"],
+      [1, 3, "punctuation.bracket"],
+      [3, 4, "number"],
+      [4, 5, "punctuation.delimiter"],
+      [5, 6, "number"],
+      [6, 8, "punctuation.bracket"],
+    ],
+  },
+  {
+    name: "subexpressions own their delimiters and back-references are escapes",
+    languages: ["posix_bre"],
+    source: String.raw`\(a\)\1`,
+    captures: [
+      [0, 2, "punctuation.bracket"],
+      [2, 3, "string.regexp"],
+      [3, 5, "punctuation.bracket"],
+      [5, 7, "string.escape"],
+    ],
+  },
+  {
+    name: "an unmatched closer retains its literal capture after a group",
+    languages: ["posix_ere"],
+    source: "(a))",
+    captures: [
+      [0, 1, "punctuation.bracket"],
+      [1, 2, "string.regexp"],
+      [2, 3, "punctuation.bracket"],
+      [3, 4, "string.regexp"],
+    ],
+  },
+  {
+    name: "an opening bracket range endpoint keeps its literal capture",
+    languages: ["posix_bre", "posix_ere"],
+    source: "[a-[]",
+    captures: [
+      [0, 1, "punctuation.bracket"],
+      [1, 2, "string.regexp"],
+      [2, 3, "operator"],
+      [3, 4, "string.regexp"],
+      [4, 5, "punctuation.bracket"],
+    ],
+  },
+  {
+    name: "a collating symbol meta character payload stays literal",
+    languages: ["posix_bre", "posix_ere"],
+    source: "[[.].]]",
+    captures: [
+      [0, 3, "punctuation.bracket"],
+      [3, 4, "string.regexp"],
+      [4, 7, "punctuation.bracket"],
+    ],
+  },
 ];
 
 let runner;
@@ -937,11 +1103,11 @@ function checked(arguments_) {
 }
 
 // Inspect rendered HTML because query assertions accept overridden captures too.
-for (const { name, languages, source, captures } of cases) {
+for (const { name, languages, source, captures, valid = true } of cases) {
   for (const language of languages) {
     const grammar = grammars.find(({ name }) => name === language);
     test(`${language}: ${name}`, () => {
-      assertCaptures(source, highlight(grammar.scope, source), captures);
+      assertCaptures(source, highlight(grammar.scope, source, valid), captures);
     });
   }
 }

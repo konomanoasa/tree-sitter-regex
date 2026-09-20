@@ -1,5 +1,15 @@
-import { alternation, classRange } from "../grammar.js";
 import { unicodeIdContinue, unicodeIdStart } from "./unicode.js";
+
+function alternation(member) {
+  return choice(
+    member,
+    seq(optional(member), repeat1(seq("|", optional(member)))),
+  );
+}
+
+function classRange(start, end) {
+  return seq(field("start", start), "-", field("end", end));
+}
 
 function bracedQuantifier($) {
   return seq(
@@ -31,6 +41,10 @@ function unicodeEscape($) {
   );
 }
 
+function lookaround($, operators) {
+  return seq("(", "?", operators, optional(field("body", $.disjunction)), ")");
+}
+
 export default function defineGrammar(name, mode) {
   const unicode = mode !== "ordinary";
   const sets = mode === "v";
@@ -38,6 +52,20 @@ export default function defineGrammar(name, mode) {
   const identifierCharacters = (characters) =>
     new RustRegex(
       unicode ? characters : String.raw`[${characters}&&[\u{0}-\u{ffff}]]`,
+    );
+  const identifierChar = ($, character) =>
+    choice(
+      character,
+      ...(!unicode ? [$.unicode_surrogate_pair] : []),
+      seq(
+        "\\",
+        unicode
+          ? $.reg_exp_unicode_escape_sequence
+          : alias(
+              $._identifier_unicode_escape_sequence,
+              $.reg_exp_unicode_escape_sequence,
+            ),
+      ),
     );
   return grammar({
     name,
@@ -62,7 +90,6 @@ export default function defineGrammar(name, mode) {
       $._octal_four_two,
       $._octal_zero_three,
       $._identity_source,
-      $._class_identity_source,
       $._null_zero,
       $._hex_start,
       $._unicode_fixed_start,
@@ -120,35 +147,12 @@ export default function defineGrammar(name, mode) {
           "\\b",
           "\\B",
           ...(unicode
-            ? [
-                seq(
-                  "(",
-                  "?",
-                  choice("=", "!"),
-                  optional(field("body", $.disjunction)),
-                  ")",
-                ),
-              ]
+            ? [lookaround($, choice("=", "!"))]
             : [$.quantifiable_assertion]),
-          seq(
-            "(",
-            "?",
-            choice("<=", "<!"),
-            optional(field("body", $.disjunction)),
-            ")",
-          ),
+          lookaround($, choice("<=", "<!")),
         ),
       ...(!unicode
-        ? {
-            quantifiable_assertion: ($) =>
-              seq(
-                "(",
-                "?",
-                choice("=", "!"),
-                optional(field("body", $.disjunction)),
-                ")",
-              ),
-          }
+        ? { quantifiable_assertion: ($) => lookaround($, choice("=", "!")) }
         : {}),
       [atomName]: ($) =>
         choice(
@@ -203,33 +207,8 @@ export default function defineGrammar(name, mode) {
           seq($.reg_exp_identifier_start, repeat($.reg_exp_identifier_part)),
         ),
       reg_exp_identifier_start: ($) =>
-        choice(
-          $.identifier_start_char,
-          ...(!unicode ? [$.unicode_surrogate_pair] : []),
-          seq(
-            "\\",
-            unicode
-              ? $.reg_exp_unicode_escape_sequence
-              : alias(
-                  $._identifier_unicode_escape_sequence,
-                  $.reg_exp_unicode_escape_sequence,
-                ),
-          ),
-        ),
-      reg_exp_identifier_part: ($) =>
-        choice(
-          $.identifier_part_char,
-          ...(!unicode ? [$.unicode_surrogate_pair] : []),
-          seq(
-            "\\",
-            unicode
-              ? $.reg_exp_unicode_escape_sequence
-              : alias(
-                  $._identifier_unicode_escape_sequence,
-                  $.reg_exp_unicode_escape_sequence,
-                ),
-          ),
-        ),
+        identifierChar($, $.identifier_start_char),
+      reg_exp_identifier_part: ($) => identifierChar($, $.identifier_part_char),
       identifier_start_char: ($) => choice($.unicode_id_start, "$", "_"),
       identifier_part_char: ($) => choice($.unicode_id_continue, "$"),
       unicode_id_start: () => identifierCharacters(unicodeIdStart),
@@ -297,23 +276,6 @@ export default function defineGrammar(name, mode) {
         ? {
             source_character_identity_escape: ($) =>
               alias($._identity_source, $.source_character),
-            _class_source_character_identity_escape: ($) =>
-              alias($._class_identity_source, $.source_character),
-            _class_identity_escape: ($) =>
-              alias(
-                $._class_source_character_identity_escape,
-                $.source_character_identity_escape,
-              ),
-            _class_character_escape: ($) =>
-              choice(
-                $.control_escape,
-                seq(alias($._control_start, "c"), $.ascii_letter),
-                alias($._null_zero, "0"),
-                $.hex_escape_sequence,
-                $.reg_exp_unicode_escape_sequence,
-                alias($._class_identity_escape, $.identity_escape),
-                $.legacy_octal_escape_sequence,
-              ),
             legacy_octal_escape_sequence: ($) =>
               choice(
                 alias($._octal_zero, "0"),
@@ -402,9 +364,7 @@ export default function defineGrammar(name, mode) {
               choice(
                 "b",
                 $.character_class_escape,
-                unicode
-                  ? $.character_escape
-                  : alias($._class_character_escape, $.character_escape),
+                $.character_escape,
                 ...(unicode
                   ? ["-"]
                   : [

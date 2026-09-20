@@ -3,6 +3,11 @@
 
 #include "../scanner.h"
 #include "tree_sitter/alloc.h"
+#include "tree_sitter/parser.h"
+
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 
 #ifndef JAVASCRIPT_REGEX_MODE
 #error "JAVASCRIPT_REGEX_MODE must be 0 (ordinary), 1 (u), or 2 (v)"
@@ -28,7 +33,6 @@ enum TokenType {
   OCTAL_FOUR_TWO,
   OCTAL_ZERO_THREE,
   IDENTITY_SOURCE,
-  CLASS_IDENTITY_SOURCE,
   NULL_ZERO,
   HEX_START,
   UNICODE_FIXED_START,
@@ -56,6 +60,61 @@ typedef struct {
   uint32_t capture_count;
   bool has_named_capture;
 } Scanner;
+
+static bool is_ascii_digit(int32_t character) {
+  return character >= '0' && character <= '9';
+}
+
+static bool is_octal_digit(int32_t character) {
+  return character >= '0' && character <= '7';
+}
+
+static bool is_hexadecimal_digit(int32_t character) {
+  return is_ascii_digit(character) ||
+    (character >= 'A' && character <= 'F') ||
+    (character >= 'a' && character <= 'f');
+}
+
+static uint32_t hexadecimal_value(int32_t character) {
+  return character <= '9' ? (uint32_t)(character - '0')
+                          : (uint32_t)((character | 32) - 'a' + 10);
+}
+
+static bool is_ascii_letter(int32_t character) {
+  return (character >= 'A' && character <= 'Z') ||
+    (character >= 'a' && character <= 'z');
+}
+
+static bool scan_interval_tail(TSLexer *lexer) {
+  bool has_minimum = false;
+  while (!lexer->eof(lexer) && is_ascii_digit(lexer->lookahead)) {
+    has_minimum = true;
+    lexer->advance(lexer, false);
+  }
+  if (!has_minimum)
+    return false;
+  if (!lexer->eof(lexer) && lexer->lookahead == '}')
+    return has_minimum;
+  if (lexer->eof(lexer) || lexer->lookahead != ',')
+    return false;
+  lexer->advance(lexer, false);
+  while (!lexer->eof(lexer) && is_ascii_digit(lexer->lookahead))
+    lexer->advance(lexer, false);
+  return !lexer->eof(lexer) && lexer->lookahead == '}';
+}
+
+static bool
+scan_hexadecimal_digits(TSLexer *lexer, unsigned length, uint32_t *value) {
+  uint32_t result = 0;
+  for (unsigned index = 0; index < length; index++) {
+    if (lexer->eof(lexer) || !is_hexadecimal_digit(lexer->lookahead))
+      return false;
+    result = result * 16 + hexadecimal_value(lexer->lookahead);
+    lexer->advance(lexer, false);
+  }
+  *value = result;
+  return true;
+}
 
 static bool emit(TSLexer *lexer, const bool *valid, enum TokenType token) {
   if (!valid[token])
@@ -97,12 +156,9 @@ static bool scan_pattern_start(Scanner *scanner, TSLexer *lexer) {
   return true;
 }
 
-static bool scan_digits(
-  const Scanner *scanner,
-  TSLexer *lexer,
-  const bool *valid,
-  bool unicode
-) {
+static bool
+scan_digits(const Scanner *scanner, TSLexer *lexer, const bool *valid) {
+  const bool unicode = JAVASCRIPT_REGEX_MODE != 0;
   const int32_t first = lexer->lookahead;
   uint32_t decimal = 0;
   bool overflow = false;
@@ -116,7 +172,7 @@ static bool scan_digits(
       overflow = true;
     if (!overflow)
       decimal = decimal * 10 + (uint32_t)(c - '0');
-    octal = octal && regex_is_octal_digit(c);
+    octal = octal && is_octal_digit(c);
     if (octal && octal_length < octal_limit)
       octal_length++;
     lexer->advance(lexer, false);
@@ -124,7 +180,7 @@ static bool scan_digits(
       lexer->mark_end(lexer);
     if (length < 2)
       length++;
-  } while (regex_is_ascii_digit(lexer->lookahead));
+  } while (is_ascii_digit(lexer->lookahead));
   if (
     first !=
     '0' &&
@@ -137,13 +193,8 @@ static bool scan_digits(
     return emit(lexer, valid, NULL_ZERO);
   if (unicode)
     return false;
-  if (octal_length == 0) {
-    return emit(
-      lexer,
-      valid,
-      valid[CLASS_IDENTITY_SOURCE] ? CLASS_IDENTITY_SOURCE : IDENTITY_SOURCE
-    );
-  }
+  if (octal_length == 0)
+    return emit(lexer, valid, IDENTITY_SOURCE);
   enum TokenType token = octal_length == 3 ? OCTAL_ZERO_THREE
     : octal_length == 2 ? (first <= '3' ? OCTAL_ZERO_TWO : OCTAL_FOUR_TWO)
     : first == '0'      ? OCTAL_ZERO
@@ -154,7 +205,7 @@ static bool scan_digits(
 static bool scan_brace(TSLexer *lexer, const bool *valid) {
   lexer->advance(lexer, false);
   lexer->mark_end(lexer);
-  bool complete = regex_scan_interval_tail(lexer, true);
+  bool complete = scan_interval_tail(lexer);
   return emit(lexer, valid, complete ? QUANTIFIER_OPEN : LITERAL_OPEN_BRACE);
 }
 
@@ -165,10 +216,10 @@ static bool scan_unicode_escape(TSLexer *lexer, const bool *valid) {
     lexer->advance(lexer, false);
     uint32_t value = 0;
     bool any = false;
-    while (regex_is_hexadecimal_digit(lexer->lookahead)) {
+    while (is_hexadecimal_digit(lexer->lookahead)) {
       any = true;
       if (value <= 0x10ffff)
-        value = value * 16 + regex_hexadecimal_value(lexer->lookahead);
+        value = value * 16 + hexadecimal_value(lexer->lookahead);
       lexer->advance(lexer, false);
     }
     return any &&
@@ -179,13 +230,8 @@ static bool scan_unicode_escape(TSLexer *lexer, const bool *valid) {
       emit(lexer, valid, UNICODE_CODE_POINT_START);
   }
   uint32_t value;
-  if (!regex_scan_hexadecimal_digits(lexer, 4, &value)) {
-    return emit(
-      lexer,
-      valid,
-      valid[CLASS_IDENTITY_SOURCE] ? CLASS_IDENTITY_SOURCE : IDENTITY_SOURCE
-    );
-  }
+  if (!scan_hexadecimal_digits(lexer, 4, &value))
+    return emit(lexer, valid, IDENTITY_SOURCE);
   if (valid[UNICODE_FIXED_START])
     return emit(lexer, valid, UNICODE_FIXED_START);
   enum TokenType token = value >= 0xd800 && value <= 0xdbff ? UNICODE_LEAD_START
@@ -196,7 +242,7 @@ static bool scan_unicode_escape(TSLexer *lexer, const bool *valid) {
     if (lexer->lookahead == 'u') {
       lexer->advance(lexer, false);
       if (
-        regex_scan_hexadecimal_digits(lexer, 4, &value) &&
+        scan_hexadecimal_digits(lexer, 4, &value) &&
         value >=
         0xdc00 &&
         value <= 0xdfff
@@ -304,7 +350,7 @@ static bool scan_regex(Scanner *scanner, TSLexer *lexer, const bool *valid) {
   if (c == '{' && (valid[QUANTIFIER_OPEN] || valid[LITERAL_OPEN_BRACE]))
     return scan_brace(lexer, valid);
   if (
-    regex_is_ascii_digit(c) &&
+    is_ascii_digit(c) &&
     (valid[DECIMAL_START] ||
       valid[NULL_ZERO] ||
       valid[OCTAL_ZERO] ||
@@ -312,11 +358,9 @@ static bool scan_regex(Scanner *scanner, TSLexer *lexer, const bool *valid) {
       valid[OCTAL_ZERO_TWO] ||
       valid[OCTAL_FOUR_TWO] ||
       valid[OCTAL_ZERO_THREE] ||
-      valid[IDENTITY_SOURCE] ||
-      valid[CLASS_IDENTITY_SOURCE])
-  ) {
-    return scan_digits(scanner, lexer, valid, JAVASCRIPT_REGEX_MODE != 0);
-  }
+      valid[IDENTITY_SOURCE])
+  )
+    return scan_digits(scanner, lexer, valid);
   if (
     c ==
     'u' &&
@@ -336,12 +380,11 @@ static bool scan_regex(Scanner *scanner, TSLexer *lexer, const bool *valid) {
     if (lexer->lookahead != 'c')
       return false;
     lexer->advance(lexer, false);
-    if (regex_is_ascii_letter(lexer->lookahead))
+    if (is_ascii_letter(lexer->lookahead))
       return false;
     bool in_class = valid[CLASS_LITERAL_BACKSLASH];
     if (
-      in_class &&
-      (regex_is_ascii_digit(lexer->lookahead) || lexer->lookahead == '_')
+      in_class && (is_ascii_digit(lexer->lookahead) || lexer->lookahead == '_')
     )
       return false;
     return emit(
@@ -351,7 +394,6 @@ static bool scan_regex(Scanner *scanner, TSLexer *lexer, const bool *valid) {
     );
   }
   if (!(valid[IDENTITY_SOURCE] ||
-        valid[CLASS_IDENTITY_SOURCE] ||
         valid[HEX_START] ||
         valid[CONTROL_START] ||
         valid[CLASS_CONTROL_START] ||
@@ -360,16 +402,16 @@ static bool scan_regex(Scanner *scanner, TSLexer *lexer, const bool *valid) {
   lexer->advance(lexer, false);
   lexer->mark_end(lexer);
   if (c == 'c') {
-    if (regex_is_ascii_letter(lexer->lookahead))
+    if (is_ascii_letter(lexer->lookahead))
       return emit(lexer, valid, CONTROL_START);
-    if (regex_is_ascii_digit(lexer->lookahead) || lexer->lookahead == '_')
+    if (is_ascii_digit(lexer->lookahead) || lexer->lookahead == '_')
       return emit(lexer, valid, CLASS_CONTROL_START);
     return false;
   }
   if (c == 'x') {
-    if (regex_is_hexadecimal_digit(lexer->lookahead)) {
+    if (is_hexadecimal_digit(lexer->lookahead)) {
       lexer->advance(lexer, false);
-      if (regex_is_hexadecimal_digit(lexer->lookahead))
+      if (is_hexadecimal_digit(lexer->lookahead))
         return emit(lexer, valid, HEX_START);
     }
   } else if (
@@ -392,15 +434,11 @@ static bool scan_regex(Scanner *scanner, TSLexer *lexer, const bool *valid) {
     case 'v':
       return false;
     case 'B':
-      if (!valid[CLASS_IDENTITY_SOURCE])
+      if (!valid[CLASS_CONTROL_START])
         return false;
     }
   }
-  return emit(
-    lexer,
-    valid,
-    valid[CLASS_IDENTITY_SOURCE] ? CLASS_IDENTITY_SOURCE : IDENTITY_SOURCE
-  );
+  return emit(lexer, valid, IDENTITY_SOURCE);
 }
 
 void *REGEX_SCANNER(create)(void) {

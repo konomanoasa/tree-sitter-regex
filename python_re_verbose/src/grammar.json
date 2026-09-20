@@ -3168,7 +3168,7 @@
           "type": "ALIAS",
           "content": {
             "type": "SYMBOL",
-            "name": "_outside_numeric_escape_start"
+            "name": "_numeric_escape_start"
           },
           "named": false,
           "value": "\\"
@@ -3198,7 +3198,7 @@
           "type": "ALIAS",
           "content": {
             "type": "SYMBOL",
-            "name": "_outside_numeric_escape_start"
+            "name": "_numeric_escape_start"
           },
           "named": false,
           "value": "\\"
@@ -3225,12 +3225,7 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "_class_start"
-          },
-          "named": false,
+          "type": "STRING",
           "value": "["
         },
         {
@@ -3255,12 +3250,7 @@
           "name": "_class_body"
         },
         {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "_class_close"
-          },
-          "named": false,
+          "type": "STRING",
           "value": "]"
         }
       ]
@@ -3280,8 +3270,8 @@
                     {
                       "type": "ALIAS",
                       "content": {
-                        "type": "SYMBOL",
-                        "name": "_class_leading_close"
+                        "type": "STRING",
+                        "value": "]"
                       },
                       "named": true,
                       "value": "class_character"
@@ -3377,8 +3367,8 @@
                     {
                       "type": "ALIAS",
                       "content": {
-                        "type": "SYMBOL",
-                        "name": "_class_leading_close"
+                        "type": "STRING",
+                        "value": "]"
                       },
                       "named": true,
                       "value": "class_character"
@@ -3689,8 +3679,8 @@
           "content": {
             "type": "ALIAS",
             "content": {
-              "type": "SYMBOL",
-              "name": "_class_leading_close"
+              "type": "STRING",
+              "value": "]"
             },
             "named": true,
             "value": "class_character"
@@ -3785,7 +3775,7 @@
           "type": "ALIAS",
           "content": {
             "type": "SYMBOL",
-            "name": "_class_numeric_escape_start"
+            "name": "_numeric_escape_start"
           },
           "named": false,
           "value": "\\"
@@ -3815,21 +3805,11 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "ALIAS",
-              "content": {
-                "type": "SYMBOL",
-                "name": "_quantifier_star"
-              },
-              "named": false,
+              "type": "STRING",
               "value": "*"
             },
             {
-              "type": "ALIAS",
-              "content": {
-                "type": "SYMBOL",
-                "name": "_quantifier_plus"
-              },
-              "named": false,
+              "type": "STRING",
               "value": "+"
             },
             {
@@ -3939,12 +3919,7 @@
                   "value": "?"
                 },
                 {
-                  "type": "ALIAS",
-                  "content": {
-                    "type": "SYMBOL",
-                    "name": "_quantifier_possessive_suffix"
-                  },
-                  "named": false,
+                  "type": "STRING",
                   "value": "+"
                 }
               ]
@@ -4194,15 +4169,7 @@
     },
     {
       "type": "SYMBOL",
-      "name": "_outside_numeric_escape_start"
-    },
-    {
-      "type": "SYMBOL",
-      "name": "_class_start"
-    },
-    {
-      "type": "SYMBOL",
-      "name": "_class_numeric_escape_start"
+      "name": "_numeric_escape_start"
     },
     {
       "type": "SYMBOL",
@@ -4210,23 +4177,11 @@
     },
     {
       "type": "SYMBOL",
-      "name": "_class_leading_close"
-    },
-    {
-      "type": "SYMBOL",
-      "name": "_class_close"
-    },
-    {
-      "type": "SYMBOL",
       "name": "_class_character"
     },
     {
       "type": "SYMBOL",
-      "name": "_quantifier_star"
-    },
-    {
-      "type": "SYMBOL",
-      "name": "_quantifier_plus"
+      "name": "_open_brace"
     },
     {
       "type": "SYMBOL",
@@ -4235,14 +4190,6 @@
     {
       "type": "SYMBOL",
       "name": "_quantifier_lazy_suffix"
-    },
-    {
-      "type": "SYMBOL",
-      "name": "_quantifier_possessive_suffix"
-    },
-    {
-      "type": "SYMBOL",
-      "name": "_open_brace"
     },
     {
       "type": "SYMBOL",

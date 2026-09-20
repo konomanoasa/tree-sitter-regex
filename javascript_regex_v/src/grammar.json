@@ -1601,10 +1601,6 @@
     },
     {
       "type": "SYMBOL",
-      "name": "_class_identity_source"
-    },
-    {
-      "type": "SYMBOL",
       "name": "_null_zero"
     },
     {

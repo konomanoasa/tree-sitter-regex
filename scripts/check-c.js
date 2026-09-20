@@ -14,29 +14,6 @@ import { tmpdir } from "node:os";
 import { delimiter, dirname, isAbsolute, join } from "node:path";
 import { grammars, packageName, root } from "./tree-sitter.js";
 
-const scannerConfigurations = {
-  javascript_regex: {
-    definitions: ["JAVASCRIPT_REGEX_MODE=0"],
-    reuseAllocator: true,
-  },
-  javascript_regex_u: {
-    definitions: ["JAVASCRIPT_REGEX_MODE=1"],
-    reuseAllocator: true,
-  },
-  javascript_regex_v: {
-    definitions: ["JAVASCRIPT_REGEX_MODE=2"],
-    reuseAllocator: true,
-  },
-  python_re: {
-    definitions: ["PYTHON_RE_LANGUAGE=python_re"],
-    reuseAllocator: false,
-  },
-  python_re_verbose: {
-    definitions: ["PYTHON_RE_LANGUAGE=python_re_verbose"],
-    reuseAllocator: false,
-  },
-};
-
 const warningArguments = ["-Wall", "-Wextra", "-Werror", "-pedantic"];
 const scannerContract = join(root, "test", "scanner.test.c");
 
@@ -136,29 +113,29 @@ function llvmCommands() {
 
 function scannerVariants() {
   return grammars.map((grammar) => {
-    const configuration = scannerConfigurations[grammar.name];
-    if (configuration === undefined)
-      throw new Error(`Unsupported scanner grammar ${grammar.name}.`);
-    if (typeof configuration.reuseAllocator !== "boolean")
-      throw new Error(
-        `Scanner grammar ${grammar.name} must declare reuseAllocator.`,
-      );
     const includeDirectory = join(root, grammar.path, "src");
     const source = join(includeDirectory, "scanner.c");
+    const headers = grammar.externalFiles
+      .filter((file) => file.endsWith(".h"))
+      .map((file) => join(root, file));
+    // Standalone headers and the contract test need the definitions that
+    // the variant's scanner.c provides before including the header.
+    const definitions = [
+      ...readFileSync(source, "utf8").matchAll(/^#define (\w+) (\S+)$/gm),
+    ].map(([, name, value]) => `-D${name}=${value}`);
     return {
       name: grammar.name,
       includeDirectory,
       source,
-      headers: grammar.externalFiles
-        .filter((file) => file.endsWith(".h"))
-        .map((file) => join(root, file)),
-      // Standalone headers and the contract test need the definitions that
-      // the variant's scanner.c provides before including the header.
+      headers,
       contractArguments: [
-        ...configuration.definitions.map((definition) => `-D${definition}`),
+        ...definitions,
         `-DREGEX_SCANNER_SOURCE="${source.replaceAll("\\", "/")}"`,
       ],
-      reuseAllocator: configuration.reuseAllocator,
+      // Only a scanner that includes alloc.h allocates through Tree-sitter.
+      reuseAllocator: headers.some((header) =>
+        readFileSync(header, "utf8").includes('"tree_sitter/alloc.h"'),
+      ),
     };
   });
 }
@@ -193,7 +170,7 @@ function checkDiagnostics(clang, clangd, variants, directory) {
       arguments: [
         clang,
         "-std=c17",
-        "-xc",
+        source.endsWith(".h") ? "-xc-header" : "-xc",
         "-I",
         variant.includeDirectory,
         ...warningArguments,

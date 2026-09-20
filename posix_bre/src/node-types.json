@@ -1,0 +1,486 @@
+[
+  {
+    "type": "basic_reg_exp",
+    "named": true,
+    "root": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "bre_branch",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "bracket_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "matching_list",
+          "named": true
+        },
+        {
+          "type": "nonmatching_list",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "bracket_list",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "follow_list",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "bre_branch",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "bre_expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "bre_dupl_symbol",
+    "named": true,
+    "fields": {
+      "maximum": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "duplication_count",
+            "named": true
+          }
+        ]
+      },
+      "minimum": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "duplication_count",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "bre_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "simple_bre",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "character_class",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "class_name",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "collating_symbol",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "collating_element_multi",
+          "named": true
+        },
+        {
+          "type": "collating_element_single",
+          "named": true
+        },
+        {
+          "type": "meta_character",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "end_range",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "collating_element_single",
+          "named": true
+        },
+        {
+          "type": "collating_symbol",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "equivalence_class",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "collating_element_multi",
+          "named": true
+        },
+        {
+          "type": "collating_element_single",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "expression_term",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "range_expression",
+          "named": true
+        },
+        {
+          "type": "single_expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "follow_list",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expression_term",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "matching_list",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "bracket_list",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "nondupl_bre",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "backreference",
+          "named": true
+        },
+        {
+          "type": "basic_reg_exp",
+          "named": true
+        },
+        {
+          "type": "one_char_or_coll_elem_bre",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "nonmatching_list",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "bracket_list",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "one_char_or_coll_elem_bre",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "bracket_expression",
+          "named": true
+        },
+        {
+          "type": "ordinary_character",
+          "named": true
+        },
+        {
+          "type": "quoted_character",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "range_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "end_range",
+          "named": true
+        },
+        {
+          "type": "start_range",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "simple_bre",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "bre_dupl_symbol",
+          "named": true
+        },
+        {
+          "type": "nondupl_bre",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "single_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "character_class",
+          "named": true
+        },
+        {
+          "type": "end_range",
+          "named": true
+        },
+        {
+          "type": "equivalence_class",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "start_range",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "end_range",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "$",
+    "named": false
+  },
+  {
+    "type": "*",
+    "named": false
+  },
+  {
+    "type": ",",
+    "named": false
+  },
+  {
+    "type": "-",
+    "named": false
+  },
+  {
+    "type": ".",
+    "named": false
+  },
+  {
+    "type": ".]",
+    "named": false
+  },
+  {
+    "type": ":]",
+    "named": false
+  },
+  {
+    "type": "=]",
+    "named": false
+  },
+  {
+    "type": "[",
+    "named": false
+  },
+  {
+    "type": "[.",
+    "named": false
+  },
+  {
+    "type": "[:",
+    "named": false
+  },
+  {
+    "type": "[=",
+    "named": false
+  },
+  {
+    "type": "\\(",
+    "named": false
+  },
+  {
+    "type": "\\)",
+    "named": false
+  },
+  {
+    "type": "\\+",
+    "named": false
+  },
+  {
+    "type": "\\?",
+    "named": false
+  },
+  {
+    "type": "\\{",
+    "named": false
+  },
+  {
+    "type": "\\|",
+    "named": false
+  },
+  {
+    "type": "\\}",
+    "named": false
+  },
+  {
+    "type": "]",
+    "named": false
+  },
+  {
+    "type": "^",
+    "named": false
+  },
+  {
+    "type": "backreference",
+    "named": true
+  },
+  {
+    "type": "class_name",
+    "named": true
+  },
+  {
+    "type": "collating_element_multi",
+    "named": true
+  },
+  {
+    "type": "collating_element_single",
+    "named": true
+  },
+  {
+    "type": "duplication_count",
+    "named": true
+  },
+  {
+    "type": "meta_character",
+    "named": true
+  },
+  {
+    "type": "ordinary_character",
+    "named": true
+  },
+  {
+    "type": "quoted_character",
+    "named": true
+  }
+]

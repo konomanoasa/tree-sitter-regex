@@ -16,6 +16,7 @@ import {
   parse,
   parseFile,
   parseSummary,
+  posixGrammars,
   pythonGrammars,
   selectNodes,
 } from "./support/parser.js";
@@ -579,12 +580,83 @@ for (const grammar of pythonGrammars) {
   }
 }
 
+test("posix_ere: an unmatched close parenthesis is an ordinary character", () => {
+  const grammar = posixGrammars.find(({ name }) => name === "posix_ere");
+  const result = parse(grammar, "(a))");
+  assert.equal(result.status, 0);
+  assert.deepEqual(selectNodes(result, ['")"', "ordinary_character `)`"]), [
+    ['")"', "0:2-0:3", "ere_expression"],
+    ["ordinary_character `)`", "0:3-0:4", "one_char_or_coll_elem_ere"],
+  ]);
+});
+
+test("posix_ere: a group closer cannot supply a missing branch operand", () => {
+  const grammar = posixGrammars.find(({ name }) => name === "posix_ere");
+  for (const source of ["()a)", "(()))", "(a|)b)", "(a|)*b)"]) {
+    assert.equal(parse(grammar, source).status, 1, source);
+  }
+});
+
+test("posix_bre: unescaped parentheses are ordinary characters", () => {
+  const grammar = posixGrammars.find(({ name }) => name === "posix_bre");
+  const result = parse(grammar, "(a))");
+  assert.equal(result.status, 0);
+  assert.deepEqual(
+    selectNodes(result, ["ordinary_character `(`", "ordinary_character `)`"]),
+    [
+      ["ordinary_character `(`", "0:0-0:1", "one_char_or_coll_elem_bre"],
+      ["ordinary_character `)`", "0:2-0:3", "one_char_or_coll_elem_bre"],
+      ["ordinary_character `)`", "0:3-0:4", "one_char_or_coll_elem_bre"],
+    ],
+  );
+});
+
+for (const grammar of posixGrammars) {
+  test(`${grammar.name}: a range endpoint cannot split a compound opener`, () => {
+    for (const source of ["[a-[:alpha:]]", "[a-[=x=]]"]) {
+      assert.equal(parse(grammar, source).status, 1, source);
+    }
+    for (const source of ["[a-[]", "[a-[.z.]]", "[[]"]) {
+      assert.equal(parse(grammar, source).status, 0, source);
+    }
+  });
+
+  test(`${grammar.name}: interior FEFF and non-BMP characters retain source byte ranges`, () => {
+    const result = parse(grammar, "a\uFEFF[\u{1F600}]\u{1F600}");
+    assert.equal(result.status, 0);
+    const ranges = result.rows.flatMap((line) => {
+      const match =
+        /^([0-9]+:[0-9]+) +- +([0-9]+:[0-9]+) +(ordinary_character|collating_element_single) `/.exec(
+          line,
+        );
+      return match ? [[match[3], match[1], match[2]]] : [];
+    });
+    assert.deepEqual(ranges, [
+      ["ordinary_character", "0:0", "0:1"],
+      ["ordinary_character", "0:1", "0:4"],
+      ["collating_element_single", "0:5", "0:9"],
+      ["ordinary_character", "0:10", "0:14"],
+    ]);
+  });
+}
+
+function regexOperators({ name }) {
+  const backslash = name === "posix_bre" ? "\\" : "";
+  return {
+    alternation: `${backslash}|`,
+    close: `${backslash})`,
+    open: `${backslash}(`,
+  };
+}
+
 for (const grammar of grammars) {
+  const { alternation, close, open } = regexOperators(grammar);
+
   test(`${grammar.name}: large literals, alternatives and nested groups parse through EOF`, () => {
     for (const [name, source] of [
       ["long literal", "x".repeat(80_000)],
-      ["wide alternatives", "a|".repeat(16_000)],
-      ["deep groups", `${"(".repeat(2000)}a${")".repeat(2000)}`],
+      ["wide alternatives", `${`a${alternation}`.repeat(16_000)}a`],
+      ["deep groups", `${open.repeat(2000)}a${close.repeat(2000)}`],
       ["space-separated atoms", "a ".repeat(40_000)],
     ]) {
       assert.equal(parseSummary(grammar, source).successful, true, name);
@@ -593,13 +665,15 @@ for (const grammar of grammars) {
 
   test(`${grammar.name}: long unterminated groups parse through EOF with native recovery`, () => {
     assert.equal(
-      parseSummary(grammar, `(${"x".repeat(80_000)}`).successful,
+      parseSummary(grammar, `${open}${"x".repeat(80_000)}`).successful,
       false,
     );
   });
 
   test(`${grammar.name}: a parser timeout cannot pass as complete recovery`, () => {
-    assert.throws(() => parseSummary(grammar, "a|".repeat(16_000), 1));
+    assert.throws(() =>
+      parseSummary(grammar, `a${alternation}`.repeat(16_000), 1),
+    );
   });
 }
 

@@ -45,12 +45,30 @@
       "injection-regex": "^python_re_verbose$",
       "highlights": "python_re_verbose/queries/highlights.scm",
       "external-files": ["common/scanner.h", "common/python/scanner.h"]
+    },
+    {
+      "name": "posix_bre",
+      "title": "POSIX BRE",
+      "scope": "source.posix-bre",
+      "path": "posix_bre",
+      "injection-regex": "^posix_bre$",
+      "highlights": "posix_bre/queries/highlights.scm",
+      "external-files": ["common/scanner.h", "common/posix/scanner.h"]
+    },
+    {
+      "name": "posix_ere",
+      "title": "POSIX ERE",
+      "scope": "source.posix-ere",
+      "path": "posix_ere",
+      "injection-regex": "^posix_ere$",
+      "highlights": "posix_ere/queries/highlights.scm",
+      "external-files": ["common/scanner.h", "common/posix/scanner.h"]
     }
   ],
   "metadata": {
     "version": "0.4.0",
     "license": "MIT",
-    "description": "Tree-sitter grammars for JavaScript regex and Python re.",
+    "description": "Tree-sitter grammars for JavaScript regex, Python re, and POSIX BRE/ERE.",
     "authors": [
       {
         "name": "konomanoasa"

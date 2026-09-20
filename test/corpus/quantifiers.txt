@@ -1283,3 +1283,218 @@ an invalid lookahead quantifier does not move the real inner group closer
 ==================
 (-((?!)?&)
 ---
+
+==================
+duplication symbols follow an expression base
+:language(posix_ere)
+:cst
+==================
+a*b+c?
+---
+
+0:0 - 0:6   extended_reg_exp
+0:0 - 0:6     ere_branch
+0:0 - 0:2       ere_expression
+0:0 - 0:1         one_char_or_coll_elem_ere
+0:0 - 0:1           ordinary_character `a`
+0:1 - 0:2         ere_dupl_symbol
+0:1 - 0:2           "*"
+0:2 - 0:4       ere_expression
+0:2 - 0:3         one_char_or_coll_elem_ere
+0:2 - 0:3           ordinary_character `b`
+0:3 - 0:4         ere_dupl_symbol
+0:3 - 0:4           "+"
+0:4 - 0:6       ere_expression
+0:4 - 0:5         one_char_or_coll_elem_ere
+0:4 - 0:5           ordinary_character `c`
+0:5 - 0:6         ere_dupl_symbol
+0:5 - 0:6           "?"
+
+==================
+intervals own their counts
+:language(posix_ere)
+:cst
+==================
+a{3}b{2,}c{1,4}
+---
+
+0:0  - 0:15   extended_reg_exp
+0:0  - 0:15     ere_branch
+0:0  - 0:4        ere_expression
+0:0  - 0:1          one_char_or_coll_elem_ere
+0:0  - 0:1            ordinary_character `a`
+0:1  - 0:4          ere_dupl_symbol
+0:1  - 0:2            "{"
+0:2  - 0:3            minimum: duplication_count `3`
+0:3  - 0:4            "}"
+0:4  - 0:9        ere_expression
+0:4  - 0:5          one_char_or_coll_elem_ere
+0:4  - 0:5            ordinary_character `b`
+0:5  - 0:9          ere_dupl_symbol
+0:5  - 0:6            "{"
+0:6  - 0:7            minimum: duplication_count `2`
+0:7  - 0:8            ","
+0:8  - 0:9            "}"
+0:9  - 0:15       ere_expression
+0:9  - 0:10         one_char_or_coll_elem_ere
+0:9  - 0:10           ordinary_character `c`
+0:10 - 0:15         ere_dupl_symbol
+0:10 - 0:11           "{"
+0:11 - 0:12           minimum: duplication_count `1`
+0:12 - 0:13           ","
+0:13 - 0:14           maximum: duplication_count `4`
+0:14 - 0:15           "}"
+
+==================
+a question mark after a duplication symbol is the repetition modifier
+:language(posix_ere)
+:cst
+==================
+a*?b{2,3}?
+---
+
+0:0  - 0:10   extended_reg_exp
+0:0  - 0:10     ere_branch
+0:0  - 0:3        ere_expression
+0:0  - 0:1          one_char_or_coll_elem_ere
+0:0  - 0:1            ordinary_character `a`
+0:1  - 0:3          ere_dupl_symbol
+0:1  - 0:2            "*"
+0:2  - 0:3            repetition_modifier
+0:2  - 0:3              "?"
+0:3  - 0:10       ere_expression
+0:3  - 0:4          one_char_or_coll_elem_ere
+0:3  - 0:4            ordinary_character `b`
+0:4  - 0:10         ere_dupl_symbol
+0:4  - 0:5            "{"
+0:5  - 0:6            minimum: duplication_count `2`
+0:6  - 0:7            ","
+0:7  - 0:8            maximum: duplication_count `3`
+0:8  - 0:9            "}"
+0:9  - 0:10           repetition_modifier
+0:9  - 0:10             "?"
+
+==================
+adjacent duplication symbols stay separate
+:language(posix_ere)
+:cst
+==================
+a**
+---
+
+0:0 - 0:3   extended_reg_exp
+0:0 - 0:3     ere_branch
+0:0 - 0:3       ere_expression
+0:0 - 0:1         one_char_or_coll_elem_ere
+0:0 - 0:1           ordinary_character `a`
+0:1 - 0:2         ere_dupl_symbol
+0:1 - 0:2           "*"
+0:2 - 0:3         ere_dupl_symbol
+0:2 - 0:3           "*"
+
+==================
+duplication symbols follow a nondupl expression
+:language(posix_bre)
+:cst
+==================
+a*b\+c\?
+---
+
+0:0 - 0:8   basic_reg_exp
+0:0 - 0:8     bre_branch
+0:0 - 0:2       bre_expression
+0:0 - 0:2         simple_bre
+0:0 - 0:1           nondupl_bre
+0:0 - 0:1             one_char_or_coll_elem_bre
+0:0 - 0:1               ordinary_character `a`
+0:1 - 0:2           bre_dupl_symbol
+0:1 - 0:2             "*"
+0:2 - 0:5       bre_expression
+0:2 - 0:5         simple_bre
+0:2 - 0:3           nondupl_bre
+0:2 - 0:3             one_char_or_coll_elem_bre
+0:2 - 0:3               ordinary_character `b`
+0:3 - 0:5           bre_dupl_symbol
+0:3 - 0:5             "\\+"
+0:5 - 0:8       bre_expression
+0:5 - 0:8         simple_bre
+0:5 - 0:6           nondupl_bre
+0:5 - 0:6             one_char_or_coll_elem_bre
+0:5 - 0:6               ordinary_character `c`
+0:6 - 0:8           bre_dupl_symbol
+0:6 - 0:8             "\\?"
+
+==================
+intervals own their counts
+:language(posix_bre)
+:cst
+==================
+a\{3\}b\{2,\}c\{1,4\}
+---
+
+0:0  - 0:21   basic_reg_exp
+0:0  - 0:21     bre_branch
+0:0  - 0:6        bre_expression
+0:0  - 0:6          simple_bre
+0:0  - 0:1            nondupl_bre
+0:0  - 0:1              one_char_or_coll_elem_bre
+0:0  - 0:1                ordinary_character `a`
+0:1  - 0:6            bre_dupl_symbol
+0:1  - 0:3              "\\{"
+0:3  - 0:4              minimum: duplication_count `3`
+0:4  - 0:6              "\\}"
+0:6  - 0:13       bre_expression
+0:6  - 0:13         simple_bre
+0:6  - 0:7            nondupl_bre
+0:6  - 0:7              one_char_or_coll_elem_bre
+0:6  - 0:7                ordinary_character `b`
+0:7  - 0:13           bre_dupl_symbol
+0:7  - 0:9              "\\{"
+0:9  - 0:10             minimum: duplication_count `2`
+0:10 - 0:11             ","
+0:11 - 0:13             "\\}"
+0:13 - 0:21       bre_expression
+0:13 - 0:21         simple_bre
+0:13 - 0:14           nondupl_bre
+0:13 - 0:14             one_char_or_coll_elem_bre
+0:13 - 0:14               ordinary_character `c`
+0:14 - 0:21           bre_dupl_symbol
+0:14 - 0:16             "\\{"
+0:16 - 0:17             minimum: duplication_count `1`
+0:17 - 0:18             ","
+0:18 - 0:19             maximum: duplication_count `4`
+0:19 - 0:21             "\\}"
+
+==================
+an asterisk is ordinary at the start of a branch
+:language(posix_bre)
+:cst
+==================
+*a\|^*b
+---
+
+0:0 - 0:7   basic_reg_exp
+0:0 - 0:2     bre_branch
+0:0 - 0:1       bre_expression
+0:0 - 0:1         simple_bre
+0:0 - 0:1           nondupl_bre
+0:0 - 0:1             one_char_or_coll_elem_bre
+0:0 - 0:1               ordinary_character `*`
+0:1 - 0:2       bre_expression
+0:1 - 0:2         simple_bre
+0:1 - 0:2           nondupl_bre
+0:1 - 0:2             one_char_or_coll_elem_bre
+0:1 - 0:2               ordinary_character `a`
+0:2 - 0:4     "\\|"
+0:4 - 0:7     bre_branch
+0:4 - 0:6       bre_expression
+0:4 - 0:5         "^"
+0:5 - 0:6         simple_bre
+0:5 - 0:6           nondupl_bre
+0:5 - 0:6             one_char_or_coll_elem_bre
+0:5 - 0:6               ordinary_character `*`
+0:6 - 0:7       bre_expression
+0:6 - 0:7         simple_bre
+0:6 - 0:7           nondupl_bre
+0:6 - 0:7             one_char_or_coll_elem_bre
+0:6 - 0:7               ordinary_character `b`

@@ -7,6 +7,7 @@ If:
   PathMatch:
     - javascript_regex(_u|_v)?/src/.*
     - python_re(_verbose)?/src/.*
+    - posix_(bre|ere)/src/.*
 CompileFlags:
   Add:
     - -I.
@@ -16,8 +17,7 @@ If:
   PathMatch: common/scanner\.h
 CompileFlags:
   Add:
-    - -xc
-    - -I../javascript_regex/src
+    - -xc-header
 
 ---
 If:
@@ -36,6 +36,15 @@ CompileFlags:
     - -xc
     - -DPYTHON_RE_LANGUAGE=python_re
     - -I../../python_re/src
+
+---
+If:
+  PathMatch: common/posix/scanner\.h
+CompileFlags:
+  Add:
+    - -xc
+    - -DPOSIX_REGEX_MODE=0
+    - -I../../posix_bre/src
 
 ---
 If:

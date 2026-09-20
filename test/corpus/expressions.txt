@@ -1114,3 +1114,260 @@ empty alternatives retain a verbose trailing newline
       (literal_character))
     (concatenation
       (verbose_whitespace))))
+
+==================
+concatenation retains individual literal characters
+:language(posix_ere)
+:cst
+==================
+abc
+---
+
+0:0 - 0:3   extended_reg_exp
+0:0 - 0:3     ere_branch
+0:0 - 0:1       ere_expression
+0:0 - 0:1         one_char_or_coll_elem_ere
+0:0 - 0:1           ordinary_character `a`
+0:1 - 0:2       ere_expression
+0:1 - 0:2         one_char_or_coll_elem_ere
+0:1 - 0:2           ordinary_character `b`
+0:2 - 0:3       ere_expression
+0:2 - 0:3         one_char_or_coll_elem_ere
+0:2 - 0:3           ordinary_character `c`
+
+==================
+alternation separates branches
+:language(posix_ere)
+:cst
+==================
+ab|c
+---
+
+0:0 - 0:4   extended_reg_exp
+0:0 - 0:2     ere_branch
+0:0 - 0:1       ere_expression
+0:0 - 0:1         one_char_or_coll_elem_ere
+0:0 - 0:1           ordinary_character `a`
+0:1 - 0:2       ere_expression
+0:1 - 0:2         one_char_or_coll_elem_ere
+0:1 - 0:2           ordinary_character `b`
+0:2 - 0:3     "|"
+0:3 - 0:4     ere_branch
+0:3 - 0:4       ere_expression
+0:3 - 0:4         one_char_or_coll_elem_ere
+0:3 - 0:4           ordinary_character `c`
+
+==================
+anchors and the wildcard are expression bases
+:language(posix_ere)
+:cst
+==================
+^.$
+---
+
+0:0 - 0:3   extended_reg_exp
+0:0 - 0:3     ere_branch
+0:0 - 0:1       ere_expression
+0:0 - 0:1         "^"
+0:1 - 0:2       ere_expression
+0:1 - 0:2         one_char_or_coll_elem_ere
+0:1 - 0:2           "."
+0:2 - 0:3       ere_expression
+0:2 - 0:3         "$"
+
+==================
+a group owns its delimiters and nested regular expression
+:language(posix_ere)
+:cst
+==================
+(a|b)
+---
+
+0:0 - 0:5   extended_reg_exp
+0:0 - 0:5     ere_branch
+0:0 - 0:5       ere_expression
+0:0 - 0:1         "("
+0:1 - 0:4         extended_reg_exp
+0:1 - 0:2           ere_branch
+0:1 - 0:2             ere_expression
+0:1 - 0:2               one_char_or_coll_elem_ere
+0:1 - 0:2                 ordinary_character `a`
+0:2 - 0:3           "|"
+0:3 - 0:4           ere_branch
+0:3 - 0:4             ere_expression
+0:3 - 0:4               one_char_or_coll_elem_ere
+0:3 - 0:4                 ordinary_character `b`
+0:4 - 0:5         ")"
+
+==================
+unmatched closing punctuation is ordinary
+:language(posix_ere)
+:cst
+==================
+)]}
+---
+
+0:0 - 0:3   extended_reg_exp
+0:0 - 0:3     ere_branch
+0:0 - 0:1       ere_expression
+0:0 - 0:1         one_char_or_coll_elem_ere
+0:0 - 0:1           ordinary_character `)`
+0:1 - 0:2       ere_expression
+0:1 - 0:2         one_char_or_coll_elem_ere
+0:1 - 0:2           ordinary_character `]`
+0:2 - 0:3       ere_expression
+0:2 - 0:3         one_char_or_coll_elem_ere
+0:2 - 0:3           ordinary_character `}`
+
+==================
+concatenation retains individual literal characters
+:language(posix_bre)
+:cst
+==================
+abc
+---
+
+0:0 - 0:3   basic_reg_exp
+0:0 - 0:3     bre_branch
+0:0 - 0:1       bre_expression
+0:0 - 0:1         simple_bre
+0:0 - 0:1           nondupl_bre
+0:0 - 0:1             one_char_or_coll_elem_bre
+0:0 - 0:1               ordinary_character `a`
+0:1 - 0:2       bre_expression
+0:1 - 0:2         simple_bre
+0:1 - 0:2           nondupl_bre
+0:1 - 0:2             one_char_or_coll_elem_bre
+0:1 - 0:2               ordinary_character `b`
+0:2 - 0:3       bre_expression
+0:2 - 0:3         simple_bre
+0:2 - 0:3           nondupl_bre
+0:2 - 0:3             one_char_or_coll_elem_bre
+0:2 - 0:3               ordinary_character `c`
+
+==================
+alternation separates branches
+:language(posix_bre)
+:cst
+==================
+ab\|c
+---
+
+0:0 - 0:5   basic_reg_exp
+0:0 - 0:2     bre_branch
+0:0 - 0:1       bre_expression
+0:0 - 0:1         simple_bre
+0:0 - 0:1           nondupl_bre
+0:0 - 0:1             one_char_or_coll_elem_bre
+0:0 - 0:1               ordinary_character `a`
+0:1 - 0:2       bre_expression
+0:1 - 0:2         simple_bre
+0:1 - 0:2           nondupl_bre
+0:1 - 0:2             one_char_or_coll_elem_bre
+0:1 - 0:2               ordinary_character `b`
+0:2 - 0:4     "\\|"
+0:4 - 0:5     bre_branch
+0:4 - 0:5       bre_expression
+0:4 - 0:5         simple_bre
+0:4 - 0:5           nondupl_bre
+0:4 - 0:5             one_char_or_coll_elem_bre
+0:4 - 0:5               ordinary_character `c`
+
+==================
+anchors attach to the expressions they bound
+:language(posix_bre)
+:cst
+==================
+^ab$
+---
+
+0:0 - 0:4   basic_reg_exp
+0:0 - 0:4     bre_branch
+0:0 - 0:2       bre_expression
+0:0 - 0:1         "^"
+0:1 - 0:2         simple_bre
+0:1 - 0:2           nondupl_bre
+0:1 - 0:2             one_char_or_coll_elem_bre
+0:1 - 0:2               ordinary_character `a`
+0:2 - 0:4       bre_expression
+0:2 - 0:3         simple_bre
+0:2 - 0:3           nondupl_bre
+0:2 - 0:3             one_char_or_coll_elem_bre
+0:2 - 0:3               ordinary_character `b`
+0:3 - 0:4         "$"
+
+==================
+a subexpression owns its delimiters and nested regular expression
+:language(posix_bre)
+:cst
+==================
+\(a\|b\)
+---
+
+0:0 - 0:8   basic_reg_exp
+0:0 - 0:8     bre_branch
+0:0 - 0:8       bre_expression
+0:0 - 0:8         simple_bre
+0:0 - 0:8           nondupl_bre
+0:0 - 0:2             "\\("
+0:2 - 0:6             basic_reg_exp
+0:2 - 0:3               bre_branch
+0:2 - 0:3                 bre_expression
+0:2 - 0:3                   simple_bre
+0:2 - 0:3                     nondupl_bre
+0:2 - 0:3                       one_char_or_coll_elem_bre
+0:2 - 0:3                         ordinary_character `a`
+0:3 - 0:5               "\\|"
+0:5 - 0:6               bre_branch
+0:5 - 0:6                 bre_expression
+0:5 - 0:6                   simple_bre
+0:5 - 0:6                     nondupl_bre
+0:5 - 0:6                       one_char_or_coll_elem_bre
+0:5 - 0:6                         ordinary_character `b`
+0:6 - 0:8             "\\)"
+
+==================
+unescaped grouping punctuation is ordinary
+:language(posix_bre)
+:cst
+==================
+(){}|+?
+---
+
+0:0 - 0:7   basic_reg_exp
+0:0 - 0:7     bre_branch
+0:0 - 0:1       bre_expression
+0:0 - 0:1         simple_bre
+0:0 - 0:1           nondupl_bre
+0:0 - 0:1             one_char_or_coll_elem_bre
+0:0 - 0:1               ordinary_character `(`
+0:1 - 0:2       bre_expression
+0:1 - 0:2         simple_bre
+0:1 - 0:2           nondupl_bre
+0:1 - 0:2             one_char_or_coll_elem_bre
+0:1 - 0:2               ordinary_character `)`
+0:2 - 0:3       bre_expression
+0:2 - 0:3         simple_bre
+0:2 - 0:3           nondupl_bre
+0:2 - 0:3             one_char_or_coll_elem_bre
+0:2 - 0:3               ordinary_character `{`
+0:3 - 0:4       bre_expression
+0:3 - 0:4         simple_bre
+0:3 - 0:4           nondupl_bre
+0:3 - 0:4             one_char_or_coll_elem_bre
+0:3 - 0:4               ordinary_character `}`
+0:4 - 0:5       bre_expression
+0:4 - 0:5         simple_bre
+0:4 - 0:5           nondupl_bre
+0:4 - 0:5             one_char_or_coll_elem_bre
+0:4 - 0:5               ordinary_character `|`
+0:5 - 0:6       bre_expression
+0:5 - 0:6         simple_bre
+0:5 - 0:6           nondupl_bre
+0:5 - 0:6             one_char_or_coll_elem_bre
+0:5 - 0:6               ordinary_character `+`
+0:6 - 0:7       bre_expression
+0:6 - 0:7         simple_bre
+0:6 - 0:7           nondupl_bre
+0:6 - 0:7             one_char_or_coll_elem_bre
+0:6 - 0:7               ordinary_character `?`

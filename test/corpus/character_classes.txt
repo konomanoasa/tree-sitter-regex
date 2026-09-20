@@ -2105,3 +2105,253 @@ an unclosed class inside a group requires recovery
 ==================
 ([a)|b
 ---
+
+==================
+a bracket expression owns its outer delimiters
+:language(posix_ere)
+:cst
+==================
+[abc]
+---
+
+0:0 - 0:5   extended_reg_exp
+0:0 - 0:5     ere_branch
+0:0 - 0:5       ere_expression
+0:0 - 0:5         one_char_or_coll_elem_ere
+0:0 - 0:5           bracket_expression
+0:0 - 0:1             "["
+0:1 - 0:4             matching_list
+0:1 - 0:4               bracket_list
+0:1 - 0:4                 follow_list
+0:1 - 0:2                   expression_term
+0:1 - 0:2                     single_expression
+0:1 - 0:2                       end_range
+0:1 - 0:2                         collating_element_single `a`
+0:2 - 0:3                   expression_term
+0:2 - 0:3                     single_expression
+0:2 - 0:3                       end_range
+0:2 - 0:3                         collating_element_single `b`
+0:3 - 0:4                   expression_term
+0:3 - 0:4                     single_expression
+0:3 - 0:4                       end_range
+0:3 - 0:4                         collating_element_single `c`
+0:4 - 0:5             "]"
+
+==================
+a nonmatching list allows a leading close bracket and a trailing hyphen
+:language(posix_ere)
+:cst
+==================
+[^]a-]
+---
+
+0:0 - 0:6   extended_reg_exp
+0:0 - 0:6     ere_branch
+0:0 - 0:6       ere_expression
+0:0 - 0:6         one_char_or_coll_elem_ere
+0:0 - 0:6           bracket_expression
+0:0 - 0:1             "["
+0:1 - 0:5             nonmatching_list
+0:1 - 0:2               "^"
+0:2 - 0:5               bracket_list
+0:2 - 0:4                 follow_list
+0:2 - 0:3                   expression_term
+0:2 - 0:3                     single_expression
+0:2 - 0:3                       end_range
+0:2 - 0:3                         collating_element_single `]`
+0:3 - 0:4                   expression_term
+0:3 - 0:4                     single_expression
+0:3 - 0:4                       end_range
+0:3 - 0:4                         collating_element_single `a`
+0:4 - 0:5                 "-"
+0:5 - 0:6             "]"
+
+==================
+a range separator belongs to the start of the range
+:language(posix_ere)
+:cst
+==================
+[a-z]
+---
+
+0:0 - 0:5   extended_reg_exp
+0:0 - 0:5     ere_branch
+0:0 - 0:5       ere_expression
+0:0 - 0:5         one_char_or_coll_elem_ere
+0:0 - 0:5           bracket_expression
+0:0 - 0:1             "["
+0:1 - 0:4             matching_list
+0:1 - 0:4               bracket_list
+0:1 - 0:4                 follow_list
+0:1 - 0:4                   expression_term
+0:1 - 0:4                     range_expression
+0:1 - 0:3                       start_range
+0:1 - 0:2                         end_range
+0:1 - 0:2                           collating_element_single `a`
+0:2 - 0:3                         "-"
+0:3 - 0:4                       end_range
+0:3 - 0:4                         collating_element_single `z`
+0:4 - 0:5             "]"
+
+==================
+a hyphen can end a range
+:language(posix_ere)
+:cst
+==================
+[a--]
+---
+
+0:0 - 0:5   extended_reg_exp
+0:0 - 0:5     ere_branch
+0:0 - 0:5       ere_expression
+0:0 - 0:5         one_char_or_coll_elem_ere
+0:0 - 0:5           bracket_expression
+0:0 - 0:1             "["
+0:1 - 0:4             matching_list
+0:1 - 0:4               bracket_list
+0:1 - 0:4                 follow_list
+0:1 - 0:4                   expression_term
+0:1 - 0:4                     range_expression
+0:1 - 0:3                       start_range
+0:1 - 0:2                         end_range
+0:1 - 0:2                           collating_element_single `a`
+0:2 - 0:3                         "-"
+0:3 - 0:4                       "-"
+0:4 - 0:5             "]"
+
+==================
+compound bracket elements keep their own delimiters
+:language(posix_ere)
+:cst
+==================
+[[.ch.][=a=][:alpha:]]
+---
+
+0:0  - 0:22   extended_reg_exp
+0:0  - 0:22     ere_branch
+0:0  - 0:22       ere_expression
+0:0  - 0:22         one_char_or_coll_elem_ere
+0:0  - 0:22           bracket_expression
+0:0  - 0:1              "["
+0:1  - 0:21             matching_list
+0:1  - 0:21               bracket_list
+0:1  - 0:21                 follow_list
+0:1  - 0:7                    expression_term
+0:1  - 0:7                      single_expression
+0:1  - 0:7                        end_range
+0:1  - 0:7                          collating_symbol
+0:1  - 0:3                            "[."
+0:3  - 0:5                            collating_element_multi `ch`
+0:5  - 0:7                            ".]"
+0:7  - 0:12                   expression_term
+0:7  - 0:12                     single_expression
+0:7  - 0:12                       equivalence_class
+0:7  - 0:9                          "[="
+0:9  - 0:10                         collating_element_single `a`
+0:10 - 0:12                         "=]"
+0:12 - 0:21                   expression_term
+0:12 - 0:21                     single_expression
+0:12 - 0:21                       character_class
+0:12 - 0:14                         "[:"
+0:14 - 0:19                         class_name `alpha`
+0:19 - 0:21                         ":]"
+0:21 - 0:22             "]"
+
+==================
+a collating symbol can carry a meta character payload
+:language(posix_ere)
+:cst
+==================
+[[.].]]
+---
+
+0:0 - 0:7   extended_reg_exp
+0:0 - 0:7     ere_branch
+0:0 - 0:7       ere_expression
+0:0 - 0:7         one_char_or_coll_elem_ere
+0:0 - 0:7           bracket_expression
+0:0 - 0:1             "["
+0:1 - 0:6             matching_list
+0:1 - 0:6               bracket_list
+0:1 - 0:6                 follow_list
+0:1 - 0:6                   expression_term
+0:1 - 0:6                     single_expression
+0:1 - 0:6                       end_range
+0:1 - 0:6                         collating_symbol
+0:1 - 0:3                           "[."
+0:3 - 0:4                           meta_character `]`
+0:4 - 0:6                           ".]"
+0:6 - 0:7             "]"
+
+==================
+a bracket expression owns its outer delimiters
+:language(posix_bre)
+:cst
+==================
+[abc]
+---
+
+0:0 - 0:5   basic_reg_exp
+0:0 - 0:5     bre_branch
+0:0 - 0:5       bre_expression
+0:0 - 0:5         simple_bre
+0:0 - 0:5           nondupl_bre
+0:0 - 0:5             one_char_or_coll_elem_bre
+0:0 - 0:5               bracket_expression
+0:0 - 0:1                 "["
+0:1 - 0:4                 matching_list
+0:1 - 0:4                   bracket_list
+0:1 - 0:4                     follow_list
+0:1 - 0:2                       expression_term
+0:1 - 0:2                         single_expression
+0:1 - 0:2                           end_range
+0:1 - 0:2                             collating_element_single `a`
+0:2 - 0:3                       expression_term
+0:2 - 0:3                         single_expression
+0:2 - 0:3                           end_range
+0:2 - 0:3                             collating_element_single `b`
+0:3 - 0:4                       expression_term
+0:3 - 0:4                         single_expression
+0:3 - 0:4                           end_range
+0:3 - 0:4                             collating_element_single `c`
+0:4 - 0:5                 "]"
+
+==================
+compound bracket elements keep their own delimiters
+:language(posix_bre)
+:cst
+==================
+[[.ch.][=a=][:alpha:]]
+---
+
+0:0  - 0:22   basic_reg_exp
+0:0  - 0:22     bre_branch
+0:0  - 0:22       bre_expression
+0:0  - 0:22         simple_bre
+0:0  - 0:22           nondupl_bre
+0:0  - 0:22             one_char_or_coll_elem_bre
+0:0  - 0:22               bracket_expression
+0:0  - 0:1                  "["
+0:1  - 0:21                 matching_list
+0:1  - 0:21                   bracket_list
+0:1  - 0:21                     follow_list
+0:1  - 0:7                        expression_term
+0:1  - 0:7                          single_expression
+0:1  - 0:7                            end_range
+0:1  - 0:7                              collating_symbol
+0:1  - 0:3                                "[."
+0:3  - 0:5                                collating_element_multi `ch`
+0:5  - 0:7                                ".]"
+0:7  - 0:12                       expression_term
+0:7  - 0:12                         single_expression
+0:7  - 0:12                           equivalence_class
+0:7  - 0:9                              "[="
+0:9  - 0:10                             collating_element_single `a`
+0:10 - 0:12                             "=]"
+0:12 - 0:21                       expression_term
+0:12 - 0:21                         single_expression
+0:12 - 0:21                           character_class
+0:12 - 0:14                             "[:"
+0:14 - 0:19                             class_name `alpha`
+0:19 - 0:21                             ":]"
+0:21 - 0:22                 "]"

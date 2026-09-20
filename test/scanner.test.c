@@ -135,6 +135,22 @@ static void test_disabled_and_recovery_scans_preserve_state(void) {
   REGEX_SCANNER(destroy)(scanner);
 }
 
+#if defined(POSIX_REGEX_MODE) || defined(PYTHON_RE_LANGUAGE)
+static void test_stateless_lifecycle_and_serialization(void) {
+  void *scanner = REGEX_SCANNER(create)();
+  assert(scanner == NULL);
+  char buffer[TREE_SITTER_SERIALIZATION_BUFFER_SIZE];
+  memset(buffer, 0x5a, sizeof(buffer));
+  assert(serialize_state(scanner, buffer) == 0);
+  for (unsigned index = 0; index < sizeof(buffer); index += 1) {
+    assert(buffer[index] == 0x5a);
+  }
+  REGEX_SCANNER(deserialize)(scanner, NULL, 0);
+  REGEX_SCANNER(deserialize)(scanner, buffer, sizeof(buffer));
+  REGEX_SCANNER(destroy)(scanner);
+}
+#endif
+
 #if defined(JAVASCRIPT_REGEX_MODE)
 static void check_token(
   void *scanner,
@@ -259,6 +275,190 @@ static void test_stateless_lifecycle_and_unicode_tokens(void) {
 }
 #endif
 
+#elif defined(POSIX_REGEX_MODE)
+static void enable_compound_payload(bool *valid_symbols, bool collating) {
+  if (collating) {
+    valid_symbols[COLLATING_SYMBOL_SINGLE] = true;
+    valid_symbols[COLLATING_SYMBOL_MULTI] = true;
+    valid_symbols[COLLATING_SYMBOL_META] = true;
+  } else {
+    valid_symbols[EQUIVALENCE_CLASS_SINGLE] = true;
+    valid_symbols[EQUIVALENCE_CLASS_MULTI] = true;
+  }
+}
+
+static void test_compound_payloads_end_before_their_closing_delimiter(void) {
+  static const struct {
+    const char *source;
+    bool collating;
+    TSSymbol token;
+    size_t length;
+  } cases[] = {
+    {"a.]", true, COLLATING_SYMBOL_SINGLE, 1},
+    {"ch.]", true, COLLATING_SYMBOL_MULTI, 2},
+    {"a.b.]", true, COLLATING_SYMBOL_MULTI, 3},
+    {"].]", true, COLLATING_SYMBOL_META, 1},
+    {"^.]", true, COLLATING_SYMBOL_META, 1},
+    {"-.]", true, COLLATING_SYMBOL_META, 1},
+    {"a=]", false, EQUIVALENCE_CLASS_SINGLE, 1},
+    {"ch=]", false, EQUIVALENCE_CLASS_MULTI, 2},
+    {"^=]", false, EQUIVALENCE_CLASS_SINGLE, 1},
+  };
+  for (
+    unsigned index = 0; index < sizeof(cases) / sizeof(cases[0]); index += 1
+  ) {
+    bool valid_symbols[TOKEN_COUNT] = {false};
+    enable_compound_payload(valid_symbols, cases[index].collating);
+    MockLexer mock =
+      make_lexer(cases[index].source, strlen(cases[index].source));
+    assert(REGEX_SCANNER(scan)(NULL, &mock.lexer, valid_symbols));
+    assert(mock.lexer.result_symbol == cases[index].token);
+    assert(mock.mark == cases[index].length);
+  }
+}
+
+static void test_empty_and_unterminated_payloads_are_not_emitted(void) {
+  static const struct {
+    const char *source;
+    bool collating;
+  } cases[] = {
+    {".]", true},
+    {"=]", false},
+    {"abc", true},
+    {"a.", true},
+    {"a=", false},
+    {"a=]", true},
+    {"a.]", false},
+  };
+  for (
+    unsigned index = 0; index < sizeof(cases) / sizeof(cases[0]); index += 1
+  ) {
+    bool valid_symbols[TOKEN_COUNT] = {false};
+    enable_compound_payload(valid_symbols, cases[index].collating);
+    MockLexer mock =
+      make_lexer(cases[index].source, strlen(cases[index].source));
+    assert(!REGEX_SCANNER(scan)(NULL, &mock.lexer, valid_symbols));
+  }
+}
+
+static void test_compound_payloads_respect_enabled_token_types(void) {
+  static const struct {
+    const char *source;
+    TSSymbol enabled;
+    bool emitted;
+  } cases[] = {
+    {"^.]", COLLATING_SYMBOL_META, true},
+    {"a.]", COLLATING_SYMBOL_SINGLE, true},
+    {"ab.]", COLLATING_SYMBOL_MULTI, true},
+    {"ab.]", COLLATING_SYMBOL_SINGLE, false},
+    {"a.]", COLLATING_SYMBOL_MULTI, false},
+    {"^.]", COLLATING_SYMBOL_SINGLE, false},
+    {"a=]", EQUIVALENCE_CLASS_SINGLE, true},
+    {"ab=]", EQUIVALENCE_CLASS_SINGLE, false},
+    {"a=]", EQUIVALENCE_CLASS_MULTI, false},
+  };
+  for (size_t index = 0; index < sizeof(cases) / sizeof(cases[0]); index++) {
+    bool valid_symbols[TOKEN_COUNT] = {false};
+    valid_symbols[cases[index].enabled] = true;
+    MockLexer mock =
+      make_lexer(cases[index].source, strlen(cases[index].source));
+    assert(
+      REGEX_SCANNER(scan)(NULL, &mock.lexer, valid_symbols) ==
+      cases[index].emitted
+    );
+    if (cases[index].emitted)
+      assert(mock.lexer.result_symbol == cases[index].enabled);
+  }
+}
+
+#if POSIX_REGEX_MODE == 0
+static void test_right_anchor_requires_a_branch_end(void) {
+  static const struct {
+    const char *source;
+    bool emitted;
+  } cases[] = {
+    {"$", true},
+    {"$\\)", true},
+    {"$\\|", true},
+    {"$a", false},
+    {"$\\", false},
+    {"$\\(", false},
+    {"a$", false},
+  };
+  for (
+    unsigned index = 0; index < sizeof(cases) / sizeof(cases[0]); index += 1
+  ) {
+    bool valid_symbols[TOKEN_COUNT] = {false};
+    valid_symbols[BRE_RIGHT_ANCHOR] = true;
+    MockLexer mock =
+      make_lexer(cases[index].source, strlen(cases[index].source));
+    if (!cases[index].emitted) {
+      assert(!REGEX_SCANNER(scan)(NULL, &mock.lexer, valid_symbols));
+      continue;
+    }
+    assert(REGEX_SCANNER(scan)(NULL, &mock.lexer, valid_symbols));
+    assert(mock.lexer.result_symbol == BRE_RIGHT_ANCHOR);
+    assert(mock.mark == 1);
+  }
+}
+#endif
+
+static void test_trailing_bracket_hyphen_requires_a_closing_bracket(void) {
+  static const struct {
+    const char *source;
+    bool emitted;
+  } cases[] = {
+    {"-]", true},
+    {"-a", false},
+    {"-", false},
+    {"--]", false},
+    {"a]", false},
+  };
+  for (
+    unsigned index = 0; index < sizeof(cases) / sizeof(cases[0]); index += 1
+  ) {
+    bool valid_symbols[TOKEN_COUNT] = {false};
+    valid_symbols[TRAILING_BRACKET_HYPHEN] = true;
+    MockLexer mock =
+      make_lexer(cases[index].source, strlen(cases[index].source));
+    if (!cases[index].emitted) {
+      assert(!REGEX_SCANNER(scan)(NULL, &mock.lexer, valid_symbols));
+      continue;
+    }
+    assert(REGEX_SCANNER(scan)(NULL, &mock.lexer, valid_symbols));
+    assert(mock.lexer.result_symbol == TRAILING_BRACKET_HYPHEN);
+    assert(mock.mark == 1);
+  }
+}
+
+static void test_literal_bracket_does_not_split_compound_openers(void) {
+  static const struct {
+    const char *source;
+    bool emitted;
+  } cases[] = {
+    {"[", true},
+    {"[]", true},
+    {"[x", true},
+    {"[.", false},
+    {"[=", false},
+    {"[:", false},
+  };
+  for (size_t index = 0; index < sizeof(cases) / sizeof(cases[0]); index++) {
+    bool valid_symbols[TOKEN_COUNT] = {false};
+    valid_symbols[BRACKET_OPEN_CHARACTER] = true;
+    MockLexer mock =
+      make_lexer(cases[index].source, strlen(cases[index].source));
+    assert(
+      REGEX_SCANNER(scan)(NULL, &mock.lexer, valid_symbols) ==
+      cases[index].emitted
+    );
+    if (cases[index].emitted) {
+      assert(mock.lexer.result_symbol == BRACKET_OPEN_CHARACTER);
+      assert(mock.offset == 1);
+    }
+  }
+}
+
 #else
 static void assert_token(const char *source, TSSymbol token, size_t length) {
   MockLexer mock = make_lexer(source, strlen(source));
@@ -267,20 +467,6 @@ static void assert_token(const char *source, TSSymbol token, size_t length) {
   assert(REGEX_SCANNER(scan)(NULL, &mock.lexer, valid_symbols));
   assert(mock.lexer.result_symbol == token);
   assert(mock.mark == length);
-}
-
-static void test_stateless_lifecycle_and_serialization(void) {
-  void *scanner = REGEX_SCANNER(create)();
-  assert(scanner == NULL);
-  char buffer[TREE_SITTER_SERIALIZATION_BUFFER_SIZE];
-  memset(buffer, 0x5a, sizeof(buffer));
-  assert(serialize_state(scanner, buffer) == 0);
-  for (unsigned index = 0; index < sizeof(buffer); index += 1) {
-    assert(buffer[index] == 0x5a);
-  }
-  REGEX_SCANNER(deserialize)(scanner, NULL, 0);
-  REGEX_SCANNER(deserialize)(scanner, buffer, sizeof(buffer));
-  REGEX_SCANNER(destroy)(scanner);
 }
 
 static void test_token_ranges_follow_the_grammar_context(void) {
@@ -293,10 +479,7 @@ static void test_token_ranges_follow_the_grammar_context(void) {
     {"#", LITERAL_CHARACTER_NORMAL, 1},
     {" ", CLASS_CHARACTER, 1},
     {"#", CLASS_CHARACTER, 1},
-    {"[", CLASS_START, 1},
     {"^", CLASS_NEGATION, 1},
-    {"]", CLASS_LEADING_CLOSE, 1},
-    {"]", CLASS_CLOSE, 1},
     {"a", LITERAL_CHARACTER_VERBOSE, 1},
     {"(?ix)", GLOBAL_FLAGS_START, 1},
     {"(?i-x:", SCOPED_FLAGS_START, 1},
@@ -312,8 +495,7 @@ static void test_token_ranges_follow_the_grammar_context(void) {
     {"\\u0123", UNICODE_ESCAPE_SHORT_START, 2},
     {"\\U00001234", UNICODE_ESCAPE_LONG_START, 2},
     {"\\N{EM DASH}", NAMED_UNICODE_ESCAPE_START, 2},
-    {"\\123", OUTSIDE_NUMERIC_ESCAPE_START, 1},
-    {"\\123", CLASS_NUMERIC_ESCAPE_START, 1},
+    {"\\123", NUMERIC_ESCAPE_START, 1},
     {"\\#", LITERAL_ESCAPE, 2},
     {"{,}", OPEN_BRACE, 1},
     {"{12}", OPEN_BRACE, 1},
@@ -349,7 +531,6 @@ static void test_invalid_tokens_are_not_emitted(void) {
     {"\\u123", UNICODE_ESCAPE_SHORT_START},
     {"\\U1234567", UNICODE_ESCAPE_LONG_START},
     {"\\Nname}", NAMED_UNICODE_ESCAPE_START},
-    {"\\8", CLASS_NUMERIC_ESCAPE_START},
     {"\\q", LITERAL_ESCAPE},
     {"(?i)", SCOPED_FLAGS_START},
     {"(?x:", GLOBAL_FLAGS_START},
@@ -364,6 +545,18 @@ static void test_invalid_tokens_are_not_emitted(void) {
       make_lexer(cases[index].source, strlen(cases[index].source));
     assert(!REGEX_SCANNER(scan)(NULL, &mock.lexer, valid_symbols));
   }
+}
+
+static void test_class_numeric_escapes_require_an_octal_digit(void) {
+  bool valid_symbols[TOKEN_COUNT] = {false};
+  valid_symbols[CLASS_CHARACTER] = true;
+  valid_symbols[NUMERIC_ESCAPE_START] = true;
+  MockLexer octal = make_lexer("\\7", 2);
+  assert(REGEX_SCANNER(scan)(NULL, &octal.lexer, valid_symbols));
+  assert(octal.lexer.result_symbol == NUMERIC_ESCAPE_START);
+  assert(octal.mark == 1);
+  MockLexer decimal = make_lexer("\\8", 2);
+  assert(!REGEX_SCANNER(scan)(NULL, &decimal.lexer, valid_symbols));
 }
 
 static void test_nul_and_eof_are_distinct(void) {
@@ -408,10 +601,21 @@ int main(void) {
 #else
   test_stateless_lifecycle_and_unicode_tokens();
 #endif
+#elif defined(POSIX_REGEX_MODE)
+  test_stateless_lifecycle_and_serialization();
+  test_compound_payloads_end_before_their_closing_delimiter();
+  test_empty_and_unterminated_payloads_are_not_emitted();
+  test_compound_payloads_respect_enabled_token_types();
+  test_trailing_bracket_hyphen_requires_a_closing_bracket();
+  test_literal_bracket_does_not_split_compound_openers();
+#if POSIX_REGEX_MODE == 0
+  test_right_anchor_requires_a_branch_end();
+#endif
 #else
   test_stateless_lifecycle_and_serialization();
   test_token_ranges_follow_the_grammar_context();
   test_invalid_tokens_are_not_emitted();
+  test_class_numeric_escapes_require_an_octal_digit();
   test_nul_and_eof_are_distinct();
 #endif
 #ifdef TREE_SITTER_REUSE_ALLOCATOR

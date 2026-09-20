@@ -41,7 +41,7 @@ jobs:
         if: runner.os == 'macOS'
         shell: sh
         run: |
-          for grammar in javascript_regex*/ python_re*/; do
+          for grammar in javascript_regex*/ python_re*/ posix_*/; do
             tree-sitter build "$grammar" --output "${grammar%/}.so" || exit 1
           done
       - name: Validate queries
@@ -49,5 +49,6 @@ jobs:
         shell: sh
         run: >-
           ts_query_ls check --format javascript_regex*/queries/ python_re*/queries/
+          posix_*/queries/
           --config
           '{"parser_install_directories":["."],"language_retrieval_patterns":["([^/]+)/queries/[^/]+[.]scm$"]}'

@@ -3,7 +3,17 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { after, before } from "node:test";
-import { createTreeSitter, grammars } from "../../scripts/tree-sitter.js";
+import { createTreeSitter, grammars, root } from "../../scripts/tree-sitter.js";
+
+const rootNodes = new Map(
+  grammars.map(({ name, path }) => [
+    name,
+    Object.keys(
+      JSON.parse(readFileSync(join(root, path, "src", "grammar.json"), "utf8"))
+        .rules,
+    )[0],
+  ]),
+);
 
 let cache;
 
@@ -97,7 +107,7 @@ function parseFile(path, language, edits = []) {
     "root must reach the edited source end",
   );
   if (result.status === 0) {
-    assert.ok(cst.includes("pattern"), cst);
+    assert.ok(cst.includes(rootNodes.get(language)), cst);
   }
   const recovery = hasRecovery(cst);
   return { status: recovery ? 1 : result.status, cst, recovery };
@@ -114,6 +124,8 @@ const unicodeLanguages = ["javascript_regex_u", "javascript_regex_v"];
 const pythonGrammars = grammars.filter(
   ({ name }) => name === "python_re" || name === "python_re_verbose",
 );
+
+const posixGrammars = grammars.filter(({ name }) => name.startsWith("posix_"));
 
 function parse(grammar, source, edits = []) {
   const path = join(cache, "pattern.txt");
@@ -198,6 +210,7 @@ export {
   parse,
   parseFile,
   parseSummary,
+  posixGrammars,
   pythonGrammars,
   runner,
   selectNodes,

@@ -9,6 +9,7 @@ import {
   javascriptLanguages,
   parse,
   parseFile,
+  posixGrammars,
   pythonGrammars,
   selectNodes,
   unicodeLanguages,
@@ -823,6 +824,93 @@ for (const grammar of pythonGrammars) {
   }
 }
 
+const posixEdits = [
+  {
+    name: "a compound opener replaces a literal opening bracket",
+    languages: ["posix_bre", "posix_ere"],
+    source: "[[:alpha:]]",
+    edited: "[[xalpha:]]",
+    edit: { byte: 2, deleteBytes: 1, insert: "x" },
+    reverse: { byte: 2, deleteBytes: 1, insert: ":" },
+  },
+  {
+    name: "extending a collating element changes single to multi",
+    languages: ["posix_bre", "posix_ere"],
+    source: "[[.a.]]",
+    edited: "[[.ab.]]",
+    edit: { byte: 4, deleteBytes: 0, insert: "b" },
+    reverse: { byte: 4, deleteBytes: 1, insert: "" },
+  },
+  {
+    name: "editing a collating symbol changes its meta classification",
+    languages: ["posix_bre", "posix_ere"],
+    source: "[[.a.]]",
+    edited: "[[.].]]",
+    edit: { byte: 3, deleteBytes: 1, insert: "]" },
+    reverse: { byte: 3, deleteBytes: 1, insert: "a" },
+  },
+  {
+    name: "a trailing literal hyphen becomes a range separator",
+    languages: ["posix_bre", "posix_ere"],
+    source: "[a-]",
+    edited: "[a-z]",
+    edit: { byte: 3, deleteBytes: 0, insert: "z" },
+    reverse: { byte: 3, deleteBytes: 1, insert: "" },
+  },
+  {
+    name: "inserting an opening parenthesis changes an unmatched closer",
+    languages: ["posix_ere"],
+    source: "a)b)",
+    edited: "(a)b)",
+    edit: { byte: 0, deleteBytes: 0, insert: "(" },
+    reverse: { byte: 0, deleteBytes: 1, insert: "" },
+  },
+  {
+    name: "repairing an empty branch restores the original group closer",
+    languages: ["posix_ere"],
+    source: "(a|)b)",
+    edited: "(a|c)b)",
+    edit: { byte: 3, deleteBytes: 0, insert: "c" },
+    reverse: { byte: 3, deleteBytes: 1, insert: "" },
+    sourceError: true,
+  },
+  {
+    name: "appending a character changes a right anchor to a literal",
+    languages: ["posix_bre"],
+    source: "^a$",
+    edited: "^a$b",
+    edit: { byte: 3, deleteBytes: 0, insert: "b" },
+    reverse: { byte: 3, deleteBytes: 1, insert: "" },
+  },
+  {
+    name: "inserting alternation changes a literal caret to an anchor",
+    languages: ["posix_bre"],
+    source: "a^*b",
+    edited: String.raw`a\|^*b`,
+    edit: { byte: 1, deleteBytes: 0, insert: String.raw`\|` },
+    reverse: { byte: 1, deleteBytes: 2, insert: "" },
+  },
+];
+
+for (const grammar of posixGrammars) {
+  for (const fixture of posixEdits) {
+    if (!fixture.languages.includes(grammar.name)) continue;
+    test(`${grammar.name}: incremental ${fixture.name}`, () => {
+      const { source, edited, edit, reverse, sourceError } = fixture;
+      assert.equal(applyEdits(source, [edit]).toString(), edited);
+      assert.equal(applyEdits(edited, [reverse]).toString(), source);
+      const original = parse(grammar, source);
+      assert.equal(original.status, sourceError ? 1 : 0);
+      const changed = parse(grammar, edited);
+      assert.equal(changed.status, 0);
+      assert.deepEqual(parse(grammar, source, [edit]), changed);
+      if (!sourceError)
+        assert.deepEqual(parse(grammar, edited, [reverse]), original);
+      assert.deepEqual(parse(grammar, edited, [reverse, edit]), changed);
+    });
+  }
+}
+
 function createEditHistoryGenerator() {
   let seed = 1n;
   function next(maximum) {
@@ -897,6 +985,11 @@ test("regex: fixed-seed generated histories converge", (context) => {
       else fragments.push("\\u{61}", "\\p{L}");
       if (grammar.name === "javascript_regex_v")
         fragments.push("[a&&b]", "[a--b]", "[\\q{ab|cd}]");
+    } else if (grammar.name.startsWith("posix_")) {
+      fragments.push("[[:alpha:]]", "[[.ch.]]", "[[=a=]]", "[a-]", "[]a]");
+      if (grammar.name === "posix_bre")
+        fragments.push(String.raw`\(a\)\1`, String.raw`a\{1,3\}`, "^*a$");
+      else fragments.push("a*?");
     } else {
       fragments.push(
         "(?P<name>a)(?P=name)",
@@ -930,6 +1023,16 @@ test("regex: fixed-seed generated histories converge", (context) => {
     );
   }
 });
+
+const unicodePayloadClosings = {
+  javascript_regex: ['")"', "operand: extended_atom"],
+  javascript_regex_u: ['")"', "operand: atom"],
+  javascript_regex_v: ['")"', "operand: atom"],
+  python_re: ['")"', "operand: capturing_group"],
+  python_re_verbose: ['")"', "operand: capturing_group"],
+  posix_bre: ["ordinary_character `)`", "one_char_or_coll_elem_bre"],
+  posix_ere: ['")"', "ere_expression"],
+};
 
 for (const grammar of grammars) {
   test(`${grammar.name}: every byte inside a Unicode payload can be deleted and repaired through an edit history`, () => {
@@ -970,18 +1073,15 @@ for (const grammar of grammars) {
         const fresh = parse(grammar, expectedSource);
         const incremental = parse(grammar, source, history);
         if (step === 0) continue;
-        const owner =
-          grammar.name === "javascript_regex"
-            ? "operand: extended_atom"
-            : grammar.name.startsWith("javascript_regex")
-              ? "operand: atom"
-              : "operand: capturing_group";
+        const closing = unicodePayloadClosings[grammar.name];
+        assert.ok(closing, grammar.name);
+        const [node, owner] = closing;
         const end = step === 2 ? 2 : 7;
         for (const result of [fresh, incremental]) {
           assert.equal(result.status, 0, label);
           assert.deepEqual(
-            selectNodes(result, ['")"']),
-            [['")"', `0:${end}-0:${end + 1}`, owner]],
+            selectNodes(result, [node]),
+            [[node, `0:${end}-0:${end + 1}`, owner]],
             label,
           );
         }
