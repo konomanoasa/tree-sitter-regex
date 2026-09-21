@@ -826,6 +826,24 @@ for (const grammar of pythonGrammars) {
 
 const posixEdits = [
   {
+    name: "repairing a compound closing marker restores its delimiter leaves",
+    languages: ["posix_bre", "posix_ere"],
+    source: "[[.é].][=😀]x][:alpha:]]",
+    edited: "[[.é].][=😀]=][:alpha:]]",
+    edit: { byte: 15, deleteBytes: 1, insert: "=" },
+    reverse: { byte: 15, deleteBytes: 1, insert: "x" },
+    sourceError: true,
+  },
+  {
+    name: "removing whitespace restores adjacent character class delimiter leaves",
+    languages: ["posix_bre", "posix_ere"],
+    source: "[[:alpha: ]]",
+    edited: "[[:alpha:]]",
+    edit: { byte: 9, deleteBytes: 1, insert: "" },
+    reverse: { byte: 9, deleteBytes: 0, insert: " " },
+    sourceError: true,
+  },
+  {
     name: "a compound opener replaces a literal opening bracket",
     languages: ["posix_bre", "posix_ere"],
     source: "[[:alpha:]]",
@@ -883,12 +901,44 @@ const posixEdits = [
     reverse: { byte: 3, deleteBytes: 1, insert: "" },
   },
   {
-    name: "inserting alternation changes a literal caret to an anchor",
+    name: "inserting a quoted pipe preserves a literal caret",
     languages: ["posix_bre"],
     source: "a^*b",
     edited: String.raw`a\|^*b`,
     edit: { byte: 1, deleteBytes: 0, insert: String.raw`\|` },
     reverse: { byte: 1, deleteBytes: 2, insert: "" },
+  },
+  {
+    name: "appending a quoted pipe changes a right anchor to a literal",
+    languages: ["posix_bre"],
+    source: "^a$",
+    edited: String.raw`^a$\|`,
+    edit: { byte: 3, deleteBytes: 0, insert: String.raw`\|` },
+    reverse: { byte: 3, deleteBytes: 2, insert: "" },
+  },
+  {
+    name: "quoting a pipe preserves its following duplication symbol",
+    languages: ["posix_bre"],
+    source: "|*",
+    edited: String.raw`\|*`,
+    edit: { byte: 0, deleteBytes: 0, insert: "\\" },
+    reverse: { byte: 0, deleteBytes: 1, insert: "" },
+  },
+  {
+    name: "quoting a plus preserves its following interval",
+    languages: ["posix_bre"],
+    source: String.raw`+\{2\}`,
+    edited: String.raw`\+\{2\}`,
+    edit: { byte: 0, deleteBytes: 0, insert: "\\" },
+    reverse: { byte: 0, deleteBytes: 1, insert: "" },
+  },
+  {
+    name: "quoting a question mark preserves a literal operand",
+    languages: ["posix_bre"],
+    source: "a?",
+    edited: String.raw`a\?`,
+    edit: { byte: 1, deleteBytes: 0, insert: "\\" },
+    reverse: { byte: 1, deleteBytes: 1, insert: "" },
   },
 ];
 

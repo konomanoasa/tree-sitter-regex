@@ -1393,7 +1393,7 @@ a**
 0:2 - 0:3           "*"
 
 ==================
-duplication symbols follow a nondupl expression
+quoted plus and question mark remain operands
 :language(posix_bre)
 :cst
 ==================
@@ -1409,20 +1409,26 @@ a*b\+c\?
 0:0 - 0:1               ordinary_character `a`
 0:1 - 0:2           bre_dupl_symbol
 0:1 - 0:2             "*"
-0:2 - 0:5       bre_expression
-0:2 - 0:5         simple_bre
+0:2 - 0:3       bre_expression
+0:2 - 0:3         simple_bre
 0:2 - 0:3           nondupl_bre
 0:2 - 0:3             one_char_or_coll_elem_bre
 0:2 - 0:3               ordinary_character `b`
-0:3 - 0:5           bre_dupl_symbol
-0:3 - 0:5             "\\+"
-0:5 - 0:8       bre_expression
-0:5 - 0:8         simple_bre
+0:3 - 0:5       bre_expression
+0:3 - 0:5         simple_bre
+0:3 - 0:5           nondupl_bre
+0:3 - 0:5             one_char_or_coll_elem_bre
+0:3 - 0:5               quoted_character `\\+`
+0:5 - 0:6       bre_expression
+0:5 - 0:6         simple_bre
 0:5 - 0:6           nondupl_bre
 0:5 - 0:6             one_char_or_coll_elem_bre
 0:5 - 0:6               ordinary_character `c`
-0:6 - 0:8           bre_dupl_symbol
-0:6 - 0:8             "\\?"
+0:6 - 0:8       bre_expression
+0:6 - 0:8         simple_bre
+0:6 - 0:8           nondupl_bre
+0:6 - 0:8             one_char_or_coll_elem_bre
+0:6 - 0:8               quoted_character `\\?`
 
 ==================
 intervals own their counts
@@ -1491,7 +1497,7 @@ an asterisk after a subexpression caret is a duplication symbol
 0:4 - 0:6             "\\)"
 
 ==================
-an asterisk is ordinary at the start of a branch
+a quoted pipe does not restart a branch
 :language(posix_bre)
 :cst
 ==================
@@ -1499,7 +1505,7 @@ an asterisk is ordinary at the start of a branch
 ---
 
 0:0 - 0:7   basic_reg_exp
-0:0 - 0:2     bre_branch
+0:0 - 0:7     bre_branch
 0:0 - 0:1       bre_expression
 0:0 - 0:1         simple_bre
 0:0 - 0:1           nondupl_bre
@@ -1510,16 +1516,88 @@ an asterisk is ordinary at the start of a branch
 0:1 - 0:2           nondupl_bre
 0:1 - 0:2             one_char_or_coll_elem_bre
 0:1 - 0:2               ordinary_character `a`
-0:2 - 0:4     "\\|"
-0:4 - 0:7     bre_branch
+0:2 - 0:4       bre_expression
+0:2 - 0:4         simple_bre
+0:2 - 0:4           nondupl_bre
+0:2 - 0:4             one_char_or_coll_elem_bre
+0:2 - 0:4               quoted_character `\\|`
 0:4 - 0:6       bre_expression
-0:4 - 0:5         "^"
-0:5 - 0:6         simple_bre
-0:5 - 0:6           nondupl_bre
-0:5 - 0:6             one_char_or_coll_elem_bre
-0:5 - 0:6               ordinary_character `*`
+0:4 - 0:6         simple_bre
+0:4 - 0:5           nondupl_bre
+0:4 - 0:5             one_char_or_coll_elem_bre
+0:4 - 0:5               ordinary_character `^`
+0:5 - 0:6           bre_dupl_symbol
+0:5 - 0:6             "*"
 0:6 - 0:7       bre_expression
 0:6 - 0:7         simple_bre
 0:6 - 0:7           nondupl_bre
 0:6 - 0:7             one_char_or_coll_elem_bre
 0:6 - 0:7               ordinary_character `b`
+
+==================
+quoted question mark plus and pipe accept duplication symbols
+:language(posix_bre)
+:cst
+==================
+\?*\+\{2\}\|*
+---
+
+0:0  - 0:13   basic_reg_exp
+0:0  - 0:13     bre_branch
+0:0  - 0:3        bre_expression
+0:0  - 0:3          simple_bre
+0:0  - 0:2            nondupl_bre
+0:0  - 0:2              one_char_or_coll_elem_bre
+0:0  - 0:2                quoted_character `\\?`
+0:2  - 0:3            bre_dupl_symbol
+0:2  - 0:3              "*"
+0:3  - 0:10       bre_expression
+0:3  - 0:10         simple_bre
+0:3  - 0:5            nondupl_bre
+0:3  - 0:5              one_char_or_coll_elem_bre
+0:3  - 0:5                quoted_character `\\+`
+0:5  - 0:10           bre_dupl_symbol
+0:5  - 0:7              "\\{"
+0:7  - 0:8              minimum: duplication_count `2`
+0:8  - 0:10             "\\}"
+0:10 - 0:13       bre_expression
+0:10 - 0:13         simple_bre
+0:10 - 0:12           nondupl_bre
+0:10 - 0:12             one_char_or_coll_elem_bre
+0:10 - 0:12               quoted_character `\\|`
+0:12 - 0:13           bre_dupl_symbol
+0:12 - 0:13             "*"
+
+==================
+an asterisk is ordinary after an initial anchor or subexpression opener
+:language(posix_bre)
+:cst
+==================
+^*\(*a\)
+---
+
+0:0 - 0:8   basic_reg_exp
+0:0 - 0:8     bre_branch
+0:0 - 0:2       bre_expression
+0:0 - 0:1         "^"
+0:1 - 0:2         simple_bre
+0:1 - 0:2           nondupl_bre
+0:1 - 0:2             one_char_or_coll_elem_bre
+0:1 - 0:2               ordinary_character `*`
+0:2 - 0:8       bre_expression
+0:2 - 0:8         simple_bre
+0:2 - 0:8           nondupl_bre
+0:2 - 0:4             "\\("
+0:4 - 0:6             basic_reg_exp
+0:4 - 0:6               bre_branch
+0:4 - 0:5                 bre_expression
+0:4 - 0:5                   simple_bre
+0:4 - 0:5                     nondupl_bre
+0:4 - 0:5                       one_char_or_coll_elem_bre
+0:4 - 0:5                         ordinary_character `*`
+0:5 - 0:6                 bre_expression
+0:5 - 0:6                   simple_bre
+0:5 - 0:6                     nondupl_bre
+0:5 - 0:6                       one_char_or_coll_elem_bre
+0:5 - 0:6                         ordinary_character `a`
+0:6 - 0:8             "\\)"

@@ -70,6 +70,7 @@ static MockLexer make_lexer(const char *source, size_t length) {
   return (MockLexer){
     .lexer =
       {.lookahead = length ? (unsigned char)source[0] : 0,
+        .result_symbol = UINT16_MAX,
         .advance = mock_advance,
         .mark_end = mock_mark_end,
         .eof = mock_eof},
@@ -377,13 +378,13 @@ static void test_compound_payloads_respect_enabled_token_types(void) {
 }
 
 #if POSIX_REGEX_MODE == 0
-static void test_right_anchor_requires_an_expression_end(void) {
+static void test_right_anchor_requires_eof(void) {
   static const struct {
     const char *source;
     bool emitted;
   } cases[] = {
     {"$", true},
-    {"$\\|", true},
+    {"$\\|", false},
     {"$a", false},
     {"$\\", false},
     {"$\\(", false},
@@ -614,7 +615,7 @@ int main(void) {
   test_trailing_bracket_hyphen_requires_a_closing_bracket();
   test_literal_bracket_does_not_split_compound_openers();
 #if POSIX_REGEX_MODE == 0
-  test_right_anchor_requires_an_expression_end();
+  test_right_anchor_requires_eof();
 #endif
 #else
   test_stateless_lifecycle_and_serialization();

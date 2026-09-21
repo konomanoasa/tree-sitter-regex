@@ -90,12 +90,7 @@ static bool posix_regex_scan_trailing_hyphen(TSLexer *lexer) {
 static bool posix_regex_scan_right_anchor(TSLexer *lexer) {
   lexer->advance(lexer, false);
   lexer->mark_end(lexer);
-  bool ends = lexer->eof(lexer);
-  if (!ends && lexer->lookahead == '\\') {
-    lexer->advance(lexer, false);
-    ends = lexer->lookahead == '|';
-  }
-  if (!ends)
+  if (!lexer->eof(lexer))
     return false;
   lexer->result_symbol = BRE_RIGHT_ANCHOR;
   return true;

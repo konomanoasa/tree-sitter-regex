@@ -1246,7 +1246,7 @@ abc
 0:2 - 0:3               ordinary_character `c`
 
 ==================
-alternation separates branches
+a quoted pipe stays in the same branch
 :language(posix_bre)
 :cst
 ==================
@@ -1254,7 +1254,7 @@ ab\|c
 ---
 
 0:0 - 0:5   basic_reg_exp
-0:0 - 0:2     bre_branch
+0:0 - 0:5     bre_branch
 0:0 - 0:1       bre_expression
 0:0 - 0:1         simple_bre
 0:0 - 0:1           nondupl_bre
@@ -1265,8 +1265,11 @@ ab\|c
 0:1 - 0:2           nondupl_bre
 0:1 - 0:2             one_char_or_coll_elem_bre
 0:1 - 0:2               ordinary_character `b`
-0:2 - 0:4     "\\|"
-0:4 - 0:5     bre_branch
+0:2 - 0:4       bre_expression
+0:2 - 0:4         simple_bre
+0:2 - 0:4           nondupl_bre
+0:2 - 0:4             one_char_or_coll_elem_bre
+0:2 - 0:4               quoted_character `\\|`
 0:4 - 0:5       bre_expression
 0:4 - 0:5         simple_bre
 0:4 - 0:5           nondupl_bre
@@ -1311,7 +1314,7 @@ anchors are ordinary characters inside a subexpression
 0:0  - 0:12           nondupl_bre
 0:0  - 0:2              "\\("
 0:2  - 0:10             basic_reg_exp
-0:2  - 0:5                bre_branch
+0:2  - 0:10               bre_branch
 0:2  - 0:3                  bre_expression
 0:2  - 0:3                    simple_bre
 0:2  - 0:3                      nondupl_bre
@@ -1327,8 +1330,11 @@ anchors are ordinary characters inside a subexpression
 0:4  - 0:5                      nondupl_bre
 0:4  - 0:5                        one_char_or_coll_elem_bre
 0:4  - 0:5                          ordinary_character `$`
-0:5  - 0:7                "\\|"
-0:7  - 0:10               bre_branch
+0:5  - 0:7                  bre_expression
+0:5  - 0:7                    simple_bre
+0:5  - 0:7                      nondupl_bre
+0:5  - 0:7                        one_char_or_coll_elem_bre
+0:5  - 0:7                          quoted_character `\\|`
 0:7  - 0:8                  bre_expression
 0:7  - 0:8                    simple_bre
 0:7  - 0:8                      nondupl_bre
@@ -1361,14 +1367,17 @@ a subexpression owns its delimiters and nested regular expression
 0:0 - 0:8           nondupl_bre
 0:0 - 0:2             "\\("
 0:2 - 0:6             basic_reg_exp
-0:2 - 0:3               bre_branch
+0:2 - 0:6               bre_branch
 0:2 - 0:3                 bre_expression
 0:2 - 0:3                   simple_bre
 0:2 - 0:3                     nondupl_bre
 0:2 - 0:3                       one_char_or_coll_elem_bre
 0:2 - 0:3                         ordinary_character `a`
-0:3 - 0:5               "\\|"
-0:5 - 0:6               bre_branch
+0:3 - 0:5                 bre_expression
+0:3 - 0:5                   simple_bre
+0:3 - 0:5                     nondupl_bre
+0:3 - 0:5                       one_char_or_coll_elem_bre
+0:3 - 0:5                         quoted_character `\\|`
 0:5 - 0:6                 bre_expression
 0:5 - 0:6                   simple_bre
 0:5 - 0:6                     nondupl_bre
@@ -1421,3 +1430,41 @@ unescaped grouping punctuation is ordinary
 0:6 - 0:7           nondupl_bre
 0:6 - 0:7             one_char_or_coll_elem_bre
 0:6 - 0:7               ordinary_character `?`
+
+==================
+a quoted pipe does not introduce anchor positions
+:language(posix_bre)
+:cst
+==================
+^a$\|^b$
+---
+
+0:0 - 0:8   basic_reg_exp
+0:0 - 0:8     bre_branch
+0:0 - 0:2       bre_expression
+0:0 - 0:1         "^"
+0:1 - 0:2         simple_bre
+0:1 - 0:2           nondupl_bre
+0:1 - 0:2             one_char_or_coll_elem_bre
+0:1 - 0:2               ordinary_character `a`
+0:2 - 0:3       bre_expression
+0:2 - 0:3         simple_bre
+0:2 - 0:3           nondupl_bre
+0:2 - 0:3             one_char_or_coll_elem_bre
+0:2 - 0:3               ordinary_character `$`
+0:3 - 0:5       bre_expression
+0:3 - 0:5         simple_bre
+0:3 - 0:5           nondupl_bre
+0:3 - 0:5             one_char_or_coll_elem_bre
+0:3 - 0:5               quoted_character `\\|`
+0:5 - 0:6       bre_expression
+0:5 - 0:6         simple_bre
+0:5 - 0:6           nondupl_bre
+0:5 - 0:6             one_char_or_coll_elem_bre
+0:5 - 0:6               ordinary_character `^`
+0:6 - 0:8       bre_expression
+0:6 - 0:7         simple_bre
+0:6 - 0:7           nondupl_bre
+0:6 - 0:7             one_char_or_coll_elem_bre
+0:6 - 0:7               ordinary_character `b`
+0:7 - 0:8         "$"

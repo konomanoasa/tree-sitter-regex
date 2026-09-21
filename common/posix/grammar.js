@@ -7,7 +7,7 @@ const ERE_ORDINARY_CHARACTER = /[^^.\x5b$()|*+?{\\]/;
 const ERE_QUOTED_CHARACTER = /\\[.\x5b\]$()|*+?{}\\^]/;
 const BRE_ORDINARY_CHARACTER = /[^.\x5b*\\]/;
 const BRE_LEADING_ORDINARY_CHARACTER = /[^.\x5b\\]/;
-const BRE_QUOTED_CHARACTER = /\\[.*\x5b\]$\\^]/;
+const BRE_QUOTED_CHARACTER = /\\[.*\x5b\]$|+?\\^]/;
 const BACKREFERENCE = /\\[1-9]/;
 
 function leading($, name) {
@@ -44,7 +44,7 @@ function interval($, opening, closing) {
 
 function breRules() {
   return {
-    basic_reg_exp: ($) => seq($.bre_branch, repeat(seq("\\|", $.bre_branch))),
+    basic_reg_exp: ($) => $.bre_branch,
     // Keep anchor-only branches separate so `^` binds to a following operand.
     bre_branch: ($) =>
       choice(
@@ -64,11 +64,7 @@ function breRules() {
       prec.right(
         choice(seq($.simple_bre, optional(rightAnchor($))), rightAnchor($)),
       ),
-    _nested_basic_reg_exp: ($) =>
-      seq(
-        alias($._nested_bre_branch, $.bre_branch),
-        repeat(seq("\\|", alias($._nested_bre_branch, $.bre_branch))),
-      ),
+    _nested_basic_reg_exp: ($) => alias($._nested_bre_branch, $.bre_branch),
     _nested_bre_branch: ($) =>
       seq(
         alias($._nested_leading_bre_expression, $.bre_expression),
@@ -100,8 +96,7 @@ function breRules() {
       ),
     one_char_or_coll_elem_bre: ($) =>
       oneCharOrCollElem($, $.ordinary_character),
-    bre_dupl_symbol: ($) =>
-      choice("*", "\\?", "\\+", interval($, "\\{", "\\}")),
+    bre_dupl_symbol: ($) => choice("*", interval($, "\\{", "\\}")),
     backreference: () => BACKREFERENCE,
     ordinary_character: () => BRE_ORDINARY_CHARACTER,
     quoted_character: () => BRE_QUOTED_CHARACTER,
@@ -206,24 +201,28 @@ function sharedRules() {
 
     collating_symbol: ($) =>
       seq(
-        "[.",
+        "[",
+        ".",
         choice(
           alias($._collating_symbol_single, $.collating_element_single),
           alias($._collating_symbol_multi, $.collating_element_multi),
           alias($._collating_symbol_meta, $.meta_character),
         ),
-        ".]",
+        ".",
+        "]",
       ),
     equivalence_class: ($) =>
       seq(
-        "[=",
+        "[",
+        "=",
         choice(
           alias($._equivalence_class_single, $.collating_element_single),
           alias($._equivalence_class_multi, $.collating_element_multi),
         ),
-        "=]",
+        "=",
+        "]",
       ),
-    character_class: ($) => seq("[:", $.class_name, ":]"),
+    character_class: ($) => seq("[", ":", $.class_name, ":", "]"),
     class_name: () => CLASS_NAME,
     collating_element_single: () => COLLATING_ELEMENT_SINGLE,
   };

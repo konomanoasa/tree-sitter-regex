@@ -629,6 +629,97 @@ test("posix_bre: unescaped parentheses are ordinary characters", () => {
 });
 
 for (const grammar of posixGrammars) {
+  const bre = grammar.name === "posix_bre";
+  const malformed = [
+    ["trailing backslash", "a\\"],
+    ["unknown ASCII-letter escape", String.raw`\q`],
+    ["zero numeric escape", String.raw`\0`],
+    ["unclosed bracket expression", "[abc"],
+    ["empty bracket expression", "[]"],
+    ["negated bracket expression without content", "[^]"],
+    ["empty collating symbol", "[[..]]"],
+    ["empty equivalence class", "[[==]]"],
+    ["empty character class", "[[::]]"],
+    ["character class name starting with a digit", "[[:1:]]"],
+    ["whitespace inside the class closing delimiter", "[[:alpha: ]]"],
+    ["unclosed collating symbol", "[[.ch"],
+    ["unclosed equivalence class", "[[=a"],
+    ["unclosed character class", "[[:alpha"],
+    ["unclosed group", bre ? String.raw`\(a` : "(a"],
+    ["empty group", bre ? String.raw`\(\)` : "()"],
+    ["unclosed interval", bre ? String.raw`a\{1` : "a{1"],
+    ["interval without a minimum", bre ? String.raw`a\{,2\}` : "a{,2}"],
+    ["nonnumeric interval maximum", bre ? String.raw`a\{1,x\}` : "a{1,x}"],
+    ["whitespace inside an interval", bre ? String.raw`a\{1, 2\}` : "a{1, 2}"],
+    ...(bre
+      ? [["unmatched group closer", String.raw`a\)`]]
+      : [
+          ["leading empty alternative", "|a"],
+          ["trailing empty alternative", "a|"],
+          ["empty middle alternative", "a||b"],
+          ["backreference extension", String.raw`\1`],
+          ["duplication symbol without an operand", "*a"],
+        ]),
+  ];
+  for (const [name, source] of malformed) {
+    test(`${grammar.name}: malformed ${name} uses standard recovery`, () => {
+      const result = parse(grammar, source);
+      assert.equal(result.status, 1, result.rows.join("\n"));
+      assert.equal(result.recovery, true, result.rows.join("\n"));
+    });
+  }
+
+  test(`${grammar.name}: single Unicode collating elements retain their scalar and byte boundaries`, () => {
+    const result = parse(grammar, "[[.é.][=😀=]]");
+    assert.equal(result.status, 0);
+    assert.deepEqual(
+      selectNodes(result, [
+        "collating_element_single `é`",
+        "collating_element_single `😀`",
+      ]),
+      [
+        ["collating_element_single `é`", "0:3-0:5", "collating_symbol"],
+        ["collating_element_single `😀`", "0:9-0:13", "equivalence_class"],
+      ],
+    );
+  });
+
+  test(`${grammar.name}: compound delimiters own one-byte leaves around Unicode and bracket payloads`, () => {
+    const result = parse(grammar, "[[.é].][=😀]=][:alpha:]]");
+    assert.equal(result.status, 0);
+    assert.deepEqual(
+      selectNodes(result, [
+        '"["',
+        '"]"',
+        '"."',
+        '"="',
+        '":"',
+        "collating_element_multi `é]`",
+        "collating_element_multi `😀]`",
+        "class_name `alpha`",
+      ]),
+      [
+        ['"["', "0:0-0:1", "bracket_expression"],
+        ['"["', "0:1-0:2", "collating_symbol"],
+        ['"."', "0:2-0:3", "collating_symbol"],
+        ["collating_element_multi `é]`", "0:3-0:6", "collating_symbol"],
+        ['"."', "0:6-0:7", "collating_symbol"],
+        ['"]"', "0:7-0:8", "collating_symbol"],
+        ['"["', "0:8-0:9", "equivalence_class"],
+        ['"="', "0:9-0:10", "equivalence_class"],
+        ["collating_element_multi `😀]`", "0:10-0:15", "equivalence_class"],
+        ['"="', "0:15-0:16", "equivalence_class"],
+        ['"]"', "0:16-0:17", "equivalence_class"],
+        ['"["', "0:17-0:18", "character_class"],
+        ['":"', "0:18-0:19", "character_class"],
+        ["class_name `alpha`", "0:19-0:24", "character_class"],
+        ['":"', "0:24-0:25", "character_class"],
+        ['"]"', "0:25-0:26", "character_class"],
+        ['"]"', "0:26-0:27", "bracket_expression"],
+      ],
+    );
+  });
+
   test(`${grammar.name}: a range endpoint cannot split a compound opener`, () => {
     for (const source of ["[a-[:alpha:]]", "[a-[=x=]]"]) {
       assert.equal(parse(grammar, source).status, 1, source);
@@ -639,22 +730,19 @@ for (const grammar of posixGrammars) {
   });
 }
 
-function regexOperators({ name }) {
-  const backslash = name === "posix_bre" ? "\\" : "";
-  return {
-    alternation: `${backslash}|`,
-    close: `${backslash})`,
-    open: `${backslash}(`,
-  };
-}
-
 for (const grammar of grammars) {
-  const { alternation, close, open } = regexOperators(grammar);
+  const bre = grammar.name === "posix_bre";
+  const open = bre ? String.raw`\(` : "(";
+  const close = bre ? String.raw`\)` : ")";
+  const repeatedExpression = bre ? String.raw`a\?b\+c\|` : "a|";
 
-  test(`${grammar.name}: large literals, alternatives and nested groups parse through EOF`, () => {
+  test(`${grammar.name}: large expressions and nested groups parse through EOF`, () => {
     for (const [name, source] of [
       ["long literal", "x".repeat(80_000)],
-      ["wide alternatives", `${`a${alternation}`.repeat(16_000)}a`],
+      [
+        bre ? "long quoted literals" : "wide alternatives",
+        `${repeatedExpression.repeat(16_000)}a`,
+      ],
       ["deep groups", `${open.repeat(2000)}a${close.repeat(2000)}`],
       ["space-separated atoms", "a ".repeat(40_000)],
     ]) {
@@ -672,7 +760,7 @@ for (const grammar of grammars) {
 
   test(`${grammar.name}: a parser timeout cannot pass as complete recovery`, () => {
     assert.throws(() =>
-      parseSummary(grammar, `a${alternation}`.repeat(16_000), 1),
+      parseSummary(grammar, repeatedExpression.repeat(16_000), 1),
     );
   });
 }

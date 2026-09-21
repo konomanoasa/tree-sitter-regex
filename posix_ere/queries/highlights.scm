@@ -1,16 +1,16 @@
-[
-  (ordinary_character)
-  (collating_element_single)
-  (collating_element_multi)
-  (meta_character)
-] @string.regexp
+(ordinary_character) @string.regexp
 
 (quoted_character) @string.escape
 
 [
   (class_name)
-  "."
+  (collating_element_single)
+  (collating_element_multi)
+  (meta_character)
 ] @character.special
+
+(one_char_or_coll_elem_ere
+  "." @character.special)
 
 (duplication_count) @number
 
@@ -21,12 +21,6 @@
   "]"
   "{"
   "}"
-  "[."
-  ".]"
-  "[="
-  "=]"
-  "[:"
-  ":]"
 ] @punctuation.bracket
 
 "," @punctuation.delimiter
@@ -46,3 +40,12 @@
 
 (bracket_list
   "-" @string.regexp)
+
+(collating_symbol
+  "." @punctuation.delimiter)
+
+(equivalence_class
+  "=" @punctuation.delimiter)
+
+(character_class
+  ":" @punctuation.delimiter)

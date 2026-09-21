@@ -3,29 +3,8 @@
   "name": "posix_bre",
   "rules": {
     "basic_reg_exp": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "bre_branch"
-        },
-        {
-          "type": "REPEAT",
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "STRING",
-                "value": "\\|"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "bre_branch"
-              }
-            ]
-          }
-        }
-      ]
+      "type": "SYMBOL",
+      "name": "bre_branch"
     },
     "bre_branch": {
       "type": "CHOICE",
@@ -217,39 +196,13 @@
       }
     },
     "_nested_basic_reg_exp": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "_nested_bre_branch"
-          },
-          "named": true,
-          "value": "bre_branch"
-        },
-        {
-          "type": "REPEAT",
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "STRING",
-                "value": "\\|"
-              },
-              {
-                "type": "ALIAS",
-                "content": {
-                  "type": "SYMBOL",
-                  "name": "_nested_bre_branch"
-                },
-                "named": true,
-                "value": "bre_branch"
-              }
-            ]
-          }
-        }
-      ]
+      "type": "ALIAS",
+      "content": {
+        "type": "SYMBOL",
+        "name": "_nested_bre_branch"
+      },
+      "named": true,
+      "value": "bre_branch"
     },
     "_nested_bre_branch": {
       "type": "SEQ",
@@ -471,14 +424,6 @@
           "value": "*"
         },
         {
-          "type": "STRING",
-          "value": "\\?"
-        },
-        {
-          "type": "STRING",
-          "value": "\\+"
-        },
-        {
           "type": "SEQ",
           "members": [
             {
@@ -544,7 +489,7 @@
     },
     "quoted_character": {
       "type": "PATTERN",
-      "value": "\\\\[.*\\x5b\\]$\\\\^]"
+      "value": "\\\\[.*\\x5b\\]$|+?\\\\^]"
     },
     "_bre_leading_ordinary_character": {
       "type": "PATTERN",
@@ -911,7 +856,11 @@
       "members": [
         {
           "type": "STRING",
-          "value": "[."
+          "value": "["
+        },
+        {
+          "type": "STRING",
+          "value": "."
         },
         {
           "type": "CHOICE",
@@ -947,7 +896,11 @@
         },
         {
           "type": "STRING",
-          "value": ".]"
+          "value": "."
+        },
+        {
+          "type": "STRING",
+          "value": "]"
         }
       ]
     },
@@ -956,7 +909,11 @@
       "members": [
         {
           "type": "STRING",
-          "value": "[="
+          "value": "["
+        },
+        {
+          "type": "STRING",
+          "value": "="
         },
         {
           "type": "CHOICE",
@@ -983,7 +940,11 @@
         },
         {
           "type": "STRING",
-          "value": "=]"
+          "value": "="
+        },
+        {
+          "type": "STRING",
+          "value": "]"
         }
       ]
     },
@@ -992,7 +953,11 @@
       "members": [
         {
           "type": "STRING",
-          "value": "[:"
+          "value": "["
+        },
+        {
+          "type": "STRING",
+          "value": ":"
         },
         {
           "type": "SYMBOL",
@@ -1000,7 +965,11 @@
         },
         {
           "type": "STRING",
-          "value": ":]"
+          "value": ":"
+        },
+        {
+          "type": "STRING",
+          "value": "]"
         }
       ]
     },

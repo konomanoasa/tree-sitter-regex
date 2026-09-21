@@ -2160,46 +2160,61 @@ every quoted character is a single token
 :language(posix_bre)
 :cst
 ==================
-\^\.\*\[\]\$\\
+\?\+\|\^\.\*\[\]\$\\
 ---
 
-0:0  - 0:14   basic_reg_exp
-0:0  - 0:14     bre_branch
+0:0  - 0:20   basic_reg_exp
+0:0  - 0:20     bre_branch
 0:0  - 0:2        bre_expression
 0:0  - 0:2          simple_bre
 0:0  - 0:2            nondupl_bre
 0:0  - 0:2              one_char_or_coll_elem_bre
-0:0  - 0:2                quoted_character `\\^`
+0:0  - 0:2                quoted_character `\\?`
 0:2  - 0:4        bre_expression
 0:2  - 0:4          simple_bre
 0:2  - 0:4            nondupl_bre
 0:2  - 0:4              one_char_or_coll_elem_bre
-0:2  - 0:4                quoted_character `\\.`
+0:2  - 0:4                quoted_character `\\+`
 0:4  - 0:6        bre_expression
 0:4  - 0:6          simple_bre
 0:4  - 0:6            nondupl_bre
 0:4  - 0:6              one_char_or_coll_elem_bre
-0:4  - 0:6                quoted_character `\\*`
+0:4  - 0:6                quoted_character `\\|`
 0:6  - 0:8        bre_expression
 0:6  - 0:8          simple_bre
 0:6  - 0:8            nondupl_bre
 0:6  - 0:8              one_char_or_coll_elem_bre
-0:6  - 0:8                quoted_character `\\[`
+0:6  - 0:8                quoted_character `\\^`
 0:8  - 0:10       bre_expression
 0:8  - 0:10         simple_bre
 0:8  - 0:10           nondupl_bre
 0:8  - 0:10             one_char_or_coll_elem_bre
-0:8  - 0:10               quoted_character `\\]`
+0:8  - 0:10               quoted_character `\\.`
 0:10 - 0:12       bre_expression
 0:10 - 0:12         simple_bre
 0:10 - 0:12           nondupl_bre
 0:10 - 0:12             one_char_or_coll_elem_bre
-0:10 - 0:12               quoted_character `\\$`
+0:10 - 0:12               quoted_character `\\*`
 0:12 - 0:14       bre_expression
 0:12 - 0:14         simple_bre
 0:12 - 0:14           nondupl_bre
 0:12 - 0:14             one_char_or_coll_elem_bre
-0:12 - 0:14               quoted_character `\\\\`
+0:12 - 0:14               quoted_character `\\[`
+0:14 - 0:16       bre_expression
+0:14 - 0:16         simple_bre
+0:14 - 0:16           nondupl_bre
+0:14 - 0:16             one_char_or_coll_elem_bre
+0:14 - 0:16               quoted_character `\\]`
+0:16 - 0:18       bre_expression
+0:16 - 0:18         simple_bre
+0:16 - 0:18           nondupl_bre
+0:16 - 0:18             one_char_or_coll_elem_bre
+0:16 - 0:18               quoted_character `\\$`
+0:18 - 0:20       bre_expression
+0:18 - 0:20         simple_bre
+0:18 - 0:20           nondupl_bre
+0:18 - 0:20             one_char_or_coll_elem_bre
+0:18 - 0:20               quoted_character `\\\\`
 
 ==================
 a back-reference keeps its spelling
