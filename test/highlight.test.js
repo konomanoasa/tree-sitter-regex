@@ -9,7 +9,12 @@ import {
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { after, before, test } from "node:test";
-import { createTreeSitter, grammars, root } from "../scripts/tree-sitter.js";
+import {
+  createTreeSitter,
+  grammars,
+  packageName,
+  root,
+} from "../scripts/tree-sitter.js";
 
 function decodeEntities(text) {
   return text
@@ -29,7 +34,7 @@ function renderedCaptures(html, source) {
   const captures = [];
   let text = "";
   for (const part of content.matchAll(
-    /<span class='([^']*)'>|<\/span>|([^<]+)/g,
+    /<span class='([^']*)'>|<[/]span>|([^<]+)/g,
   )) {
     if (part[1] !== undefined) stack.push(part[1].replaceAll(" ", "."));
     else if (part[0] === "</span>") assert.notEqual(stack.pop(), undefined);
@@ -120,7 +125,7 @@ function assertCaptures(source, actual, ranges) {
     expected.fill(capture, start, end);
     previousEnd = end;
   }
-  // HTML emits line breaks outside spans; compare colors on source characters.
+  // HTML emits line breaks outside spans.
   for (const [index, byte] of bytes.entries()) {
     if (byte !== 10)
       assert.equal(
@@ -144,8 +149,39 @@ const captureNames = [
   "string.escape",
   "string.regexp",
 ];
+let highlight;
 
-const cases = [
+let directory;
+let runner;
+before(() => {
+  directory = mkdtempSync(join(tmpdir(), `${packageName}-highlight-`));
+  runner = createTreeSitter();
+  highlight = createHighlighter({
+    directory,
+    root,
+    run: assertCommand,
+    captureNames,
+  });
+});
+after(() => {
+  try {
+    runner?.close();
+  } finally {
+    if (directory) rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+function assertCommand(arguments_) {
+  const result = runner.run(arguments_, {
+    timeout: 60_000,
+  });
+  assert.ifError(result.error);
+  assert.equal(result.status, 0, result.stdout + result.stderr);
+  assert.doesNotMatch(result.stderr, /Non-standard highlight captures/);
+  return result.stdout;
+}
+
+const finalCaptureCases = [
   {
     name: "HTML-sensitive Unicode literals retain source bytes and captures",
     languages: grammars.map(({ name }) => name),
@@ -1074,36 +1110,13 @@ const cases = [
   },
 ];
 
-let runner;
-let directory;
-let highlight;
-
-before(() => {
-  directory = mkdtempSync(join(tmpdir(), "regex-highlight-"));
-  runner = createTreeSitter();
-  highlight = createHighlighter({
-    directory,
-    root,
-    run: checked,
-    captureNames,
-  });
-});
-
-after(() => {
-  runner?.close();
-  if (directory) rmSync(directory, { recursive: true, force: true });
-});
-
-function checked(arguments_) {
-  const result = runner.run(arguments_, { encoding: "utf8", timeout: 60_000 });
-  assert.ifError(result.error);
-  assert.equal(result.status, 0, result.stdout + result.stderr);
-  assert.doesNotMatch(result.stderr, /Non-standard highlight captures/);
-  return result.stdout;
-}
-
-// Inspect rendered HTML because query assertions accept overridden captures too.
-for (const { name, languages, source, captures, valid = true } of cases) {
+for (const {
+  name,
+  languages,
+  source,
+  captures,
+  valid = true,
+} of finalCaptureCases) {
   for (const language of languages) {
     const grammar = grammars.find(({ name }) => name === language);
     test(`${language}: ${name}`, () => {

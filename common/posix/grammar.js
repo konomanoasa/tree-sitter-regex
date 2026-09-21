@@ -14,7 +14,7 @@ function leading($, name) {
   return alias($[`_leading_${name}`], $[name]);
 }
 
-// Negated classes exclude NUL, which is an ordinary source character.
+// Negated classes exclude NUL.
 function nul($, name) {
   return alias("\0", $[name]);
 }
@@ -64,7 +64,6 @@ function breRules() {
       prec.right(
         choice(seq($.simple_bre, optional(rightAnchor($))), rightAnchor($)),
       ),
-    // Subexpressions have no anchors (BOUNDARY.md).
     _nested_basic_reg_exp: ($) =>
       seq(
         alias($._nested_bre_branch, $.bre_branch),

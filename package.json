@@ -14,11 +14,6 @@
     "javascript_regex*/src/*.c",
     "javascript_regex*/src/*.json",
     "javascript_regex*/src/tree_sitter/*.h",
-    "python_re*/grammar.js",
-    "python_re*/queries/*.scm",
-    "python_re*/src/*.c",
-    "python_re*/src/*.json",
-    "python_re*/src/tree_sitter/*.h",
     "posix_bre/grammar.js",
     "posix_bre/queries/*.scm",
     "posix_bre/src/*.c",
@@ -29,6 +24,11 @@
     "posix_ere/src/*.c",
     "posix_ere/src/*.json",
     "posix_ere/src/tree_sitter/*.h",
+    "python_re*/grammar.js",
+    "python_re*/queries/*.scm",
+    "python_re*/src/*.c",
+    "python_re*/src/*.json",
+    "python_re*/src/tree_sitter/*.h",
     "tree-sitter.json"
   ],
   "publishConfig": {
@@ -55,7 +55,7 @@
     "tree-sitter": "node scripts/tree-sitter.js"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.11",
+    "@biomejs/biome": "2.5.14",
     "@types/node": "26.5.1",
     "@unicode/unicode-17.0.0": "1.6.17",
     "tree-sitter-cli": "0.27.0"

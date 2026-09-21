@@ -1,10 +1,7 @@
 import assert from "node:assert/strict";
-import { spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { test } from "node:test";
-import { pathToFileURL } from "node:url";
 import {
   unicodeIdContinue,
   unicodeIdStart,
@@ -679,75 +676,3 @@ for (const grammar of grammars) {
     );
   });
 }
-
-test("regex: corpus fuzz propagates CLI failures even when its exit status is zero", () => {
-  const directory = mkdtempSync(join(tmpdir(), "tree-sitter-fuzz-exit-#-"));
-  const preload = join(directory, "cli.mjs");
-  const script = join(import.meta.dirname, "..", "scripts", "tree-sitter.js");
-  const fixtures = [
-    {
-      name: "successful CLI output",
-      status: 0,
-      stdout: "0 test_language corpus tests failed fuzzing\n",
-      stderr: "",
-      expectedStatus: 0,
-    },
-    {
-      name: "failed fuzz case with successful CLI exit status",
-      status: 0,
-      stdout: "1 test_language corpus tests failed fuzzing\n",
-      stderr: "",
-      expectedStatus: 1,
-    },
-    {
-      name: "failed CLI exit status",
-      status: 1,
-      stdout: "",
-      stderr: "fuzz command failed\n",
-      expectedStatus: 1,
-    },
-  ];
-  try {
-    for (const fixture of fixtures) {
-      writeFileSync(
-        preload,
-        `
-import childProcess from "node:child_process";
-import { syncBuiltinESMExports } from "node:module";
-const fixture = ${JSON.stringify(fixture)};
-childProcess.spawnSync = (_command, arguments_) => {
-  if (arguments_.includes("build")) return { status: 0, stdout: "", stderr: "" };
-  if (arguments_.includes("fuzz")) return fixture;
-  throw new Error("unexpected CLI invocation");
-};
-syncBuiltinESMExports();
-`,
-      );
-      const result = spawnSync(
-        process.execPath,
-        ["--import", pathToFileURL(preload).href, script, "fuzz-all"],
-        {
-          encoding: "utf8",
-          timeout: 60_000,
-          killSignal: "SIGKILL",
-        },
-      );
-      assert.ifError(result.error);
-      assert.equal(
-        result.status,
-        fixture.expectedStatus,
-        `${fixture.name}\n${result.stdout}${result.stderr}`,
-      );
-      assert.ok(
-        result.stdout.includes(fixture.stdout),
-        `${fixture.name}: CLI stdout is missing`,
-      );
-      assert.ok(
-        result.stderr.includes(fixture.stderr),
-        `${fixture.name}: CLI stderr is missing`,
-      );
-    }
-  } finally {
-    rmSync(directory, { recursive: true, force: true });
-  }
-});

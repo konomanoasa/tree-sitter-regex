@@ -79,6 +79,10 @@ function resultStatus(result) {
     }
     throw result.error;
   }
+  if (result.signal) {
+    process.stderr.write(`Tree-sitter CLI terminated by ${result.signal}.\n`);
+    return 1;
+  }
   return result.status ?? 1;
 }
 
@@ -117,6 +121,8 @@ function createTreeSitter(environment = {}) {
 
   let closed = false;
   return Object.freeze({
+    directory: temporaryDirectory,
+    configPath: join(treeSitterConfigDirectory, "config.json"),
     close() {
       if (!closed) {
         closed = true;

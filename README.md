@@ -3,7 +3,7 @@
 [![CI](https://github.com/konomanoasa/tree-sitter-regex/actions/workflows/ci.yaml/badge.svg)](https://github.com/konomanoasa/tree-sitter-regex/actions/workflows/ci.yaml)
 [![npm](https://img.shields.io/npm/v/@konomanoasa/tree-sitter-regex)](https://www.npmjs.com/package/@konomanoasa/tree-sitter-regex)
 
-[Tree-sitter](https://tree-sitter.github.io/tree-sitter/) regular expression grammars
+[Tree-sitter](https://tree-sitter.github.io/tree-sitter/) regular expression grammars for:
 
 - ECMAScript 2026 regular expression literal bodies (`/.../`)
 - Python 3.14 `re` patterns in raw `str` literals

@@ -1,6 +1,19 @@
 CompileFlags:
   Add:
     - -std=c17
+    - -xc
+    - -Wall
+    - -Wextra
+    - -Werror
+    - -pedantic
+    - -Wno-unused-function
+
+---
+If:
+  PathMatch: .*\.h
+CompileFlags:
+  Add:
+    - -xc-header
 
 ---
 If:
@@ -14,17 +27,9 @@ CompileFlags:
 
 ---
 If:
-  PathMatch: common/scanner\.h
-CompileFlags:
-  Add:
-    - -xc-header
-
----
-If:
   PathMatch: common/javascript/scanner\.h
 CompileFlags:
   Add:
-    - -xc
     - -DJAVASCRIPT_REGEX_MODE=0
     - -I../../javascript_regex/src
 
@@ -33,7 +38,6 @@ If:
   PathMatch: common/python/scanner\.h
 CompileFlags:
   Add:
-    - -xc
     - -DPYTHON_RE_LANGUAGE=python_re
     - -I../../python_re/src
 
@@ -42,7 +46,6 @@ If:
   PathMatch: common/posix/scanner\.h
 CompileFlags:
   Add:
-    - -xc
     - -DPOSIX_REGEX_MODE=0
     - -I../../posix_bre/src
 

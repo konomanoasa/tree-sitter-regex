@@ -50,8 +50,7 @@ static bool posix_regex_is_meta_character(int32_t character) {
   return character == '^' || character == '-' || character == ']';
 }
 
-// An unterminated payload extends to the end of the input; declining after
-// scanning that far would make every later opener rescan the remainder.
+// Declining at EOF makes later openers rescan the same suffix.
 static bool
 posix_regex_scan_payload(TSLexer *lexer, const PosixRegexCompound *compound) {
   uint32_t count = 0;

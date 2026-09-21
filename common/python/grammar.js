@@ -317,8 +317,6 @@ export default function defineGrammar(name, mode) {
         ),
       character_class: ($) =>
         seq("[", optional(alias($._class_negation, "^")), $._class_body, "]"),
-      // A hyphen after a member is a range operator, or a literal only when
-      // "]" follows; a fresh hyphen member exists only first or after a range.
       _class_body: ($) =>
         classMembers(
           $,

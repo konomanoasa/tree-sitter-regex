@@ -8,7 +8,7 @@
       "path": "javascript_regex",
       "injection-regex": "^javascript_regex$",
       "highlights": "javascript_regex/queries/highlights.scm",
-      "external-files": ["common/scanner.h", "common/javascript/scanner.h"]
+      "external-files": ["common/javascript/scanner.h", "common/scanner.h"]
     },
     {
       "name": "javascript_regex_u",
@@ -17,7 +17,7 @@
       "path": "javascript_regex_u",
       "injection-regex": "^javascript_regex_u$",
       "highlights": "javascript_regex_u/queries/highlights.scm",
-      "external-files": ["common/scanner.h", "common/javascript/scanner.h"]
+      "external-files": ["common/javascript/scanner.h", "common/scanner.h"]
     },
     {
       "name": "javascript_regex_v",
@@ -26,25 +26,7 @@
       "path": "javascript_regex_v",
       "injection-regex": "^javascript_regex_v$",
       "highlights": "javascript_regex_v/queries/highlights.scm",
-      "external-files": ["common/scanner.h", "common/javascript/scanner.h"]
-    },
-    {
-      "name": "python_re",
-      "title": "Python re",
-      "scope": "source.python-re",
-      "path": "python_re",
-      "injection-regex": "^python_re$",
-      "highlights": "python_re/queries/highlights.scm",
-      "external-files": ["common/scanner.h", "common/python/scanner.h"]
-    },
-    {
-      "name": "python_re_verbose",
-      "title": "Python re (VERBOSE)",
-      "scope": "source.python-re.verbose",
-      "path": "python_re_verbose",
-      "injection-regex": "^python_re_verbose$",
-      "highlights": "python_re_verbose/queries/highlights.scm",
-      "external-files": ["common/scanner.h", "common/python/scanner.h"]
+      "external-files": ["common/javascript/scanner.h", "common/scanner.h"]
     },
     {
       "name": "posix_bre",
@@ -53,7 +35,7 @@
       "path": "posix_bre",
       "injection-regex": "^posix_bre$",
       "highlights": "posix_bre/queries/highlights.scm",
-      "external-files": ["common/scanner.h", "common/posix/scanner.h"]
+      "external-files": ["common/posix/scanner.h", "common/scanner.h"]
     },
     {
       "name": "posix_ere",
@@ -62,18 +44,31 @@
       "path": "posix_ere",
       "injection-regex": "^posix_ere$",
       "highlights": "posix_ere/queries/highlights.scm",
-      "external-files": ["common/scanner.h", "common/posix/scanner.h"]
+      "external-files": ["common/posix/scanner.h", "common/scanner.h"]
+    },
+    {
+      "name": "python_re",
+      "title": "Python re",
+      "scope": "source.python-re",
+      "path": "python_re",
+      "injection-regex": "^python_re$",
+      "highlights": "python_re/queries/highlights.scm",
+      "external-files": ["common/python/scanner.h", "common/scanner.h"]
+    },
+    {
+      "name": "python_re_verbose",
+      "title": "Python re (VERBOSE)",
+      "scope": "source.python-re.verbose",
+      "path": "python_re_verbose",
+      "injection-regex": "^python_re_verbose$",
+      "highlights": "python_re_verbose/queries/highlights.scm",
+      "external-files": ["common/python/scanner.h", "common/scanner.h"]
     }
   ],
   "metadata": {
     "version": "0.5.0",
     "license": "MIT",
     "description": "Tree-sitter grammars for JavaScript regex, Python re, and POSIX BRE/ERE.",
-    "authors": [
-      {
-        "name": "konomanoasa"
-      }
-    ],
     "links": {
       "repository": "https://github.com/konomanoasa/tree-sitter-regex"
     }
