@@ -21,7 +21,7 @@ let runner;
 
 before(() => {
   cache = mkdtempSync(join(tmpdir(), "tree-sitter-regex-parser-"));
-  runner = createTreeSitter({ NO_COLOR: "1" });
+  runner = createTreeSitter();
 });
 
 after(() => {

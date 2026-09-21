@@ -10,8 +10,6 @@ import { tmpdir } from "node:os";
 import { join, relative } from "node:path";
 import { generateParsers, grammars, packageName, root } from "./tree-sitter.js";
 
-const prerequisiteScripts = ["generate-unicode.js"];
-
 const generatedPaths = [
   "grammar.json",
   "node-types.json",
@@ -144,20 +142,13 @@ function main(arguments_) {
     throw new Error("Usage: node scripts/check-generated.js");
   }
 
-  for (const script of prerequisiteScripts) {
-    const result = spawnSync(
-      process.execPath,
-      [join(root, "scripts", script), "--check"],
-      {
-        cwd: root,
-        stdio: "inherit",
-        timeout: 60_000,
-        killSignal: "SIGKILL",
-      },
-    );
-    if (result.error) throw result.error;
-    if (result.status !== 0) return 1;
-  }
+  const unicode = spawnSync(
+    process.execPath,
+    [join(root, "scripts", "generate-unicode.js"), "--check"],
+    { cwd: root, stdio: "inherit", timeout: 60_000, killSignal: "SIGKILL" },
+  );
+  if (unicode.error) throw unicode.error;
+  if (unicode.status !== 0) return 1;
 
   const generatedRoot = mkdtempSync(
     join(tmpdir(), `${packageName}-generated-`),

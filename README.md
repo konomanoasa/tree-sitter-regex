@@ -17,29 +17,24 @@ npm install @konomanoasa/tree-sitter-regex
 
 ## Grammars
 
-This repository contains the following seven grammars.
-
-| Grammar | Selection |
-| --- | --- |
-| `javascript_regex` | ECMAScript, neither `u` nor `v` |
-| `javascript_regex_u` | ECMAScript, `u` |
-| `javascript_regex_v` | ECMAScript, `v` |
-| `posix_bre` | POSIX BRE |
-| `posix_ere` | POSIX ERE |
-| `python_re` | Python, initial `VERBOSE` disabled |
-| `python_re_verbose` | Python, initial `VERBOSE` enabled |
+| Grammar | Description | Rust constant |
+| --- | --- | --- |
+| `javascript_regex` | ECMAScript 2026, neither `u` nor `v` | `LANGUAGE_JAVASCRIPT` |
+| `javascript_regex_u` | ECMAScript 2026, `u` | `LANGUAGE_JAVASCRIPT_U` |
+| `javascript_regex_v` | ECMAScript 2026, `v` | `LANGUAGE_JAVASCRIPT_V` |
+| `posix_bre` | POSIX.1-2024 BRE | `LANGUAGE_POSIX_BRE` |
+| `posix_ere` | POSIX.1-2024 ERE | `LANGUAGE_POSIX_ERE` |
+| `python_re` | Python 3.14, initial `VERBOSE` disabled | `LANGUAGE_PYTHON` |
+| `python_re_verbose` | Python 3.14, initial `VERBOSE` enabled | `LANGUAGE_PYTHON_VERBOSE` |
 
 ## Development
 
+Development requires Node.js 24.2.0 or later.
+
 ```sh
 npm install
-npm run parse:javascript -- pattern.txt
-npm run parse:javascript:u -- pattern.txt
-npm run parse:javascript:v -- pattern.txt
-npm run parse:posix:bre -- pattern.txt
-npm run parse:posix:ere -- pattern.txt
-npm run parse:python -- pattern.txt
-npm run parse:python:verbose -- pattern.txt
+npm run build
+npm test
 ```
 
 ## Specifications

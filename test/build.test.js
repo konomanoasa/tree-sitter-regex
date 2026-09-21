@@ -89,6 +89,69 @@ test(`${language}: generated checks reject stale and missing files without rewri
   }
 });
 
+test(`${language}: Rust rebuilds grammars after parser or scanner header changes`, () => {
+  const directory = mkdtempSync(join(tmpdir(), `${packageName}-build-`));
+  const source = join(directory, "source");
+  try {
+    copyFiles(
+      [
+        "Cargo.toml",
+        "Cargo.lock",
+        "bindings/rust",
+        "test/bindings.test.rs",
+        ...(existsSync(join(root, "common")) ? ["common"] : []),
+        ...grammars.flatMap(({ path, externalFiles, highlights }) => [
+          join(path, "src"),
+          ...externalFiles,
+          ...highlights,
+        ]),
+      ],
+      source,
+    );
+
+    function check() {
+      const result = spawnSync(
+        "cargo",
+        [
+          "check",
+          "--locked",
+          "--lib",
+          "--manifest-path",
+          join(source, "Cargo.toml"),
+          "--target-dir",
+          join(directory, "target"),
+        ],
+        { encoding: "utf8", timeout: 60_000, killSignal: "SIGKILL" },
+      );
+      assert.ifError(result.error);
+      return { status: result.status, output: result.stdout + result.stderr };
+    }
+
+    const initial = check();
+    assert.equal(initial.status, 0, initial.output);
+    const headers = new Set(
+      grammars.flatMap(({ path, externalFiles }) => [
+        join(path, "src", "tree_sitter", "parser.h"),
+        ...externalFiles.filter((file) => file.endsWith(".h")),
+      ]),
+    );
+    for (const header of headers) {
+      const path = join(source, header);
+      const original = readFileSync(path);
+      const marker = "tree_sitter_header_change_requires_rebuild";
+      writeFileSync(path, `${original}\n#error ${marker}\n`);
+      const changed = check();
+      assert.notEqual(changed.status, 0, `${path}: ${changed.output}`);
+      assert.ok(changed.output.includes(marker), changed.output);
+      writeFileSync(path, original);
+      const restored = check();
+      assert.equal(restored.status, 0, restored.output);
+    }
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
 test(`${language}: corpus fuzz propagates CLI failures even when its exit status is zero`, () => {
   const directory = mkdtempSync(join(tmpdir(), "tree-sitter-fuzz-exit-#-"));
   const preload = join(directory, "cli.mjs");

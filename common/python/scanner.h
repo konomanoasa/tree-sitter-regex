@@ -60,25 +60,29 @@ static bool python_re_is_ascii_letter(int32_t character) {
     (character >= 'a' && character <= 'z');
 }
 
-static bool python_re_scan_interval_tail(TSLexer *lexer) {
-  bool has_minimum = false;
-  while (!lexer->eof(lexer) && python_re_is_ascii_digit(lexer->lookahead)) {
-    has_minimum = true;
+static bool python_re_skip_ascii_digits(TSLexer *lexer) {
+  bool has_digit = false;
+  while (python_re_is_ascii_digit(lexer->lookahead)) {
+    has_digit = true;
     lexer->advance(lexer, false);
   }
-  if (!lexer->eof(lexer) && lexer->lookahead == '}')
+  return has_digit;
+}
+
+static bool python_re_scan_interval_tail(TSLexer *lexer) {
+  bool has_minimum = python_re_skip_ascii_digits(lexer);
+  if (lexer->lookahead == '}')
     return has_minimum;
-  if (lexer->eof(lexer) || lexer->lookahead != ',')
+  if (lexer->lookahead != ',')
     return false;
   lexer->advance(lexer, false);
-  while (!lexer->eof(lexer) && python_re_is_ascii_digit(lexer->lookahead))
-    lexer->advance(lexer, false);
-  return !lexer->eof(lexer) && lexer->lookahead == '}';
+  python_re_skip_ascii_digits(lexer);
+  return lexer->lookahead == '}';
 }
 
 static bool python_re_scan_hexadecimal_digits(TSLexer *lexer, unsigned length) {
   for (unsigned index = 0; index < length; index++) {
-    if (lexer->eof(lexer) || !python_re_is_hexadecimal_digit(lexer->lookahead))
+    if (!python_re_is_hexadecimal_digit(lexer->lookahead))
       return false;
     lexer->advance(lexer, false);
   }
@@ -142,11 +146,20 @@ static bool python_re_emit(TSLexer *lexer, uint16_t token) {
 
 static bool
 python_re_scan_character(TSLexer *lexer, int32_t character, uint16_t token) {
-  if (lexer->eof(lexer) || lexer->lookahead != character) {
+  if (lexer->lookahead != character) {
     return false;
   }
   lexer->advance(lexer, false);
   return python_re_emit(lexer, token);
+}
+
+static bool python_re_skip_flags(TSLexer *lexer, bool enable) {
+  bool has_flag = false;
+  while (python_re_is_flag(lexer->lookahead, enable)) {
+    has_flag = true;
+    lexer->advance(lexer, false);
+  }
+  return has_flag;
 }
 
 static bool
@@ -156,41 +169,27 @@ python_re_scan_flags_start(TSLexer *lexer, const bool *valid_symbols) {
   }
   lexer->advance(lexer, false);
   lexer->mark_end(lexer);
-  if (lexer->eof(lexer) || lexer->lookahead != '?') {
+  if (lexer->lookahead != '?') {
     return false;
   }
   lexer->advance(lexer, false);
-  bool has_enable = false;
-  while (!lexer->eof(lexer) && python_re_is_flag(lexer->lookahead, true)) {
-    has_enable = true;
-    lexer->advance(lexer, false);
-  }
-  if (!lexer->eof(lexer) && lexer->lookahead == ')' && has_enable) {
+  bool has_enable = python_re_skip_flags(lexer, true);
+  if (lexer->lookahead == ')' && has_enable) {
     if (!valid_symbols[GLOBAL_FLAGS_START]) {
       return false;
     }
     lexer->result_symbol = GLOBAL_FLAGS_START;
     return true;
   }
-  if (!lexer->eof(lexer) && lexer->lookahead == '-') {
+  if (lexer->lookahead == '-') {
     lexer->advance(lexer, false);
-    bool has_disable = false;
-    while (!lexer->eof(lexer) && python_re_is_flag(lexer->lookahead, false)) {
-      has_disable = true;
-      lexer->advance(lexer, false);
-    }
-    if (!has_disable) {
+    if (!python_re_skip_flags(lexer, false)) {
       return false;
     }
   } else if (!has_enable) {
     return false;
   }
-  if (
-    lexer->eof(lexer) ||
-    lexer->lookahead !=
-    ':' ||
-    !valid_symbols[SCOPED_FLAGS_START]
-  ) {
+  if (lexer->lookahead != ':' || !valid_symbols[SCOPED_FLAGS_START]) {
     return false;
   }
   lexer->result_symbol = SCOPED_FLAGS_START;
@@ -204,7 +203,7 @@ static bool python_re_scan_flag_set(
 ) {
   bool has_character = false;
   bool has_x = false;
-  while (!lexer->eof(lexer) && python_re_is_flag(lexer->lookahead, enable)) {
+  while (python_re_is_flag(lexer->lookahead, enable)) {
     has_character = true;
     has_x = has_x || lexer->lookahead == 'x';
     lexer->advance(lexer, false);

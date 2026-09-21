@@ -85,29 +85,29 @@ static bool is_ascii_letter(int32_t character) {
     (character >= 'a' && character <= 'z');
 }
 
-static bool scan_interval_tail(TSLexer *lexer) {
-  bool has_minimum = false;
-  while (!lexer->eof(lexer) && is_ascii_digit(lexer->lookahead)) {
-    has_minimum = true;
+static void skip_ascii_digits(TSLexer *lexer) {
+  while (is_ascii_digit(lexer->lookahead))
     lexer->advance(lexer, false);
-  }
-  if (!has_minimum)
+}
+
+static bool scan_interval_tail(TSLexer *lexer) {
+  if (!is_ascii_digit(lexer->lookahead))
     return false;
-  if (!lexer->eof(lexer) && lexer->lookahead == '}')
-    return has_minimum;
-  if (lexer->eof(lexer) || lexer->lookahead != ',')
+  skip_ascii_digits(lexer);
+  if (lexer->lookahead == '}')
+    return true;
+  if (lexer->lookahead != ',')
     return false;
   lexer->advance(lexer, false);
-  while (!lexer->eof(lexer) && is_ascii_digit(lexer->lookahead))
-    lexer->advance(lexer, false);
-  return !lexer->eof(lexer) && lexer->lookahead == '}';
+  skip_ascii_digits(lexer);
+  return lexer->lookahead == '}';
 }
 
 static bool
 scan_hexadecimal_digits(TSLexer *lexer, unsigned length, uint32_t *value) {
   uint32_t result = 0;
   for (unsigned index = 0; index < length; index++) {
-    if (lexer->eof(lexer) || !is_hexadecimal_digit(lexer->lookahead))
+    if (!is_hexadecimal_digit(lexer->lookahead))
       return false;
     result = result * 16 + hexadecimal_value(lexer->lookahead);
     lexer->advance(lexer, false);
@@ -282,8 +282,6 @@ static bool reserved_double(int32_t c) {
 
 static bool scan_set_character(TSLexer *lexer, const bool *valid) {
   int32_t first = lexer->lookahead;
-  if (lexer->eof(lexer))
-    return false;
   if (first == '^' && valid[CLASS_NEGATION]) {
     lexer->advance(lexer, false);
     lexer->mark_end(lexer);
@@ -312,7 +310,6 @@ static bool scan_set_character(TSLexer *lexer, const bool *valid) {
   case '}':
   case '/':
   case '-':
-  case '\\':
   case '|':
     return false;
   default:

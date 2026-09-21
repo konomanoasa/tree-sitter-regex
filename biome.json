@@ -2,6 +2,7 @@
   "files": {
     "includes": [
       "**",
+      "!!**/target",
       "!**/src/grammar.json",
       "!**/src/node-types.json",
       "!common/javascript/unicode.js"
