@@ -6,9 +6,11 @@ import { grammars } from "../scripts/tree-sitter.js";
 import {
   applyEdits,
   cache,
+  hasRecovery,
   javascriptLanguages,
   parse,
   parseFile,
+  parseSequence,
   posixGrammars,
   pythonGrammars,
   selectNodes,
@@ -505,6 +507,20 @@ for (const [index, scenario] of cases.entries()) {
         const incremental = parseFile(beforePath, language, [edit]);
         assert.equal(incremental.status, fresh.status);
         if (!expectedError) assert.deepEqual(incremental, fresh);
+        // Only a restored source that needs no recovery has a guaranteed shape.
+        if (reverse ? scenario.afterError : scenario.beforeError) return;
+        const restore = {
+          byte: edit.byte,
+          deleteBytes: Buffer.byteLength(edit.insert),
+          insert: Buffer.from(before)
+            .subarray(edit.byte, edit.byte + edit.deleteBytes)
+            .toString(),
+        };
+        assert.deepEqual(
+          parseFile(beforePath, language, [edit, restore]),
+          parseFile(beforePath, language),
+          "undoing the edit must restore the fresh CST",
+        );
       });
     }
   }
@@ -977,20 +993,34 @@ function createEditHistoryGenerator() {
       const initial = joinSource(parts);
       let source = Buffer.from(initial);
       const edits = [];
+      let undo;
       for (let step = 0; step < 5; step++) {
-        const position = next(source.length + 1);
-        const insert = next(2) === 0 || position === source.length;
-        const edit = insert
-          ? {
-              byte: position,
-              deleteBytes: 0,
-              insert: insertions[next(insertions.length)],
-            }
-          : {
-              byte: position,
-              deleteBytes: Math.min(next(2) + 1, source.length - position),
-              insert: "",
-            };
+        let edit;
+        if (undo !== undefined && next(3) === 0) {
+          edit = undo;
+        } else {
+          const position = next(source.length + 1);
+          const insert = next(2) === 0 || position === source.length;
+          edit = insert
+            ? {
+                byte: position,
+                deleteBytes: 0,
+                insert: insertions[next(insertions.length)],
+              }
+            : {
+                byte: position,
+                deleteBytes: Math.min(next(2) + 1, source.length - position),
+                insert: "",
+              };
+        }
+        // The inverse edit returns to a source the previous step already parsed.
+        undo = {
+          byte: edit.byte,
+          deleteBytes: Buffer.byteLength(edit.insert),
+          insert: source
+            .subarray(edit.byte, edit.byte + edit.deleteBytes)
+            .toString(),
+        };
         edits.push(edit);
         source = applyEdits(source, [edit]);
         yield {
@@ -1002,6 +1032,48 @@ function createEditHistoryGenerator() {
       }
     }
   };
+}
+
+const reproducedSources = {
+  javascript: [
+    String.raw`(?<x>a)\k<x>[b-d]{2,}`,
+    // Nothing captures before it, so a leaked capture count would reclassify it.
+    String.raw`\1`,
+    String.raw`\u{41}|(a`,
+    "[a-",
+    "a**",
+  ],
+  python: [
+    "(?x)(?P<n>a)(?P=n) #c\nb",
+    "(?(1)a|b",
+    String.raw`\N{NAME`,
+    "a{ 2}|*b",
+  ],
+  posix: ["[[:alpha:]]a*", "[[.ch", "[a-]x", "a\\"],
+};
+
+for (const grammar of grammars) {
+  test(`${grammar.name}: parsing after other sources reproduces every CST including recovery artifacts`, () => {
+    const sources = reproducedSources[grammar.name.replace(/_.*/, "")];
+    assert.ok(sources, grammar.name);
+    const paths = sources.map((source, index) => {
+      const path = join(cache, `reproduced-${index}.txt`);
+      writeFileSync(path, source);
+      return path;
+    });
+    const alone = paths.flatMap((path) =>
+      parseFile(path, grammar.name).cst.split("\n"),
+    );
+    assert.ok(
+      hasRecovery(alone.join("\n")),
+      "the sources must cover recovery artifacts",
+    );
+    assert.deepEqual(
+      parseSequence([...paths, ...paths], grammar.name),
+      [...alone, ...alone],
+      "an earlier source must not change a later CST",
+    );
+  });
 }
 
 const fuzzFragments = [

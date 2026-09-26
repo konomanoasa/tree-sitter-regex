@@ -70,7 +70,7 @@ function sourceEndPoint(source) {
   return `${row}:${bytes.length - bytes.lastIndexOf(10) - 1}`;
 }
 
-function parseFile(path, language, edits = []) {
+function runParse(paths, language, edits) {
   const grammar = grammars.find(({ name }) => name === language);
   assert.ok(grammar, language);
   const arguments_ = [
@@ -80,7 +80,7 @@ function parseFile(path, language, edits = []) {
     "--encoding",
     "utf8",
     "--cst",
-    path,
+    ...paths,
   ];
   if (edits.length > 0) {
     arguments_.push("--edits", ...edits.map(formatEdit));
@@ -100,17 +100,28 @@ function parseFile(path, language, edits = []) {
     .filter((line) => /^[0-9]/.test(line))
     .join("\n");
   assert.ok(cst.length > 0, result.stderr || result.stdout);
+  return { cst, status: result.status };
+}
+
+// One invocation parses every path in order, so the concatenated CSTs show
+// whether parsing an earlier source changes a later one.
+function parseSequence(paths, language) {
+  return runParse(paths, language, []).cst.split("\n");
+}
+
+function parseFile(path, language, edits = []) {
+  const { cst, status } = runParse([path], language, edits);
   const end = /^[0-9]+:[0-9]+ +- +([0-9]+:[0-9]+)/.exec(cst)?.[1];
   assert.equal(
     end,
     sourceEndPoint(applyEdits(readFileSync(path), edits)),
     "root must reach the edited source end",
   );
-  if (result.status === 0) {
+  if (status === 0) {
     assert.ok(cst.includes(rootNodes.get(language)), cst);
   }
   const recovery = hasRecovery(cst);
-  return { status: recovery ? 1 : result.status, cst, recovery };
+  return { status: recovery ? 1 : status, cst, recovery };
 }
 
 const javascriptLanguages = [
@@ -209,6 +220,7 @@ export {
   javascriptLanguages,
   parse,
   parseFile,
+  parseSequence,
   parseSummary,
   posixGrammars,
   pythonGrammars,

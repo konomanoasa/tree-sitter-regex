@@ -249,14 +249,17 @@ python_re_scan_comment(TSLexer *lexer, int32_t terminator, uint16_t token) {
   return python_re_emit(lexer, token);
 }
 
+static uint16_t python_re_literal_token(const bool *valid_symbols) {
+  return valid_symbols[LITERAL_CHARACTER_NORMAL] ? LITERAL_CHARACTER_NORMAL
+                                                 : LITERAL_CHARACTER_VERBOSE;
+}
+
 static bool python_re_scan_brace(TSLexer *lexer, const bool *valid_symbols) {
   lexer->advance(lexer, false);
   lexer->mark_end(lexer);
-  uint16_t token = OPEN_BRACE;
-  if (!python_re_scan_interval_tail(lexer)) {
-    token = valid_symbols[LITERAL_CHARACTER_NORMAL] ? LITERAL_CHARACTER_NORMAL
-                                                    : LITERAL_CHARACTER_VERBOSE;
-  }
+  uint16_t token = python_re_scan_interval_tail(lexer)
+    ? OPEN_BRACE
+    : python_re_literal_token(valid_symbols);
   if (!valid_symbols[token]) {
     return false;
   }
@@ -401,9 +404,7 @@ static bool python_re_scan(TSLexer *lexer, const bool *valid_symbols) {
   if (lexer->lookahead == '\\') {
     return python_re_scan_escape(lexer, valid_symbols, false);
   }
-  uint16_t token = valid_symbols[LITERAL_CHARACTER_NORMAL]
-    ? LITERAL_CHARACTER_NORMAL
-    : LITERAL_CHARACTER_VERBOSE;
+  uint16_t token = python_re_literal_token(valid_symbols);
   if (
     !valid_symbols[token] ||
     python_re_is_metacharacter(lexer->lookahead) ||

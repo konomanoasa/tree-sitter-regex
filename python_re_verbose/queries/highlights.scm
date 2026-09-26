@@ -42,6 +42,7 @@
   "{"
   "}"
   "<"
+  ">"
 ] @punctuation.bracket
 
 [
@@ -69,9 +70,6 @@
   "<="
   "<!"
 ] @operator
-
-(named_capturing_group
-  ">" @punctuation.bracket)
 
 (atomic_group
   ">" @operator)

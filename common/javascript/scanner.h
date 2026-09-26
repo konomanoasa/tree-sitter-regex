@@ -85,6 +85,10 @@ static bool is_ascii_letter(int32_t character) {
     (character >= 'a' && character <= 'z');
 }
 
+static bool is_class_control_letter(int32_t character) {
+  return is_ascii_digit(character) || character == '_';
+}
+
 static void skip_ascii_digits(TSLexer *lexer) {
   while (is_ascii_digit(lexer->lookahead))
     lexer->advance(lexer, false);
@@ -282,13 +286,10 @@ static bool reserved_double(int32_t c) {
 
 static bool scan_set_character(TSLexer *lexer, const bool *valid) {
   int32_t first = lexer->lookahead;
-  if (first == '^' && valid[CLASS_NEGATION]) {
-    lexer->advance(lexer, false);
-    lexer->mark_end(lexer);
-    return emit(lexer, valid, CLASS_NEGATION);
-  }
   lexer->advance(lexer, false);
   lexer->mark_end(lexer);
+  if (first == '^' && valid[CLASS_NEGATION])
+    return emit(lexer, valid, CLASS_NEGATION);
   if (first == '-' && lexer->lookahead == '-') {
     lexer->advance(lexer, false);
     lexer->mark_end(lexer);
@@ -380,9 +381,7 @@ static bool scan_regex(Scanner *scanner, TSLexer *lexer, const bool *valid) {
     if (is_ascii_letter(lexer->lookahead))
       return false;
     bool in_class = valid[CLASS_LITERAL_BACKSLASH];
-    if (
-      in_class && (is_ascii_digit(lexer->lookahead) || lexer->lookahead == '_')
-    )
+    if (in_class && is_class_control_letter(lexer->lookahead))
       return false;
     return emit(
       lexer,
@@ -401,7 +400,7 @@ static bool scan_regex(Scanner *scanner, TSLexer *lexer, const bool *valid) {
   if (c == 'c') {
     if (is_ascii_letter(lexer->lookahead))
       return emit(lexer, valid, CONTROL_START);
-    if (is_ascii_digit(lexer->lookahead) || lexer->lookahead == '_')
+    if (is_class_control_letter(lexer->lookahead))
       return emit(lexer, valid, CLASS_CONTROL_START);
     return false;
   }
