@@ -6,14 +6,23 @@ CompileFlags:
     - -Wextra
     - -Werror
     - -pedantic
-    - -Wno-unused-function
 
 ---
+# Standalone headers are checked without their callers.
 If:
   PathMatch: .*\.h
 CompileFlags:
   Add:
     - -xc-header
+    - -Wno-unused-function
+
+---
+# Directly included scanner helpers may be unused in individual tests.
+If:
+  PathMatch: test/[^/]*\.c
+CompileFlags:
+  Add:
+    - -Wno-unused-function
 
 ---
 If:
@@ -56,3 +65,11 @@ CompileFlags:
   Add:
     - -DREGEX_SCANNER_SOURCE="../python_re/src/scanner.c"
     - -I../python_re/src
+
+---
+# Clangd checks included helpers before their callers and can hit its error limit.
+If:
+  PathMatch: python_re(_verbose)?/src/scanner\.c
+CompileFlags:
+  Add:
+    - -Wno-unused-function

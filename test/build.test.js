@@ -14,7 +14,9 @@ import { test } from "node:test";
 import { pathToFileURL } from "node:url";
 import { copyFiles, packageName, root } from "../scripts/tree-sitter.js";
 
-const configuration = JSON.parse(readFileSync(join(root, "tree-sitter.json")));
+const configuration = JSON.parse(
+  readFileSync(join(root, "tree-sitter.json"), "utf8"),
+);
 const grammars = configuration.grammars.map((grammar) => ({
   ...grammar,
   externalFiles: [].concat(grammar["external-files"] ?? []),
@@ -253,7 +255,7 @@ syncBuiltinESMExports();
 
 test(`${language}: package metadata matches the grammar and license`, () => {
   const { metadata } = configuration;
-  const pkg = JSON.parse(readFileSync(join(root, "package.json")));
+  const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
   for (const key of ["version", "license", "description"])
     assert.equal(pkg[key], metadata[key]);
   assert.equal(pkg.repository, `git+${metadata.links.repository}.git`);

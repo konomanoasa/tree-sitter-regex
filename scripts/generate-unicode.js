@@ -47,7 +47,8 @@ function main(arguments_) {
   try {
     actual = readFileSync(outputPath, "utf8");
   } catch (error) {
-    if (error.code !== "ENOENT") throw error;
+    if (!(error instanceof Error && "code" in error && error.code === "ENOENT"))
+      throw error;
   }
   if (actual !== generated) {
     throw new Error(
@@ -60,6 +61,6 @@ function main(arguments_) {
 try {
   process.exitCode = main(process.argv.slice(2));
 } catch (error) {
-  console.error(error.message);
+  console.error(error instanceof Error ? error.message : String(error));
   process.exitCode = 1;
 }

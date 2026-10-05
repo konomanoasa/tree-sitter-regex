@@ -246,10 +246,10 @@ for (const profile of profiles) {
     assert.equal(names.has("class_string_disjunction"), profile.sets);
   });
   test(`${profile.name}: raw identifier characters respect the BMP boundary and supplementary extremes`, () => {
-    for (const [source, expected] of [
-      ["(?<\uffff>)(?<a\uffff>)", false],
-      ["(?<\u{10000}>)(?<a\u{10000}>)", true],
-      ["(?<\u{10ffff}>)(?<a\u{10ffff}>)", !profile.unicode],
+    for (const { source, expected } of [
+      { source: "(?<\uffff>)(?<a\uffff>)", expected: false },
+      { source: "(?<\u{10000}>)(?<a\u{10000}>)", expected: true },
+      { source: "(?<\u{10ffff}>)(?<a\u{10ffff}>)", expected: !profile.unicode },
     ]) {
       assert.equal(parseSummary(grammar, source).successful, expected, source);
     }
@@ -302,28 +302,28 @@ const continuation = new RegExp(`^${unicodeIdContinue}$`, "u");
 
 test("regex: Unicode 17 identifiers include the new scripts and distinguish letters, marks, digits, and gaps", () => {
   const cases = [
-    [0x10940, true, true],
-    [0x10959, true, true],
-    [0x1095a, false, false],
-    [0x11db0, true, true],
-    [0x11dd8, true, true],
-    [0x11dd9, true, true],
-    [0x11ddb, true, true],
-    [0x11ddc, false, false],
-    [0x11de0, false, true],
-    [0x11de9, false, true],
-    [0x11dea, false, false],
-    [0x16ea0, true, true],
-    [0x16ed3, true, true],
-    [0x16ed4, false, false],
-    [0x1e6c0, true, true],
-    [0x1e6e3, false, true],
-    [0x1e6f6, false, false],
-    [0x323b0, true, true],
-    [0x33479, true, true],
-    [0x3347a, false, false],
+    { codePoint: 0x10940, expectedStart: true, expectedContinue: true },
+    { codePoint: 0x10959, expectedStart: true, expectedContinue: true },
+    { codePoint: 0x1095a, expectedStart: false, expectedContinue: false },
+    { codePoint: 0x11db0, expectedStart: true, expectedContinue: true },
+    { codePoint: 0x11dd8, expectedStart: true, expectedContinue: true },
+    { codePoint: 0x11dd9, expectedStart: true, expectedContinue: true },
+    { codePoint: 0x11ddb, expectedStart: true, expectedContinue: true },
+    { codePoint: 0x11ddc, expectedStart: false, expectedContinue: false },
+    { codePoint: 0x11de0, expectedStart: false, expectedContinue: true },
+    { codePoint: 0x11de9, expectedStart: false, expectedContinue: true },
+    { codePoint: 0x11dea, expectedStart: false, expectedContinue: false },
+    { codePoint: 0x16ea0, expectedStart: true, expectedContinue: true },
+    { codePoint: 0x16ed3, expectedStart: true, expectedContinue: true },
+    { codePoint: 0x16ed4, expectedStart: false, expectedContinue: false },
+    { codePoint: 0x1e6c0, expectedStart: true, expectedContinue: true },
+    { codePoint: 0x1e6e3, expectedStart: false, expectedContinue: true },
+    { codePoint: 0x1e6f6, expectedStart: false, expectedContinue: false },
+    { codePoint: 0x323b0, expectedStart: true, expectedContinue: true },
+    { codePoint: 0x33479, expectedStart: true, expectedContinue: true },
+    { codePoint: 0x3347a, expectedStart: false, expectedContinue: false },
   ];
-  for (const [codePoint, expectedStart, expectedContinue] of cases) {
+  for (const { codePoint, expectedStart, expectedContinue } of cases) {
     const character = String.fromCodePoint(codePoint);
     const label = `U+${codePoint.toString(16).toUpperCase()}`;
     assert.equal(start.test(character), expectedStart, `${label} ID_Start`);
@@ -337,20 +337,20 @@ test("regex: Unicode 17 identifiers include the new scripts and distinguish lett
 
 test("regex: Unicode properties preserve the distinction from ECMAScript identifier additions", () => {
   const cases = [
-    ["A", true, true],
-    ["z", true, true],
-    ["0", false, true],
-    ["$", false, false],
-    ["_", false, true],
-    ["\u0301", false, true],
-    ["\u200c", false, true],
-    ["\u200d", false, true],
-    ["\u0000", false, false],
-    ["\ud800", false, false],
-    ["\udfff", false, false],
-    ["\u{10ffff}", false, false],
+    { character: "A", expectedStart: true, expectedContinue: true },
+    { character: "z", expectedStart: true, expectedContinue: true },
+    { character: "0", expectedStart: false, expectedContinue: true },
+    { character: "$", expectedStart: false, expectedContinue: false },
+    { character: "_", expectedStart: false, expectedContinue: true },
+    { character: "\u0301", expectedStart: false, expectedContinue: true },
+    { character: "\u200c", expectedStart: false, expectedContinue: true },
+    { character: "\u200d", expectedStart: false, expectedContinue: true },
+    { character: "\u0000", expectedStart: false, expectedContinue: false },
+    { character: "\ud800", expectedStart: false, expectedContinue: false },
+    { character: "\udfff", expectedStart: false, expectedContinue: false },
+    { character: "\u{10ffff}", expectedStart: false, expectedContinue: false },
   ];
-  for (const [character, expectedStart, expectedContinue] of cases) {
+  for (const { character, expectedStart, expectedContinue } of cases) {
     assert.equal(
       start.test(character),
       expectedStart,

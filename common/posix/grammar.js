@@ -230,7 +230,7 @@ function sharedRules() {
 
 export default function defineGrammar(name, dialect) {
   const bre = dialect === "bre";
-  return grammar({
+  const options = {
     name,
 
     extras: () => [],
@@ -246,10 +246,8 @@ export default function defineGrammar(name, dialect) {
       ...(bre ? [$._bre_right_anchor] : []),
       $._error_sentinel,
     ],
-
-    rules: {
-      ...(bre ? breRules() : ereRules()),
-      ...sharedRules(),
-    },
-  });
+  };
+  return bre
+    ? grammar({ ...options, rules: { ...breRules(), ...sharedRules() } })
+    : grammar({ ...options, rules: { ...ereRules(), ...sharedRules() } });
 }
