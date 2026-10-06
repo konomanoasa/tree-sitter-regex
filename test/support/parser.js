@@ -103,8 +103,6 @@ function runParse(paths, language, edits) {
   return { cst, status: result.status };
 }
 
-// One invocation parses every path in order, so the concatenated CSTs show
-// whether parsing an earlier source changes a later one.
 function parseSequence(paths, language) {
   return runParse(paths, language, []).cst.split("\n");
 }

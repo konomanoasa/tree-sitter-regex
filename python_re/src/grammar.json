@@ -113,36 +113,6 @@
         ]
       }
     },
-    "_root_prefix_verbose": {
-      "type": "REPEAT1",
-      "content": {
-        "type": "CHOICE",
-        "members": [
-          {
-            "type": "SYMBOL",
-            "name": "_layout_verbose"
-          },
-          {
-            "type": "ALIAS",
-            "content": {
-              "type": "SYMBOL",
-              "name": "_global_flags_without_x"
-            },
-            "named": true,
-            "value": "global_flags"
-          },
-          {
-            "type": "ALIAS",
-            "content": {
-              "type": "SYMBOL",
-              "name": "_global_flags_with_x"
-            },
-            "named": true,
-            "value": "global_flags"
-          }
-        ]
-      }
-    },
     "_root_alternation_normal": {
       "type": "CHOICE",
       "members": [
@@ -227,6 +197,126 @@
               {
                 "type": "SYMBOL",
                 "name": "_layout_normal"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "_root_prefix_verbose": {
+      "type": "REPEAT1",
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "_layout_verbose"
+          },
+          {
+            "type": "ALIAS",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_global_flags_without_x"
+            },
+            "named": true,
+            "value": "global_flags"
+          },
+          {
+            "type": "ALIAS",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_global_flags_with_x"
+            },
+            "named": true,
+            "value": "global_flags"
+          }
+        ]
+      }
+    },
+    "_root_alternation_verbose": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_root_concatenation_verbose"
+          },
+          "named": true,
+          "value": "concatenation"
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "_root_concatenation_verbose"
+                  },
+                  "named": true,
+                  "value": "concatenation"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
+            },
+            {
+              "type": "REPEAT1",
+              "content": {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": "|"
+                  },
+                  {
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "ALIAS",
+                        "content": {
+                          "type": "SYMBOL",
+                          "name": "_concatenation_verbose"
+                        },
+                        "named": true,
+                        "value": "concatenation"
+                      },
+                      {
+                        "type": "BLANK"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "_root_concatenation_verbose": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "_term_verbose"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "_term_verbose"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "_layout_verbose"
               }
             ]
           }
@@ -1531,96 +1621,6 @@
     "_layout_normal": {
       "type": "SYMBOL",
       "name": "comment_group"
-    },
-    "_root_alternation_verbose": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "_root_concatenation_verbose"
-          },
-          "named": true,
-          "value": "concatenation"
-        },
-        {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "ALIAS",
-                  "content": {
-                    "type": "SYMBOL",
-                    "name": "_root_concatenation_verbose"
-                  },
-                  "named": true,
-                  "value": "concatenation"
-                },
-                {
-                  "type": "BLANK"
-                }
-              ]
-            },
-            {
-              "type": "REPEAT1",
-              "content": {
-                "type": "SEQ",
-                "members": [
-                  {
-                    "type": "STRING",
-                    "value": "|"
-                  },
-                  {
-                    "type": "CHOICE",
-                    "members": [
-                      {
-                        "type": "ALIAS",
-                        "content": {
-                          "type": "SYMBOL",
-                          "name": "_concatenation_verbose"
-                        },
-                        "named": true,
-                        "value": "concatenation"
-                      },
-                      {
-                        "type": "BLANK"
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    "_root_concatenation_verbose": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "_term_verbose"
-        },
-        {
-          "type": "REPEAT",
-          "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_term_verbose"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_layout_verbose"
-              }
-            ]
-          }
-        }
-      ]
     },
     "_alternation_verbose": {
       "type": "CHOICE",

@@ -1,3 +1,7 @@
+const TWO_HEXADECIMAL_DIGITS = /[0-9A-Fa-f]{2}/;
+const FOUR_HEXADECIMAL_DIGITS = /[0-9A-Fa-f]{4}/;
+const EIGHT_HEXADECIMAL_DIGITS = /[0-9A-Fa-f]{8}/;
+
 function alternation(first, following = first) {
   return choice(
     first,
@@ -9,10 +13,6 @@ function classRange(start, end) {
   return seq(field("start", start), "-", field("end", end));
 }
 
-const TWO_HEXADECIMAL_DIGITS = /[0-9A-Fa-f]{2}/;
-const FOUR_HEXADECIMAL_DIGITS = /[0-9A-Fa-f]{4}/;
-const EIGHT_HEXADECIMAL_DIGITS = /[0-9A-Fa-f]{8}/;
-
 function modeRule(name, verbose) {
   return `_${name}_${verbose ? "verbose" : "normal"}`;
 }
@@ -23,6 +23,15 @@ function modeNode($, name, verbose) {
 
 function body($, verbose) {
   return optional(field("body", modeNode($, "alternation", verbose)));
+}
+
+function rootBody($, verbose) {
+  return optional(
+    field(
+      "body",
+      alias($[modeRule("root_alternation", verbose)], $.alternation),
+    ),
+  );
 }
 
 function classMembers($, starts, ranges) {
@@ -67,6 +76,27 @@ function scopedFlags($, outerVerbose) {
   );
 }
 
+function rootRules(verbose) {
+  const rule = (name) => modeRule(name, verbose);
+  return {
+    [rule("root_prefix")]: ($) =>
+      repeat1(
+        choice(
+          verbose ? $._layout_verbose : $.comment_group,
+          alias($._global_flags_without_x, $.global_flags),
+          ...(verbose ? [alias($._global_flags_with_x, $.global_flags)] : []),
+        ),
+      ),
+    [rule("root_alternation")]: ($) =>
+      alternation(
+        alias($[rule("root_concatenation")], $.concatenation),
+        modeNode($, "concatenation", verbose),
+      ),
+    [rule("root_concatenation")]: ($) =>
+      seq($[rule("term")], repeat(choice($[rule("term")], $[rule("layout")]))),
+  };
+}
+
 function modeRules(verbose) {
   const rule = (name) => modeRule(name, verbose);
   const concreteGroups = [
@@ -79,13 +109,6 @@ function modeRules(verbose) {
     ["atomic_group", "?", ">"],
   ];
   return {
-    [rule("root_alternation")]: ($) =>
-      alternation(
-        alias($[rule("root_concatenation")], $.concatenation),
-        modeNode($, "concatenation", verbose),
-      ),
-    [rule("root_concatenation")]: ($) =>
-      seq($[rule("term")], repeat(choice($[rule("term")], $[rule("layout")]))),
     [rule("alternation")]: ($) =>
       alternation(modeNode($, "concatenation", verbose)),
     [rule("concatenation")]: ($) =>
@@ -194,51 +217,20 @@ export default function defineGrammar(name, mode) {
     rules: {
       pattern: ($) =>
         verbose
-          ? seq(
-              optional($._root_prefix_verbose),
-              optional(
-                field(
-                  "body",
-                  alias($._root_alternation_verbose, $.alternation),
-                ),
-              ),
-            )
+          ? seq(optional($._root_prefix_verbose), rootBody($, true))
           : seq(
               optional($._root_prefix_normal),
               choice(
-                optional(
-                  field(
-                    "body",
-                    alias($._root_alternation_normal, $.alternation),
-                  ),
-                ),
+                rootBody($, false),
                 seq(
                   alias($._global_flags_with_x, $.global_flags),
                   optional($._root_prefix_verbose),
-                  optional(
-                    field(
-                      "body",
-                      alias($._root_alternation_verbose, $.alternation),
-                    ),
-                  ),
+                  rootBody($, true),
                 ),
               ),
             ),
-      _root_prefix_normal: ($) =>
-        repeat1(
-          choice(
-            $.comment_group,
-            alias($._global_flags_without_x, $.global_flags),
-          ),
-        ),
-      _root_prefix_verbose: ($) =>
-        repeat1(
-          choice(
-            $._layout_verbose,
-            alias($._global_flags_without_x, $.global_flags),
-            alias($._global_flags_with_x, $.global_flags),
-          ),
-        ),
+      ...(!verbose ? rootRules(false) : {}),
+      ...rootRules(true),
       ...modeRules(false),
       ...modeRules(true),
       _non_quantifiable_atom: ($) =>

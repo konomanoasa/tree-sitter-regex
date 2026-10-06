@@ -507,7 +507,6 @@ for (const [index, scenario] of cases.entries()) {
         const incremental = parseFile(beforePath, language, [edit]);
         assert.equal(incremental.status, fresh.status);
         if (!expectedError) assert.deepEqual(incremental, fresh);
-        // Only a restored source that needs no recovery has a guaranteed shape.
         if (reverse ? scenario.afterError : scenario.beforeError) return;
         const restore = {
           byte: edit.byte,
@@ -1055,7 +1054,6 @@ function createEditHistoryGenerator() {
                 insert: "",
               };
         }
-        // The inverse edit returns to a source the previous step already parsed.
         undo = {
           byte: edit.byte,
           deleteBytes: Buffer.byteLength(edit.insert),
@@ -1079,7 +1077,6 @@ function createEditHistoryGenerator() {
 const reproducedSources = {
   javascript: [
     String.raw`(?<x>a)\k<x>[b-d]{2,}`,
-    // Nothing captures before it, so a leaked capture count would reclassify it.
     String.raw`\1`,
     String.raw`\u{41}|(a`,
     "[a-",

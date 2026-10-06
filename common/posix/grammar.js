@@ -45,7 +45,7 @@ function interval($, opening, closing) {
 function breRules() {
   return {
     basic_reg_exp: ($) => $.bre_branch,
-    // Keep anchor-only branches separate so `^` binds to a following operand.
+    // Separate anchor-only branches so ^ binds to the following operand.
     bre_branch: ($) =>
       choice(
         alias($._bre_anchor_only_expression, $.bre_expression),
@@ -169,7 +169,7 @@ function sharedRules() {
     duplication_count: () => DUPLICATION_COUNT,
 
     bracket_expression: ($) =>
-      choice(seq("[", $.matching_list, "]"), seq("[", $.nonmatching_list, "]")),
+      seq("[", choice($.matching_list, $.nonmatching_list), "]"),
     matching_list: ($) => $.bracket_list,
     nonmatching_list: ($) => seq("^", $.bracket_list),
     bracket_list: ($) =>
@@ -179,8 +179,7 @@ function sharedRules() {
     expression_term: ($) => choice($.single_expression, $.range_expression),
     single_expression: ($) =>
       choice($.end_range, $.character_class, $.equivalence_class),
-    range_expression: ($) =>
-      choice(seq($.start_range, $.end_range), seq($.start_range, "-")),
+    range_expression: ($) => seq($.start_range, choice($.end_range, "-")),
     start_range: ($) => seq($.end_range, "-"),
     end_range: ($) =>
       choice(
@@ -195,10 +194,7 @@ function sharedRules() {
     _leading_single_expression: ($) =>
       choice(leading($, "end_range"), $.character_class, $.equivalence_class),
     _leading_range_expression: ($) =>
-      choice(
-        seq(leading($, "start_range"), $.end_range),
-        seq(leading($, "start_range"), "-"),
-      ),
+      seq(leading($, "start_range"), choice($.end_range, "-")),
     _leading_start_range: ($) => seq(leading($, "end_range"), "-"),
     _leading_end_range: ($) =>
       choice(

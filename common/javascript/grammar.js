@@ -146,9 +146,7 @@ export default function defineGrammar(name, mode) {
           "$",
           "\\b",
           "\\B",
-          ...(unicode
-            ? [lookaround($, choice("=", "!"))]
-            : [$.quantifiable_assertion]),
+          unicode ? lookaround($, choice("=", "!")) : $.quantifiable_assertion,
           lookaround($, choice("<=", "<!")),
         ),
       ...(!unicode
@@ -271,7 +269,9 @@ export default function defineGrammar(name, mode) {
         unicode
           ? choice($.syntax_character, "/")
           : $.source_character_identity_escape,
-      syntax_character: () => token(choice(..."^$\\.*+?()[]{}|")),
+      ...(unicode
+        ? { syntax_character: () => token(choice(..."^$\\.*+?()[]{}|")) }
+        : {}),
       ...(!unicode
         ? {
             source_character_identity_escape: ($) =>
