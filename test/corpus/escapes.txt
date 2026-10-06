@@ -2230,7 +2230,7 @@ a back-reference keeps its spelling
 0:0 - 0:5         simple_bre
 0:0 - 0:5           nondupl_bre
 0:0 - 0:2             "\\("
-0:2 - 0:3             basic_reg_exp
+0:2 - 0:3             expression: basic_reg_exp
 0:2 - 0:3               bre_branch
 0:2 - 0:3                 bre_expression
 0:2 - 0:3                   simple_bre

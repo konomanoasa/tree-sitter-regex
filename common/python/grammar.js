@@ -39,18 +39,13 @@ function digitsEscape(prefix, digits, kind) {
 }
 
 function globalFlags($, flags) {
-  return seq(
-    alias($._global_flags_start, "("),
-    "?",
-    field("flags", alias(flags, $.flag_set)),
-    ")",
-  );
+  return seq("(", "?", field("flags", alias(flags, $.flag_set)), ")");
 }
 
 function scopedFlags($, outerVerbose) {
   const branch = (enable, disable, verbose) =>
     seq(
-      alias($._scoped_flags_start, "("),
+      "(",
       "?",
       ...(enable === null ? [] : [field("enable", alias(enable, $.flag_set))]),
       ...(disable === null
@@ -105,11 +100,19 @@ function modeRules(verbose) {
       ),
     [rule("atom")]: ($) =>
       choice($[rule("quantifiable_atom")], $._non_quantifiable_atom),
+    [rule("literal_character")]: ($) =>
+      choice(
+        token(
+          verbose ? /[^.^$\\()\x5b*+?|{# \t\r\n\v\f]/ : /[^.^$\\()\x5b*+?|{]/,
+        ),
+        $._nul_character,
+        $._literal_open_brace,
+      ),
     [rule("quantifiable_atom")]: ($) =>
       choice(
         alias($[rule("literal_character")], $.literal_character),
         $.wildcard,
-        $.literal_escape,
+        $._literal_escape,
         $.control_escape,
         $.hex_escape,
         $.unicode_escape,
@@ -149,7 +152,7 @@ function modeRules(verbose) {
           "condition",
           choice(
             alias($._conditional_group_id, $.group_id),
-            alias($._parenthesized_group_name, $.group_name),
+            alias($._conditional_group_name, $.group_name),
           ),
         ),
         ")",
@@ -177,31 +180,10 @@ export default function defineGrammar(name, mode) {
   return grammar({
     name,
     externals: ($) => [
-      $._global_flags_start,
-      $._scoped_flags_start,
-      $._enable_flags_with_x,
-      $._enable_flags_without_x,
-      $._disable_flags_with_x,
-      $._disable_flags_without_x,
-      $._angle_group_name,
-      $._parenthesized_group_name,
-      $._conditional_group_id,
-      $._comment_group_content,
-      $._verbose_comment,
-      $._literal_escape,
-      $._hex_escape_start,
-      $._unicode_escape_short_start,
-      $._unicode_escape_long_start,
-      $._named_unicode_escape_start,
-      $._unicode_character_name,
-      $._numeric_escape_start,
-      $._class_negation,
-      $._class_character,
       $._open_brace,
-      $._quantifier_question,
-      $._quantifier_lazy_suffix,
-      $._literal_character_normal,
-      $._literal_character_verbose,
+      $._literal_open_brace,
+      $._nul_character,
+      $._escaped_nul_character,
       $._error_sentinel,
     ],
     conflicts: ($) => [
@@ -261,39 +243,30 @@ export default function defineGrammar(name, mode) {
       ...modeRules(true),
       _non_quantifiable_atom: ($) =>
         choice(
-          $.start_anchor,
+          alias("^", $.start_anchor),
           $.end_anchor,
           $.anchor_escape,
           $.word_boundary_escape,
         ),
       wildcard: () => ".",
-      start_anchor: () => "^",
       end_anchor: () => "$",
-      literal_escape: ($) => $._literal_escape,
+      _literal_escape: ($) =>
+        choice(
+          alias(token(/\\[^A-Za-z0-9]/), $.literal_escape),
+          alias($._escaped_nul_character, $.literal_escape),
+        ),
       control_escape: () =>
         token(choice("\\a", "\\f", "\\n", "\\r", "\\t", "\\v")),
       hex_escape: ($) =>
-        digitsEscape(
-          alias($._hex_escape_start, "\\x"),
-          TWO_HEXADECIMAL_DIGITS,
-          $.hexadecimal_digits,
-        ),
+        digitsEscape("\\x", TWO_HEXADECIMAL_DIGITS, $.hexadecimal_digits),
       unicode_escape: ($) =>
         choice(
-          digitsEscape(
-            alias($._unicode_escape_short_start, "\\u"),
-            FOUR_HEXADECIMAL_DIGITS,
-            $.hexadecimal_digits,
-          ),
-          digitsEscape(
-            alias($._unicode_escape_long_start, "\\U"),
-            EIGHT_HEXADECIMAL_DIGITS,
-            $.hexadecimal_digits,
-          ),
+          digitsEscape("\\u", FOUR_HEXADECIMAL_DIGITS, $.hexadecimal_digits),
+          digitsEscape("\\U", EIGHT_HEXADECIMAL_DIGITS, $.hexadecimal_digits),
         ),
       named_unicode_escape: ($) =>
         seq(
-          alias($._named_unicode_escape_start, "\\N"),
+          "\\N",
           "{",
           field(
             "name",
@@ -305,18 +278,10 @@ export default function defineGrammar(name, mode) {
       anchor_escape: () => token(choice("\\A", "\\z", "\\Z")),
       word_boundary_escape: () => token(choice("\\b", "\\B")),
       _outside_octal_escape: ($) =>
-        digitsEscape(
-          alias($._numeric_escape_start, "\\"),
-          /0[0-7]{0,2}|[1-7][0-7]{2}/,
-          $.octal_digits,
-        ),
+        digitsEscape("\\", /0[0-7]{0,2}|[1-7][0-7]{2}/, $.octal_digits),
       _outside_numeric_backreference: ($) =>
-        seq(
-          alias($._numeric_escape_start, "\\"),
-          field("group", alias(token(/[1-9][0-9]?/), $.group_id)),
-        ),
-      character_class: ($) =>
-        seq("[", optional(alias($._class_negation, "^")), $._class_body, "]"),
+        seq("\\", field("group", alias(token(/[1-9][0-9]?/), $.group_id))),
+      character_class: ($) => seq("[", optional("^"), $._class_body, "]"),
       _class_body: ($) =>
         classMembers(
           $,
@@ -352,7 +317,7 @@ export default function defineGrammar(name, mode) {
       _class_endpoint: ($) =>
         choice(
           $.class_character,
-          $.literal_escape,
+          $._literal_escape,
           $.control_escape,
           $.backspace_escape,
           $.hex_escape,
@@ -360,21 +325,16 @@ export default function defineGrammar(name, mode) {
           $.named_unicode_escape,
           alias($._class_octal_escape, $.octal_escape),
         ),
-      class_character: ($) => $._class_character,
+      class_character: () => token(choice(/[^\\\]-]/, prec(1, "\0"))),
       backspace_escape: () => "\\b",
       _class_octal_escape: ($) =>
-        digitsEscape(
-          alias($._numeric_escape_start, "\\"),
-          /[0-7]{1,3}/,
-          $.octal_digits,
-        ),
-      // "?" stays external: the shared lexer would extend it to "?P".
+        digitsEscape("\\", /[0-7]{1,3}/, $.octal_digits),
       quantifier: ($) =>
         seq(
           choice(
             "*",
             "+",
-            alias($._quantifier_question, "?"),
+            "?",
             seq(
               alias($._open_brace, "{"),
               field("count", $.decimal_digits),
@@ -388,7 +348,7 @@ export default function defineGrammar(name, mode) {
               "}",
             ),
           ),
-          optional(choice(alias($._quantifier_lazy_suffix, "?"), "+")),
+          optional(choice("?", "+")),
         ),
       decimal_digits: () => /[0-9]+/,
       named_backreference: ($) =>
@@ -401,6 +361,24 @@ export default function defineGrammar(name, mode) {
         ),
       _global_flags_with_x: ($) => globalFlags($, $._enable_flags_with_x),
       _global_flags_without_x: ($) => globalFlags($, $._enable_flags_without_x),
+      _enable_flags_with_x: () => /[aiLmsu]*x[aiLmsux]*/,
+      _enable_flags_without_x: () => /[aiLmsu]+/,
+      _disable_flags_with_x: () => /[ims]*x[imsx]*/,
+      _disable_flags_without_x: () => /[ims]+/,
+      _angle_group_name: () => token(repeat1(choice(/[^>]/, prec(1, "\0")))),
+      _parenthesized_group_name: () =>
+        token(repeat1(choice(/[^)]/, prec(1, "\0")))),
+      _conditional_group_id: () => /[0-9]+/,
+      _conditional_group_name: () =>
+        token(
+          seq(
+            repeat(/[0-9]/),
+            choice(/[^0-9)]/, prec(1, "\0")),
+            repeat(choice(/[^)]/, prec(1, "\0"))),
+          ),
+        ),
+      _unicode_character_name: () =>
+        token(repeat1(choice(/[^}]/, prec(1, "\0")))),
       comment_group: ($) =>
         seq(
           "(",
@@ -410,7 +388,36 @@ export default function defineGrammar(name, mode) {
           ")",
         ),
       verbose_whitespace: () => /[ \t\n\v\f\r]+/,
-      verbose_comment: ($) => $._verbose_comment,
+      _comment_group_content: () =>
+        token(
+          choice(
+            "\\",
+            seq(
+              repeat1(
+                choice(
+                  /[^\\)]/,
+                  prec(1, "\0"),
+                  seq("\\", choice(/./, "\n", prec(1, "\0"))),
+                ),
+              ),
+              optional("\\"),
+            ),
+          ),
+        ),
+      verbose_comment: () =>
+        token(
+          seq(
+            "#",
+            repeat(
+              choice(
+                /[^\\\n]/,
+                prec(1, "\0"),
+                seq("\\", choice(/./, "\n", prec(1, "\0"))),
+              ),
+            ),
+            optional("\\"),
+          ),
+        ),
     },
   });
 }

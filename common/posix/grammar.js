@@ -88,7 +88,13 @@ function breRules() {
         $.backreference,
       ),
     _bre_subexpression: ($) =>
-      seq("\\(", alias($._nested_basic_reg_exp, $.basic_reg_exp), "\\)"),
+      seq(
+        field("opening", "\\("),
+        optional(
+          field("expression", alias($._nested_basic_reg_exp, $.basic_reg_exp)),
+        ),
+        field("closing", "\\)"),
+      ),
     _leading_one_char_or_coll_elem_bre: ($) =>
       oneCharOrCollElem(
         $,
@@ -124,9 +130,14 @@ function ereRules() {
             "^",
             "$",
             seq(
-              "(",
-              alias($._nested_extended_reg_exp, $.extended_reg_exp),
-              ")",
+              field("opening", "("),
+              optional(
+                field(
+                  "expression",
+                  alias($._nested_extended_reg_exp, $.extended_reg_exp),
+                ),
+              ),
+              field("closing", ")"),
             ),
           ),
           repeat($.ere_dupl_symbol),
@@ -145,10 +156,9 @@ function ereRules() {
       prec.right(
         seq(
           choice("*", "+", "?", interval($, "{", "}")),
-          optional($.repetition_modifier),
+          optional(field("modifier", alias("?", $.repetition_modifier))),
         ),
       ),
-    repetition_modifier: () => "?",
     ordinary_character: () => ERE_ORDINARY_CHARACTER,
     quoted_character: () => ERE_QUOTED_CHARACTER,
   };
@@ -203,10 +213,13 @@ function sharedRules() {
       seq(
         "[",
         ".",
-        choice(
-          alias($._collating_symbol_single, $.collating_element_single),
-          alias($._collating_symbol_multi, $.collating_element_multi),
-          alias($._collating_symbol_meta, $.meta_character),
+        field(
+          "element",
+          choice(
+            alias($._collating_symbol_single, $.collating_element_single),
+            alias($._collating_symbol_multi, $.collating_element_multi),
+            alias($._collating_symbol_meta, $.meta_character),
+          ),
         ),
         ".",
         "]",
@@ -215,14 +228,18 @@ function sharedRules() {
       seq(
         "[",
         "=",
-        choice(
-          alias($._equivalence_class_single, $.collating_element_single),
-          alias($._equivalence_class_multi, $.collating_element_multi),
+        field(
+          "element",
+          choice(
+            alias($._equivalence_class_single, $.collating_element_single),
+            alias($._equivalence_class_multi, $.collating_element_multi),
+          ),
         ),
         "=",
         "]",
       ),
-    character_class: ($) => seq("[", ":", $.class_name, ":", "]"),
+    character_class: ($) =>
+      seq("[", ":", field("name", $.class_name), ":", "]"),
     class_name: () => CLASS_NAME,
     collating_element_single: () => COLLATING_ELEMENT_SINGLE,
   };

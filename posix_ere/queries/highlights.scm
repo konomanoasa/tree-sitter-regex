@@ -14,6 +14,9 @@
 
 (duplication_count) @number
 
+(ere_dupl_symbol
+  modifier: (repetition_modifier) @operator)
+
 [
   "("
   ")"

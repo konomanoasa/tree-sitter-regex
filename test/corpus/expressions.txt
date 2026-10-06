@@ -1187,7 +1187,7 @@ a group owns its delimiters and nested regular expression
 0:0 - 0:5     ere_branch
 0:0 - 0:5       ere_expression
 0:0 - 0:1         "("
-0:1 - 0:4         extended_reg_exp
+0:1 - 0:4         expression: extended_reg_exp
 0:1 - 0:2           ere_branch
 0:1 - 0:2             ere_expression
 0:1 - 0:2               one_char_or_coll_elem_ere
@@ -1313,7 +1313,7 @@ anchors are ordinary characters inside a subexpression
 0:0  - 0:12         simple_bre
 0:0  - 0:12           nondupl_bre
 0:0  - 0:2              "\\("
-0:2  - 0:10             basic_reg_exp
+0:2  - 0:10             expression: basic_reg_exp
 0:2  - 0:10               bre_branch
 0:2  - 0:3                  bre_expression
 0:2  - 0:3                    simple_bre
@@ -1366,7 +1366,7 @@ a subexpression owns its delimiters and nested regular expression
 0:0 - 0:8         simple_bre
 0:0 - 0:8           nondupl_bre
 0:0 - 0:2             "\\("
-0:2 - 0:6             basic_reg_exp
+0:2 - 0:6             expression: basic_reg_exp
 0:2 - 0:6               bre_branch
 0:2 - 0:3                 bre_expression
 0:2 - 0:3                   simple_bre

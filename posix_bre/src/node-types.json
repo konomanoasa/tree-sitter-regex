@@ -108,39 +108,41 @@
   {
     "type": "character_class",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "class_name",
-          "named": true
-        }
-      ]
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "class_name",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
     "type": "collating_symbol",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "collating_element_multi",
-          "named": true
-        },
-        {
-          "type": "collating_element_single",
-          "named": true
-        },
-        {
-          "type": "meta_character",
-          "named": true
-        }
-      ]
+    "fields": {
+      "element": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "collating_element_multi",
+            "named": true
+          },
+          {
+            "type": "collating_element_single",
+            "named": true
+          },
+          {
+            "type": "meta_character",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
@@ -165,20 +167,21 @@
   {
     "type": "equivalence_class",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "collating_element_multi",
-          "named": true
-        },
-        {
-          "type": "collating_element_single",
-          "named": true
-        }
-      ]
+    "fields": {
+      "element": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "collating_element_multi",
+            "named": true
+          },
+          {
+            "type": "collating_element_single",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
@@ -233,17 +236,44 @@
   {
     "type": "nondupl_bre",
     "named": true,
-    "fields": {},
+    "fields": {
+      "closing": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "\\)",
+            "named": false
+          }
+        ]
+      },
+      "expression": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "basic_reg_exp",
+            "named": true
+          }
+        ]
+      },
+      "opening": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "\\(",
+            "named": false
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": false,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "backreference",
-          "named": true
-        },
-        {
-          "type": "basic_reg_exp",
           "named": true
         },
         {

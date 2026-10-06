@@ -98,11 +98,6 @@
     }
   },
   {
-    "type": "class_character",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "class_range",
     "named": true,
     "fields": {
@@ -371,6 +366,11 @@
     }
   },
   {
+    "type": "decimal_digits",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "global_flags",
     "named": true,
     "fields": {
@@ -385,6 +385,11 @@
         ]
       }
     }
+  },
+  {
+    "type": "group_id",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "hex_escape",
@@ -403,7 +408,7 @@
     }
   },
   {
-    "type": "literal_escape",
+    "type": "literal_character",
     "named": true,
     "fields": {}
   },
@@ -833,11 +838,6 @@
     }
   },
   {
-    "type": "verbose_comment",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "!",
     "named": false
   },
@@ -946,15 +946,15 @@
     "named": true
   },
   {
+    "type": "class_character",
+    "named": true
+  },
+  {
     "type": "comment_content",
     "named": true
   },
   {
     "type": "control_escape",
-    "named": true
-  },
-  {
-    "type": "decimal_digits",
     "named": true
   },
   {
@@ -966,10 +966,6 @@
     "named": true
   },
   {
-    "type": "group_id",
-    "named": true
-  },
-  {
     "type": "group_name",
     "named": true
   },
@@ -978,7 +974,7 @@
     "named": true
   },
   {
-    "type": "literal_character",
+    "type": "literal_escape",
     "named": true
   },
   {
@@ -991,6 +987,10 @@
   },
   {
     "type": "unicode_character_name",
+    "named": true
+  },
+  {
+    "type": "verbose_comment",
     "named": true
   },
   {

@@ -4,11 +4,8 @@
 [![crates.io](https://img.shields.io/crates/v/konomanoasa-tree-sitter-regex)](https://crates.io/crates/konomanoasa-tree-sitter-regex)
 [![npm](https://img.shields.io/npm/v/@konomanoasa/tree-sitter-regex)](https://www.npmjs.com/package/@konomanoasa/tree-sitter-regex)
 
-[Tree-sitter](https://tree-sitter.github.io/tree-sitter/) regular expression grammars for:
-
-- ECMAScript 2026 regular expression literal bodies (`/.../`)
-- Python 3.14 `re` patterns in raw `str` literals
-- POSIX.1-2024 BRE and ERE
+[Tree-sitter](https://tree-sitter.github.io/tree-sitter/) grammars for
+ECMAScript 2026 regular expressions, Python 3.14 `re`, and POSIX.1-2024 BRE/ERE.
 
 ## Installation
 
@@ -17,6 +14,9 @@ npm install @konomanoasa/tree-sitter-regex
 ```
 
 ## Grammars
+
+ECMAScript input is the body of a regular expression literal (`/.../`).
+Python input is a pattern in a raw `str` literal.
 
 | Grammar              | Description                             |
 | -------------------- | --------------------------------------- |

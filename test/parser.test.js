@@ -98,6 +98,105 @@ test("javascript_regex_v: a class string retains NUL and empty alternatives", ()
 
 const ownershipCases = [
   {
+    name: "scoped normal mode retains NUL literals and escaped NUL",
+    source: "(?-x:\0\\\0)",
+    expected: [
+      ["literal_character `\\0`", "0:5-0:6", "concatenation"],
+      ["literal_escape `\\\\\\0`", "0:6-0:8", "concatenation"],
+    ],
+  },
+  {
+    name: "an escaped NUL in a class leaves the next NUL as a class character",
+    source: "[\\\0\0]",
+    expected: [
+      ["literal_escape `\\\\\\0`", "0:1-0:3", "character_class"],
+      ["class_character `\\0`", "0:3-0:4", "character_class"],
+    ],
+  },
+  {
+    name: "escaped NUL leaves a following NUL as a literal through EOF",
+    source: "\\\0\0",
+    expected: [
+      ["literal_escape `\\\\\\0`", "0:0-0:2", "concatenation"],
+      ["literal_character `\\0`", "0:2-0:3", "concatenation"],
+    ],
+  },
+  {
+    name: "NUL remains inside a capturing group name",
+    source: "(?P<a\0b>x)",
+    expected: [
+      ["name: group_name `a\\0b`", "0:4-0:7", "named_capturing_group"],
+      ['">"', "0:7-0:8", "named_capturing_group"],
+    ],
+  },
+  {
+    name: "NUL remains inside a named backreference",
+    source: "(?P=a\0b)",
+    expected: [
+      ["name: group_name `a\\0b`", "0:4-0:7", "named_backreference"],
+      ['")"', "0:7-0:8", "named_backreference"],
+    ],
+  },
+  {
+    name: "NUL prevents a conditional name from being split into a numeric ID",
+    source: "(?(1\0a)x|y)",
+    expected: [
+      ["condition: group_name `1\\0a`", "0:3-0:6", "conditional_group"],
+    ],
+  },
+  {
+    name: "NUL remains inside a Unicode character name",
+    source: "\\N{A\0B}",
+    expected: [
+      [
+        "name: unicode_character_name `A\\0B`",
+        "0:3-0:6",
+        "named_unicode_escape",
+      ],
+      ['"}"', "0:6-0:7", "named_unicode_escape"],
+    ],
+  },
+  {
+    name: "NUL and escaped NUL leave the comment group closer structural",
+    source: "(?#a\0\\\0b)c",
+    expected: [
+      ["comment_content `a\\0\\\\\\0b`", "0:3-0:8", "comment_group"],
+      ['")"', "0:8-0:9", "comment_group"],
+      ["literal_character `c`", "0:9-0:10", "concatenation"],
+    ],
+  },
+  {
+    name: "NUL and escaped NUL leave the verbose comment newline structural",
+    source: "(?x:#a\0\\\0b\nc)",
+    expected: [
+      ["verbose_comment `#a\\0\\\\\\0b`", "0:4-0:10", "concatenation"],
+      ["verbose_whitespace", "0:10-1:0", "concatenation"],
+      ["literal_character `c`", "1:0-1:1", "concatenation"],
+    ],
+  },
+  {
+    name: "an escaped CR leaves the LF ending a verbose comment structural",
+    source: "(?x:#a\\\r\nb)",
+    expected: [
+      ["verbose_comment `#a\\\\\\r`", "0:4-0:8", "concatenation"],
+      ["verbose_whitespace", "0:8-1:0", "concatenation"],
+      ["literal_character `b`", "1:0-1:1", "concatenation"],
+    ],
+  },
+  {
+    name: "question quantifiers leave a following P as a literal",
+    source: "a?P|b*?P|c??P",
+    expected: [
+      ['"?"', "0:1-0:2", "quantifier: quantifier"],
+      ["literal_character `P`", "0:2-0:3", "concatenation"],
+      ['"?"', "0:6-0:7", "quantifier: quantifier"],
+      ["literal_character `P`", "0:7-0:8", "concatenation"],
+      ['"?"', "0:10-0:11", "quantifier: quantifier"],
+      ['"?"', "0:11-0:12", "quantifier: quantifier"],
+      ["literal_character `P`", "0:12-0:13", "concatenation"],
+    ],
+  },
+  {
     name: "repetition owns Unicode operand and verbose layout before its quantifier",
     source: "(?x:é #c\n*)z",
     expected: [
@@ -190,6 +289,20 @@ for (const { name, expected } of initialLayoutCases) {
 }
 
 for (const grammar of pythonGrammars) {
+  test(`${grammar.name}: EOF does not supply a character in unfinished groups or escapes`, () => {
+    for (const source of ["(?-x:", "(?-x:a", "(?-x:\0", "\\", "a\\"]) {
+      assert.equal(parseSummary(grammar, source, 100_000).successful, false);
+    }
+    const complete = "(?-x:a)";
+    const deletion = { byte: 6, deleteBytes: 1, insert: "" };
+    const restoration = { byte: 6, deleteBytes: 0, insert: ")" };
+    assert.equal(parse(grammar, complete, [deletion]).status, 1);
+    assert.deepEqual(
+      parse(grammar, complete, [deletion, restoration]),
+      parse(grammar, complete),
+    );
+  });
+
   test(`${grammar.name}: scoped flags support 2048 nested alternating verbose modes`, () => {
     const depth = 2048;
     const headers = Array.from({ length: depth }, (_, index) =>
@@ -498,6 +611,11 @@ const malformedCases = [
     source: "[\\xA]|z\\\n",
   },
   {
+    name: "nonoctal numeric escape in a class",
+    languages: ["python_re", "python_re_verbose"],
+    source: "[\\8]",
+  },
+  {
     name: "missing class closer",
     languages: ["python_re", "python_re_verbose"],
     source: "[a|)#\n",
@@ -609,7 +727,7 @@ test("posix_ere: an unmatched close parenthesis is an ordinary character", () =>
 
 test("posix_ere: a group closer cannot supply a missing branch operand", () => {
   const grammar = posixGrammars.find(({ name }) => name === "posix_ere");
-  for (const source of ["()a)", "(()))", "(a|)b)", "(a|)*b)"]) {
+  for (const source of ["(|a)b)", "(a|)b)", "(|)b)", "(a||b)c)", "(a|)*b)"]) {
     assert.equal(parse(grammar, source).status, 1, source);
   }
 });
@@ -630,6 +748,36 @@ test("posix_bre: unescaped parentheses are ordinary characters", () => {
 
 for (const grammar of posixGrammars) {
   const bre = grammar.name === "posix_bre";
+  test(`${grammar.name}: empty groups remain valid in nested and repeated expressions`, () => {
+    const sources = bre
+      ? [
+          String.raw`\(\)`,
+          String.raw`a\(\)b`,
+          String.raw`\(\(\)\)`,
+          String.raw`\(\)*`,
+          String.raw`\(\)\{2\}`,
+          String.raw`\(\)\1`,
+          String.raw`\(\)*$`,
+        ]
+      : [
+          "()",
+          "a()b",
+          "(())",
+          "()*",
+          "(){2}",
+          "()*?",
+          "()|a",
+          "(a|())",
+          "()a)",
+          "(()))",
+        ];
+    for (const source of sources) {
+      const result = parse(grammar, source);
+      assert.equal(result.status, 0, source);
+      assert.equal(result.recovery, false, source);
+    }
+  });
+
   const malformed = [
     ["trailing backslash", "a\\"],
     ["unknown ASCII-letter escape", String.raw`\q`],
@@ -646,7 +794,7 @@ for (const grammar of posixGrammars) {
     ["unclosed equivalence class", "[[=a"],
     ["unclosed character class", "[[:alpha"],
     ["unclosed group", bre ? String.raw`\(a` : "(a"],
-    ["empty group", bre ? String.raw`\(\)` : "()"],
+    ["group opener without a body or closer", bre ? String.raw`\(` : "("],
     ["unclosed interval", bre ? String.raw`a\{1` : "a{1"],
     ["interval without a minimum", bre ? String.raw`a\{,2\}` : "a{,2}"],
     ["nonnumeric interval maximum", bre ? String.raw`a\{1,x\}` : "a{1,x}"],
@@ -674,12 +822,20 @@ for (const grammar of posixGrammars) {
     assert.equal(result.status, 0);
     assert.deepEqual(
       selectNodes(result, [
-        "collating_element_single `é`",
-        "collating_element_single `😀`",
+        "element: collating_element_single `é`",
+        "element: collating_element_single `😀`",
       ]),
       [
-        ["collating_element_single `é`", "0:3-0:5", "collating_symbol"],
-        ["collating_element_single `😀`", "0:9-0:13", "equivalence_class"],
+        [
+          "element: collating_element_single `é`",
+          "0:3-0:5",
+          "collating_symbol",
+        ],
+        [
+          "element: collating_element_single `😀`",
+          "0:9-0:13",
+          "equivalence_class",
+        ],
       ],
     );
   });
@@ -694,25 +850,33 @@ for (const grammar of posixGrammars) {
         '"."',
         '"="',
         '":"',
-        "collating_element_multi `é]`",
-        "collating_element_multi `😀]`",
-        "class_name `alpha`",
+        "element: collating_element_multi `é]`",
+        "element: collating_element_multi `😀]`",
+        "name: class_name `alpha`",
       ]),
       [
         ['"["', "0:0-0:1", "bracket_expression"],
         ['"["', "0:1-0:2", "collating_symbol"],
         ['"."', "0:2-0:3", "collating_symbol"],
-        ["collating_element_multi `é]`", "0:3-0:6", "collating_symbol"],
+        [
+          "element: collating_element_multi `é]`",
+          "0:3-0:6",
+          "collating_symbol",
+        ],
         ['"."', "0:6-0:7", "collating_symbol"],
         ['"]"', "0:7-0:8", "collating_symbol"],
         ['"["', "0:8-0:9", "equivalence_class"],
         ['"="', "0:9-0:10", "equivalence_class"],
-        ["collating_element_multi `😀]`", "0:10-0:15", "equivalence_class"],
+        [
+          "element: collating_element_multi `😀]`",
+          "0:10-0:15",
+          "equivalence_class",
+        ],
         ['"="', "0:15-0:16", "equivalence_class"],
         ['"]"', "0:16-0:17", "equivalence_class"],
         ['"["', "0:17-0:18", "character_class"],
         ['":"', "0:18-0:19", "character_class"],
-        ["class_name `alpha`", "0:19-0:24", "character_class"],
+        ["name: class_name `alpha`", "0:19-0:24", "character_class"],
         ['":"', "0:24-0:25", "character_class"],
         ['"]"', "0:25-0:26", "character_class"],
         ['"]"', "0:26-0:27", "bracket_expression"],

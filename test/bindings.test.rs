@@ -68,6 +68,88 @@ fn parses_valid_source() {
 }
 
 #[test]
+fn posix_group_and_repetition_fields_resolve_to_direct_children() {
+  for (language, source, expected) in [
+    (
+      grammar::LANGUAGE_POSIX_BRE,
+      r"\(\)",
+      vec![
+        ("nondupl_bre", "opening", 0..2),
+        ("nondupl_bre", "closing", 2..4),
+      ],
+    ),
+    (
+      grammar::LANGUAGE_POSIX_BRE,
+      r"\(\(a\)\)\{2,3\}",
+      vec![
+        ("nondupl_bre", "opening", 0..2),
+        ("nondupl_bre", "expression", 2..7),
+        ("nondupl_bre", "closing", 7..9),
+        ("nondupl_bre", "opening", 2..4),
+        ("nondupl_bre", "expression", 4..5),
+        ("nondupl_bre", "closing", 5..7),
+        ("bre_dupl_symbol", "minimum", 11..12),
+        ("bre_dupl_symbol", "maximum", 13..14),
+      ],
+    ),
+    (
+      grammar::LANGUAGE_POSIX_ERE,
+      "()",
+      vec![
+        ("ere_expression", "opening", 0..1),
+        ("ere_expression", "closing", 1..2),
+      ],
+    ),
+    (
+      grammar::LANGUAGE_POSIX_ERE,
+      "((a)){2,3}?",
+      vec![
+        ("ere_expression", "opening", 0..1),
+        ("ere_expression", "expression", 1..4),
+        ("ere_expression", "closing", 4..5),
+        ("ere_expression", "opening", 1..2),
+        ("ere_expression", "expression", 2..3),
+        ("ere_expression", "closing", 3..4),
+        ("ere_dupl_symbol", "minimum", 6..7),
+        ("ere_dupl_symbol", "maximum", 8..9),
+        ("ere_dupl_symbol", "modifier", 10..11),
+      ],
+    ),
+  ] {
+    let mut parser = Parser::new();
+    parser.set_language(&language.into()).unwrap();
+    let tree = parser.parse(source, None).unwrap();
+    assert!(!tree.root_node().has_error(), "{source}");
+    let mut pending = vec![tree.root_node()];
+    let mut fields = Vec::new();
+    while let Some(node) = pending.pop() {
+      let mut cursor = node.walk();
+      let mut children = Vec::new();
+      if cursor.goto_first_child() {
+        loop {
+          let child = cursor.node();
+          if let Some(field) = cursor.field_name() {
+            assert_eq!(
+              node.child_by_field_name(field),
+              Some(child),
+              "{source}"
+            );
+            assert_eq!(child.parent(), Some(node), "{source}");
+            fields.push((node.kind(), field, child.byte_range()));
+          }
+          children.push(child);
+          if !cursor.goto_next_sibling() {
+            break;
+          }
+        }
+      }
+      pending.extend(children.into_iter().rev());
+    }
+    assert_eq!(fields, expected, "{source}");
+  }
+}
+
+#[test]
 fn uses_distinct_grammars() {
   let languages = [
     grammar::LANGUAGE_JAVASCRIPT,

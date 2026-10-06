@@ -481,46 +481,37 @@ static void test_token_ranges_follow_the_grammar_context(void) {
     TSSymbol token;
     size_t length;
   } cases[] = {
-    {" ", LITERAL_CHARACTER_NORMAL, 1},
-    {"#", LITERAL_CHARACTER_NORMAL, 1},
-    {" ", CLASS_CHARACTER, 1},
-    {"#", CLASS_CHARACTER, 1},
-    {"^", CLASS_NEGATION, 1},
-    {"a", LITERAL_CHARACTER_VERBOSE, 1},
-    {"(?ix)", GLOBAL_FLAGS_START, 1},
-    {"(?i-x:", SCOPED_FLAGS_START, 1},
-    {"ix", ENABLE_FLAGS_WITH_X, 2},
-    {"mi", ENABLE_FLAGS_WITHOUT_X, 2},
-    {"sx", DISABLE_FLAGS_WITH_X, 2},
-    {"ms", DISABLE_FLAGS_WITHOUT_X, 2},
-    {"name>", ANGLE_GROUP_NAME, 4},
-    {"name)", PARENTHESIZED_GROUP_NAME, 4},
-    {"123)", CONDITIONAL_GROUP_ID, 3},
-    {"EM DASH}", UNICODE_CHARACTER_NAME, 7},
-    {"\\x01", HEX_ESCAPE_START, 2},
-    {"\\u0123", UNICODE_ESCAPE_SHORT_START, 2},
-    {"\\U00001234", UNICODE_ESCAPE_LONG_START, 2},
-    {"\\N{EM DASH}", NAMED_UNICODE_ESCAPE_START, 2},
-    {"\\123", NUMERIC_ESCAPE_START, 1},
-    {"\\#", LITERAL_ESCAPE, 2},
     {"{,}", OPEN_BRACE, 1},
     {"{12}", OPEN_BRACE, 1},
     {"{12,}", OPEN_BRACE, 1},
     {"{,12}", OPEN_BRACE, 1},
     {"{1,2}", OPEN_BRACE, 1},
-    {"{", LITERAL_CHARACTER_NORMAL, 1},
-    {"{1", LITERAL_CHARACTER_VERBOSE, 1},
-    {"{ 1}", LITERAL_CHARACTER_NORMAL, 1},
-    {"a\\)b)c", COMMENT_GROUP_CONTENT, 4},
-    {"a\\\\)b", COMMENT_GROUP_CONTENT, 3},
-    {"#a\\\nb\nc", VERBOSE_COMMENT, 5},
-    {"#a\\\\\nb", VERBOSE_COMMENT, 4},
-    {"#a\\\r\nb", VERBOSE_COMMENT, 4},
+    {"{", LITERAL_OPEN_BRACE, 1},
+    {"{1", LITERAL_OPEN_BRACE, 1},
+    {"{ 1}", LITERAL_OPEN_BRACE, 1},
   };
   for (
     unsigned index = 0; index < sizeof(cases) / sizeof(cases[0]); index += 1
   ) {
     assert_token(cases[index].source, cases[index].token, cases[index].length);
+  }
+  const struct {
+    const char *source;
+    size_t length;
+    TSSymbol token;
+    size_t end;
+  } nul_cases[] = {
+    {"\0x", 2, NUL_CHARACTER, 1},
+    {"\\\0x", 3, ESCAPED_NUL_CHARACTER, 2},
+  };
+  for (size_t i = 0; i < sizeof(nul_cases) / sizeof(nul_cases[0]); i++) {
+    MockLexer mock = make_lexer(nul_cases[i].source, nul_cases[i].length);
+    bool valid[TOKEN_COUNT] = {false};
+    valid[nul_cases[i].token] = true;
+    assert(REGEX_SCANNER(scan)(NULL, &mock.lexer, valid));
+    assert(mock.lexer.result_symbol == nul_cases[i].token);
+    assert(mock.mark == nul_cases[i].end);
+    assert(mock.offset == nul_cases[i].end);
   }
 }
 
@@ -529,18 +520,13 @@ static void test_invalid_tokens_are_not_emitted(void) {
     const char *source;
     TSSymbol token;
   } cases[] = {
-    {" ", LITERAL_CHARACTER_VERBOSE},
-    {"#", LITERAL_CHARACTER_VERBOSE},
-    {">", ANGLE_GROUP_NAME},
-    {"}", UNICODE_CHARACTER_NAME},
-    {"\\x0", HEX_ESCAPE_START},
-    {"\\u123", UNICODE_ESCAPE_SHORT_START},
-    {"\\U1234567", UNICODE_ESCAPE_LONG_START},
-    {"\\Nname}", NAMED_UNICODE_ESCAPE_START},
-    {"\\q", LITERAL_ESCAPE},
-    {"(?i)", SCOPED_FLAGS_START},
-    {"(?x:", GLOBAL_FLAGS_START},
-    {"{1}", LITERAL_CHARACTER_NORMAL},
+    {"{1}", LITERAL_OPEN_BRACE},
+    {"{ 1}", OPEN_BRACE},
+    {"", OPEN_BRACE},
+    {"", NUL_CHARACTER},
+    {"", ESCAPED_NUL_CHARACTER},
+    {"\\", ESCAPED_NUL_CHARACTER},
+    {"\\a", ESCAPED_NUL_CHARACTER},
   };
   for (
     unsigned index = 0; index < sizeof(cases) / sizeof(cases[0]); index += 1
@@ -550,33 +536,6 @@ static void test_invalid_tokens_are_not_emitted(void) {
     MockLexer mock =
       make_lexer(cases[index].source, strlen(cases[index].source));
     assert(!REGEX_SCANNER(scan)(NULL, &mock.lexer, valid_symbols));
-  }
-}
-
-static void test_class_numeric_escapes_require_an_octal_digit(void) {
-  bool valid_symbols[TOKEN_COUNT] = {false};
-  valid_symbols[CLASS_CHARACTER] = true;
-  valid_symbols[NUMERIC_ESCAPE_START] = true;
-  MockLexer octal = make_lexer("\\7", 2);
-  assert(REGEX_SCANNER(scan)(NULL, &octal.lexer, valid_symbols));
-  assert(octal.lexer.result_symbol == NUMERIC_ESCAPE_START);
-  assert(octal.mark == 1);
-  MockLexer decimal = make_lexer("\\8", 2);
-  assert(!REGEX_SCANNER(scan)(NULL, &decimal.lexer, valid_symbols));
-}
-
-static void test_nul_and_eof_are_distinct(void) {
-  const TSSymbol tokens[] =
-    {LITERAL_CHARACTER_NORMAL, LITERAL_CHARACTER_VERBOSE, CLASS_CHARACTER};
-  for (size_t index = 0; index < sizeof(tokens) / sizeof(tokens[0]); index++) {
-    bool valid_symbols[TOKEN_COUNT] = {false};
-    valid_symbols[tokens[index]] = true;
-    MockLexer nul = make_lexer("\0", 1);
-    assert(REGEX_SCANNER(scan)(NULL, &nul.lexer, valid_symbols));
-    assert(nul.lexer.result_symbol == tokens[index]);
-    assert(nul.mark == 1);
-    MockLexer eof = make_lexer("", 0);
-    assert(!REGEX_SCANNER(scan)(NULL, &eof.lexer, valid_symbols));
   }
 }
 
@@ -621,8 +580,6 @@ int main(void) {
   test_stateless_lifecycle_and_serialization();
   test_token_ranges_follow_the_grammar_context();
   test_invalid_tokens_are_not_emitted();
-  test_class_numeric_escapes_require_an_octal_digit();
-  test_nul_and_eof_are_distinct();
 #endif
 #ifdef TREE_SITTER_REUSE_ALLOCATOR
   test_reuse_allocator_contract();

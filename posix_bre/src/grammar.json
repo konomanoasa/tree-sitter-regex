@@ -333,21 +333,41 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
-          "value": "\\("
-        },
-        {
-          "type": "ALIAS",
+          "type": "FIELD",
+          "name": "opening",
           "content": {
-            "type": "SYMBOL",
-            "name": "_nested_basic_reg_exp"
-          },
-          "named": true,
-          "value": "basic_reg_exp"
+            "type": "STRING",
+            "value": "\\("
+          }
         },
         {
-          "type": "STRING",
-          "value": "\\)"
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "FIELD",
+              "name": "expression",
+              "content": {
+                "type": "ALIAS",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "_nested_basic_reg_exp"
+                },
+                "named": true,
+                "value": "basic_reg_exp"
+              }
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "FIELD",
+          "name": "closing",
+          "content": {
+            "type": "STRING",
+            "value": "\\)"
+          }
         }
       ]
     },
@@ -863,36 +883,40 @@
           "value": "."
         },
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "ALIAS",
-              "content": {
-                "type": "SYMBOL",
-                "name": "_collating_symbol_single"
+          "type": "FIELD",
+          "name": "element",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "_collating_symbol_single"
+                },
+                "named": true,
+                "value": "collating_element_single"
               },
-              "named": true,
-              "value": "collating_element_single"
-            },
-            {
-              "type": "ALIAS",
-              "content": {
-                "type": "SYMBOL",
-                "name": "_collating_symbol_multi"
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "_collating_symbol_multi"
+                },
+                "named": true,
+                "value": "collating_element_multi"
               },
-              "named": true,
-              "value": "collating_element_multi"
-            },
-            {
-              "type": "ALIAS",
-              "content": {
-                "type": "SYMBOL",
-                "name": "_collating_symbol_meta"
-              },
-              "named": true,
-              "value": "meta_character"
-            }
-          ]
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "_collating_symbol_meta"
+                },
+                "named": true,
+                "value": "meta_character"
+              }
+            ]
+          }
         },
         {
           "type": "STRING",
@@ -916,27 +940,31 @@
           "value": "="
         },
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "ALIAS",
-              "content": {
-                "type": "SYMBOL",
-                "name": "_equivalence_class_single"
+          "type": "FIELD",
+          "name": "element",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "_equivalence_class_single"
+                },
+                "named": true,
+                "value": "collating_element_single"
               },
-              "named": true,
-              "value": "collating_element_single"
-            },
-            {
-              "type": "ALIAS",
-              "content": {
-                "type": "SYMBOL",
-                "name": "_equivalence_class_multi"
-              },
-              "named": true,
-              "value": "collating_element_multi"
-            }
-          ]
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "_equivalence_class_multi"
+                },
+                "named": true,
+                "value": "collating_element_multi"
+              }
+            ]
+          }
         },
         {
           "type": "STRING",
@@ -960,8 +988,12 @@
           "value": ":"
         },
         {
-          "type": "SYMBOL",
-          "name": "class_name"
+          "type": "FIELD",
+          "name": "name",
+          "content": {
+            "type": "SYMBOL",
+            "name": "class_name"
+          }
         },
         {
           "type": "STRING",

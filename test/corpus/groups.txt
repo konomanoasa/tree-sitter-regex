@@ -1022,6 +1022,36 @@ group names retain source spelling without semantic validation
       (literal_escape))))
 
 ==================
+empty BRE groups own only their delimiters
+:language(posix_bre)
+:cst
+==================
+\(\)
+---
+
+0:0 - 0:4   basic_reg_exp
+0:0 - 0:4     bre_branch
+0:0 - 0:4       bre_expression
+0:0 - 0:4         simple_bre
+0:0 - 0:4           nondupl_bre
+0:0 - 0:2             "\\("
+0:2 - 0:4             "\\)"
+
+==================
+empty ERE groups own only their delimiters
+:language(posix_ere)
+:cst
+==================
+()
+---
+
+0:0 - 0:2   extended_reg_exp
+0:0 - 0:2     ere_branch
+0:0 - 0:2       ere_expression
+0:0 - 0:1         "("
+0:1 - 0:2         ")"
+
+==================
 empty groups and lookarounds own their introducers and closers
 :language(javascript_regex)
 :cst
@@ -1344,6 +1374,23 @@ comment content skips an escaped parenthesis
       (literal_escape))))
 
 ==================
+an escaped backslash leaves the comment group closer structural
+:language(python_re)
+:language(python_re_verbose)
+==================
+(?#a\\)b\
+
+---
+
+(pattern
+  (comment_group
+    (comment_content))
+  body: (alternation
+    (concatenation
+      (literal_character)
+      (literal_escape))))
+
+==================
 comment content can begin with a brace
 :language(python_re)
 :language(python_re_verbose)
@@ -1368,6 +1415,28 @@ verbose comment skips an escaped newline
 (?x:#a\
 b
 z)\
+
+---
+
+(pattern
+  body: (alternation
+    (concatenation
+      (scoped_flags_group
+        enable: (flag_set)
+        body: (alternation
+          (concatenation
+            (verbose_comment)
+            (verbose_whitespace)
+            (literal_character))))
+      (literal_escape))))
+
+==================
+an escaped backslash leaves the verbose comment newline structural
+:language(python_re)
+:language(python_re_verbose)
+==================
+(?x:#a\\
+b)\
 
 ---
 

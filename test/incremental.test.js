@@ -841,6 +841,48 @@ for (const grammar of pythonGrammars) {
 }
 
 const posixEdits = [
+  ...posixGrammars.flatMap(({ name }) => {
+    const [opening, closing] =
+      name === "posix_bre" ? ["\\(", "\\)"] : ["(", ")"];
+    const languages = [name];
+    const byte = opening.length;
+    return [
+      {
+        name: "deleting a group body leaves only its delimiters",
+        languages,
+        source: `${opening}a${closing}`,
+        edited: `${opening}${closing}`,
+        edit: { byte, deleteBytes: 1, insert: "" },
+        reverse: { byte, deleteBytes: 0, insert: "a" },
+      },
+      {
+        name: "completing a bodyless group at EOF removes recovery",
+        languages,
+        source: opening,
+        edited: `${opening}${closing}`,
+        edit: { byte, deleteBytes: 0, insert: closing },
+        reverse: { byte, deleteBytes: closing.length, insert: "" },
+        sourceError: true,
+      },
+      {
+        name: "deleting a nested group body preserves its quantifier",
+        languages,
+        source: `${opening}${opening}a${closing}*${closing}`,
+        edited: `${opening}${opening}${closing}*${closing}`,
+        edit: { byte: 2 * byte, deleteBytes: 1, insert: "" },
+        reverse: { byte: 2 * byte, deleteBytes: 0, insert: "a" },
+      },
+    ];
+  }),
+  {
+    name: "an empty group supplies a missing alternative",
+    languages: ["posix_ere"],
+    source: "(a|)",
+    edited: "(a|())",
+    edit: { byte: 3, deleteBytes: 0, insert: "()" },
+    reverse: { byte: 3, deleteBytes: 2, insert: "" },
+    sourceError: true,
+  },
   {
     name: "repairing a compound closing marker restores its delimiter leaves",
     languages: ["posix_bre", "posix_ere"],

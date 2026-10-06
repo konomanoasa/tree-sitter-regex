@@ -65,11 +65,3 @@ CompileFlags:
   Add:
     - -DREGEX_SCANNER_SOURCE="../python_re/src/scanner.c"
     - -I../python_re/src
-
----
-# Clangd checks included helpers before their callers and can hit its error limit.
-If:
-  PathMatch: python_re(_verbose)?/src/scanner\.c
-CompileFlags:
-  Add:
-    - -Wno-unused-function

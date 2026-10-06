@@ -36,39 +36,41 @@
   {
     "type": "character_class",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "class_name",
-          "named": true
-        }
-      ]
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "class_name",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
     "type": "collating_symbol",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "collating_element_multi",
-          "named": true
-        },
-        {
-          "type": "collating_element_single",
-          "named": true
-        },
-        {
-          "type": "meta_character",
-          "named": true
-        }
-      ]
+    "fields": {
+      "element": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "collating_element_multi",
+            "named": true
+          },
+          {
+            "type": "collating_element_single",
+            "named": true
+          },
+          {
+            "type": "meta_character",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
@@ -93,20 +95,21 @@
   {
     "type": "equivalence_class",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "collating_element_multi",
-          "named": true
-        },
-        {
-          "type": "collating_element_single",
-          "named": true
-        }
-      ]
+    "fields": {
+      "element": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "collating_element_multi",
+            "named": true
+          },
+          {
+            "type": "collating_element_single",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
@@ -147,33 +150,60 @@
             "named": true
           }
         ]
+      },
+      "modifier": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "repetition_modifier",
+            "named": true
+          }
+        ]
       }
-    },
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "repetition_modifier",
-          "named": true
-        }
-      ]
     }
   },
   {
     "type": "ere_expression",
     "named": true,
-    "fields": {},
+    "fields": {
+      "closing": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": ")",
+            "named": false
+          }
+        ]
+      },
+      "expression": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "extended_reg_exp",
+            "named": true
+          }
+        ]
+      },
+      "opening": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "(",
+            "named": false
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": true,
       "required": false,
       "types": [
         {
           "type": "ere_dupl_symbol",
-          "named": true
-        },
-        {
-          "type": "extended_reg_exp",
           "named": true
         },
         {
@@ -306,11 +336,6 @@
     }
   },
   {
-    "type": "repetition_modifier",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "single_expression",
     "named": true,
     "fields": {},
@@ -430,6 +455,10 @@
   },
   {
     "type": "quoted_character",
+    "named": true
+  },
+  {
+    "type": "repetition_modifier",
     "named": true
   },
   {
