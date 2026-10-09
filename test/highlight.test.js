@@ -138,6 +138,8 @@ const captureNames = [
   "character.special",
   "comment",
   "keyword.modifier",
+  "keyword",
+  "string",
   "label",
   "number",
   "operator",
@@ -182,6 +184,93 @@ function assertCommand(arguments_) {
 
 const finalCaptureCases = [
   {
+    name: "PCRE2 names and quote markers retain their leaf captures",
+    languages: ["pcre2"],
+    source: String.raw`(?<x>a)\k<x>\Q+\E`,
+    captures: [
+      [0, 1, "punctuation.bracket"],
+      [1, 2, "punctuation.special"],
+      [2, 3, "punctuation.bracket"],
+      [3, 4, "label"],
+      [4, 5, "punctuation.bracket"],
+      [5, 6, "string.regexp"],
+      [6, 7, "punctuation.bracket"],
+      [7, 9, "punctuation.special"],
+      [9, 10, "punctuation.bracket"],
+      [10, 11, "label"],
+      [11, 12, "punctuation.bracket"],
+      [12, 14, "punctuation.special"],
+      [14, 15, "string.regexp"],
+      [15, 17, "punctuation.special"],
+    ],
+  },
+  {
+    name: "PCRE2 extended layout leaves whitespace uncolored",
+    languages: ["pcre2"],
+    source: "(?xx)[a b] #z\n",
+    captures: [
+      [0, 1, "punctuation.bracket"],
+      [1, 2, "punctuation.special"],
+      [2, 4, "keyword.modifier"],
+      [4, 6, "punctuation.bracket"],
+      [6, 7, "string.regexp"],
+      [8, 9, "string.regexp"],
+      [9, 10, "punctuation.bracket"],
+      [11, 13, "comment"],
+    ],
+  },
+  {
+    name: "PCRE2 anchors stay operators beside callout string delimiters",
+    languages: ["pcre2"],
+    source: "^a.$(?C$x$)",
+    captures: [
+      [0, 1, "operator"],
+      [1, 2, "string.regexp"],
+      [2, 3, "character.special"],
+      [3, 4, "operator"],
+      [4, 5, "punctuation.bracket"],
+      [5, 7, "punctuation.special"],
+      [7, 8, "punctuation.bracket"],
+      [8, 9, "string"],
+      [9, 11, "punctuation.bracket"],
+    ],
+  },
+  {
+    name: "PCRE2 comment group markers stay comments beside callout delimiters",
+    languages: ["pcre2"],
+    source: "a(?#c)(?C#d#)",
+    captures: [
+      [0, 1, "string.regexp"],
+      [1, 2, "punctuation.bracket"],
+      [2, 3, "punctuation.special"],
+      [3, 5, "comment"],
+      [5, 6, "punctuation.bracket"],
+      [6, 7, "punctuation.bracket"],
+      [7, 9, "punctuation.special"],
+      [9, 10, "punctuation.bracket"],
+      [10, 11, "string"],
+      [11, 13, "punctuation.bracket"],
+    ],
+  },
+  {
+    name: "PCRE2 alphabetic group stars are introducers while the non-atomic star is an operator",
+    languages: ["pcre2"],
+    source: ".(?*a)(*napla:b)",
+    captures: [
+      [0, 1, "character.special"],
+      [1, 2, "punctuation.bracket"],
+      [2, 3, "punctuation.special"],
+      [3, 4, "operator"],
+      [4, 5, "string.regexp"],
+      [5, 7, "punctuation.bracket"],
+      [7, 8, "punctuation.special"],
+      [8, 13, "keyword"],
+      [13, 14, "punctuation.delimiter"],
+      [14, 15, "string.regexp"],
+      [15, 16, "punctuation.bracket"],
+    ],
+  },
+  {
     name: "HTML-sensitive Unicode literals retain source bytes and captures",
     languages: grammars.map(({ name }) => name),
     source: `é😀<&>"'`,
@@ -205,13 +294,13 @@ const finalCaptureCases = [
   },
   {
     name: "UTF-8 characters and literal punctuation retain literal captures",
-    languages: ["javascript_regex", "javascript_regex_u", "javascript_regex_v"],
+    languages: ["js_regex", "js_regex_u", "js_regex_v"],
     source: "é 😀-_,;:#",
     captures: [[0, 13, "string.regexp"]],
   },
   {
     name: "assertions differ from literal characters and wildcard",
-    languages: ["javascript_regex", "javascript_regex_u", "javascript_regex_v"],
+    languages: ["js_regex", "js_regex_u", "js_regex_v"],
     source: String.raw`^a|.$\b\B`,
     captures: [
       [0, 1, "operator"],
@@ -223,7 +312,7 @@ const finalCaptureCases = [
   },
   {
     name: "group punctuation is split by role for all lookarounds",
-    languages: ["javascript_regex", "javascript_regex_u", "javascript_regex_v"],
+    languages: ["js_regex", "js_regex_u", "js_regex_v"],
     source: "(a)(?:b)(?=c)(?!d)(?<=e)(?<!f)",
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -253,7 +342,7 @@ const finalCaptureCases = [
   },
   {
     name: "inline modifiers and quantifiers use their separate leaf roles",
-    languages: ["javascript_regex", "javascript_regex_u", "javascript_regex_v"],
+    languages: ["js_regex", "js_regex_u", "js_regex_v"],
     source: "(?im-s:a+?b*?c??d{12,34}?e{2,}f{3})",
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -288,7 +377,7 @@ const finalCaptureCases = [
   },
   {
     name: "named groups and references preserve escaped UTF-8 identifier leaves",
-    languages: ["javascript_regex", "javascript_regex_u", "javascript_regex_v"],
+    languages: ["js_regex", "js_regex_u", "js_regex_v"],
     source: String.raw`(?<$_é\u0061>x)\k<$_é\u0061>`,
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -308,7 +397,7 @@ const finalCaptureCases = [
   },
   {
     name: "ordinary surrogate-pair name leaves retain labels before identifier validation",
-    languages: ["javascript_regex"],
+    languages: ["js_regex"],
     source: String.raw`(?<😀𐐀>)\k<😀𐐀>`,
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -324,7 +413,7 @@ const finalCaptureCases = [
   },
   {
     name: "braced Unicode identifier escapes retain their bracket captures",
-    languages: ["javascript_regex", "javascript_regex_u", "javascript_regex_v"],
+    languages: ["js_regex", "js_regex_u", "js_regex_v"],
     source: String.raw`(?<\u{61}>x)\k<a>`,
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -344,13 +433,13 @@ const finalCaptureCases = [
   },
   {
     name: "character escapes retain source leaves for prefixes and digits",
-    languages: ["javascript_regex", "javascript_regex_u", "javascript_regex_v"],
+    languages: ["js_regex", "js_regex_u", "js_regex_v"],
     source: String.raw`\n\r\t\f\v\cA\0\x41\u0041\/`,
     captures: [[0, 27, "string.escape"]],
   },
   {
     name: "numeric backreferences are escapes rather than repetition counts",
-    languages: ["javascript_regex", "javascript_regex_u", "javascript_regex_v"],
+    languages: ["js_regex", "js_regex_u", "js_regex_v"],
     source: String.raw`(a)\1`,
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -361,13 +450,13 @@ const finalCaptureCases = [
   },
   {
     name: "escaped regex punctuation remains an escape",
-    languages: ["javascript_regex", "javascript_regex_u", "javascript_regex_v"],
+    languages: ["js_regex", "js_regex_u", "js_regex_v"],
     source: String.raw`\^\$\.\*\+\?\(\)\[\]\{\}\|`,
     captures: [[0, 26, "string.escape"]],
   },
   {
     name: "classic classes separate range operators and backspace escape leaves",
-    languages: ["javascript_regex", "javascript_regex_u"],
+    languages: ["js_regex", "js_regex_u"],
     source: String.raw`[a-z\d\b]`,
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -381,7 +470,7 @@ const finalCaptureCases = [
   },
   {
     name: "Unicode set classes preserve the backspace terminal as one leaf",
-    languages: ["javascript_regex_v"],
+    languages: ["js_regex_v"],
     source: String.raw`[a-z\d\b]`,
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -395,7 +484,7 @@ const finalCaptureCases = [
   },
   {
     name: "all shorthand character classes keep special character captures",
-    languages: ["javascript_regex", "javascript_regex_u", "javascript_regex_v"],
+    languages: ["js_regex", "js_regex_u", "js_regex_v"],
     source: String.raw`\d\D\s\S\w\W[\D\s\S\w\W]`,
     captures: [
       [0, 12, "character.special"],
@@ -406,7 +495,7 @@ const finalCaptureCases = [
   },
   {
     name: "classic class hyphens remain literal at both edges",
-    languages: ["javascript_regex", "javascript_regex_u"],
+    languages: ["js_regex", "js_regex_u"],
     source: "[-a-]",
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -416,7 +505,7 @@ const finalCaptureCases = [
   },
   {
     name: "Annex B identity octal and literal fallback spellings differ",
-    languages: ["javascript_regex"],
+    languages: ["js_regex"],
     source: String.raw`\8\11\c_\p{L}]}{`,
     captures: [
       [0, 5, "string.escape"],
@@ -427,7 +516,7 @@ const finalCaptureCases = [
   },
   {
     name: "Annex B class control escapes include numeric and underscore payloads",
-    languages: ["javascript_regex"],
+    languages: ["js_regex"],
     source: String.raw`[\c1\c_]`,
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -437,7 +526,7 @@ const finalCaptureCases = [
   },
   {
     name: "Annex B reference markers without named groups are identity escapes",
-    languages: ["javascript_regex"],
+    languages: ["js_regex"],
     source: String.raw`\k<a>`,
     captures: [
       [0, 2, "string.escape"],
@@ -446,7 +535,7 @@ const finalCaptureCases = [
   },
   {
     name: "Annex B invalid braced quantifiers keep structural token classifications",
-    languages: ["javascript_regex"],
+    languages: ["js_regex"],
     source: "{2,1}a{2,1}",
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -464,7 +553,7 @@ const finalCaptureCases = [
   },
   {
     name: "Unicode code points and surrogate pairs preserve distinct leaf ranges",
-    languages: ["javascript_regex_u", "javascript_regex_v"],
+    languages: ["js_regex_u", "js_regex_v"],
     source: String.raw`\u{41}\uD83D\uDE00`,
     captures: [
       [0, 2, "string.escape"],
@@ -476,7 +565,7 @@ const finalCaptureCases = [
   },
   {
     name: "Unicode property payloads exclude braces and equality operators",
-    languages: ["javascript_regex_u", "javascript_regex_v"],
+    languages: ["js_regex_u", "js_regex_v"],
     source: String.raw`\p{L}\P{gc=Lu}\p{scx=Latn}`,
     captures: [
       [0, 2, "character.special"],
@@ -499,7 +588,7 @@ const finalCaptureCases = [
   },
   {
     name: "property spelling is highlighted without validating Unicode names",
-    languages: ["javascript_regex_u", "javascript_regex_v"],
+    languages: ["js_regex_u", "js_regex_v"],
     source: String.raw`\p{A_=B_2}`,
     captures: [
       [0, 2, "character.special"],
@@ -512,7 +601,7 @@ const finalCaptureCases = [
   },
   {
     name: "Unicode sets separate nested brackets operators and class strings",
-    languages: ["javascript_regex_v"],
+    languages: ["js_regex_v"],
     source: String.raw`[[a-z]&&[^x]][\p{L}--\q{a|é|\n}]`,
     captures: [
       [0, 2, "punctuation.bracket"],
@@ -542,7 +631,7 @@ const finalCaptureCases = [
   },
   {
     name: "Unicode set reserved punctuation stays escaped",
-    languages: ["javascript_regex_v"],
+    languages: ["js_regex_v"],
     source: "[\\&\\-\\!\\#\\%\\,\\:\\;\\<\\=\\>\\@\\`\\~\\b]",
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -552,7 +641,7 @@ const finalCaptureCases = [
   },
   {
     name: "character class negation differs from a literal caret",
-    languages: ["javascript_regex", "javascript_regex_u", "javascript_regex_v"],
+    languages: ["js_regex", "js_regex_u", "js_regex_v"],
     source: "[^^]",
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -563,7 +652,7 @@ const finalCaptureCases = [
   },
   {
     name: "multi-digit backreferences keep every decimal leaf escaped",
-    languages: ["javascript_regex", "javascript_regex_u", "javascript_regex_v"],
+    languages: ["js_regex", "js_regex_u", "js_regex_v"],
     source: String.raw`()()()()()()()()()()\10`,
     captures: [
       [0, 20, "punctuation.bracket"],
@@ -572,7 +661,7 @@ const finalCaptureCases = [
   },
   {
     name: "Annex B literal backslashes in classes keep literal capture roles",
-    languages: ["javascript_regex"],
+    languages: ["js_regex"],
     source: String.raw`[\c]`,
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -582,13 +671,13 @@ const finalCaptureCases = [
   },
   {
     name: "Annex B surrogate escapes remain separate fixed-width escapes",
-    languages: ["javascript_regex"],
+    languages: ["js_regex"],
     source: String.raw`\uD83D\uDE00`,
     captures: [[0, 12, "string.escape"]],
   },
   {
     name: "Annex B quantifiable assertions distinguish introducer and quantifier",
-    languages: ["javascript_regex"],
+    languages: ["js_regex"],
     source: "(?=a)?",
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -601,7 +690,7 @@ const finalCaptureCases = [
   },
   {
     name: "empty class string alternatives retain only real separator leaves",
-    languages: ["javascript_regex_v"],
+    languages: ["js_regex_v"],
     source: String.raw`[\q{|a||}]`,
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -615,7 +704,7 @@ const finalCaptureCases = [
   },
   {
     name: "Unicode multi-digit references retain maximal spelling without resolving groups",
-    languages: ["javascript_regex_u", "javascript_regex_v"],
+    languages: ["js_regex_u", "js_regex_v"],
     source: String.raw`\12+\100?`,
     captures: [
       [0, 3, "string.escape"],

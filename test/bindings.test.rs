@@ -5,23 +5,23 @@ use tree_sitter::{Language, Parser, Query};
 fn parses_valid_source() {
   for (language, node_types, highlights, source, root_kind) in [
     (
-      grammar::LANGUAGE_JAVASCRIPT,
-      grammar::NODE_TYPES_JAVASCRIPT,
-      grammar::HIGHLIGHTS_QUERY_JAVASCRIPT,
+      grammar::LANGUAGE_JS,
+      grammar::NODE_TYPES_JS,
+      grammar::HIGHLIGHTS_QUERY_JS,
       r"(?<name>a+)\k<name>",
       "pattern",
     ),
     (
-      grammar::LANGUAGE_JAVASCRIPT_U,
-      grammar::NODE_TYPES_JAVASCRIPT_U,
-      grammar::HIGHLIGHTS_QUERY_JAVASCRIPT_U,
+      grammar::LANGUAGE_JS_U,
+      grammar::NODE_TYPES_JS_U,
+      grammar::HIGHLIGHTS_QUERY_JS_U,
       r"\u{1F600}",
       "pattern",
     ),
     (
-      grammar::LANGUAGE_JAVASCRIPT_V,
-      grammar::NODE_TYPES_JAVASCRIPT_V,
-      grammar::HIGHLIGHTS_QUERY_JAVASCRIPT_V,
+      grammar::LANGUAGE_JS_V,
+      grammar::NODE_TYPES_JS_V,
+      grammar::HIGHLIGHTS_QUERY_JS_V,
       r"[\q{ab|cd}]",
       "pattern",
     ),
@@ -51,6 +51,13 @@ fn parses_valid_source() {
       grammar::NODE_TYPES_PYTHON_VERBOSE,
       grammar::HIGHLIGHTS_QUERY_PYTHON_VERBOSE,
       "a # comment\n b",
+      "pattern",
+    ),
+    (
+      grammar::LANGUAGE_PCRE2,
+      grammar::NODE_TYPES_PCRE2,
+      grammar::HIGHLIGHTS_QUERY_PCRE2,
+      r"(?<name>a+)\k<name>",
       "pattern",
     ),
   ] {
@@ -152,13 +159,14 @@ fn posix_group_and_repetition_fields_resolve_to_direct_children() {
 #[test]
 fn uses_distinct_grammars() {
   let languages = [
-    grammar::LANGUAGE_JAVASCRIPT,
-    grammar::LANGUAGE_JAVASCRIPT_U,
-    grammar::LANGUAGE_JAVASCRIPT_V,
+    grammar::LANGUAGE_JS,
+    grammar::LANGUAGE_JS_U,
+    grammar::LANGUAGE_JS_V,
     grammar::LANGUAGE_POSIX_BRE,
     grammar::LANGUAGE_POSIX_ERE,
     grammar::LANGUAGE_PYTHON,
     grammar::LANGUAGE_PYTHON_VERBOSE,
+    grammar::LANGUAGE_PCRE2,
   ]
   .map(Language::new);
   for (index, language) in languages.iter().enumerate() {

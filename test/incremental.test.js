@@ -359,7 +359,7 @@ const cases = [
   },
   {
     name: "removing a non-BMP endpoint turns a basic class range into two members",
-    languages: ["javascript_regex", "javascript_regex_u"],
+    languages: ["js_regex", "js_regex_u"],
     before: "[a-😀]",
     after: "[a-]",
     byte: 3,
@@ -368,7 +368,7 @@ const cases = [
   },
   {
     name: "a repeated reserved punctuation becomes an error inside a Unicode set",
-    languages: ["javascript_regex_v"],
+    languages: ["js_regex_v"],
     before: "[!a]",
     after: "[!!a]",
     byte: 2,
@@ -378,7 +378,7 @@ const cases = [
   },
   {
     name: "a second ampersand changes a union into an intersection",
-    languages: ["javascript_regex_v"],
+    languages: ["js_regex_v"],
     before: "[a&b]",
     after: "[a&&b]",
     byte: 3,
@@ -387,7 +387,7 @@ const cases = [
   },
   {
     name: "a third ampersand invalidates an intersection",
-    languages: ["javascript_regex_v"],
+    languages: ["js_regex_v"],
     before: "[a&&b]",
     after: "[a&&&b]",
     byte: 4,
@@ -397,7 +397,7 @@ const cases = [
   },
   {
     name: "reserved punctuation lookahead also updates inside a class string",
-    languages: ["javascript_regex_v"],
+    languages: ["js_regex_v"],
     before: String.raw`[\q{!a}]`,
     after: String.raw`[\q{!!a}]`,
     byte: 5,
@@ -407,7 +407,7 @@ const cases = [
   },
   {
     name: "escaping a class string separator merges its alternatives",
-    languages: ["javascript_regex_v"],
+    languages: ["js_regex_v"],
     before: String.raw`[\q{a|b}]`,
     after: String.raw`[\q{a\|b}]`,
     byte: 5,
@@ -416,7 +416,7 @@ const cases = [
   },
   {
     name: "escaping an early class string closer changes the ownership of its suffix",
-    languages: ["javascript_regex_v"],
+    languages: ["js_regex_v"],
     before: String.raw`[\q{a}b}]`,
     after: String.raw`[\q{a\}b}]`,
     byte: 5,
@@ -426,7 +426,7 @@ const cases = [
   },
   {
     name: "removing and restoring a nested class closer updates syntax",
-    languages: ["javascript_regex_v"],
+    languages: ["js_regex_v"],
     before: "[[a]&&[b]]",
     after: "[[a&&[b]]",
     byte: 3,
@@ -436,7 +436,7 @@ const cases = [
   },
   {
     name: "an intersection edit after a non-BMP character uses a byte offset",
-    languages: ["javascript_regex_v"],
+    languages: ["js_regex_v"],
     before: "[😀&b]",
     after: "[😀&&b]",
     byte: 6,
@@ -445,7 +445,7 @@ const cases = [
   },
   {
     name: "a second hyphen changes a range into subtraction",
-    languages: ["javascript_regex_v"],
+    languages: ["js_regex_v"],
     before: "[a-b]",
     after: "[a--b]",
     byte: 3,
@@ -454,7 +454,7 @@ const cases = [
   },
   {
     name: "replacing both operator characters changes the set operation",
-    languages: ["javascript_regex_v"],
+    languages: ["js_regex_v"],
     before: "[a&&b]",
     after: "[a--b]",
     byte: 2,
@@ -463,7 +463,7 @@ const cases = [
   },
   {
     name: "a digit following a class string null escape requires recovery",
-    languages: ["javascript_regex_v"],
+    languages: ["js_regex_v"],
     before: String.raw`[\q{\0}]`,
     after: String.raw`[\q{\00}]`,
     byte: 6,
@@ -485,7 +485,7 @@ for (const [index, scenario] of cases.entries()) {
     scenario.after,
     scenario.name,
   );
-  for (const language of scenario.languages ?? ["javascript_regex"]) {
+  for (const language of scenario.languages ?? ["js_regex"]) {
     for (const reverse of [false, true]) {
       test(`${language}: ${scenario.name} (${reverse ? "reverse" : "forward"})`, () => {
         const before = reverse ? scenario.after : scenario.before;
@@ -550,7 +550,7 @@ const histories = [
   },
   {
     name: "ordinary capture state across successive edits",
-    languages: ["javascript_regex"],
+    languages: ["js_regex"],
     before: String.raw`\k<x>(a)`,
     edits: [
       {
@@ -621,7 +621,7 @@ const histories = [
   },
   {
     name: "Unicode set recovery across successive edits",
-    languages: ["javascript_regex_v"],
+    languages: ["js_regex_v"],
     before: "[a&&b]",
     edits: [
       {
@@ -1075,6 +1075,13 @@ function createEditHistoryGenerator() {
 }
 
 const reproducedSources = {
+  pcre2: [
+    String.raw`(?xx)(?<x>a)\k<x>[a b]`,
+    String.raw`(?|(a)|(b))\11`,
+    String.raw`\Q(a)\E+`,
+    "(*CR)(?x)#comment\na\rb",
+    "(?<x>",
+  ],
   javascript: [
     String.raw`(?<x>a)\k<x>[b-d]{2,}`,
     String.raw`\1`,
@@ -1093,7 +1100,7 @@ const reproducedSources = {
 
 for (const grammar of grammars) {
   test(`${grammar.name}: parsing after other sources reproduces every CST including recovery artifacts`, () => {
-    const sources = reproducedSources[grammar.name.replace(/_.*/, "")];
+    const sources = reproducedSources[grammar.path.split("/")[0]];
     assert.ok(sources, grammar.name);
     const paths = sources.map((source, index) => {
       const path = join(cache, `reproduced-${index}.txt`);
@@ -1140,17 +1147,31 @@ test("regex: fixed-seed generated histories converge", (context) => {
   const generateHistories = createEditHistoryGenerator();
   for (const grammar of grammars) {
     const fragments = [...fuzzFragments];
-    if (grammar.name.startsWith("javascript_regex")) {
+    if (grammar.name.startsWith("js_regex")) {
       fragments.push("(?<name>a)\\k<name>");
-      if (grammar.name === "javascript_regex") fragments.push("\\8", "{x}");
+      if (grammar.name === "js_regex") fragments.push("\\8", "{x}");
       else fragments.push("\\u{61}", "\\p{L}");
-      if (grammar.name === "javascript_regex_v")
+      if (grammar.name === "js_regex_v")
         fragments.push("[a&&b]", "[a--b]", "[\\q{ab|cd}]");
     } else if (grammar.name.startsWith("posix_")) {
       fragments.push("[[:alpha:]]", "[[.ch.]]", "[[=a=]]", "[a-]", "[]a]");
       if (grammar.name === "posix_bre")
         fragments.push(String.raw`\(a\)\1`, String.raw`a\{1,3\}`, "^*a$");
       else fragments.push("a*?");
+    } else if (grammar.name === "pcre2") {
+      fragments.push(
+        "(?n)(a)",
+        "(?xx)[a b]",
+        "(?x:a #c\nb)",
+        String.raw`(?|(a)|(b)(c))\11`,
+        String.raw`\Q(a)\E+`,
+        String.raw`\x{41}`,
+        String.raw`\u{41}`,
+        "(*CR)(?x)#a\rb",
+        "(?[[a]&![b]])",
+        "(?C'arg')",
+        "(*SKIP:tag)",
+      );
     } else {
       fragments.push(
         "(?P<name>a)(?P=name)",
@@ -1186,9 +1207,9 @@ test("regex: fixed-seed generated histories converge", (context) => {
 });
 
 const unicodePayloadClosings = {
-  javascript_regex: ['")"', "operand: extended_atom"],
-  javascript_regex_u: ['")"', "operand: atom"],
-  javascript_regex_v: ['")"', "operand: atom"],
+  js_regex: ['")"', "operand: extended_atom"],
+  js_regex_u: ['")"', "operand: atom"],
+  js_regex_v: ['")"', "operand: atom"],
   python_re: ['")"', "operand: capturing_group"],
   python_re_verbose: ['")"', "operand: capturing_group"],
   posix_bre: ["ordinary_character `)`", "one_char_or_coll_elem_bre"],
@@ -1234,7 +1255,10 @@ for (const grammar of grammars) {
         const fresh = parse(grammar, expectedSource);
         const incremental = parse(grammar, source, history);
         if (step === 0) continue;
-        const closing = unicodePayloadClosings[grammar.name];
+        const closing =
+          grammar.name === "pcre2"
+            ? ['")"', "operand: capturing_group"]
+            : unicodePayloadClosings[grammar.name];
         assert.ok(closing, grammar.name);
         const [node, owner] = closing;
         const end = step === 2 ? 2 : 7;

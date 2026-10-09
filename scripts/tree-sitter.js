@@ -1,7 +1,6 @@
 import { spawnSync } from "node:child_process";
 import {
   cpSync,
-  existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
@@ -46,6 +45,7 @@ const grammars = Object.freeze(
       }),
   ),
 );
+const sharedSources = ["javascript/common", "posix/common", "python/common"];
 const missingCliMessage = "Tree-sitter CLI is missing; run npm ci.";
 
 function treeSitterExecutable() {
@@ -229,7 +229,7 @@ function testCorpus(arguments_) {
     copyFiles(
       [
         "package.json",
-        ...(existsSync(join(root, "common")) ? ["common"] : []),
+        ...sharedSources,
         ...grammars.flatMap(({ path, externalFiles, highlights }) => [
           join(path, "grammar.js"),
           join(path, "src"),
@@ -301,20 +301,14 @@ function checkQueries() {
     readFileSync(join(root, ".tsqueryrc.json"), "utf8"),
   );
   for (const grammar of grammars) {
-    const parserAliases = { ...configuration.parser_aliases };
-    for (const { name } of grammars) {
-      if (name === grammar.name) delete parserAliases[name];
-      else parserAliases[name] = grammar.name;
-    }
     const directories = [...new Set(grammar.highlights.map(dirname))];
-    const settings = { ...configuration, parser_aliases: parserAliases };
     const result = spawnSync(
       "ts_query_ls",
       [
         "check",
         "--format",
         "--config",
-        JSON.stringify(settings),
+        JSON.stringify(configuration),
         ...directories,
       ],
       {
@@ -390,4 +384,5 @@ export {
   grammars,
   packageName,
   root,
+  sharedSources,
 };

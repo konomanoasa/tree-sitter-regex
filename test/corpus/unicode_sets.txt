@@ -1,6 +1,6 @@
 ==================
 nested classes remain separate operands of an implicit union
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 [[a][b]c]
@@ -40,7 +40,7 @@ nested classes remain separate operands of an implicit union
 
 ==================
 intersection retains a source ordered sequence of operands
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 [a&&b&&c]
@@ -70,7 +70,7 @@ intersection retains a source ordered sequence of operands
 
 ==================
 subtraction retains the minuend followed by each successive subtrahend
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 [a--b--c]
@@ -100,7 +100,7 @@ subtraction retains the minuend followed by each successive subtrahend
 
 ==================
 every doubled reserved punctuation remains a character when it occurs singly
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 [&!#$%*+,.:;<=>?@^`~]
@@ -176,7 +176,7 @@ every doubled reserved punctuation remains a character when it occurs singly
 
 ==================
 every reserved punctuator can be escaped in a Unicode set
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 [\&\-\!\#\%\,\:\;\<\=\>\@\`\~]
@@ -251,7 +251,7 @@ every reserved punctuator can be escaped in a Unicode set
 
 ==================
 repeated nonreserved characters stay ordinary including spaces and non-BMP characters
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 [aa00__  "'😀😀]
@@ -306,7 +306,7 @@ repeated nonreserved characters stay ordinary including spaces and non-BMP chara
 
 ==================
 an implicit union can contain characters properties strings and empty classes
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 [a\p{RGI_Emoji}\q{ab|cd}[]]
@@ -386,7 +386,7 @@ an implicit union can contain characters properties strings and empty classes
 
 ==================
 class escapes properties and string disjunctions can be intersection operands
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 [\d&&\p{ASCII}&&\q{0|1}]
@@ -449,7 +449,7 @@ class escapes properties and string disjunctions can be intersection operands
 
 ==================
 nested classes combine range union intersection and subtraction without implicit precedence
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 [[[a-z]&&\p{ASCII}]--[aeiou]]
@@ -534,7 +534,7 @@ nested classes combine range union intersection and subtraction without implicit
 
 ==================
 ranges can use escaped reserved punctuation and ordinary single punctuation as endpoints
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 [\&-\~!-?]
@@ -567,7 +567,7 @@ ranges can use escaped reserved punctuation and ordinary single punctuation as e
 
 ==================
 pattern operators are characters within class strings and quantifiers remain outside the class
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 [\q{a.b*+?^$}]+
@@ -612,7 +612,7 @@ pattern operators are characters within class strings and quantifiers remain out
 
 ==================
 character escapes inside class strings retain their classifications and escaped delimiters
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 [\q{\|\}\]\\\b\cA\x42\u0043\uD83D\uDE00\u{1F600}\0}]
@@ -719,7 +719,7 @@ character escapes inside class strings retain their classifications and escaped 
 
 ==================
 class strings allow the extra reserved punctuation escapes
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 [\q{\&\-\!\#\%\,\:\;\<\=\>\@\`\~}]
@@ -787,7 +787,7 @@ class strings allow the extra reserved punctuation escapes
 
 ==================
 single reserved punctuation remains literal within class strings
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 [\q{&!#$%*+,.:;<=>?@^`~}]
@@ -851,7 +851,7 @@ single reserved punctuation remains literal within class strings
 
 ==================
 negation and property restrictions on string sets remain consumer checks
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 [^\q{ab}][\w&&[^\P{RGI_Emoji}]]
@@ -938,7 +938,7 @@ negation and property restrictions on string sets remain consumer checks
 
 ==================
 escaping either adjacent punctuation prevents a reserved doubled spelling
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 [!\!!][\!!\!]
@@ -985,7 +985,7 @@ escaping either adjacent punctuation prevents a reserved doubled spelling
 
 ==================
 escaped ampersands remain distinct from the intersection operator
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 [&\&][a&&\&][a\&&b][\&&&b]
@@ -1061,7 +1061,7 @@ escaped ampersands remain distinct from the intersection operator
 
 ==================
 nested negated classes own separate brackets and carets and an intersection owns both ampersands
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 [^[^a]&&[\q{b|😀}]]
@@ -1111,7 +1111,7 @@ nested negated classes own separate brackets and carets and an intersection owns
 
 ==================
 escaped string separators and closers keep their complete source ranges
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 [\q{a\|b\}c\]d}]
@@ -1160,7 +1160,7 @@ escaped string separators and closers keep their complete source ranges
 
 ==================
 empty string alternatives retain delimiters without zero width string nodes
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 [\q{}][\q{|}][\q{a||b|}]
@@ -1220,7 +1220,7 @@ empty string alternatives retain delimiters without zero width string nodes
 
 ==================
 an intersection cannot follow an implicit union
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [ab&&c]
@@ -1228,7 +1228,7 @@ an intersection cannot follow an implicit union
 
 ==================
 an intersection cannot be followed by an implicit union
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a&&bc]
@@ -1236,7 +1236,7 @@ an intersection cannot be followed by an implicit union
 
 ==================
 a subtraction cannot follow an implicit union
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [ab--c]
@@ -1244,7 +1244,7 @@ a subtraction cannot follow an implicit union
 
 ==================
 a subtraction cannot be followed by an implicit union
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a--bc]
@@ -1252,7 +1252,7 @@ a subtraction cannot be followed by an implicit union
 
 ==================
 an intersection and a subtraction cannot share a class level
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a&&b--c]
@@ -1260,7 +1260,7 @@ an intersection and a subtraction cannot share a class level
 
 ==================
 a subtraction and an intersection cannot share a class level
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a--b&&c]
@@ -1268,7 +1268,7 @@ a subtraction and an intersection cannot share a class level
 
 ==================
 a range cannot be the left operand of an intersection
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a-z&&b]
@@ -1276,7 +1276,7 @@ a range cannot be the left operand of an intersection
 
 ==================
 a range cannot be the right operand of an intersection
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a&&b-z]
@@ -1284,7 +1284,7 @@ a range cannot be the right operand of an intersection
 
 ==================
 a range cannot be the left operand of a subtraction
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a-z--b]
@@ -1292,7 +1292,7 @@ a range cannot be the left operand of a subtraction
 
 ==================
 a range cannot be the right operand of a subtraction
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a--b-z]
@@ -1300,7 +1300,7 @@ a range cannot be the right operand of a subtraction
 
 ==================
 a class escape cannot be a Unicode set range endpoint
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [\d-a]
@@ -1308,7 +1308,7 @@ a class escape cannot be a Unicode set range endpoint
 
 ==================
 a property escape cannot be a Unicode set range endpoint
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a-\p{ASCII}]
@@ -1316,7 +1316,7 @@ a property escape cannot be a Unicode set range endpoint
 
 ==================
 a nested class cannot be a Unicode set range endpoint
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [[a]-b]
@@ -1324,7 +1324,7 @@ a nested class cannot be a Unicode set range endpoint
 
 ==================
 a class string cannot be a Unicode set range endpoint
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a-\q{b}]
@@ -1332,7 +1332,7 @@ a class string cannot be a Unicode set range endpoint
 
 ==================
 a leading raw hyphen is not a Unicode set character
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [-a]
@@ -1340,7 +1340,7 @@ a leading raw hyphen is not a Unicode set character
 
 ==================
 a trailing raw hyphen is not a Unicode set character
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a-]
@@ -1348,7 +1348,7 @@ a trailing raw hyphen is not a Unicode set character
 
 ==================
 an intersection operator requires a left operand
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [&&a]
@@ -1356,7 +1356,7 @@ an intersection operator requires a left operand
 
 ==================
 an intersection operator cannot precede a raw ampersand
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a&&&b]
@@ -1364,7 +1364,7 @@ an intersection operator cannot precede a raw ampersand
 
 ==================
 a doubled ampersand is not an operator inside a class string
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [\q{a&&b}]
@@ -1372,7 +1372,7 @@ a doubled ampersand is not an operator inside a class string
 
 ==================
 a doubled plus is reserved inside a class string
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [\q{a++b}]
@@ -1380,7 +1380,7 @@ a doubled plus is reserved inside a class string
 
 ==================
 class escapes cannot occur inside class strings
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [\q{\d}]
@@ -1388,7 +1388,7 @@ class escapes cannot occur inside class strings
 
 ==================
 property escapes cannot occur inside class strings
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [\q{\p{ASCII}}]
@@ -1396,7 +1396,7 @@ property escapes cannot occur inside class strings
 
 ==================
 a class string cannot contain a nested class
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [\q{[a]}]
@@ -1404,7 +1404,7 @@ a class string cannot contain a nested class
 
 ==================
 a class string cannot contain a raw range separator
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [\q{a-b}]
@@ -1412,7 +1412,7 @@ a class string cannot contain a raw range separator
 
 ==================
 a class string cannot contain another string disjunction
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [\q{\q{a}}]
@@ -1420,7 +1420,7 @@ a class string cannot contain another string disjunction
 
 ==================
 parentheses cannot create groups inside Unicode sets
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [(a)]
@@ -1428,7 +1428,7 @@ parentheses cannot create groups inside Unicode sets
 
 ==================
 a raw slash cannot be a Unicode set character
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a/b]
@@ -1436,7 +1436,7 @@ a raw slash cannot be a Unicode set character
 
 ==================
 a raw pipe does not separate Unicode set operands
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a|b]
@@ -1444,7 +1444,7 @@ a raw pipe does not separate Unicode set operands
 
 ==================
 braces cannot introduce quantifiers inside Unicode sets
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a{2}]
@@ -1452,8 +1452,8 @@ braces cannot introduce quantifiers inside Unicode sets
 
 ==================
 a class string disjunction cannot occur outside a class
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 \q{a}
@@ -1461,8 +1461,8 @@ a class string disjunction cannot occur outside a class
 
 ==================
 extra reserved punctuation escapes are limited to class context
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 \&
@@ -1470,7 +1470,7 @@ extra reserved punctuation escapes are limited to class context
 
 ==================
 raw doubled exclamation marks are reserved in Unicode sets
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a!!b]
@@ -1478,7 +1478,7 @@ raw doubled exclamation marks are reserved in Unicode sets
 
 ==================
 raw doubled hash signs are reserved in Unicode sets
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a##b]
@@ -1486,7 +1486,7 @@ raw doubled hash signs are reserved in Unicode sets
 
 ==================
 raw doubled dollar signs are reserved in Unicode sets
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a$$b]
@@ -1494,7 +1494,7 @@ raw doubled dollar signs are reserved in Unicode sets
 
 ==================
 raw doubled percent signs are reserved in Unicode sets
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a%%b]
@@ -1502,7 +1502,7 @@ raw doubled percent signs are reserved in Unicode sets
 
 ==================
 raw doubled asterisks are reserved in Unicode sets
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a**b]
@@ -1510,7 +1510,7 @@ raw doubled asterisks are reserved in Unicode sets
 
 ==================
 raw doubled plus signs are reserved in Unicode sets
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a++b]
@@ -1518,7 +1518,7 @@ raw doubled plus signs are reserved in Unicode sets
 
 ==================
 raw doubled commas are reserved in Unicode sets
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a,,b]
@@ -1526,7 +1526,7 @@ raw doubled commas are reserved in Unicode sets
 
 ==================
 raw doubled dots are reserved in Unicode sets
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a..b]
@@ -1534,7 +1534,7 @@ raw doubled dots are reserved in Unicode sets
 
 ==================
 raw doubled colons are reserved in Unicode sets
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a::b]
@@ -1542,7 +1542,7 @@ raw doubled colons are reserved in Unicode sets
 
 ==================
 raw doubled semicolons are reserved in Unicode sets
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a;;b]
@@ -1550,7 +1550,7 @@ raw doubled semicolons are reserved in Unicode sets
 
 ==================
 raw doubled less than signs are reserved in Unicode sets
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a<<b]
@@ -1558,7 +1558,7 @@ raw doubled less than signs are reserved in Unicode sets
 
 ==================
 raw doubled equals signs are reserved in Unicode sets
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a==b]
@@ -1566,7 +1566,7 @@ raw doubled equals signs are reserved in Unicode sets
 
 ==================
 raw doubled greater than signs are reserved in Unicode sets
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a>>b]
@@ -1574,7 +1574,7 @@ raw doubled greater than signs are reserved in Unicode sets
 
 ==================
 raw doubled question marks are reserved in Unicode sets
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a??b]
@@ -1582,7 +1582,7 @@ raw doubled question marks are reserved in Unicode sets
 
 ==================
 raw doubled at signs are reserved in Unicode sets
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a@@b]
@@ -1590,7 +1590,7 @@ raw doubled at signs are reserved in Unicode sets
 
 ==================
 raw doubled carets are reserved in Unicode sets
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a^^b]
@@ -1598,7 +1598,7 @@ raw doubled carets are reserved in Unicode sets
 
 ==================
 raw doubled backticks are reserved in Unicode sets
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a``b]
@@ -1606,7 +1606,7 @@ raw doubled backticks are reserved in Unicode sets
 
 ==================
 raw doubled tildes are reserved in Unicode sets
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a~~b]
@@ -1614,7 +1614,7 @@ raw doubled tildes are reserved in Unicode sets
 
 ==================
 an outer Unicode set without its closing bracket requires recovery
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [[a]
@@ -1622,7 +1622,7 @@ an outer Unicode set without its closing bracket requires recovery
 
 ==================
 unclosed nested Unicode sets require recovery
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [[a
@@ -1630,7 +1630,7 @@ unclosed nested Unicode sets require recovery
 
 ==================
 real inner brackets stay with their classes when the outer bracket is missing
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [[a]&&[b]
@@ -1638,7 +1638,7 @@ real inner brackets stay with their classes when the outer bracket is missing
 
 ==================
 an unclosed class string before a bracket requires recovery
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [\q{ab]c
@@ -1646,7 +1646,7 @@ an unclosed class string before a bracket requires recovery
 
 ==================
 unclosed class string alternatives require recovery
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [\q{a||b
@@ -1654,7 +1654,7 @@ unclosed class string alternatives require recovery
 
 ==================
 an unclosed class string after a code point escape requires recovery
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [\q{\u{41}a]b
@@ -1662,7 +1662,7 @@ an unclosed class string after a code point escape requires recovery
 
 ==================
 an unclosed Unicode set after reserved punctuation requires recovery
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a!
@@ -1670,7 +1670,7 @@ an unclosed Unicode set after reserved punctuation requires recovery
 
 ==================
 an intersection without a right operand requires recovery
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a&&]b
@@ -1678,7 +1678,7 @@ an intersection without a right operand requires recovery
 
 ==================
 a subtraction without a right operand requires recovery
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a--]b
@@ -1686,7 +1686,7 @@ a subtraction without a right operand requires recovery
 
 ==================
 mixed intersection and subtraction require recovery at the same class level
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a&&b--c]d
@@ -1694,7 +1694,7 @@ mixed intersection and subtraction require recovery at the same class level
 
 ==================
 a third raw ampersand cannot become a valid intersection operand
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a&&&]
@@ -1702,7 +1702,7 @@ a third raw ampersand cannot become a valid intersection operand
 
 ==================
 a third ampersand in an intersection requires recovery before following text
-:language(javascript_regex_v)
+:language(js_regex_v)
 :error
 ==================
 [a&&&b]c

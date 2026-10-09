@@ -41,6 +41,7 @@ const variants = grammars.map((grammar) => {
     headers,
     contractArguments: [
       ...definitions,
+      ...(grammar.name === "pcre2" ? ["-DPCRE2_SCANNER"] : []),
       `-DREGEX_SCANNER_SOURCE="${source.replaceAll("\\", "/")}"`,
     ],
     reuseAllocator: [source, ...headers].some((file) =>

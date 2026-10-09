@@ -1,6 +1,6 @@
 ==================
 groups and lookarounds retain body fields and literal boundaries
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 (a|b)(?:c)(?=d)(?!e)(?<=f)(?<!g)
@@ -90,8 +90,8 @@ groups and lookarounds retain body fields and literal boundaries
 
 ==================
 groups and lookarounds retain body fields and literal boundaries
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 (a|b)(?:c)(?=d)(?!e)(?<=f)(?<!g)
@@ -241,7 +241,7 @@ groups and lookarounds retain body fields and literal boundaries
 
 ==================
 unescaped group names accept Unicode identifiers and dollar underscore
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 (?<名>a)(?<𐐀x>b)(?<$_0>c)
@@ -318,8 +318,8 @@ unescaped group names accept Unicode identifiers and dollar underscore
 
 ==================
 unescaped group names accept Unicode identifiers and dollar underscore
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 (?<名>a)(?<𐐀x>b)(?<$_0>c)
@@ -397,7 +397,7 @@ unescaped group names accept Unicode identifiers and dollar underscore
 
 ==================
 group names accept braced escapes and surrogate pairs in every JavaScript mode
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 (?<\u0061\u{62}_0>c)(?<\uD801\uDC00>d)
@@ -484,8 +484,8 @@ group names accept braced escapes and surrogate pairs in every JavaScript mode
 
 ==================
 group names accept braced escapes and surrogate pairs in every JavaScript mode
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 (?<\u0061\u{62}_0>c)(?<\uD801\uDC00>d)
@@ -572,7 +572,7 @@ group names accept braced escapes and surrogate pairs in every JavaScript mode
 
 ==================
 nested groups retain their own alternatives
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 (a(?:b|c))
@@ -612,8 +612,8 @@ nested groups retain their own alternatives
 
 ==================
 nested groups retain their own alternatives
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 (a(?:b|c))
@@ -717,7 +717,7 @@ all consuming group categories can be quantified
 
 ==================
 ordinary group names preserve supplementary start and continuation characters
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 (?<𑶰𑷠>x)
@@ -749,8 +749,8 @@ ordinary group names preserve supplementary start and continuation characters
 
 ==================
 named identifiers support Unicode 17 start and continuation code points
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 (?<𑶰𑷠>x)
@@ -784,7 +784,7 @@ named identifiers support Unicode 17 start and continuation code points
 
 ==================
 group names allow join control characters after the first character
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 (?<a‌‍b>c)
@@ -824,8 +824,8 @@ group names allow join control characters after the first character
 
 ==================
 group names allow join control characters after the first character
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 (?<a‌‍b>c)
@@ -865,7 +865,7 @@ group names allow join control characters after the first character
 
 ==================
 ordinary raw supplementary names preserve surrogate-pair syntax before early errors
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 (?<😀𐐀>)\k<😀𐐀>
@@ -904,8 +904,8 @@ ordinary raw supplementary names preserve surrogate-pair syntax before early err
 
 ==================
 Unicode modes reject a raw supplementary non-identifier at the start of a name
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 (?<😀>)
@@ -913,8 +913,8 @@ Unicode modes reject a raw supplementary non-identifier at the start of a name
 
 ==================
 Unicode modes reject a raw supplementary non-identifier inside a name
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 (?<a😀>)
@@ -922,7 +922,7 @@ Unicode modes reject a raw supplementary non-identifier inside a name
 
 ==================
 escaped identifier code points preserve syntax before identifier validity checks
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 (?<\u0030>x)
@@ -960,8 +960,8 @@ escaped identifier code points preserve syntax before identifier validity checks
 
 ==================
 escaped identifier code points preserve syntax before identifier validity checks
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 (?<\u0030>x)
@@ -1053,7 +1053,7 @@ empty ERE groups own only their delimiters
 
 ==================
 empty groups and lookarounds own their introducers and closers
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 ()(?:)(?=)(?!)(?<=)(?<!)
@@ -1101,8 +1101,8 @@ empty groups and lookarounds own their introducers and closers
 
 ==================
 empty groups and lookarounds own their introducers and closers
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 ()(?:)(?=)(?!)(?<=)(?<!)
@@ -1189,7 +1189,7 @@ empty groups and lookarounds own their introducers and closers
 
 ==================
 empty group bodies are absent in every group form
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 ()(?:)(?<name>)(?ims:)(?-im:)
@@ -1253,8 +1253,8 @@ empty group bodies are absent in every group form
 
 ==================
 empty group bodies are absent in every group form
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 ()(?:)(?<name>)(?ims:)(?-im:)
@@ -1454,9 +1454,9 @@ b)\
 
 ==================
 an unescaped group name cannot start with an ASCII digit
-:language(javascript_regex)
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 (?<0>a)
@@ -1464,9 +1464,9 @@ an unescaped group name cannot start with an ASCII digit
 
 ==================
 group names cannot use hexadecimal character escapes
-:language(javascript_regex)
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 (?<\x61>a)
@@ -1474,9 +1474,9 @@ group names cannot use hexadecimal character escapes
 
 ==================
 out-of-range code point escapes in group names require recovery
-:language(javascript_regex)
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 (?<\u0030>x)(?<\u{110000}>y)
@@ -1484,9 +1484,9 @@ out-of-range code point escapes in group names require recovery
 
 ==================
 an extra closing parenthesis requires recovery before following text
-:language(javascript_regex)
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 (a))b
@@ -1494,9 +1494,9 @@ an extra closing parenthesis requires recovery before following text
 
 ==================
 an opening parenthesis alone remains an incomplete construct
-:language(javascript_regex)
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 (
@@ -1504,9 +1504,9 @@ an opening parenthesis alone remains an incomplete construct
 
 ==================
 an unterminated capturing group requires recovery
-:language(javascript_regex)
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 (ab
@@ -1514,9 +1514,9 @@ an unterminated capturing group requires recovery
 
 ==================
 a named group without its closing parenthesis requires recovery
-:language(javascript_regex)
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 (?<x>a
@@ -1524,9 +1524,9 @@ a named group without its closing parenthesis requires recovery
 
 ==================
 a named group without its name terminator requires recovery
-:language(javascript_regex)
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 (?<x)a|b
@@ -1534,9 +1534,9 @@ a named group without its name terminator requires recovery
 
 ==================
 an incomplete Unicode escape in a group name remains erroneous
-:language(javascript_regex)
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 (?<\u12>a)
@@ -1544,9 +1544,9 @@ an incomplete Unicode escape in a group name remains erroneous
 
 ==================
 the real closer belongs to the inner group and the missing closer to the outer group
-:language(javascript_regex)
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 ((a)

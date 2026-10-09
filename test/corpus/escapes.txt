@@ -1,6 +1,6 @@
 ==================
 common character escapes preserve their syntactic categories
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 \f\n\r\t\v\cA\cz\0\x41\u0042\d\D\s\S\w\W
@@ -113,8 +113,8 @@ common character escapes preserve their syntactic categories
 
 ==================
 common character escapes preserve their syntactic categories
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 \f\n\r\t\v\cA\cz\0\x41\u0042\d\D\s\S\w\W
@@ -262,7 +262,7 @@ fixed escapes remain atoms in both Python modes
 
 ==================
 hexadecimal and Unicode escapes own fixed introducers and digit fields
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 \x41\u0042
@@ -295,8 +295,8 @@ hexadecimal and Unicode escapes own fixed introducers and digit fields
 
 ==================
 hexadecimal and Unicode escapes own fixed introducers and digit fields
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 \x41\u0042
@@ -390,7 +390,7 @@ fixed and named Unicode escapes expose their fields
 
 ==================
 every syntax character and the literal delimiter can be escaped
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 \^\$\\\.\*\+\?\(\)\[\]\{\}\|\/
@@ -522,8 +522,8 @@ every syntax character and the literal delimiter can be escaped
 
 ==================
 every syntax character and the literal delimiter can be escaped
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 \^\$\\\.\*\+\?\(\)\[\]\{\}\|\/
@@ -640,8 +640,8 @@ every syntax character and the literal delimiter can be escaped
 
 ==================
 property escapes retain lone and assigned property spellings
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 \p{ASCII}\P{General_Category=Lu}\p{Script_Extensions=Hiragana}\p{sc=Latn}
@@ -833,7 +833,7 @@ property escapes retain lone and assigned property spellings
 
 ==================
 null escapes can be quantified and followed by an alternative
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 \0?|\0
@@ -862,8 +862,8 @@ null escapes can be quantified and followed by an alternative
 
 ==================
 null escapes can be quantified and followed by an alternative
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 \0?|\0
@@ -952,7 +952,7 @@ numeric escapes follow octal and backreference boundaries
 
 ==================
 ordinary mode keeps surrogate escapes separate and quantifies the trailing escape
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 \uD800\uDC00+\uD800\uD801\uDC00\uDC00\uDbFf\udFff
@@ -1063,8 +1063,8 @@ ordinary mode keeps surrogate escapes separate and quantifies the trailing escap
 
 ==================
 only adjacent leading and trailing surrogate escapes combine in Unicode modes
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 \uD800\uDC00+\uD800\uD801\uDC00\uDC00\uDbFf\udFff
@@ -1165,8 +1165,8 @@ only adjacent leading and trailing surrogate escapes combine in Unicode modes
 
 ==================
 braced and reversed surrogate spellings do not combine
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 \uDC00\uD800\u{DC00}\u{D800}\uDC00
@@ -1247,8 +1247,8 @@ braced and reversed surrogate spellings do not combine
 
 ==================
 surrogate pair escapes own both spellings before the quantifier
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 \uD83D\uDE00+\x41
@@ -1292,7 +1292,7 @@ surrogate pair escapes own both spellings before the quantifier
 
 ==================
 fixed width hexadecimal escapes leave subsequent digits as literals
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 \x412\u00423
@@ -1333,8 +1333,8 @@ fixed width hexadecimal escapes leave subsequent digits as literals
 
 ==================
 fixed width hexadecimal escapes leave subsequent digits as literals
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 \x412\u00423
@@ -1376,7 +1376,7 @@ fixed width hexadecimal escapes leave subsequent digits as literals
 
 ==================
 an escaped backslash prevents the following spelling from becoming an escape
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 \\b\\u0041
@@ -1428,8 +1428,8 @@ an escaped backslash prevents the following spelling from becoming an escape
 
 ==================
 an escaped backslash prevents the following spelling from becoming an escape
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 \\b\\u0041
@@ -1531,7 +1531,7 @@ B}\
 
 ==================
 a null escape is complete at end of input
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 \0
@@ -1549,8 +1549,8 @@ a null escape is complete at end of input
 
 ==================
 a null escape is complete at end of input
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 \0
@@ -1568,7 +1568,7 @@ a null escape is complete at end of input
 
 ==================
 null escape lookahead preserves following nondecimal characters and escapes
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 \0a\0_\0😀\0\0
@@ -1622,8 +1622,8 @@ null escape lookahead preserves following nondecimal characters and escapes
 
 ==================
 null escape lookahead preserves following nondecimal characters and escapes
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 \0a\0_\0😀\0\0
@@ -1677,8 +1677,8 @@ null escape lookahead preserves following nondecimal characters and escapes
 
 ==================
 code point escapes preserve leading zeroes up to the permitted lexical maximum
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 \u{0}\u{000041}\u{10FFFF}\u{00000010FFFF}
@@ -1759,8 +1759,8 @@ code point escapes preserve leading zeroes up to the permitted lexical maximum
 
 ==================
 property existence and string set restrictions are left to the consumer
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 \p{Not_A_Property}\p{1}\P{RGI_Emoji}\p{Age=V15_0}
@@ -1908,8 +1908,8 @@ property existence and string set restrictions are left to the consumer
 
 ==================
 a null escape cannot precede an octal digit in Unicode modes
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 \01
@@ -1917,8 +1917,8 @@ a null escape cannot precede an octal digit in Unicode modes
 
 ==================
 a null escape cannot precede a nonoctal decimal digit inside a Unicode class
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 [\09]
@@ -1926,8 +1926,8 @@ a null escape cannot precede a nonoctal decimal digit inside a Unicode class
 
 ==================
 a body identity escape cannot quote an ordinary letter in Unicode modes
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 \a
@@ -1935,8 +1935,8 @@ a body identity escape cannot quote an ordinary letter in Unicode modes
 
 ==================
 an escaped hyphen is only accepted in class context in Unicode modes
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 \-
@@ -1944,8 +1944,8 @@ an escaped hyphen is only accepted in class context in Unicode modes
 
 ==================
 a control letter escape requires an ASCII letter
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 \c1
@@ -1953,8 +1953,8 @@ a control letter escape requires an ASCII letter
 
 ==================
 the nonboundary assertion escape requires recovery in Unicode classes
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 [\B]
@@ -1962,8 +1962,8 @@ the nonboundary assertion escape requires recovery in Unicode classes
 
 ==================
 additional class control digits require recovery in Unicode modes
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 [\c1]
@@ -1971,8 +1971,8 @@ additional class control digits require recovery in Unicode modes
 
 ==================
 a hexadecimal escape requires two hexadecimal digits
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 \x4G
@@ -1980,8 +1980,8 @@ a hexadecimal escape requires two hexadecimal digits
 
 ==================
 an unbraced Unicode escape requires four hexadecimal digits
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 \u004G
@@ -1989,8 +1989,8 @@ an unbraced Unicode escape requires four hexadecimal digits
 
 ==================
 a code point escape requires nonempty hexadecimal digits
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 \u{}
@@ -1998,8 +1998,8 @@ a code point escape requires nonempty hexadecimal digits
 
 ==================
 a code point escape above the Unicode maximum requires recovery
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 \u{0}\u{000041}\u{10FFFF}\u{110000}
@@ -2007,8 +2007,8 @@ a code point escape above the Unicode maximum requires recovery
 
 ==================
 a Unicode property name before equals cannot contain a digit
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 \p{Sc1=Latin}
@@ -2016,8 +2016,8 @@ a Unicode property name before equals cannot contain a digit
 
 ==================
 a Unicode property value after equals cannot be empty
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 \p{Script=}
@@ -2025,8 +2025,8 @@ a Unicode property value after equals cannot be empty
 
 ==================
 a Unicode property value cannot contain a hyphen
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 \p{Script=Old-Italic}
@@ -2034,8 +2034,8 @@ a Unicode property value cannot contain a hyphen
 
 ==================
 a lone Unicode property spelling cannot be empty
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 \p{}
@@ -2043,9 +2043,9 @@ a lone Unicode property spelling cannot be empty
 
 ==================
 a dangling body backslash is not a complete escape
-:language(javascript_regex)
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 ab\
@@ -2053,8 +2053,8 @@ ab\
 
 ==================
 a dangling backslash inside a class requires recovery
-:language(javascript_regex)
-:language(javascript_regex_u)
+:language(js_regex)
+:language(js_regex_u)
 :error
 ==================
 [a\
@@ -2062,7 +2062,7 @@ a dangling backslash inside a class requires recovery
 
 ==================
 a short hexadecimal escape inside a class requires recovery
-:language(javascript_regex_u)
+:language(js_regex_u)
 :error
 ==================
 [\x4]b
@@ -2070,8 +2070,8 @@ a short hexadecimal escape inside a class requires recovery
 
 ==================
 a nonhexadecimal escape digit inside nested groups requires recovery
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 ((a\xG1)b)c
@@ -2079,8 +2079,8 @@ a nonhexadecimal escape digit inside nested groups requires recovery
 
 ==================
 a short Unicode escape before a group closer requires recovery
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 (\u12)|b
@@ -2088,7 +2088,7 @@ a short Unicode escape before a group closer requires recovery
 
 ==================
 an unclosed code point escape inside a class requires recovery
-:language(javascript_regex_u)
+:language(js_regex_u)
 :error
 ==================
 [\u{41]b
@@ -2096,7 +2096,7 @@ an unclosed code point escape inside a class requires recovery
 
 ==================
 an unclosed property escape inside a class requires recovery
-:language(javascript_regex_u)
+:language(js_regex_u)
 :error
 ==================
 [\p{ASCII]b

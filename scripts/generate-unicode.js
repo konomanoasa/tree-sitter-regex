@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import idContinue from "@unicode/unicode-17.0.0/Binary_Property/ID_Continue/code-points.js";
 import idStart from "@unicode/unicode-17.0.0/Binary_Property/ID_Start/code-points.js";
 
-const outputPath = new URL("../common/javascript/unicode.js", import.meta.url);
+const outputPath = new URL("../javascript/common/unicode.js", import.meta.url);
 
 function characterClass(codePoints) {
   const ranges = [];

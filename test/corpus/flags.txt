@@ -123,7 +123,7 @@ f
 
 ==================
 nested modifier groups preserve enable disable and body fields
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 (?im-s:a(?s-i:b)c)
@@ -174,8 +174,8 @@ nested modifier groups preserve enable disable and body fields
 
 ==================
 nested modifier groups preserve enable disable and body fields
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 (?im-s:a(?s-i:b)c)
@@ -262,7 +262,7 @@ nested scoped modes restore in stack order
 
 ==================
 modifier consistency is left to the consumer
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 (?ii-i:a)(?-:)
@@ -299,8 +299,8 @@ modifier consistency is left to the consumer
 
 ==================
 modifier consistency is left to the consumer
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 (?ii-i:a)(?-:)
@@ -337,7 +337,7 @@ modifier consistency is left to the consumer
 
 ==================
 modifier spelling remains structural before flag validity checks
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 (?ii-m:x)(?-:)
@@ -374,8 +374,8 @@ modifier spelling remains structural before flag validity checks
 
 ==================
 modifier spelling remains structural before flag validity checks
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 (?ii-m:x)(?-:)
@@ -456,9 +456,9 @@ x enabled and disabled together keeps verbose mode
 
 ==================
 modifier groups accept only i m and s
-:language(javascript_regex)
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 (?x:a)
@@ -466,9 +466,9 @@ modifier groups accept only i m and s
 
 ==================
 an incomplete modifier group requires recovery
-:language(javascript_regex)
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 (?i:
@@ -476,9 +476,9 @@ an incomplete modifier group requires recovery
 
 ==================
 nested modifier groups require all closing parentheses
-:language(javascript_regex)
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 (?i:a(?-m:b)

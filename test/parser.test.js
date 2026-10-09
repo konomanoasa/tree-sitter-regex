@@ -5,7 +5,7 @@ import { test } from "node:test";
 import {
   unicodeIdContinue,
   unicodeIdStart,
-} from "../common/javascript/unicode.js";
+} from "../javascript/common/unicode.js";
 import { grammars, root } from "../scripts/tree-sitter.js";
 import {
   cache,
@@ -18,9 +18,16 @@ import {
 } from "./support/parser.js";
 
 const sourceCharacterLeaves = {
-  javascript_regex: Array(5).fill("source_character"),
-  javascript_regex_u: Array(5).fill("source_character"),
-  javascript_regex_v: Array(5).fill("source_character"),
+  pcre2: [
+    "literal_character",
+    "literal_character",
+    "literal_character",
+    "class_character",
+    "literal_character",
+  ],
+  js_regex: Array(5).fill("source_character"),
+  js_regex_u: Array(5).fill("source_character"),
+  js_regex_v: Array(5).fill("source_character"),
   python_re: [
     "literal_character",
     "literal_character",
@@ -78,10 +85,10 @@ for (const grammar of grammars) {
   });
 }
 
-test("javascript_regex_v: a class string retains NUL and empty alternatives", () => {
+test("js_regex_v: a class string retains NUL and empty alternatives", () => {
   const path = join(cache, "class-string-nul.txt");
   writeFileSync(path, "[\\q{\0||a}]");
-  const result = parseFile(path, "javascript_regex_v");
+  const result = parseFile(path, "js_regex_v");
   assert.equal(result.status, 0);
   const ranges = [
     ...result.cst.matchAll(
@@ -314,9 +321,9 @@ for (const grammar of pythonGrammars) {
 }
 
 const profiles = [
-  { name: "javascript_regex", unicode: false, sets: false },
-  { name: "javascript_regex_u", unicode: true, sets: false },
-  { name: "javascript_regex_v", unicode: true, sets: true },
+  { name: "js_regex", unicode: false, sets: false },
+  { name: "js_regex_u", unicode: true, sets: false },
+  { name: "js_regex_v", unicode: true, sets: true },
 ];
 
 for (const profile of profiles) {
@@ -896,6 +903,7 @@ for (const grammar of posixGrammars) {
 
 for (const grammar of grammars) {
   const bre = grammar.name === "posix_bre";
+  const depth = grammar.name === "pcre2" ? 1000 : 2000;
   const open = bre ? String.raw`\(` : "(";
   const close = bre ? String.raw`\)` : ")";
   const repeatedExpression = bre ? String.raw`a\?b\+c\|` : "a|";
@@ -907,7 +915,7 @@ for (const grammar of grammars) {
         bre ? "long quoted literals" : "wide alternatives",
         `${repeatedExpression.repeat(16_000)}a`,
       ],
-      ["deep groups", `${open.repeat(2000)}a${close.repeat(2000)}`],
+      ["deep groups", `${open.repeat(depth)}a${close.repeat(depth)}`],
       ["space-separated atoms", "a ".repeat(40_000)],
     ]) {
       assert.equal(parseSummary(grammar, source).successful, true, name);

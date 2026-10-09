@@ -35,7 +35,6 @@ test(`${language}: Rust rebuilds grammars after source or header changes`, () =>
         "Cargo.lock",
         "bindings/rust",
         "test",
-        ...(existsSync(join(root, "common")) ? ["common"] : []),
         ...grammars.flatMap(({ path, externalFiles, highlights }) => [
           join(path, "src"),
           ...externalFiles,

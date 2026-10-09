@@ -4,6 +4,6 @@
 **/src/node-types.json linguist-generated=true
 **/src/parser.c linguist-generated=true
 **/src/tree_sitter/*.h linguist-generated=true
-common/javascript/unicode.js linguist-generated=true
+javascript/common/unicode.js linguist-generated=true
 
 test/corpus/**/*.txt whitespace=-blank-at-eol

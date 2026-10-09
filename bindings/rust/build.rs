@@ -15,25 +15,27 @@ fn main() {
     println!("cargo::rerun-if-changed={}", Path::new(&headers).display());
   }
 
-  for (directory, library) in [
-    ("javascript_regex/src", "tree-sitter-javascript-regex"),
-    ("javascript_regex_u/src", "tree-sitter-javascript-regex-u"),
-    ("javascript_regex_v/src", "tree-sitter-javascript-regex-v"),
-    ("posix_bre/src", "tree-sitter-posix-bre"),
-    ("posix_ere/src", "tree-sitter-posix-ere"),
-    ("python_re/src", "tree-sitter-python-re"),
-    ("python_re_verbose/src", "tree-sitter-python-re-verbose"),
+  for (name, path) in [
+    ("js_regex", "javascript/regex"),
+    ("js_regex_u", "javascript/regex_u"),
+    ("js_regex_v", "javascript/regex_v"),
+    ("pcre2", "pcre2"),
+    ("posix_bre", "posix/bre"),
+    ("posix_ere", "posix/ere"),
+    ("python_re", "python/re"),
+    ("python_re_verbose", "python/re_verbose"),
   ] {
+    let directory = format!("{path}/src");
+    let library = format!("tree-sitter-{}", name.replace('_', "-"));
     println!("cargo::rerun-if-changed={directory}");
-    let directory = Path::new(directory);
+    let directory = Path::new(&directory);
     build
       .clone()
       .include(directory)
       .files([directory.join("parser.c"), directory.join("scanner.c")])
-      .compile(library);
+      .compile(&library);
   }
-  println!("cargo::rerun-if-changed=common/javascript/scanner.h");
-  println!("cargo::rerun-if-changed=common/posix/scanner.h");
-  println!("cargo::rerun-if-changed=common/python/scanner.h");
-  println!("cargo::rerun-if-changed=common/scanner.h");
+  println!("cargo::rerun-if-changed=javascript/common/scanner.h");
+  println!("cargo::rerun-if-changed=posix/common/scanner.h");
+  println!("cargo::rerun-if-changed=python/common/scanner.h");
 }

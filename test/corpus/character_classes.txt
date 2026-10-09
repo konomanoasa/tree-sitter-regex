@@ -24,7 +24,7 @@ class boundaries preserve positional punctuation
 
 ==================
 carets after the leading negation are ordinary class members
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 [^^a][a^]
@@ -63,7 +63,7 @@ carets after the leading negation are ordinary class members
 
 ==================
 carets after the leading negation are ordinary class members
-:language(javascript_regex_u)
+:language(js_regex_u)
 :cst
 ==================
 [^^a][a^]
@@ -102,7 +102,7 @@ carets after the leading negation are ordinary class members
 
 ==================
 carets after the leading negation are ordinary class members
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 [^^a][a^]
@@ -141,7 +141,7 @@ carets after the leading negation are ordinary class members
 
 ==================
 basic classes treat doubled ampersands as ordinary members
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 [a&&b]
@@ -170,7 +170,7 @@ basic classes treat doubled ampersands as ordinary members
 
 ==================
 basic classes treat doubled ampersands as ordinary members
-:language(javascript_regex_u)
+:language(js_regex_u)
 :cst
 ==================
 [a&&b]
@@ -199,7 +199,7 @@ basic classes treat doubled ampersands as ordinary members
 
 ==================
 groups alternatives whitespace and opening brackets are ordinary inside basic classes
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 [()|.$*+?{}[ #]
@@ -246,7 +246,7 @@ groups alternatives whitespace and opening brackets are ordinary inside basic cl
 
 ==================
 groups alternatives whitespace and opening brackets are ordinary inside basic classes
-:language(javascript_regex_u)
+:language(js_regex_u)
 :cst
 ==================
 [()|.$*+?{}[ #]
@@ -293,7 +293,7 @@ groups alternatives whitespace and opening brackets are ordinary inside basic cl
 
 ==================
 class escapes distinguish backspace and escaped brackets from delimiters
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 [\b\d\s\w\x41\u0042\cA\0\-\]\[]
@@ -381,7 +381,7 @@ class escapes distinguish backspace and escaped brackets from delimiters
 
 ==================
 class escapes distinguish backspace and escaped brackets from delimiters
-:language(javascript_regex_u)
+:language(js_regex_u)
 :cst
 ==================
 [\b\d\s\w\x41\u0042\cA\0\-\]\[]
@@ -465,7 +465,7 @@ class escapes distinguish backspace and escaped brackets from delimiters
 
 ==================
 class escapes distinguish backspace and escaped brackets from delimiters
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 [\b\d\s\w\x41\u0042\cA\0\-\]\[]
@@ -574,7 +574,7 @@ class escapes expose class-specific nodes and fields
 
 ==================
 class ranges own literal and escaped endpoints
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 [a-z\x41-\u005A]
@@ -621,7 +621,7 @@ class ranges own literal and escaped endpoints
 
 ==================
 class ranges own literal and escaped endpoints
-:language(javascript_regex_u)
+:language(js_regex_u)
 :cst
 ==================
 [a-z\x41-\u005A]
@@ -669,7 +669,7 @@ class ranges own literal and escaped endpoints
 
 ==================
 class ranges own literal and escaped endpoints
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 [a-z\x41-\u005A]
@@ -742,7 +742,7 @@ class ranges own literal and escaped endpoints
 
 ==================
 consecutive class ranges retain separate endpoints
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 [a-zA-Z0-9]+
@@ -784,7 +784,7 @@ consecutive class ranges retain separate endpoints
 
 ==================
 consecutive class ranges retain separate endpoints
-:language(javascript_regex_u)
+:language(js_regex_u)
 :cst
 ==================
 [a-zA-Z0-9]+
@@ -826,7 +826,7 @@ consecutive class ranges retain separate endpoints
 
 ==================
 consecutive class ranges retain separate endpoints
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 [a-zA-Z0-9]+
@@ -903,7 +903,7 @@ ranges bind from left to right
 
 ==================
 hyphens can be ordinary members or range endpoints
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 [-a][a-][--][--a][a--]
@@ -974,7 +974,7 @@ hyphens can be ordinary members or range endpoints
 
 ==================
 hyphens can be ordinary members or range endpoints
-:language(javascript_regex_u)
+:language(js_regex_u)
 :cst
 ==================
 [-a][a-][--][--a][a--]
@@ -1045,7 +1045,7 @@ hyphens can be ordinary members or range endpoints
 
 ==================
 members after a completed range begin a new range only with another separator
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 [a-b-c][a-b--c]
@@ -1095,7 +1095,7 @@ members after a completed range begin a new range only with another separator
 
 ==================
 members after a completed range begin a new range only with another separator
-:language(javascript_regex_u)
+:language(js_regex_u)
 :cst
 ==================
 [a-b-c][a-b--c]
@@ -1165,7 +1165,7 @@ str profiles allow Unicode escapes as range endpoints
 
 ==================
 class range endpoints preserve escape kinds and leave set validation to the consumer
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 [\x41-\u005a\b-\cZ\d-a-z]
@@ -1233,7 +1233,7 @@ class range endpoints preserve escape kinds and leave set validation to the cons
 
 ==================
 class range endpoints preserve escape kinds and leave set validation to the consumer
-:language(javascript_regex_u)
+:language(js_regex_u)
 :cst
 ==================
 [\x41-\u005a\b-\cZ\d-a-z]
@@ -1302,7 +1302,7 @@ class range endpoints preserve escape kinds and leave set validation to the cons
 
 ==================
 property escapes and Unicode code points remain distinct class members
-:language(javascript_regex_u)
+:language(js_regex_u)
 :cst
 ==================
 [\p{ASCII}\P{Script=Greek}\u{61}-\u{7A}]
@@ -1413,7 +1413,7 @@ property escapes and Unicode code points remain distinct class members
 
 ==================
 property escapes and Unicode code points remain distinct class members
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 [\p{ASCII}\P{Script=Greek}\u{61}-\u{7A}]
@@ -1548,7 +1548,7 @@ verbose mode keeps class whitespace and comment spellings as members
 
 ==================
 property range validity in Unicode mode is left to the consumer
-:language(javascript_regex_u)
+:language(js_regex_u)
 :cst
 ==================
 [\p{ASCII}-z]
@@ -1686,7 +1686,7 @@ a class escape cannot be either endpoint of a range starting with an escape or a
 
 ==================
 empty classes own separate bracket and negation tokens and a body caret stays an anchor
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 [][^][a]^
@@ -1721,7 +1721,7 @@ empty classes own separate bracket and negation tokens and a body caret stays an
 
 ==================
 empty classes own separate bracket and negation tokens and a body caret stays an anchor
-:language(javascript_regex_u)
+:language(js_regex_u)
 :cst
 ==================
 [][^][a]^
@@ -1756,7 +1756,7 @@ empty classes own separate bracket and negation tokens and a body caret stays an
 
 ==================
 empty classes own separate bracket and negation tokens and a body caret stays an anchor
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 [][^][a]^
@@ -1792,7 +1792,7 @@ empty classes own separate bracket and negation tokens and a body caret stays an
 
 ==================
 ordinary mode assigns class range endpoints to individual surrogate escapes
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 [\uD83D\uDE00-\uD83D\uDE4F]
@@ -1860,7 +1860,7 @@ ordinary mode assigns class range endpoints to individual surrogate escapes
 
 ==================
 surrogate escapes combine before class range endpoints in Unicode mode
-:language(javascript_regex_u)
+:language(js_regex_u)
 :cst
 ==================
 [\uD83D\uDE00-\uD83D\uDE4F]
@@ -1919,7 +1919,7 @@ surrogate escapes combine before class range endpoints in Unicode mode
 
 ==================
 surrogate escapes combine before class range endpoints in Unicode mode
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 [\uD83D\uDE00-\uD83D\uDE4F]
@@ -1976,7 +1976,7 @@ surrogate escapes combine before class range endpoints in Unicode mode
 
 ==================
 non-BMP class endpoints and null escape lookahead preserve exact byte ranges
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 [😀-🙏]\0a
@@ -2011,7 +2011,7 @@ non-BMP class endpoints and null escape lookahead preserve exact byte ranges
 
 ==================
 non-BMP class endpoints and null escape lookahead preserve exact byte ranges
-:language(javascript_regex_u)
+:language(js_regex_u)
 :cst
 ==================
 [😀-🙏]\0a
@@ -2046,7 +2046,7 @@ non-BMP class endpoints and null escape lookahead preserve exact byte ranges
 
 ==================
 non-BMP class endpoints and null escape lookahead preserve exact byte ranges
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 [😀-🙏]\0a
@@ -2081,8 +2081,8 @@ non-BMP class endpoints and null escape lookahead preserve exact byte ranges
 
 ==================
 a raw body closing bracket requires recovery in Unicode modes
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 ]
@@ -2090,8 +2090,8 @@ a raw body closing bracket requires recovery in Unicode modes
 
 ==================
 an unterminated character class requires recovery
-:language(javascript_regex)
-:language(javascript_regex_u)
+:language(js_regex)
+:language(js_regex_u)
 :error
 ==================
 [ab
@@ -2099,8 +2099,8 @@ an unterminated character class requires recovery
 
 ==================
 an unclosed class inside a group requires recovery
-:language(javascript_regex)
-:language(javascript_regex_u)
+:language(js_regex)
+:language(js_regex_u)
 :error
 ==================
 ([a)|b

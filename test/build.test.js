@@ -17,6 +17,7 @@ import {
   createTreeSitter,
   packageName,
   root,
+  sharedSources,
 } from "../scripts/tree-sitter.js";
 
 const configuration = JSON.parse(
@@ -39,7 +40,7 @@ test(`${language}: generated checks reject stale and missing files without rewri
         "package.json",
         "tree-sitter.json",
         "scripts",
-        ...(existsSync(join(root, "common")) ? ["common"] : []),
+        ...sharedSources,
         ...grammars.flatMap(({ path, externalFiles }) => [
           join(path, "grammar.js"),
           join(path, "src"),

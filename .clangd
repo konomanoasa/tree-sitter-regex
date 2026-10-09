@@ -27,41 +27,41 @@ CompileFlags:
 ---
 If:
   PathMatch:
-    - javascript_regex(_u|_v)?/src/.*
-    - python_re(_verbose)?/src/.*
-    - posix_(bre|ere)/src/.*
+    - javascript/regex(_u|_v)?/src/.*
+    - python/re(_verbose)?/src/.*
+    - posix/(bre|ere)/src/.*
 CompileFlags:
   Add:
     - -I.
 
 ---
 If:
-  PathMatch: common/javascript/scanner\.h
+  PathMatch: javascript/common/scanner\.h
 CompileFlags:
   Add:
-    - -DJAVASCRIPT_REGEX_MODE=0
-    - -I../../javascript_regex/src
+    - -DJS_REGEX_MODE=0
+    - -I../regex/src
 
 ---
 If:
-  PathMatch: common/python/scanner\.h
+  PathMatch: python/common/scanner\.h
 CompileFlags:
   Add:
     - -DPYTHON_RE_LANGUAGE=python_re
-    - -I../../python_re/src
+    - -I../re/src
 
 ---
 If:
-  PathMatch: common/posix/scanner\.h
+  PathMatch: posix/common/scanner\.h
 CompileFlags:
   Add:
     - -DPOSIX_REGEX_MODE=0
-    - -I../../posix_bre/src
+    - -I../bre/src
 
 ---
 If:
   PathMatch: test/scanner\.test\.c
 CompileFlags:
   Add:
-    - -DREGEX_SCANNER_SOURCE="../python_re/src/scanner.c"
-    - -I../python_re/src
+    - -DREGEX_SCANNER_SOURCE="../python/re/src/scanner.c"
+    - -I../python/re/src

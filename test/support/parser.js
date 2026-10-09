@@ -122,13 +122,9 @@ function parseFile(path, language, edits = []) {
   return { status: recovery ? 1 : status, cst, recovery };
 }
 
-const javascriptLanguages = [
-  "javascript_regex",
-  "javascript_regex_u",
-  "javascript_regex_v",
-];
+const javascriptLanguages = ["js_regex", "js_regex_u", "js_regex_v"];
 
-const unicodeLanguages = ["javascript_regex_u", "javascript_regex_v"];
+const unicodeLanguages = ["js_regex_u", "js_regex_v"];
 
 const pythonGrammars = grammars.filter(
   ({ name }) => name === "python_re" || name === "python_re_verbose",

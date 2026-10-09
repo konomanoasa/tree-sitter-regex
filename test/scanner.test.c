@@ -5,6 +5,10 @@
 
 #include REGEX_SCANNER_SOURCE
 
+#ifdef PCRE2_SCANNER
+#define REGEX_SCANNER(suffix) tree_sitter_pcre2_external_scanner_##suffix
+#endif
+
 #define TOKEN_COUNT (ERROR_SENTINEL + 1)
 
 #ifdef TREE_SITTER_REUSE_ALLOCATOR
@@ -123,7 +127,7 @@ static void assert_scans_decline(void *scanner, const bool *valid_symbols) {
 
 static void test_disabled_and_recovery_scans_preserve_state(void) {
   void *scanner = REGEX_SCANNER(create)();
-#if defined(JAVASCRIPT_REGEX_MODE) && JAVASCRIPT_REGEX_MODE == 0
+#if defined(JS_REGEX_MODE) && JS_REGEX_MODE == 0
   *(Scanner *)scanner =
     (Scanner){.capture_count = 2, .has_named_capture = true};
 #endif
@@ -152,7 +156,7 @@ static void test_stateless_lifecycle_and_serialization(void) {
 }
 #endif
 
-#if defined(JAVASCRIPT_REGEX_MODE)
+#if defined(JS_REGEX_MODE)
 static void check_token(
   void *scanner,
   const char *source,
@@ -171,7 +175,7 @@ static void check_token(
   }
 }
 
-#if JAVASCRIPT_REGEX_MODE == 0
+#if JS_REGEX_MODE == 0
 static void test_serialization_and_reset(void) {
   Scanner *scanner = REGEX_SCANNER(create)();
   assert(scanner != NULL);
@@ -264,7 +268,7 @@ static void test_stateless_lifecycle_and_unicode_tokens(void) {
     0
   );
   check_token(scanner, "\\uDC00", 6, UNICODE_PAIR_SEPARATOR, true, 2);
-#if JAVASCRIPT_REGEX_MODE == 2
+#if JS_REGEX_MODE == 2
   check_token(scanner, "&&x", 3, CLASS_INTERSECTION, true, 2);
   check_token(scanner, "&&&", 3, CLASS_INTERSECTION, false, 0);
   check_token(scanner, "!!", 2, CLASS_SET_RAW_CHARACTER, false, 0);
@@ -465,7 +469,7 @@ static void test_literal_bracket_does_not_split_compound_openers(void) {
   }
 }
 
-#else
+#elif defined(PYTHON_RE_LANGUAGE)
 static void assert_token(const char *source, TSSymbol token, size_t length) {
   MockLexer mock = make_lexer(source, strlen(source));
   bool valid_symbols[TOKEN_COUNT] = {false};
@@ -539,11 +543,59 @@ static void test_invalid_tokens_are_not_emitted(void) {
   }
 }
 
+#elif defined(PCRE2_SCANNER)
+static bool scan_pcre2(void *scanner, const char *source, TSSymbol token) {
+  MockLexer mock = make_lexer(source, strlen(source));
+  bool valid[TOKEN_COUNT] = {false};
+  valid[token] = true;
+  bool emitted = REGEX_SCANNER(scan)(scanner, &mock.lexer, valid);
+  if (emitted)
+    assert(mock.lexer.result_symbol == token);
+  return emitted;
+}
+
+static void test_pcre2_complete_state_roundtrip_and_scope_limit(void) {
+  void *scanner = REGEX_SCANNER(create)();
+  void *restored = REGEX_SCANNER(create)();
+  assert(scan_pcre2(scanner, "(?|", SCOPE_OPEN));
+  assert(scan_pcre2(scanner, "nxx", ENABLE_FLAGS));
+  assert(scan_pcre2(scanner, "(?<name>", SCOPE_OPEN));
+  assert(scan_pcre2(scanner, "\\Q", QUOTE_START));
+  char before[TREE_SITTER_SERIALIZATION_BUFFER_SIZE];
+  char after[TREE_SITTER_SERIALIZATION_BUFFER_SIZE];
+  unsigned length = serialize_state(scanner, before);
+  REGEX_SCANNER(deserialize)(restored, before, length);
+  assert(serialize_state(restored, after) == length);
+  assert(memcmp(before, after, length) == 0);
+  bool disabled[TOKEN_COUNT] = {false};
+  assert_scans_decline(restored, disabled);
+  assert(scan_pcre2(restored, "\\E", QUOTE_END));
+  assert(scan_pcre2(restored, ")", SCOPE_CLOSE));
+  assert(scan_pcre2(restored, "|", PIPE));
+  assert(scan_pcre2(restored, ")", SCOPE_CLOSE));
+  REGEX_SCANNER(deserialize)(restored, NULL, 0);
+  for (unsigned i = 0; i < 1000; i++)
+    assert(scan_pcre2(restored, "(?:", SCOPE_OPEN));
+  unsigned count = 1000;
+  while (scan_pcre2(restored, "(?:", SCOPE_OPEN))
+    count++;
+  assert(count < TREE_SITTER_SERIALIZATION_BUFFER_SIZE);
+  length = serialize_state(restored, before);
+  assert(!scan_pcre2(restored, "(?:", SCOPE_OPEN));
+  assert(serialize_state(restored, after) == length);
+  assert(memcmp(before, after, length) == 0);
+  REGEX_SCANNER(deserialize)(scanner, before, length);
+  for (unsigned i = 0; i < count; i++)
+    assert(scan_pcre2(scanner, ")", SCOPE_CLOSE));
+  assert(!scan_pcre2(scanner, ")", SCOPE_CLOSE));
+  REGEX_SCANNER(destroy)(scanner);
+  REGEX_SCANNER(destroy)(restored);
+}
 #endif
 
 #ifdef TREE_SITTER_REUSE_ALLOCATOR
 static void test_reuse_allocator_contract(void) {
-#if JAVASCRIPT_REGEX_MODE == 0
+#if (defined(JS_REGEX_MODE) && JS_REGEX_MODE == 0) || defined(PCRE2_SCANNER)
   assert(reuse_calloc_calls > 0);
   reuse_fail_next_calloc = true;
   assert(REGEX_SCANNER(create)() == NULL);
@@ -558,8 +610,8 @@ static void test_reuse_allocator_contract(void) {
 
 int main(void) {
   test_disabled_and_recovery_scans_preserve_state();
-#if defined(JAVASCRIPT_REGEX_MODE)
-#if JAVASCRIPT_REGEX_MODE == 0
+#if defined(JS_REGEX_MODE)
+#if JS_REGEX_MODE == 0
   test_serialization_and_reset();
   test_capture_context_and_failed_scan();
   test_capture_context_stops_at_the_lexer_boundary();
@@ -576,10 +628,12 @@ int main(void) {
 #if POSIX_REGEX_MODE == 0
   test_right_anchor_requires_eof();
 #endif
-#else
+#elif defined(PYTHON_RE_LANGUAGE)
   test_stateless_lifecycle_and_serialization();
   test_token_ranges_follow_the_grammar_context();
   test_invalid_tokens_are_not_emitted();
+#elif defined(PCRE2_SCANNER)
+  test_pcre2_complete_state_roundtrip_and_scope_limit();
 #endif
 #ifdef TREE_SITTER_REUSE_ALLOCATOR
   test_reuse_allocator_contract();

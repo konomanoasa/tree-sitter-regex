@@ -1,6 +1,6 @@
 ==================
 concatenation retains individual literal characters
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 abc
@@ -24,8 +24,8 @@ abc
 
 ==================
 concatenation retains individual literal characters
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 abc
@@ -89,7 +89,7 @@ ab|.^$-
 
 ==================
 whitespace and hash characters remain literals
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 a # b
@@ -121,8 +121,8 @@ a # b
 
 ==================
 whitespace and hash characters remain literals
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 a # b
@@ -171,7 +171,7 @@ a]b\
 
 ==================
 concatenation binds more tightly than alternation
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 ab|c.d
@@ -204,8 +204,8 @@ ab|c.d
 
 ==================
 concatenation binds more tightly than alternation
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 ab|c.d
@@ -238,7 +238,7 @@ ab|c.d
 
 ==================
 a quantifier after a space applies to that space
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 a ?
@@ -261,8 +261,8 @@ a ?
 
 ==================
 a quantifier after a space applies to that space
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 a ?
@@ -285,7 +285,7 @@ a ?
 
 ==================
 anchors negated classes and lazy quantifiers share the same token ownership
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 ^[^a]+?$
@@ -317,7 +317,7 @@ anchors negated classes and lazy quantifiers share the same token ownership
 
 ==================
 anchors negated classes and lazy quantifiers share the same token ownership
-:language(javascript_regex_u)
+:language(js_regex_u)
 :cst
 ==================
 ^[^a]+?$
@@ -349,7 +349,7 @@ anchors negated classes and lazy quantifiers share the same token ownership
 
 ==================
 anchors negated classes and lazy quantifiers share the same token ownership
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 ^[^a]+?$
@@ -406,7 +406,7 @@ anchors negated classes and lazy quantifiers retain Python token ownership
 
 ==================
 groups modifiers assertions escapes and repetition share the same structure in every JavaScript mode
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 ^(?<名>(?im-s:a|b){1,3}?)(?=\k<名>)[\d\-]\1$
@@ -520,7 +520,7 @@ groups modifiers assertions escapes and repetition share the same structure in e
 
 ==================
 groups modifiers assertions escapes and repetition share the same structure in every JavaScript mode
-:language(javascript_regex_u)
+:language(js_regex_u)
 :cst
 ==================
 ^(?<名>(?im-s:a|b){1,3}?)(?=\k<名>)[\d\-]\1$
@@ -630,7 +630,7 @@ groups modifiers assertions escapes and repetition share the same structure in e
 
 ==================
 groups modifiers assertions escapes and repetition share the same structure in every JavaScript mode
-:language(javascript_regex_v)
+:language(js_regex_v)
 :cst
 ==================
 ^(?<名>(?im-s:a|b){1,3}?)(?=\k<名>)[\d\-]\1$
@@ -770,7 +770,7 @@ comment group is verbose-mode prefix layout
 
 ==================
 literal characters and named group quantifiers retain Unicode byte ranges
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 é😀(?<名>a){2,3}?|b
@@ -825,8 +825,8 @@ literal characters and named group quantifiers retain Unicode byte ranges
 
 ==================
 literal characters and named group quantifiers retain Unicode byte ranges
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 é😀(?<名>a){2,3}?|b
@@ -881,7 +881,7 @@ literal characters and named group quantifiers retain Unicode byte ranges
 
 ==================
 group alternatives and repetition retain complete Unicode byte ranges
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 (?:é|😀){2,3}?
@@ -921,8 +921,8 @@ group alternatives and repetition retain complete Unicode byte ranges
 
 ==================
 group alternatives and repetition retain complete Unicode byte ranges
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 (?:é|😀){2,3}?
@@ -994,9 +994,9 @@ group alternatives and repetition retain complete Unicode byte ranges
 
 ==================
 empty input has no body or zero-width children
-:language(javascript_regex)
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 
@@ -1017,9 +1017,9 @@ empty input has no body or zero-width children
 
 ==================
 an alternation of empty branches retains only the separator
-:language(javascript_regex)
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 |
@@ -1031,7 +1031,7 @@ an alternation of empty branches retains only the separator
 
 ==================
 empty alternatives retain separators without empty concatenations
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 |a||
@@ -1050,8 +1050,8 @@ empty alternatives retain separators without empty concatenations
 
 ==================
 empty alternatives retain separators without empty concatenations
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 |a||

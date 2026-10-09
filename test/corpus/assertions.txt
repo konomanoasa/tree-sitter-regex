@@ -1,6 +1,6 @@
 ==================
 anchors word boundaries and lookarounds remain assertions
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 ^\ba\B$(?=b)(?!c)(?<=d)(?<!e)
@@ -78,8 +78,8 @@ anchors word boundaries and lookarounds remain assertions
 
 ==================
 anchors word boundaries and lookarounds remain assertions
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 ^\ba\B$(?=b)(?!c)(?<=d)(?<!e)
@@ -268,7 +268,7 @@ scoped verbose mode flows through assertion and atomic bodies
 
 ==================
 every lookaround supports an empty body
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 (?=)(?!)(?<=)(?<!)
@@ -306,8 +306,8 @@ every lookaround supports an empty body
 
 ==================
 every lookaround supports an empty body
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 (?=)(?!)(?<=)(?<!)

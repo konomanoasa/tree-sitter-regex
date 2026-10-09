@@ -1,0 +1,2708 @@
+[
+  {
+    "type": "alternation",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "concatenation",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "assertion_condition",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "alternation",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "atomic_group",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "alternation",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "atomic_script_run_group",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "alternation",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "backreference",
+    "named": true,
+    "fields": {
+      "group": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "group_name",
+            "named": true
+          },
+          {
+            "type": "group_number",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "escape_whitespace",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "branch_reset_group",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "alternation",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "callout",
+    "named": true,
+    "fields": {
+      "number": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "decimal_digits",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "callout_string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "callout_string",
+    "named": true,
+    "fields": {
+      "content": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "callout_content",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "capturing_group",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "alternation",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "character_class",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "backspace_escape",
+          "named": true
+        },
+        {
+          "type": "character_class_escape",
+          "named": true
+        },
+        {
+          "type": "class_character",
+          "named": true
+        },
+        {
+          "type": "class_range",
+          "named": true
+        },
+        {
+          "type": "control_character_escape",
+          "named": true
+        },
+        {
+          "type": "control_escape",
+          "named": true
+        },
+        {
+          "type": "hex_escape",
+          "named": true
+        },
+        {
+          "type": "literal_escape",
+          "named": true
+        },
+        {
+          "type": "octal_escape",
+          "named": true
+        },
+        {
+          "type": "posix_character_class",
+          "named": true
+        },
+        {
+          "type": "quote_end",
+          "named": true
+        },
+        {
+          "type": "quote_start",
+          "named": true
+        },
+        {
+          "type": "unicode_escape",
+          "named": true
+        },
+        {
+          "type": "unicode_property",
+          "named": true
+        },
+        {
+          "type": "verbose_whitespace",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "class_complement",
+    "named": true,
+    "fields": {
+      "operand": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "backspace_escape",
+            "named": true
+          },
+          {
+            "type": "character_class",
+            "named": true
+          },
+          {
+            "type": "character_class_escape",
+            "named": true
+          },
+          {
+            "type": "class_complement",
+            "named": true
+          },
+          {
+            "type": "class_parenthesized_expression",
+            "named": true
+          },
+          {
+            "type": "control_character_escape",
+            "named": true
+          },
+          {
+            "type": "control_escape",
+            "named": true
+          },
+          {
+            "type": "hex_escape",
+            "named": true
+          },
+          {
+            "type": "literal_escape",
+            "named": true
+          },
+          {
+            "type": "octal_escape",
+            "named": true
+          },
+          {
+            "type": "posix_character_class",
+            "named": true
+          },
+          {
+            "type": "unicode_escape",
+            "named": true
+          },
+          {
+            "type": "unicode_property",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "quote_end",
+          "named": true
+        },
+        {
+          "type": "quote_start",
+          "named": true
+        },
+        {
+          "type": "verbose_whitespace",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "class_intersection",
+    "named": true,
+    "fields": {
+      "left": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "backspace_escape",
+            "named": true
+          },
+          {
+            "type": "character_class",
+            "named": true
+          },
+          {
+            "type": "character_class_escape",
+            "named": true
+          },
+          {
+            "type": "class_complement",
+            "named": true
+          },
+          {
+            "type": "class_intersection",
+            "named": true
+          },
+          {
+            "type": "class_parenthesized_expression",
+            "named": true
+          },
+          {
+            "type": "control_character_escape",
+            "named": true
+          },
+          {
+            "type": "control_escape",
+            "named": true
+          },
+          {
+            "type": "hex_escape",
+            "named": true
+          },
+          {
+            "type": "literal_escape",
+            "named": true
+          },
+          {
+            "type": "octal_escape",
+            "named": true
+          },
+          {
+            "type": "posix_character_class",
+            "named": true
+          },
+          {
+            "type": "unicode_escape",
+            "named": true
+          },
+          {
+            "type": "unicode_property",
+            "named": true
+          }
+        ]
+      },
+      "right": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "backspace_escape",
+            "named": true
+          },
+          {
+            "type": "character_class",
+            "named": true
+          },
+          {
+            "type": "character_class_escape",
+            "named": true
+          },
+          {
+            "type": "class_complement",
+            "named": true
+          },
+          {
+            "type": "class_parenthesized_expression",
+            "named": true
+          },
+          {
+            "type": "control_character_escape",
+            "named": true
+          },
+          {
+            "type": "control_escape",
+            "named": true
+          },
+          {
+            "type": "hex_escape",
+            "named": true
+          },
+          {
+            "type": "literal_escape",
+            "named": true
+          },
+          {
+            "type": "octal_escape",
+            "named": true
+          },
+          {
+            "type": "posix_character_class",
+            "named": true
+          },
+          {
+            "type": "unicode_escape",
+            "named": true
+          },
+          {
+            "type": "unicode_property",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "quote_end",
+          "named": true
+        },
+        {
+          "type": "quote_start",
+          "named": true
+        },
+        {
+          "type": "verbose_whitespace",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "class_parenthesized_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "backspace_escape",
+          "named": true
+        },
+        {
+          "type": "character_class",
+          "named": true
+        },
+        {
+          "type": "character_class_escape",
+          "named": true
+        },
+        {
+          "type": "class_complement",
+          "named": true
+        },
+        {
+          "type": "class_intersection",
+          "named": true
+        },
+        {
+          "type": "class_parenthesized_expression",
+          "named": true
+        },
+        {
+          "type": "class_subtraction",
+          "named": true
+        },
+        {
+          "type": "class_symmetric_difference",
+          "named": true
+        },
+        {
+          "type": "class_union",
+          "named": true
+        },
+        {
+          "type": "control_character_escape",
+          "named": true
+        },
+        {
+          "type": "control_escape",
+          "named": true
+        },
+        {
+          "type": "hex_escape",
+          "named": true
+        },
+        {
+          "type": "literal_escape",
+          "named": true
+        },
+        {
+          "type": "octal_escape",
+          "named": true
+        },
+        {
+          "type": "posix_character_class",
+          "named": true
+        },
+        {
+          "type": "quote_end",
+          "named": true
+        },
+        {
+          "type": "quote_start",
+          "named": true
+        },
+        {
+          "type": "unicode_escape",
+          "named": true
+        },
+        {
+          "type": "unicode_property",
+          "named": true
+        },
+        {
+          "type": "verbose_whitespace",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "class_range",
+    "named": true,
+    "fields": {
+      "end": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "backspace_escape",
+            "named": true
+          },
+          {
+            "type": "class_character",
+            "named": true
+          },
+          {
+            "type": "control_character_escape",
+            "named": true
+          },
+          {
+            "type": "control_escape",
+            "named": true
+          },
+          {
+            "type": "hex_escape",
+            "named": true
+          },
+          {
+            "type": "literal_escape",
+            "named": true
+          },
+          {
+            "type": "octal_escape",
+            "named": true
+          },
+          {
+            "type": "unicode_escape",
+            "named": true
+          }
+        ]
+      },
+      "start": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "backspace_escape",
+            "named": true
+          },
+          {
+            "type": "class_character",
+            "named": true
+          },
+          {
+            "type": "control_character_escape",
+            "named": true
+          },
+          {
+            "type": "control_escape",
+            "named": true
+          },
+          {
+            "type": "hex_escape",
+            "named": true
+          },
+          {
+            "type": "literal_escape",
+            "named": true
+          },
+          {
+            "type": "octal_escape",
+            "named": true
+          },
+          {
+            "type": "unicode_escape",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "quote_end",
+          "named": true
+        },
+        {
+          "type": "quote_start",
+          "named": true
+        },
+        {
+          "type": "verbose_whitespace",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "class_subtraction",
+    "named": true,
+    "fields": {
+      "left": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "backspace_escape",
+            "named": true
+          },
+          {
+            "type": "character_class",
+            "named": true
+          },
+          {
+            "type": "character_class_escape",
+            "named": true
+          },
+          {
+            "type": "class_complement",
+            "named": true
+          },
+          {
+            "type": "class_intersection",
+            "named": true
+          },
+          {
+            "type": "class_parenthesized_expression",
+            "named": true
+          },
+          {
+            "type": "class_subtraction",
+            "named": true
+          },
+          {
+            "type": "class_symmetric_difference",
+            "named": true
+          },
+          {
+            "type": "class_union",
+            "named": true
+          },
+          {
+            "type": "control_character_escape",
+            "named": true
+          },
+          {
+            "type": "control_escape",
+            "named": true
+          },
+          {
+            "type": "hex_escape",
+            "named": true
+          },
+          {
+            "type": "literal_escape",
+            "named": true
+          },
+          {
+            "type": "octal_escape",
+            "named": true
+          },
+          {
+            "type": "posix_character_class",
+            "named": true
+          },
+          {
+            "type": "unicode_escape",
+            "named": true
+          },
+          {
+            "type": "unicode_property",
+            "named": true
+          }
+        ]
+      },
+      "right": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "backspace_escape",
+            "named": true
+          },
+          {
+            "type": "character_class",
+            "named": true
+          },
+          {
+            "type": "character_class_escape",
+            "named": true
+          },
+          {
+            "type": "class_complement",
+            "named": true
+          },
+          {
+            "type": "class_intersection",
+            "named": true
+          },
+          {
+            "type": "class_parenthesized_expression",
+            "named": true
+          },
+          {
+            "type": "control_character_escape",
+            "named": true
+          },
+          {
+            "type": "control_escape",
+            "named": true
+          },
+          {
+            "type": "hex_escape",
+            "named": true
+          },
+          {
+            "type": "literal_escape",
+            "named": true
+          },
+          {
+            "type": "octal_escape",
+            "named": true
+          },
+          {
+            "type": "posix_character_class",
+            "named": true
+          },
+          {
+            "type": "unicode_escape",
+            "named": true
+          },
+          {
+            "type": "unicode_property",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "quote_end",
+          "named": true
+        },
+        {
+          "type": "quote_start",
+          "named": true
+        },
+        {
+          "type": "verbose_whitespace",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "class_symmetric_difference",
+    "named": true,
+    "fields": {
+      "left": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "backspace_escape",
+            "named": true
+          },
+          {
+            "type": "character_class",
+            "named": true
+          },
+          {
+            "type": "character_class_escape",
+            "named": true
+          },
+          {
+            "type": "class_complement",
+            "named": true
+          },
+          {
+            "type": "class_intersection",
+            "named": true
+          },
+          {
+            "type": "class_parenthesized_expression",
+            "named": true
+          },
+          {
+            "type": "class_subtraction",
+            "named": true
+          },
+          {
+            "type": "class_symmetric_difference",
+            "named": true
+          },
+          {
+            "type": "class_union",
+            "named": true
+          },
+          {
+            "type": "control_character_escape",
+            "named": true
+          },
+          {
+            "type": "control_escape",
+            "named": true
+          },
+          {
+            "type": "hex_escape",
+            "named": true
+          },
+          {
+            "type": "literal_escape",
+            "named": true
+          },
+          {
+            "type": "octal_escape",
+            "named": true
+          },
+          {
+            "type": "posix_character_class",
+            "named": true
+          },
+          {
+            "type": "unicode_escape",
+            "named": true
+          },
+          {
+            "type": "unicode_property",
+            "named": true
+          }
+        ]
+      },
+      "right": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "backspace_escape",
+            "named": true
+          },
+          {
+            "type": "character_class",
+            "named": true
+          },
+          {
+            "type": "character_class_escape",
+            "named": true
+          },
+          {
+            "type": "class_complement",
+            "named": true
+          },
+          {
+            "type": "class_intersection",
+            "named": true
+          },
+          {
+            "type": "class_parenthesized_expression",
+            "named": true
+          },
+          {
+            "type": "control_character_escape",
+            "named": true
+          },
+          {
+            "type": "control_escape",
+            "named": true
+          },
+          {
+            "type": "hex_escape",
+            "named": true
+          },
+          {
+            "type": "literal_escape",
+            "named": true
+          },
+          {
+            "type": "octal_escape",
+            "named": true
+          },
+          {
+            "type": "posix_character_class",
+            "named": true
+          },
+          {
+            "type": "unicode_escape",
+            "named": true
+          },
+          {
+            "type": "unicode_property",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "quote_end",
+          "named": true
+        },
+        {
+          "type": "quote_start",
+          "named": true
+        },
+        {
+          "type": "verbose_whitespace",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "class_union",
+    "named": true,
+    "fields": {
+      "left": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "backspace_escape",
+            "named": true
+          },
+          {
+            "type": "character_class",
+            "named": true
+          },
+          {
+            "type": "character_class_escape",
+            "named": true
+          },
+          {
+            "type": "class_complement",
+            "named": true
+          },
+          {
+            "type": "class_intersection",
+            "named": true
+          },
+          {
+            "type": "class_parenthesized_expression",
+            "named": true
+          },
+          {
+            "type": "class_subtraction",
+            "named": true
+          },
+          {
+            "type": "class_symmetric_difference",
+            "named": true
+          },
+          {
+            "type": "class_union",
+            "named": true
+          },
+          {
+            "type": "control_character_escape",
+            "named": true
+          },
+          {
+            "type": "control_escape",
+            "named": true
+          },
+          {
+            "type": "hex_escape",
+            "named": true
+          },
+          {
+            "type": "literal_escape",
+            "named": true
+          },
+          {
+            "type": "octal_escape",
+            "named": true
+          },
+          {
+            "type": "posix_character_class",
+            "named": true
+          },
+          {
+            "type": "unicode_escape",
+            "named": true
+          },
+          {
+            "type": "unicode_property",
+            "named": true
+          }
+        ]
+      },
+      "right": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "backspace_escape",
+            "named": true
+          },
+          {
+            "type": "character_class",
+            "named": true
+          },
+          {
+            "type": "character_class_escape",
+            "named": true
+          },
+          {
+            "type": "class_complement",
+            "named": true
+          },
+          {
+            "type": "class_intersection",
+            "named": true
+          },
+          {
+            "type": "class_parenthesized_expression",
+            "named": true
+          },
+          {
+            "type": "control_character_escape",
+            "named": true
+          },
+          {
+            "type": "control_escape",
+            "named": true
+          },
+          {
+            "type": "hex_escape",
+            "named": true
+          },
+          {
+            "type": "literal_escape",
+            "named": true
+          },
+          {
+            "type": "octal_escape",
+            "named": true
+          },
+          {
+            "type": "posix_character_class",
+            "named": true
+          },
+          {
+            "type": "unicode_escape",
+            "named": true
+          },
+          {
+            "type": "unicode_property",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "quote_end",
+          "named": true
+        },
+        {
+          "type": "quote_start",
+          "named": true
+        },
+        {
+          "type": "verbose_whitespace",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "comment_group",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "comment_content",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "concatenation",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "anchor_escape",
+          "named": true
+        },
+        {
+          "type": "atomic_group",
+          "named": true
+        },
+        {
+          "type": "atomic_script_run_group",
+          "named": true
+        },
+        {
+          "type": "backreference",
+          "named": true
+        },
+        {
+          "type": "branch_reset_group",
+          "named": true
+        },
+        {
+          "type": "callout",
+          "named": true
+        },
+        {
+          "type": "capturing_group",
+          "named": true
+        },
+        {
+          "type": "character_class",
+          "named": true
+        },
+        {
+          "type": "character_class_escape",
+          "named": true
+        },
+        {
+          "type": "comment_group",
+          "named": true
+        },
+        {
+          "type": "conditional_group",
+          "named": true
+        },
+        {
+          "type": "control_character_escape",
+          "named": true
+        },
+        {
+          "type": "control_escape",
+          "named": true
+        },
+        {
+          "type": "control_verb",
+          "named": true
+        },
+        {
+          "type": "end_anchor",
+          "named": true
+        },
+        {
+          "type": "extended_character_class",
+          "named": true
+        },
+        {
+          "type": "global_flags",
+          "named": true
+        },
+        {
+          "type": "hex_escape",
+          "named": true
+        },
+        {
+          "type": "literal_character",
+          "named": true
+        },
+        {
+          "type": "literal_escape",
+          "named": true
+        },
+        {
+          "type": "match_reset",
+          "named": true
+        },
+        {
+          "type": "named_capturing_group",
+          "named": true
+        },
+        {
+          "type": "negative_lookahead_assertion",
+          "named": true
+        },
+        {
+          "type": "negative_lookbehind_assertion",
+          "named": true
+        },
+        {
+          "type": "non_atomic_lookahead_assertion",
+          "named": true
+        },
+        {
+          "type": "non_atomic_lookbehind_assertion",
+          "named": true
+        },
+        {
+          "type": "non_capturing_group",
+          "named": true
+        },
+        {
+          "type": "numeric_backreference",
+          "named": true
+        },
+        {
+          "type": "octal_escape",
+          "named": true
+        },
+        {
+          "type": "positive_lookahead_assertion",
+          "named": true
+        },
+        {
+          "type": "positive_lookbehind_assertion",
+          "named": true
+        },
+        {
+          "type": "quote_end",
+          "named": true
+        },
+        {
+          "type": "quote_start",
+          "named": true
+        },
+        {
+          "type": "repetition",
+          "named": true
+        },
+        {
+          "type": "scan_substring_assertion",
+          "named": true
+        },
+        {
+          "type": "scoped_flags_group",
+          "named": true
+        },
+        {
+          "type": "script_run_group",
+          "named": true
+        },
+        {
+          "type": "start_anchor",
+          "named": true
+        },
+        {
+          "type": "subroutine_call",
+          "named": true
+        },
+        {
+          "type": "unicode_escape",
+          "named": true
+        },
+        {
+          "type": "unicode_property",
+          "named": true
+        },
+        {
+          "type": "verbose_comment",
+          "named": true
+        },
+        {
+          "type": "verbose_whitespace",
+          "named": true
+        },
+        {
+          "type": "wildcard",
+          "named": true
+        },
+        {
+          "type": "word_boundary_assertion",
+          "named": true
+        },
+        {
+          "type": "word_boundary_escape",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "condition_name",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "conditional_group",
+    "named": true,
+    "fields": {
+      "condition": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "assertion_condition",
+            "named": true
+          },
+          {
+            "type": "condition_name",
+            "named": true
+          },
+          {
+            "type": "define_condition",
+            "named": true
+          },
+          {
+            "type": "group_name",
+            "named": true
+          },
+          {
+            "type": "group_number",
+            "named": true
+          },
+          {
+            "type": "recursion_condition",
+            "named": true
+          },
+          {
+            "type": "version_condition",
+            "named": true
+          }
+        ]
+      },
+      "no_pattern": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "concatenation",
+            "named": true
+          }
+        ]
+      },
+      "yes_pattern": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "concatenation",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "callout",
+          "named": true
+        },
+        {
+          "type": "comment_group",
+          "named": true
+        },
+        {
+          "type": "quote_end",
+          "named": true
+        },
+        {
+          "type": "quote_start",
+          "named": true
+        },
+        {
+          "type": "verbose_comment",
+          "named": true
+        },
+        {
+          "type": "verbose_whitespace",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "control_character_escape",
+    "named": true,
+    "fields": {
+      "character": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "control_character",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "control_verb",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "verb_name",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "verb_argument",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "decimal_digits",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "end_anchor",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "extended_character_class",
+    "named": true,
+    "fields": {
+      "expression": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "backspace_escape",
+            "named": true
+          },
+          {
+            "type": "character_class",
+            "named": true
+          },
+          {
+            "type": "character_class_escape",
+            "named": true
+          },
+          {
+            "type": "class_complement",
+            "named": true
+          },
+          {
+            "type": "class_intersection",
+            "named": true
+          },
+          {
+            "type": "class_parenthesized_expression",
+            "named": true
+          },
+          {
+            "type": "class_subtraction",
+            "named": true
+          },
+          {
+            "type": "class_symmetric_difference",
+            "named": true
+          },
+          {
+            "type": "class_union",
+            "named": true
+          },
+          {
+            "type": "control_character_escape",
+            "named": true
+          },
+          {
+            "type": "control_escape",
+            "named": true
+          },
+          {
+            "type": "hex_escape",
+            "named": true
+          },
+          {
+            "type": "literal_escape",
+            "named": true
+          },
+          {
+            "type": "octal_escape",
+            "named": true
+          },
+          {
+            "type": "posix_character_class",
+            "named": true
+          },
+          {
+            "type": "unicode_escape",
+            "named": true
+          },
+          {
+            "type": "unicode_property",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "quote_end",
+          "named": true
+        },
+        {
+          "type": "quote_start",
+          "named": true
+        },
+        {
+          "type": "verbose_whitespace",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "global_flags",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "flag_set",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "group_list",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "group_name",
+          "named": true
+        },
+        {
+          "type": "group_number",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "group_name",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "hex_escape",
+    "named": true,
+    "fields": {
+      "digits": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "hexadecimal_digits",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "escape_whitespace",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "named_capturing_group",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "alternation",
+            "named": true
+          }
+        ]
+      },
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "group_name",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "negative_lookahead_assertion",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "alternation",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "negative_lookbehind_assertion",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "alternation",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "non_atomic_lookahead_assertion",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "alternation",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "non_atomic_lookbehind_assertion",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "alternation",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "non_capturing_group",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "alternation",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "numeric_backreference",
+    "named": true,
+    "fields": {
+      "group": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "group_number",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "octal_escape",
+    "named": true,
+    "fields": {
+      "digits": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "octal_digits",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "escape_whitespace",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "pattern",
+    "named": true,
+    "root": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "alternation",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "start_option",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "positive_lookahead_assertion",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "alternation",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "positive_lookbehind_assertion",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "alternation",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "posix_character_class",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "class_name",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "quantifier",
+    "named": true,
+    "fields": {
+      "count": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "decimal_digits",
+            "named": true
+          }
+        ]
+      },
+      "maximum": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "decimal_digits",
+            "named": true
+          }
+        ]
+      },
+      "minimum": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "decimal_digits",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "comment_group",
+          "named": true
+        },
+        {
+          "type": "quantifier_whitespace",
+          "named": true
+        },
+        {
+          "type": "quote_end",
+          "named": true
+        },
+        {
+          "type": "quote_start",
+          "named": true
+        },
+        {
+          "type": "verbose_comment",
+          "named": true
+        },
+        {
+          "type": "verbose_whitespace",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "recursion_condition",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "group_name",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "repetition",
+    "named": true,
+    "fields": {
+      "operand": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "atomic_group",
+            "named": true
+          },
+          {
+            "type": "atomic_script_run_group",
+            "named": true
+          },
+          {
+            "type": "backreference",
+            "named": true
+          },
+          {
+            "type": "branch_reset_group",
+            "named": true
+          },
+          {
+            "type": "capturing_group",
+            "named": true
+          },
+          {
+            "type": "character_class",
+            "named": true
+          },
+          {
+            "type": "character_class_escape",
+            "named": true
+          },
+          {
+            "type": "conditional_group",
+            "named": true
+          },
+          {
+            "type": "control_character_escape",
+            "named": true
+          },
+          {
+            "type": "control_escape",
+            "named": true
+          },
+          {
+            "type": "control_verb",
+            "named": true
+          },
+          {
+            "type": "extended_character_class",
+            "named": true
+          },
+          {
+            "type": "hex_escape",
+            "named": true
+          },
+          {
+            "type": "literal_character",
+            "named": true
+          },
+          {
+            "type": "literal_escape",
+            "named": true
+          },
+          {
+            "type": "named_capturing_group",
+            "named": true
+          },
+          {
+            "type": "negative_lookahead_assertion",
+            "named": true
+          },
+          {
+            "type": "negative_lookbehind_assertion",
+            "named": true
+          },
+          {
+            "type": "non_atomic_lookahead_assertion",
+            "named": true
+          },
+          {
+            "type": "non_atomic_lookbehind_assertion",
+            "named": true
+          },
+          {
+            "type": "non_capturing_group",
+            "named": true
+          },
+          {
+            "type": "numeric_backreference",
+            "named": true
+          },
+          {
+            "type": "octal_escape",
+            "named": true
+          },
+          {
+            "type": "positive_lookahead_assertion",
+            "named": true
+          },
+          {
+            "type": "positive_lookbehind_assertion",
+            "named": true
+          },
+          {
+            "type": "scan_substring_assertion",
+            "named": true
+          },
+          {
+            "type": "scoped_flags_group",
+            "named": true
+          },
+          {
+            "type": "script_run_group",
+            "named": true
+          },
+          {
+            "type": "subroutine_call",
+            "named": true
+          },
+          {
+            "type": "unicode_escape",
+            "named": true
+          },
+          {
+            "type": "unicode_property",
+            "named": true
+          },
+          {
+            "type": "wildcard",
+            "named": true
+          }
+        ]
+      },
+      "quantifier": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "quantifier",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "comment_group",
+          "named": true
+        },
+        {
+          "type": "quote_end",
+          "named": true
+        },
+        {
+          "type": "quote_start",
+          "named": true
+        },
+        {
+          "type": "verbose_comment",
+          "named": true
+        },
+        {
+          "type": "verbose_whitespace",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "scan_substring_assertion",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "alternation",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "group_list",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "scoped_flags_group",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "alternation",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "flag_set",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "script_run_group",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "alternation",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "start_anchor",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "start_option",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "option_name",
+            "named": true
+          }
+        ]
+      },
+      "value": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "decimal_digits",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "subroutine_call",
+    "named": true,
+    "fields": {
+      "group": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "group_name",
+            "named": true
+          },
+          {
+            "type": "group_number",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "group_list",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "unicode_escape",
+    "named": true,
+    "fields": {
+      "digits": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "hexadecimal_digits",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "escape_whitespace",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "unicode_property",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "property_name",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "escape_whitespace",
+          "named": true
+        },
+        {
+          "type": "property_escape",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "version_condition",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "decimal_digits",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "wildcard",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "word_boundary_assertion",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "!",
+    "named": false
+  },
+  {
+    "type": "\"",
+    "named": false
+  },
+  {
+    "type": "#",
+    "named": false
+  },
+  {
+    "type": "$",
+    "named": false
+  },
+  {
+    "type": "%",
+    "named": false
+  },
+  {
+    "type": "&",
+    "named": false
+  },
+  {
+    "type": "'",
+    "named": false
+  },
+  {
+    "type": "(",
+    "named": false
+  },
+  {
+    "type": ")",
+    "named": false
+  },
+  {
+    "type": "*",
+    "named": false
+  },
+  {
+    "type": "+",
+    "named": false
+  },
+  {
+    "type": ",",
+    "named": false
+  },
+  {
+    "type": "-",
+    "named": false
+  },
+  {
+    "type": ".",
+    "named": false
+  },
+  {
+    "type": ":",
+    "named": false
+  },
+  {
+    "type": "<",
+    "named": false
+  },
+  {
+    "type": "<!",
+    "named": false
+  },
+  {
+    "type": "<*",
+    "named": false
+  },
+  {
+    "type": "<=",
+    "named": false
+  },
+  {
+    "type": "=",
+    "named": false
+  },
+  {
+    "type": ">",
+    "named": false
+  },
+  {
+    "type": ">=",
+    "named": false
+  },
+  {
+    "type": "?",
+    "named": false
+  },
+  {
+    "type": "?C",
+    "named": false
+  },
+  {
+    "type": "?P",
+    "named": false
+  },
+  {
+    "type": "R",
+    "named": false
+  },
+  {
+    "type": "U+",
+    "named": false
+  },
+  {
+    "type": "VERSION",
+    "named": false
+  },
+  {
+    "type": "[",
+    "named": false
+  },
+  {
+    "type": "\\",
+    "named": false
+  },
+  {
+    "type": "\\N",
+    "named": false
+  },
+  {
+    "type": "\\c",
+    "named": false
+  },
+  {
+    "type": "\\g",
+    "named": false
+  },
+  {
+    "type": "\\k",
+    "named": false
+  },
+  {
+    "type": "\\o",
+    "named": false
+  },
+  {
+    "type": "\\x",
+    "named": false
+  },
+  {
+    "type": "]",
+    "named": false
+  },
+  {
+    "type": "^",
+    "named": false
+  },
+  {
+    "type": "`",
+    "named": false
+  },
+  {
+    "type": "anchor_escape",
+    "named": true
+  },
+  {
+    "type": "asr",
+    "named": false
+  },
+  {
+    "type": "atomic",
+    "named": false
+  },
+  {
+    "type": "atomic_script_run",
+    "named": false
+  },
+  {
+    "type": "backspace_escape",
+    "named": true
+  },
+  {
+    "type": "callout_content",
+    "named": true
+  },
+  {
+    "type": "character_class_escape",
+    "named": true
+  },
+  {
+    "type": "class_character",
+    "named": true
+  },
+  {
+    "type": "class_name",
+    "named": true
+  },
+  {
+    "type": "comment_content",
+    "named": true
+  },
+  {
+    "type": "control_character",
+    "named": true
+  },
+  {
+    "type": "control_escape",
+    "named": true
+  },
+  {
+    "type": "define_condition",
+    "named": true
+  },
+  {
+    "type": "escape_whitespace",
+    "named": true
+  },
+  {
+    "type": "flag_set",
+    "named": true
+  },
+  {
+    "type": "group_number",
+    "named": true
+  },
+  {
+    "type": "hexadecimal_digits",
+    "named": true
+  },
+  {
+    "type": "literal_character",
+    "named": true
+  },
+  {
+    "type": "literal_escape",
+    "named": true
+  },
+  {
+    "type": "match_reset",
+    "named": true
+  },
+  {
+    "type": "napla",
+    "named": false
+  },
+  {
+    "type": "naplb",
+    "named": false
+  },
+  {
+    "type": "negative_lookahead",
+    "named": false
+  },
+  {
+    "type": "negative_lookbehind",
+    "named": false
+  },
+  {
+    "type": "nla",
+    "named": false
+  },
+  {
+    "type": "nlb",
+    "named": false
+  },
+  {
+    "type": "non_atomic_positive_lookahead",
+    "named": false
+  },
+  {
+    "type": "non_atomic_positive_lookbehind",
+    "named": false
+  },
+  {
+    "type": "octal_digits",
+    "named": true
+  },
+  {
+    "type": "option_name",
+    "named": true
+  },
+  {
+    "type": "pla",
+    "named": false
+  },
+  {
+    "type": "plb",
+    "named": false
+  },
+  {
+    "type": "positive_lookahead",
+    "named": false
+  },
+  {
+    "type": "positive_lookbehind",
+    "named": false
+  },
+  {
+    "type": "property_escape",
+    "named": true
+  },
+  {
+    "type": "property_name",
+    "named": true
+  },
+  {
+    "type": "quantifier_whitespace",
+    "named": true
+  },
+  {
+    "type": "quote_end",
+    "named": true
+  },
+  {
+    "type": "quote_start",
+    "named": true
+  },
+  {
+    "type": "scan_substring",
+    "named": false
+  },
+  {
+    "type": "script_run",
+    "named": false
+  },
+  {
+    "type": "scs",
+    "named": false
+  },
+  {
+    "type": "sr",
+    "named": false
+  },
+  {
+    "type": "verb_argument",
+    "named": true
+  },
+  {
+    "type": "verb_name",
+    "named": true
+  },
+  {
+    "type": "verbose_comment",
+    "named": true
+  },
+  {
+    "type": "verbose_whitespace",
+    "named": true
+  },
+  {
+    "type": "word_boundary_escape",
+    "named": true
+  },
+  {
+    "type": "{",
+    "named": false
+  },
+  {
+    "type": "|",
+    "named": false
+  },
+  {
+    "type": "}",
+    "named": false
+  }
+]

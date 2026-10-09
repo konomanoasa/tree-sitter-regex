@@ -1,6 +1,6 @@
 ==================
 simple and lazy quantifiers wrap only their operands
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 a*b+c?d*?e+?f??
@@ -57,8 +57,8 @@ a*b+c?d*?e+?f??
 
 ==================
 simple and lazy quantifiers wrap only their operands
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 a*b+c?d*?e+?f??
@@ -158,7 +158,7 @@ a*b+?c?+d{2}e{2,4}?f{2,}+g{,4}h{,}\
 
 ==================
 quantifiers own count bounds punctuation and lazy modifiers
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 a{2}b{3,}c{4,5}?d*e+?f??
@@ -228,8 +228,8 @@ a{2}b{3,}c{4,5}?d*e+?f??
 
 ==================
 quantifiers own count bounds punctuation and lazy modifiers
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 a{2}b{3,}c{4,5}?d*e+?f??
@@ -348,7 +348,7 @@ a{2}b{3,}c{4,5}?d*e+?f??
 
 ==================
 each group form can be a repetition operand
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 (ab|c)+(?<x>d)?(?:e)*(?i:f){2}
@@ -440,8 +440,8 @@ each group form can be a repetition operand
 
 ==================
 each group form can be a repetition operand
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 (ab|c)+(?<x>d)?(?:e)*(?i:f){2}
@@ -570,7 +570,7 @@ representative consuming atom categories can be quantified
 
 ==================
 positive and negative lookahead assertions can be repetition operands in ordinary mode
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 (?=a)+(?!b){2}?
@@ -683,7 +683,7 @@ scoped verbose layout belongs to the following quantifier relation
 
 ==================
 interval bounds retain spelling and leave value checks to the consumer
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 a{0}b{2,}c{2,4}?d{4,2}e{01,002}
@@ -759,8 +759,8 @@ a{0}b{2,}c{2,4}?d{4,2}e{01,002}
 
 ==================
 interval bounds retain spelling and leave value checks to the consumer
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 a{0}b{2,}c{2,4}?d{4,2}e{01,002}
@@ -863,7 +863,7 @@ a{0002}b{4,2}c{12345678901234567890}\
 
 ==================
 a quantified non-BMP source character keeps its complete byte range
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 😀+
@@ -882,8 +882,8 @@ a quantified non-BMP source character keeps its complete byte range
 
 ==================
 a quantified non-BMP source character keeps its complete byte range
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :cst
 ==================
 😀+
@@ -922,7 +922,7 @@ quantifier punctuation remains ordinary inside a character class
 
 ==================
 raw closing brackets and noninterval braces are ordinary body characters
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 ]{x}}
@@ -954,7 +954,7 @@ raw closing brackets and noninterval braces are ordinary body characters
 
 ==================
 incomplete intervals and omitted lower bounds are literal source characters
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 a{2|a{2,|{,2}|{}
@@ -1062,7 +1062,7 @@ a{2|b{2,|c{2,3,}|d{}|e}f\
 
 ==================
 orphan braced quantifiers remain structural in Annex B
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 {2}a
@@ -1085,7 +1085,7 @@ orphan braced quantifiers remain structural in Annex B
 
 ==================
 an operandless interval retains an invalid braced quantifier node in ordinary mode
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 {2}
@@ -1104,7 +1104,7 @@ an operandless interval retains an invalid braced quantifier node in ordinary mo
 
 ==================
 a second interval retains an invalid braced quantifier node in ordinary mode
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 a{1}{2}
@@ -1133,7 +1133,7 @@ a{1}{2}
 
 ==================
 an interval after an anchor retains an invalid braced quantifier node in ordinary mode
-:language(javascript_regex)
+:language(js_regex)
 :cst
 ==================
 ^{2}
@@ -1155,9 +1155,9 @@ an interval after an anchor retains an invalid braced quantifier node in ordinar
 
 ==================
 adjacent quantifiers require recovery before following text
-:language(javascript_regex)
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 a**b
@@ -1165,9 +1165,9 @@ a**b
 
 ==================
 a possessive quantifier suffix is not accepted
-:language(javascript_regex)
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 a++b
@@ -1175,9 +1175,9 @@ a++b
 
 ==================
 an anchor cannot be a repetition operand
-:language(javascript_regex)
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 ^*b
@@ -1185,8 +1185,8 @@ an anchor cannot be a repetition operand
 
 ==================
 a lookahead cannot be quantified in Unicode modes
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 (?=a)+b
@@ -1194,9 +1194,9 @@ a lookahead cannot be quantified in Unicode modes
 
 ==================
 lookbehind assertions cannot be quantified in JavaScript
-:language(javascript_regex)
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 (?<=a)+
@@ -1204,9 +1204,9 @@ lookbehind assertions cannot be quantified in JavaScript
 
 ==================
 a word boundary cannot be quantified in JavaScript
-:language(javascript_regex)
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 \b?
@@ -1214,8 +1214,8 @@ a word boundary cannot be quantified in JavaScript
 
 ==================
 a complete interval without an operand cannot become literal braces
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 {2}
@@ -1223,8 +1223,8 @@ a complete interval without an operand cannot become literal braces
 
 ==================
 a second complete interval cannot become literal braces after a quantifier
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 a{1}{2}
@@ -1232,8 +1232,8 @@ a{1}{2}
 
 ==================
 a complete interval cannot quantify an anchor
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 ^{2}
@@ -1241,8 +1241,8 @@ a complete interval cannot quantify an anchor
 
 ==================
 a noninterval opening brace requires recovery in Unicode modes
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 {a}
@@ -1250,8 +1250,8 @@ a noninterval opening brace requires recovery in Unicode modes
 
 ==================
 an unclosed interval requires recovery in Unicode modes
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 a{2
@@ -1259,8 +1259,8 @@ a{2
 
 ==================
 an operandless quantifier inside nested groups requires recovery
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 ((())((?:?))
@@ -1268,8 +1268,8 @@ an operandless quantifier inside nested groups requires recovery
 
 ==================
 every complete orphan quantifier including its lazy suffix remains an error
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 (*)(+)(?=)?(?:*?)(?:+?)(?:??)(?:{2})(?:{2,})(?:{2,3}?)(?:{3,2})
@@ -1277,8 +1277,8 @@ every complete orphan quantifier including its lazy suffix remains an error
 
 ==================
 an invalid lookahead quantifier does not move the real inner group closer
-:language(javascript_regex_u)
-:language(javascript_regex_v)
+:language(js_regex_u)
+:language(js_regex_v)
 :error
 ==================
 (-((?!)?&)

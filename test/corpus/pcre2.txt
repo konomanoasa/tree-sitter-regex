@@ -1,0 +1,163 @@
+==================
+PCRE2 quotation preserves the last repeated character
+:language(pcre2)
+==================
+\Qab\E+
+---
+
+(pattern (alternation (concatenation (quote_start) (literal_character) (repetition (literal_character) (quote_end) (quantifier)))))
+
+==================
+PCRE2 class operators preserve left association and precedence
+:language(pcre2)
+==================
+(?[[a]|[b]^[c]&![d]])
+---
+
+(pattern (alternation (concatenation (extended_character_class (class_symmetric_difference (class_union (character_class (class_character)) (character_class (class_character))) (class_intersection (character_class (class_character)) (class_complement (character_class (class_character)))))))))
+
+==================
+PCRE2 class negation does not consume a later literal caret
+:language(pcre2)
+==================
+[^^]
+---
+
+(pattern (alternation (concatenation (character_class (class_character)))))
+
+==================
+PCRE2 normal hexadecimal braces form one escape
+:language(pcre2)
+==================
+\x{41}
+---
+
+(pattern (alternation (concatenation (hex_escape (hexadecimal_digits)))))
+
+==================
+PCRE2 default parentheses capture
+:language(pcre2)
+==================
+(a)
+---
+
+(pattern (alternation (concatenation (capturing_group (alternation (concatenation (literal_character)))))))
+
+==================
+PCRE2 inline n makes parentheses noncapturing
+:language(pcre2)
+==================
+(?n)(a)
+---
+
+(pattern (alternation (concatenation (global_flags (flag_set)) (non_capturing_group (alternation (concatenation (literal_character)))))))
+
+==================
+PCRE2 conditional assertions retain separate branches
+:language(pcre2)
+==================
+(?(?=a)b|c)
+---
+
+(pattern (alternation (concatenation (conditional_group (assertion_condition (alternation (concatenation (literal_character)))) (concatenation (literal_character)) (concatenation (literal_character))))))
+
+==================
+PCRE2 callouts and verbs retain opaque payloads
+:language(pcre2)
+==================
+(?C'foo''bar')(*MARK:tag)
+---
+
+(pattern (alternation (concatenation (callout (callout_string (callout_content))) (control_verb (verb_name) (verb_argument)))))
+
+==================
+PCRE2 assertion conditions can carry an explicit callout
+:language(pcre2)
+==================
+(?(?C9)(?=x)a|b)
+---
+
+(pattern (alternation (concatenation (conditional_group (callout (decimal_digits)) (assertion_condition (alternation (concatenation (literal_character)))) (concatenation (literal_character)) (concatenation (literal_character))))))
+
+==================
+PCRE2 ACCEPT can repeat and optional verb arguments can be empty
+:language(pcre2)
+==================
+(*ACCEPT)??(*PRUNE:)
+---
+
+(pattern (alternation (concatenation (repetition (control_verb (verb_name)) (quantifier)) (control_verb (verb_name)))))
+
+==================
+PCRE2 property names allow loose spacing before negation and the L& name
+:language(pcre2)
+==================
+\p{L&}\P{ ^ Bi-di class = Al }\p{
+^L
+u}
+---
+
+(pattern (alternation (concatenation (unicode_property (property_escape) (property_name)) (unicode_property (property_escape) (escape_whitespace) (property_name)) (unicode_property (property_escape) (escape_whitespace) (property_name)))))
+
+==================
+PCRE2 quoted class hyphens and brackets stay literal
+:language(pcre2)
+==================
+[a\Q-\Ez][\Q]\E]
+---
+
+(pattern (alternation (concatenation (character_class (class_character) (quote_start) (class_character) (quote_end) (class_character)) (character_class (quote_start) (class_character) (quote_end)))))
+
+==================
+PCRE2 class negation follows ignored quote markers and extended whitespace
+:language(pcre2)
+==================
+[\E^a](?xx)[ ^b]
+---
+
+(pattern (alternation (concatenation (character_class (quote_end) (class_character)) (global_flags (flag_set)) (character_class (verbose_whitespace) (class_character)))))
+
+==================
+PCRE2 extended classes take POSIX class operands outside nested classes
+:language(pcre2)
+==================
+(?[ [:alpha:] - [z] ])
+---
+
+(pattern (alternation (concatenation (extended_character_class (verbose_whitespace) (class_subtraction (posix_character_class (class_name)) (verbose_whitespace) (verbose_whitespace) (character_class (class_character))) (verbose_whitespace)))))
+
+==================
+PCRE2 extended classes ignore quote markers between operands
+:language(pcre2)
+==================
+(?[\E[a]&\Q\E![b]\E])
+---
+
+(pattern (alternation (concatenation (extended_character_class (quote_end) (class_intersection (character_class (class_character)) (quote_start) (quote_end) (class_complement (character_class (class_character)))) (quote_end)))))
+
+==================
+PCRE2 x letters enable class spacing only as an adjacent pair
+:language(pcre2)
+==================
+(?^)(?xix)[ a](?xx)[ b]
+---
+
+(pattern (alternation (concatenation (global_flags) (global_flags (flag_set)) (character_class (class_character) (class_character)) (global_flags (flag_set)) (character_class (verbose_whitespace) (class_character)))))
+
+==================
+PCRE2 alphabetic lookaround assertions can be conditions
+:language(pcre2)
+==================
+(?(*pla:a)b|c)(?(?C1)(*nlb:d)e)
+---
+
+(pattern (alternation (concatenation (conditional_group (assertion_condition (alternation (concatenation (literal_character)))) (concatenation (literal_character)) (concatenation (literal_character))) (conditional_group (callout (decimal_digits)) (assertion_condition (alternation (concatenation (literal_character)))) (concatenation (literal_character))))))
+
+==================
+PCRE2 condition callouts may be followed by ignored comments and quote markers
+:language(pcre2)
+==================
+(?(?C1)(?#c)\E(?=a)b)
+---
+
+(pattern (alternation (concatenation (conditional_group (callout (decimal_digits)) (comment_group (comment_content)) (quote_end) (assertion_condition (alternation (concatenation (literal_character)))) (concatenation (literal_character))))))
