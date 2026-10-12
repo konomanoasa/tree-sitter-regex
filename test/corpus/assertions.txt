@@ -1,10 +1,19 @@
 ==================
+PCRE2 quantified compatibility word boundaries preserve the source operands
+:language(pcre2)
+==================
+[[:<:]]*[[:>:]]{0}
+------------------
+
+(pattern (alternation (concatenation (repetition (word_boundary_assertion) (quantifier)) (repetition (word_boundary_assertion) (quantifier (decimal_digits))))))
+
+==================
 anchors word boundaries and lookarounds remain assertions
 :language(js_regex)
 :cst
 ==================
 ^\ba\B$(?=b)(?!c)(?<=d)(?<!e)
----
+------------------
 
 0:0  - 0:29   pattern
 0:0  - 0:29     body: disjunction
@@ -83,7 +92,7 @@ anchors word boundaries and lookarounds remain assertions
 :cst
 ==================
 ^\ba\B$(?=b)(?!c)(?<=d)(?<!e)
----
+------------------
 
 0:0  - 0:29   pattern
 0:0  - 0:29     body: disjunction
@@ -160,7 +169,7 @@ lookaround direction polarity and atomic groups have distinct public nodes
 ==================
 (?=a)(?!b)(?<=c)(?<!d)(?>e)\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -194,7 +203,7 @@ assertions and atomic groups can be repetition operands
 ==================
 (?=a)*(?!b)+(?<=c)?(?<!d){2}(?>e)*\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -240,7 +249,7 @@ scoped verbose mode flows through assertion and atomic bodies
 (?x:(?= a # gap
  b)(?> c ))\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -272,7 +281,7 @@ every lookaround supports an empty body
 :cst
 ==================
 (?=)(?!)(?<=)(?<!)
----
+------------------
 
 0:0  - 0:18   pattern
 0:0  - 0:18     body: disjunction
@@ -311,7 +320,7 @@ every lookaround supports an empty body
 :cst
 ==================
 (?=)(?!)(?<=)(?<!)
----
+------------------
 
 0:0  - 0:18   pattern
 0:0  - 0:18     body: disjunction
@@ -348,7 +357,7 @@ empty bodies preserve every assertion and atomic category
 ==================
 (?=)(?!)(?<=)(?<!)(?>)\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -367,7 +376,7 @@ lookbehind length and atomic matching semantics remain outside the CST
 ==================
 (?<=a*)(?<!a|bc)(?>a|b)\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -392,3 +401,219 @@ lookbehind length and atomic matching semantics remain outside the CST
           (concatenation
             (literal_character))))
       (literal_escape))))
+
+==================
+PCRE2 compatibility boundaries surround literal text
+:language(pcre2)
+==================
+[[:<:]]word[[:>:]]
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (word_boundary_assertion)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (word_boundary_assertion))))
+
+==================
+PCRE2 symbolic lookaround introducers remain separate
+:language(pcre2)
+==================
+(?=a)(?!b)(?<=c)(?<!d)(?*e)(?<*f)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (positive_lookahead_assertion
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (negative_lookahead_assertion
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (positive_lookbehind_assertion
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (negative_lookbehind_assertion
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (non_atomic_lookahead_assertion
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (non_atomic_lookbehind_assertion
+        body: (alternation
+          (concatenation
+            (literal_character)))))))
+
+==================
+PCRE2 word lookaround names remain separate
+:language(pcre2)
+==================
+(*pla:a)(*nla:b)(*plb:c)(*nlb:d)(*napla:e)(*naplb:f)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (positive_lookahead_assertion
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (negative_lookahead_assertion
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (positive_lookbehind_assertion
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (negative_lookbehind_assertion
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (non_atomic_lookahead_assertion
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (non_atomic_lookbehind_assertion
+        body: (alternation
+          (concatenation
+            (literal_character)))))))
+
+==================
+PCRE2 substring scanning retains the group list before its body
+:language(pcre2)
+==================
+(*scs:(1,<name>)a)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (scan_substring_assertion
+        (group_list
+          (group_number)
+          (group_name))
+        body: (alternation
+          (concatenation
+            (literal_character)))))))
+
+==================
+PCRE2 word boundary < accepts *
+:language(pcre2)
+==================
+[[:<:]]*
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (repetition
+        operand: (word_boundary_assertion)
+        quantifier: (quantifier)))))
+
+==================
+PCRE2 word boundary > accepts +
+:language(pcre2)
+==================
+[[:>:]]+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (repetition
+        operand: (word_boundary_assertion)
+        quantifier: (quantifier)))))
+
+==================
+PCRE2 word boundary < accepts {0}
+:language(pcre2)
+==================
+[[:<:]]{0}
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (repetition
+        operand: (word_boundary_assertion)
+        quantifier: (quantifier
+          count: (decimal_digits))))))
+
+==================
+PCRE2 word boundary > accepts ??
+:language(pcre2)
+==================
+[[:>:]]??
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (repetition
+        operand: (word_boundary_assertion)
+        quantifier: (quantifier)))))
+
+==================
+PCRE2 verbose layout remains inside word-boundary repetition
+:language(pcre2)
+==================
+(?x)[[:<:]] (?#c){1,2}+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (global_flags
+        (flag_set))
+      (repetition
+        operand: (word_boundary_assertion)
+        (verbose_whitespace)
+        (comment_group
+          (comment_content))
+        quantifier: (quantifier
+          minimum: (decimal_digits)
+          maximum: (decimal_digits))))))
+
+==================
+python_re: malformed lookahead assertion without its closer uses standard recovery — "(?=a\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+(?=a\
+
+------------------
+
+
+
+==================
+python_re: malformed lookbehind assertion without its closer uses standard recovery — "(?<=a\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+(?<=a\
+
+------------------
+
+
+
+==================
+python_re_verbose: malformed verbose layout cannot split a lookbehind introducer uses standard recovery — "(?< =a)|z\\\n"
+:language(python_re_verbose)
+:error
+==================
+(?< =a)|z\
+
+------------------

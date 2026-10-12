@@ -4,7 +4,7 @@ concatenation retains individual literal characters
 :cst
 ==================
 abc
----
+------------------
 
 0:0 - 0:3   pattern
 0:0 - 0:3     body: disjunction
@@ -29,7 +29,7 @@ concatenation retains individual literal characters
 :cst
 ==================
 abc
----
+------------------
 
 0:0 - 0:3   pattern
 0:0 - 0:3     body: disjunction
@@ -53,7 +53,7 @@ normal mode preserves expression hierarchy and basic atoms
 ==================
 ab|.^$-
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -73,7 +73,7 @@ verbose mode preserves expression hierarchy and basic atoms
 ==================
 ab|.^$-
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -93,7 +93,7 @@ whitespace and hash characters remain literals
 :cst
 ==================
 a # b
----
+------------------
 
 0:0 - 0:5   pattern
 0:0 - 0:5     body: disjunction
@@ -126,7 +126,7 @@ whitespace and hash characters remain literals
 :cst
 ==================
 a # b
----
+------------------
 
 0:0 - 0:5   pattern
 0:0 - 0:5     body: disjunction
@@ -159,7 +159,7 @@ closing bracket is ordinary outside a character class
 ==================
 a]b\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -175,7 +175,7 @@ concatenation binds more tightly than alternation
 :cst
 ==================
 ab|c.d
----
+------------------
 
 0:0 - 0:6   pattern
 0:0 - 0:6     body: disjunction
@@ -209,7 +209,7 @@ concatenation binds more tightly than alternation
 :cst
 ==================
 ab|c.d
----
+------------------
 
 0:0 - 0:6   pattern
 0:0 - 0:6     body: disjunction
@@ -242,7 +242,7 @@ a quantifier after a space applies to that space
 :cst
 ==================
 a ?
----
+------------------
 
 0:0 - 0:3   pattern
 0:0 - 0:3     body: disjunction
@@ -266,7 +266,7 @@ a quantifier after a space applies to that space
 :cst
 ==================
 a ?
----
+------------------
 
 0:0 - 0:3   pattern
 0:0 - 0:3     body: disjunction
@@ -289,7 +289,7 @@ anchors negated classes and lazy quantifiers share the same token ownership
 :cst
 ==================
 ^[^a]+?$
----
+------------------
 
 0:0 - 0:8   pattern
 0:0 - 0:8     body: disjunction
@@ -321,7 +321,7 @@ anchors negated classes and lazy quantifiers share the same token ownership
 :cst
 ==================
 ^[^a]+?$
----
+------------------
 
 0:0 - 0:8   pattern
 0:0 - 0:8     body: disjunction
@@ -353,7 +353,7 @@ anchors negated classes and lazy quantifiers share the same token ownership
 :cst
 ==================
 ^[^a]+?$
----
+------------------
 
 0:0 - 0:8   pattern
 0:0 - 0:8     body: disjunction
@@ -387,7 +387,7 @@ anchors negated classes and lazy quantifiers retain Python token ownership
 :cst
 ==================
 ^[^a]+?$
----
+------------------
 
 0:0 - 0:8   pattern
 0:0 - 0:8     body: alternation
@@ -410,7 +410,7 @@ groups modifiers assertions escapes and repetition share the same structure in e
 :cst
 ==================
 ^(?<名>(?im-s:a|b){1,3}?)(?=\k<名>)[\d\-]\1$
----
+------------------
 
 0:0  - 0:46   pattern
 0:0  - 0:46     body: disjunction
@@ -524,7 +524,7 @@ groups modifiers assertions escapes and repetition share the same structure in e
 :cst
 ==================
 ^(?<名>(?im-s:a|b){1,3}?)(?=\k<名>)[\d\-]\1$
----
+------------------
 
 0:0  - 0:46   pattern
 0:0  - 0:46     body: disjunction
@@ -634,7 +634,7 @@ groups modifiers assertions escapes and repetition share the same structure in e
 :cst
 ==================
 ^(?<名>(?im-s:a|b){1,3}?)(?=\k<名>)[\d\-]\1$
----
+------------------
 
 0:0  - 0:46   pattern
 0:0  - 0:46     body: disjunction
@@ -742,7 +742,7 @@ comment group is normal-mode prefix layout
 ==================
 (?# comment | # (? )a
 
----
+------------------
 
 (pattern
   (comment_group
@@ -758,7 +758,7 @@ comment group is verbose-mode prefix layout
 ==================
 (?# comment | # (? )a
 
----
+------------------
 
 (pattern
   (comment_group
@@ -774,7 +774,7 @@ literal characters and named group quantifiers retain Unicode byte ranges
 :cst
 ==================
 é😀(?<名>a){2,3}?|b
----
+------------------
 
 0:0  - 0:23   pattern
 0:0  - 0:23     body: disjunction
@@ -830,7 +830,7 @@ literal characters and named group quantifiers retain Unicode byte ranges
 :cst
 ==================
 é😀(?<名>a){2,3}?|b
----
+------------------
 
 0:0  - 0:23   pattern
 0:0  - 0:23     body: disjunction
@@ -885,7 +885,7 @@ group alternatives and repetition retain complete Unicode byte ranges
 :cst
 ==================
 (?:é|😀){2,3}?
----
+------------------
 
 0:0  - 0:17   pattern
 0:0  - 0:17     body: disjunction
@@ -926,7 +926,7 @@ group alternatives and repetition retain complete Unicode byte ranges
 :cst
 ==================
 (?:é|😀){2,3}?
----
+------------------
 
 0:0  - 0:17   pattern
 0:0  - 0:17     body: disjunction
@@ -967,7 +967,7 @@ group alternatives and repetition retain complete Unicode byte ranges
 :cst
 ==================
 (?:é|😀){2,3}?
----
+------------------
 
 0:0  - 0:17   pattern
 0:0  - 0:17     body: alternation
@@ -997,21 +997,12 @@ empty input has no body or zero-width children
 :language(js_regex)
 :language(js_regex_u)
 :language(js_regex_v)
-:cst
-==================
-
----
-
-0:0 - 0:0   pattern
-
-==================
-empty input has no body or zero-width children
 :language(python_re)
 :language(python_re_verbose)
 :cst
 ==================
 
----
+------------------
 
 0:0 - 0:0   pattern
 
@@ -1023,7 +1014,7 @@ an alternation of empty branches retains only the separator
 :cst
 ==================
 |
----
+------------------
 
 0:0 - 0:1   pattern
 0:0 - 0:1     body: disjunction
@@ -1035,7 +1026,7 @@ empty alternatives retain separators without empty concatenations
 :cst
 ==================
 |a||
----
+------------------
 
 0:0 - 0:4   pattern
 0:0 - 0:4     body: disjunction
@@ -1055,7 +1046,7 @@ empty alternatives retain separators without empty concatenations
 :cst
 ==================
 |a||
----
+------------------
 
 0:0 - 0:4   pattern
 0:0 - 0:4     body: disjunction
@@ -1075,7 +1066,7 @@ empty alternatives retain separators without empty concatenations
 :cst
 ==================
 |a||
----
+------------------
 
 0:0 - 0:4   pattern
 0:0 - 0:4     body: alternation
@@ -1091,7 +1082,7 @@ empty alternatives retain a normal trailing newline
 ==================
 |a|
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -1106,7 +1097,7 @@ empty alternatives retain a verbose trailing newline
 ==================
 |a|
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -1121,7 +1112,7 @@ concatenation retains individual literal characters
 :cst
 ==================
 abc
----
+------------------
 
 0:0 - 0:3   extended_reg_exp
 0:0 - 0:3     ere_branch
@@ -1141,7 +1132,7 @@ alternation separates branches
 :cst
 ==================
 ab|c
----
+------------------
 
 0:0 - 0:4   extended_reg_exp
 0:0 - 0:2     ere_branch
@@ -1163,7 +1154,7 @@ anchors and the wildcard are expression bases
 :cst
 ==================
 ^.$
----
+------------------
 
 0:0 - 0:3   extended_reg_exp
 0:0 - 0:3     ere_branch
@@ -1181,7 +1172,7 @@ a group owns its delimiters and nested regular expression
 :cst
 ==================
 (a|b)
----
+------------------
 
 0:0 - 0:5   extended_reg_exp
 0:0 - 0:5     ere_branch
@@ -1205,7 +1196,7 @@ unmatched closing punctuation is ordinary
 :cst
 ==================
 )]}
----
+------------------
 
 0:0 - 0:3   extended_reg_exp
 0:0 - 0:3     ere_branch
@@ -1225,7 +1216,7 @@ concatenation retains individual literal characters
 :cst
 ==================
 abc
----
+------------------
 
 0:0 - 0:3   basic_reg_exp
 0:0 - 0:3     bre_branch
@@ -1251,7 +1242,7 @@ a quoted pipe stays in the same branch
 :cst
 ==================
 ab\|c
----
+------------------
 
 0:0 - 0:5   basic_reg_exp
 0:0 - 0:5     bre_branch
@@ -1282,7 +1273,7 @@ anchors attach to the expressions they bound
 :cst
 ==================
 ^ab$
----
+------------------
 
 0:0 - 0:4   basic_reg_exp
 0:0 - 0:4     bre_branch
@@ -1305,7 +1296,7 @@ anchors are ordinary characters inside a subexpression
 :cst
 ==================
 \(^a$\|^b$\)
----
+------------------
 
 0:0  - 0:12   basic_reg_exp
 0:0  - 0:12     bre_branch
@@ -1358,7 +1349,7 @@ a subexpression owns its delimiters and nested regular expression
 :cst
 ==================
 \(a\|b\)
----
+------------------
 
 0:0 - 0:8   basic_reg_exp
 0:0 - 0:8     bre_branch
@@ -1391,7 +1382,7 @@ unescaped grouping punctuation is ordinary
 :cst
 ==================
 (){}|+?
----
+------------------
 
 0:0 - 0:7   basic_reg_exp
 0:0 - 0:7     bre_branch
@@ -1437,7 +1428,7 @@ a quoted pipe does not introduce anchor positions
 :cst
 ==================
 ^a$\|^b$
----
+------------------
 
 0:0 - 0:8   basic_reg_exp
 0:0 - 0:8     bre_branch
@@ -1468,3 +1459,113 @@ a quoted pipe does not introduce anchor positions
 0:6 - 0:7             one_char_or_coll_elem_bre
 0:6 - 0:7               ordinary_character `b`
 0:7 - 0:8         "$"
+
+==================
+posix_ere: an empty group may form one branch
+:language(posix_ere)
+==================
+()|a
+------------------
+
+(extended_reg_exp
+  (ere_branch
+    (ere_expression))
+  (ere_branch
+    (ere_expression
+      (one_char_or_coll_elem_ere
+        (ordinary_character)))))
+
+==================
+rejects incomplete structures using standard recovery — "\\"
+:language(pcre2)
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+\
+------------------
+
+
+
+==================
+pcre2: PCRE2 rejects incomplete structures using standard recovery — "\\j"
+:language(pcre2)
+:error
+==================
+\j
+------------------
+
+
+
+==================
+pcre2: PCRE2 rejects incomplete structures using standard recovery — "a(**)"
+:language(pcre2)
+:error
+==================
+a(**)
+------------------
+
+
+
+==================
+malformed trailing backslash uses standard recovery — "a\\"
+:language(posix_bre)
+:language(posix_ere)
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+a\
+------------------
+
+
+
+==================
+posix_ere: malformed leading empty alternative uses standard recovery — "|a"
+:language(posix_ere)
+:error
+==================
+|a
+------------------
+
+
+
+==================
+posix_ere: malformed trailing empty alternative uses standard recovery — "a|"
+:language(posix_ere)
+:error
+==================
+a|
+------------------
+
+
+
+==================
+posix_ere: malformed empty middle alternative uses standard recovery — "a||b"
+:language(posix_ere)
+:error
+==================
+a||b
+------------------
+
+
+
+==================
+posix_ere: malformed duplication symbol without an operand uses standard recovery — "*a"
+:language(posix_ere)
+:error
+==================
+*a
+------------------
+
+
+
+==================
+python_re: malformed unexpected closer uses standard recovery — "a)b|c\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+a)b|c\
+
+------------------

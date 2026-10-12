@@ -4,7 +4,7 @@ ordinary identity escapes preserve letters punctuation whitespace and non-BMP so
 :cst
 ==================
 \a\z\-\_\ \😀
----
+------------------
 
 0:0  - 0:15   pattern
 0:0  - 0:15     body: disjunction
@@ -64,7 +64,7 @@ without captures nonzero digits become octal or single identity escapes
 :cst
 ==================
 \1\7\8\9
----
+------------------
 
 0:0 - 0:8   pattern
 0:0 - 0:8     body: disjunction
@@ -108,7 +108,7 @@ a leading zero distinguishes null from legacy octal even before eight or nine
 :cst
 ==================
 \01\00\000\08\09\0
----
+------------------
 
 0:0  - 0:18   pattern
 0:0  - 0:18     body: disjunction
@@ -173,7 +173,7 @@ legacy octal uses at most three digits below four and two digits above three
 :cst
 ==================
 \377\400\777\1234\478\18\81\999
----
+------------------
 
 0:0  - 0:31   pattern
 0:0  - 0:31     body: disjunction
@@ -283,7 +283,7 @@ a class B escape is an identity character while b remains backspace
 :cst
 ==================
 [\B\b]
----
+------------------
 
 0:0 - 0:6   pattern
 0:0 - 0:6     body: disjunction
@@ -315,7 +315,7 @@ classes use legacy numeric escapes even when the same body escape is a reference
 :cst
 ==================
 (\1)[\1\8\08]
----
+------------------
 
 0:0  - 0:13   pattern
 0:0  - 0:13     body: disjunction
@@ -370,7 +370,7 @@ a quantifier attaches to the remaining digit after an octal or identity prefix
 :cst
 ==================
 \1234+\81?\7*
----
+------------------
 
 0:0  - 0:13   pattern
 0:0  - 0:13     body: disjunction
@@ -424,7 +424,7 @@ legacy octal and class control escapes can be range endpoints
 :cst
 ==================
 [\00-\37\c0-\c9\c_-\cA]
----
+------------------
 
 0:0  - 0:23   pattern
 0:0  - 0:23     body: disjunction
@@ -489,7 +489,7 @@ numeric braces quantify identity escapes in ordinary mode
 :cst
 ==================
 \u{2}\p{3}\q{4}
----
+------------------
 
 0:0  - 0:15   pattern
 0:0  - 0:15     body: disjunction
@@ -543,7 +543,7 @@ escape introducers and braces remain ordinary class members in ordinary mode
 :cst
 ==================
 [\u{2}\p{a}\q{b}]
----
+------------------
 
 0:0  - 0:17   pattern
 0:0  - 0:17     body: disjunction
@@ -603,7 +603,7 @@ the c after a literal backslash can be quantified while class punctuation remain
 :cst
 ==================
 \c+[\c+]
----
+------------------
 
 0:0 - 0:8   pattern
 0:0 - 0:8     body: disjunction
@@ -640,7 +640,7 @@ an overflowing decimal value cannot wrap into a small numeric reference
 :cst
 ==================
 \4294967297(a)
----
+------------------
 
 0:0  - 0:14   pattern
 0:0  - 0:14     body: disjunction
@@ -702,7 +702,7 @@ an escaped non-BMP source character remains whole before a quantifier and an oct
 :cst
 ==================
 \😀+\3778
----
+------------------
 
 0:0  - 0:11   pattern
 0:0  - 0:11     body: disjunction
@@ -738,7 +738,7 @@ invalid body control escapes preserve a literal backslash and leave c and its su
 :cst
 ==================
 \c1\c_\c
----
+------------------
 
 0:0 - 0:8   pattern
 0:0 - 0:8     body: disjunction
@@ -779,7 +779,7 @@ class control prefixes and fallback backslashes preserve the real class closer
 :cst
 ==================
 [\c1\c]
----
+------------------
 
 0:0 - 0:7   pattern
 0:0 - 0:7     body: disjunction
@@ -810,7 +810,7 @@ class control escapes distinguish digits underscores letters and an incomplete s
 :cst
 ==================
 [\c1\c_\cA\c]
----
+------------------
 
 0:0  - 0:13   pattern
 0:0  - 0:13     body: disjunction
@@ -853,7 +853,7 @@ incomplete hexadecimal and Unicode spellings fall back to identity escapes in th
 :cst
 ==================
 \x4G\u004G
----
+------------------
 
 0:0  - 0:10   pattern
 0:0  - 0:10     body: disjunction
@@ -905,7 +905,7 @@ incomplete hexadecimal and Unicode spellings fall back to identity escapes in a 
 :cst
 ==================
 [\x4G\u004G]
----
+------------------
 
 0:0  - 0:12   pattern
 0:0  - 0:12     body: disjunction

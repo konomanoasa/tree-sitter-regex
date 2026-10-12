@@ -180,6 +180,11 @@
     }
   },
   {
+    "type": "comment_content",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "comment_group",
     "named": true,
     "fields": {},
@@ -388,6 +393,11 @@
   },
   {
     "type": "group_id",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "group_name",
     "named": true,
     "fields": {}
   },
@@ -950,10 +960,6 @@
     "named": true
   },
   {
-    "type": "comment_content",
-    "named": true
-  },
-  {
     "type": "control_escape",
     "named": true
   },
@@ -963,10 +969,6 @@
   },
   {
     "type": "flag_set",
-    "named": true
-  },
-  {
-    "type": "group_name",
     "named": true
   },
   {

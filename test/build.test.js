@@ -13,12 +13,20 @@ import { join } from "node:path";
 import { test } from "node:test";
 import { pathToFileURL } from "node:url";
 import {
+  unicodeIdContinue,
+  unicodeIdStart,
+} from "../javascript/common/unicode.js";
+import {
   copyFiles,
   createTreeSitter,
+  grammarDependencies,
   packageName,
   root,
-  sharedSources,
 } from "../scripts/tree-sitter.js";
+
+const commandTimeoutMs = 60_000;
+const archiveTimeoutMs = 120_000;
+const archiveOutputLimitBytes = 64 * 1024 * 1024;
 
 const configuration = JSON.parse(
   readFileSync(join(root, "tree-sitter.json"), "utf8"),
@@ -40,7 +48,7 @@ test(`${language}: generated checks reject stale and missing files without rewri
         "package.json",
         "tree-sitter.json",
         "scripts",
-        ...sharedSources,
+        ...grammarDependencies,
         ...grammars.flatMap(({ path, externalFiles }) => [
           join(path, "grammar.js"),
           join(path, "src"),
@@ -57,7 +65,7 @@ test(`${language}: generated checks reject stale and missing files without rewri
         {
           cwd: directory,
           encoding: "utf8",
-          timeout: 60_000,
+          timeout: commandTimeoutMs,
           killSignal: "SIGKILL",
         },
       );
@@ -164,7 +172,7 @@ syncBuiltinESMExports();
         ["--import", pathToFileURL(preload).href, script, "fuzz-all"],
         {
           encoding: "utf8",
-          timeout: 60_000,
+          timeout: commandTimeoutMs,
           killSignal: "SIGKILL",
         },
       );
@@ -209,8 +217,8 @@ function run(command, arguments_, cwd = root) {
   const result = spawnSync(command, arguments_, {
     cwd,
     encoding: "utf8",
-    timeout: 120000,
-    maxBuffer: 64 * 1024 * 1024,
+    timeout: archiveTimeoutMs,
+    maxBuffer: archiveOutputLimitBytes,
     killSignal: "SIGKILL",
   });
   assert.ifError(result.error);
@@ -270,4 +278,84 @@ test("npm archives contain reproducible grammars for every language", () => {
     runner.close();
     rmSync(directory, { recursive: true, force: true });
   }
+});
+
+const start = new RegExp(`^${unicodeIdStart}$`, "u");
+
+const continuation = new RegExp(`^${unicodeIdContinue}$`, "u");
+
+test("regex: Unicode 17 identifiers include the new scripts and distinguish letters, marks, digits, and gaps", () => {
+  const cases = [
+    { codePoint: 0x10940, expectedStart: true, expectedContinue: true },
+    { codePoint: 0x10959, expectedStart: true, expectedContinue: true },
+    { codePoint: 0x1095a, expectedStart: false, expectedContinue: false },
+    { codePoint: 0x11db0, expectedStart: true, expectedContinue: true },
+    { codePoint: 0x11dd8, expectedStart: true, expectedContinue: true },
+    { codePoint: 0x11dd9, expectedStart: true, expectedContinue: true },
+    { codePoint: 0x11ddb, expectedStart: true, expectedContinue: true },
+    { codePoint: 0x11ddc, expectedStart: false, expectedContinue: false },
+    { codePoint: 0x11de0, expectedStart: false, expectedContinue: true },
+    { codePoint: 0x11de9, expectedStart: false, expectedContinue: true },
+    { codePoint: 0x11dea, expectedStart: false, expectedContinue: false },
+    { codePoint: 0x16ea0, expectedStart: true, expectedContinue: true },
+    { codePoint: 0x16ed3, expectedStart: true, expectedContinue: true },
+    { codePoint: 0x16ed4, expectedStart: false, expectedContinue: false },
+    { codePoint: 0x1e6c0, expectedStart: true, expectedContinue: true },
+    { codePoint: 0x1e6e3, expectedStart: false, expectedContinue: true },
+    { codePoint: 0x1e6f6, expectedStart: false, expectedContinue: false },
+    { codePoint: 0x323b0, expectedStart: true, expectedContinue: true },
+    { codePoint: 0x33479, expectedStart: true, expectedContinue: true },
+    { codePoint: 0x3347a, expectedStart: false, expectedContinue: false },
+  ];
+  for (const { codePoint, expectedStart, expectedContinue } of cases) {
+    const character = String.fromCodePoint(codePoint);
+    const label = `U+${codePoint.toString(16).toUpperCase()}`;
+    assert.equal(start.test(character), expectedStart, `${label} ID_Start`);
+    assert.equal(
+      continuation.test(character),
+      expectedContinue,
+      `${label} ID_Continue`,
+    );
+  }
+});
+
+test("regex: Unicode properties preserve the distinction from ECMAScript identifier additions", () => {
+  const cases = [
+    { character: "A", expectedStart: true, expectedContinue: true },
+    { character: "z", expectedStart: true, expectedContinue: true },
+    { character: "0", expectedStart: false, expectedContinue: true },
+    { character: "$", expectedStart: false, expectedContinue: false },
+    { character: "_", expectedStart: false, expectedContinue: true },
+    { character: "\u0301", expectedStart: false, expectedContinue: true },
+    { character: "\u200c", expectedStart: false, expectedContinue: true },
+    { character: "\u200d", expectedStart: false, expectedContinue: true },
+    { character: "\u0000", expectedStart: false, expectedContinue: false },
+    { character: "\ud800", expectedStart: false, expectedContinue: false },
+    { character: "\udfff", expectedStart: false, expectedContinue: false },
+    { character: "\u{10ffff}", expectedStart: false, expectedContinue: false },
+  ];
+  for (const { character, expectedStart, expectedContinue } of cases) {
+    assert.equal(
+      start.test(character),
+      expectedStart,
+      JSON.stringify(character),
+    );
+    assert.equal(
+      continuation.test(character),
+      expectedContinue,
+      JSON.stringify(character),
+    );
+  }
+});
+
+test("regex: generated classes contain the published Unicode 17 property totals", () => {
+  let starts = 0;
+  let continuations = 0;
+  for (let codePoint = 0; codePoint <= 0x10ffff; codePoint += 1) {
+    const character = String.fromCodePoint(codePoint);
+    if (start.test(character)) starts += 1;
+    if (continuation.test(character)) continuations += 1;
+  }
+  assert.equal(starts, 145_916);
+  assert.equal(continuations, 149_240);
 });

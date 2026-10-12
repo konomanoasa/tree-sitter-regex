@@ -1,938 +1,1243 @@
 import assert from "node:assert/strict";
-import { readFileSync, writeFileSync } from "node:fs";
+import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { test } from "node:test";
+import { grammars } from "../scripts/tree-sitter.js";
 import {
-  unicodeIdContinue,
-  unicodeIdStart,
-} from "../javascript/common/unicode.js";
-import { grammars, root } from "../scripts/tree-sitter.js";
-import {
+  applyEdits,
   cache,
+  javascriptLanguages,
   parse,
   parseFile,
   parseSummary,
   posixGrammars,
   pythonGrammars,
-  selectNodes,
+  unicodeLanguages,
 } from "./support/parser.js";
 
-const sourceCharacterLeaves = {
-  pcre2: [
-    "literal_character",
-    "literal_character",
-    "literal_character",
-    "class_character",
-    "literal_character",
-  ],
-  js_regex: Array(5).fill("source_character"),
-  js_regex_u: Array(5).fill("source_character"),
-  js_regex_v: Array(5).fill("source_character"),
-  python_re: [
-    "literal_character",
-    "literal_character",
-    "literal_character",
-    "class_character",
-    "literal_character",
-  ],
-  python_re_verbose: [
-    "literal_character",
-    "literal_character",
-    "literal_character",
-    "class_character",
-    "literal_character",
-  ],
-  posix_bre: [
-    "ordinary_character",
-    "ordinary_character",
-    "ordinary_character",
-    "collating_element_single",
-    "ordinary_character",
-  ],
-  posix_ere: [
-    "ordinary_character",
-    "ordinary_character",
-    "ordinary_character",
-    "collating_element_single",
-    "ordinary_character",
-  ],
-};
+const unfinishedEscapeTimeoutMicros = 100_000;
 
-const sourceCharacterRanges = [
-  ["0:0", "0:1"],
-  ["0:1", "0:4"],
-  ["0:4", "0:5"],
-  ["0:6", "0:7"],
-  ["0:8", "0:12"],
+const pcre2Grammar = grammars.find(({ name }) => name === "pcre2");
+
+const javascriptEditCases = [
+  {
+    name: "editing an empty pattern initializes capture information from the new source",
+    before: "",
+    after: String.raw`\1()`,
+    byte: 0,
+    deleteBytes: 0,
+    insert: String.raw`\1()`,
+  },
+  {
+    name: "a capture appended at EOF changes an earlier octal escape",
+    before: String.raw`\1`,
+    after: String.raw`\1()`,
+    byte: 2,
+    deleteBytes: 0,
+    insert: "()",
+  },
+  {
+    name: "a later second capture changes a decimal escape before both groups",
+    before: String.raw`\2(a)`,
+    after: String.raw`\2(a)(b)`,
+    byte: 5,
+    deleteBytes: 0,
+    insert: "(b)",
+  },
+  {
+    name: "changing a later noncapture into a capture updates earlier escapes",
+    before: String.raw`\1(?:a)`,
+    after: String.raw`\1(a)`,
+    byte: 3,
+    deleteBytes: 2,
+    insert: "",
+  },
+  {
+    name: "a later ninth capture changes an identity escape into a reference",
+    before: String.raw`\9()()()()()()()()`,
+    after: String.raw`\9()()()()()()()()()`,
+    byte: 18,
+    deleteBytes: 0,
+    insert: "()",
+  },
+  {
+    name: "a named capture appended at EOF changes an earlier k escape",
+    before: String.raw`\k<x>`,
+    after: String.raw`\k<x>(?<x>a)`,
+    byte: 5,
+    deleteBytes: 0,
+    insert: "(?<x>a)",
+  },
+  {
+    name: "naming an existing capture changes an earlier k escape",
+    before: String.raw`\k<x>(a)`,
+    after: String.raw`\k<x>(?<x>a)`,
+    byte: 6,
+    deleteBytes: 0,
+    insert: "?<x>",
+  },
+  {
+    name: "a later named capture invalidates an earlier class k identity escape",
+    before: String.raw`[\k](a)`,
+    after: String.raw`[\k](?<x>a)`,
+    byte: 5,
+    deleteBytes: 0,
+    insert: "?<x>",
+    afterError: true,
+  },
+  {
+    name: "escaping a class opener exposes a later capture to the whole pattern scan",
+    before: String.raw`\1[(a)]`,
+    after: String.raw`\1\[(a)]`,
+    byte: 2,
+    deleteBytes: 0,
+    insert: "\\",
+  },
+  {
+    name: "removing and restoring a class closer updates capture classification",
+    before: String.raw`\1[a](b)`,
+    after: String.raw`\1[a(b)`,
+    byte: 4,
+    deleteBytes: 1,
+    insert: "",
+    afterError: true,
+  },
+
+  {
+    name: "a later capture changes references across non-BMP source bytes",
+    before: String.raw`😀\1x`,
+    after: String.raw`😀\1x()`,
+    byte: 7,
+    deleteBytes: 0,
+    insert: "()",
+  },
+  {
+    name: "a second digit changes a valid reference into an octal escape",
+    before: String.raw`\1(a)`,
+    after: String.raw`\11(a)`,
+    byte: 2,
+    deleteBytes: 0,
+    insert: "1",
+  },
+  {
+    name: "a second digit extends a reference when the full number has a capture",
+    languages: javascriptLanguages,
+    before: String.raw`\1()()()()()()()()()()`,
+    after: String.raw`\10()()()()()()()()()()`,
+    byte: 2,
+    deleteBytes: 0,
+    insert: "0",
+  },
+  {
+    name: "a third digit reclassifies a reference using the full number and mode",
+    languages: javascriptLanguages,
+    before: String.raw`\10()()()()()()()()()()`,
+    after: String.raw`\100()()()()()()()()()()`,
+    byte: 3,
+    deleteBytes: 0,
+    insert: "0",
+  },
+  {
+    name: "appending a digit changes a null escape into an octal prefix",
+    before: String.raw`\0`,
+    after: String.raw`\08`,
+    byte: 2,
+    deleteBytes: 0,
+    insert: "8",
+  },
+  {
+    name: "completing a hexadecimal spelling replaces its identity escape",
+    before: String.raw`\x4`,
+    after: String.raw`\x41`,
+    byte: 3,
+    deleteBytes: 0,
+    insert: "1",
+  },
+  {
+    name: "completing a Unicode spelling replaces its identity escape",
+    before: String.raw`\u004`,
+    after: String.raw`\u0041`,
+    byte: 5,
+    deleteBytes: 0,
+    insert: "1",
+  },
+  {
+    name: "an ASCII letter completes a body control escape",
+    before: String.raw`\c`,
+    after: String.raw`\cA`,
+    byte: 2,
+    deleteBytes: 0,
+    insert: "A",
+  },
+  {
+    name: "a digit completes a class control escape",
+    before: String.raw`[\c]`,
+    after: String.raw`[\c1]`,
+    byte: 3,
+    deleteBytes: 0,
+    insert: "1",
+  },
+  {
+    name: "a closing brace changes literal characters into an interval",
+    before: "a{2",
+    after: "a{2}",
+    byte: 3,
+    deleteBytes: 0,
+    insert: "}",
+  },
+  {
+    name: "completing an operandless interval exposes the Annex B production",
+    before: "{2",
+    after: "{2}",
+    byte: 2,
+    deleteBytes: 0,
+    insert: "}",
+  },
+  {
+    name: "editing before the initial token resets the whole pattern information",
+    before: String.raw`\1(a)`,
+    after: String.raw`x\1(a)`,
+    byte: 0,
+    deleteBytes: 0,
+    insert: "x",
+  },
+  {
+    name: "inserting an empty alternative preserves expression precedence",
+    languages: javascriptLanguages,
+    before: "a|b",
+    after: "a||b",
+    byte: 2,
+    deleteBytes: 0,
+    insert: "|",
+  },
+  {
+    name: "removing and restoring a group closer recovers the normal body",
+    languages: javascriptLanguages,
+    before: "(a|b)c",
+    after: "(a|bc",
+    byte: 4,
+    deleteBytes: 1,
+    insert: "",
+    afterError: true,
+  },
+  {
+    name: "adding a leading class caret inserts a separate negation token",
+    languages: javascriptLanguages,
+    before: "[a]",
+    after: "[^a]",
+    byte: 1,
+    deleteBytes: 0,
+    insert: "^",
+  },
+  {
+    name: "removing the first class member reclassifies a caret as negation",
+    languages: javascriptLanguages,
+    before: "[a^]",
+    after: "[^]",
+    byte: 1,
+    deleteBytes: 1,
+    insert: "",
+  },
+  {
+    name: "editing a modifier preserves its scoped body",
+    languages: javascriptLanguages,
+    before: "(?i:a)",
+    after: "(?m:a)",
+    byte: 2,
+    deleteBytes: 1,
+    insert: "m",
+  },
+  {
+    name: "an identifier edit after a multibyte character preserves the group delimiters",
+    languages: javascriptLanguages,
+    before: "(?<名>a)",
+    after: "(?<名x>a)",
+    byte: 6,
+    deleteBytes: 0,
+    insert: "x",
+  },
+  {
+    name: "replacing a BMP name start with a supplementary character changes its lexical branch",
+    languages: javascriptLanguages,
+    before: "(?<名>a)",
+    after: "(?<𐐀>a)",
+    byte: 3,
+    deleteBytes: 3,
+    insert: "𐐀",
+  },
+  {
+    name: "an ordinary supplementary name part stays syntax before identifier validation",
+    before: String.raw`(?<a𐐀>)\k<a𐐀>`,
+    after: String.raw`(?<a😀>)\k<a𐐀>`,
+    byte: 4,
+    deleteBytes: 4,
+    insert: "😀",
+  },
+  {
+    name: "joining body surrogate escapes respects each language's character unit",
+    languages: javascriptLanguages,
+    before: String.raw`\uD800x\uDC00+`,
+    after: String.raw`\uD800\uDC00+`,
+    byte: 6,
+    deleteBytes: 1,
+    insert: "",
+  },
+  {
+    name: "joining class surrogate escapes updates both their structure and ranges",
+    languages: javascriptLanguages,
+    before: String.raw`[\uD800x\uDC00]`,
+    after: String.raw`[\uD800\uDC00]`,
+    byte: 7,
+    deleteBytes: 1,
+    insert: "",
+  },
+  {
+    name: "an edit on a later line preserves UTF-8 byte columns",
+    languages: javascriptLanguages,
+    before: "a\nb",
+    after: "a\n😀b",
+    byte: 2,
+    deleteBytes: 0,
+    insert: "😀",
+  },
+  {
+    name: "a NUL source character does not terminate scanning before an edit",
+    languages: javascriptLanguages,
+    before: "\0a",
+    after: "\0😀a",
+    byte: 1,
+    deleteBytes: 0,
+    insert: "😀",
+  },
+  {
+    name: "an interior U+FEFF source character remains a literal during edits",
+    languages: javascriptLanguages,
+    before: "a\uFEFF",
+    after: "a\uFEFFb",
+    byte: 4,
+    deleteBytes: 0,
+    insert: "b",
+  },
+  {
+    name: "adding a body digit invalidates a Unicode null escape",
+    languages: unicodeLanguages,
+    before: String.raw`\0`,
+    after: String.raw`\01`,
+    byte: 2,
+    deleteBytes: 0,
+    insert: "1",
+    afterError: true,
+  },
+
+  {
+    name: "adding a class digit invalidates a Unicode null escape",
+    languages: unicodeLanguages,
+    before: String.raw`[\0]`,
+    after: String.raw`[\01]`,
+    byte: 3,
+    deleteBytes: 0,
+    insert: "1",
+    afterError: true,
+  },
+  {
+    name: "completing a code point escape removes its missing brace",
+    languages: unicodeLanguages,
+    before: String.raw`\u{41`,
+    after: String.raw`\u{41}`,
+    byte: 5,
+    deleteBytes: 0,
+    insert: "}",
+    beforeError: true,
+  },
+  {
+    name: "removing and restoring a property closer updates syntax",
+    languages: unicodeLanguages,
+    before: String.raw`[\p{L}]`,
+    after: String.raw`[\p{L]`,
+    byte: 5,
+    deleteBytes: 1,
+    insert: "",
+    afterError: true,
+  },
+  {
+    name: "removing a non-BMP endpoint turns a basic class range into two members",
+    languages: ["js_regex", "js_regex_u"],
+    before: "[a-😀]",
+    after: "[a-]",
+    byte: 3,
+    deleteBytes: 4,
+    insert: "",
+  },
+  {
+    name: "a repeated reserved punctuation becomes an error inside a Unicode set",
+    languages: ["js_regex_v"],
+    before: "[!a]",
+    after: "[!!a]",
+    byte: 2,
+    deleteBytes: 0,
+    insert: "!",
+    afterError: true,
+  },
+  {
+    name: "a second ampersand changes a union into an intersection",
+    languages: ["js_regex_v"],
+    before: "[a&b]",
+    after: "[a&&b]",
+    byte: 3,
+    deleteBytes: 0,
+    insert: "&",
+  },
+  {
+    name: "a third ampersand invalidates an intersection",
+    languages: ["js_regex_v"],
+    before: "[a&&b]",
+    after: "[a&&&b]",
+    byte: 4,
+    deleteBytes: 0,
+    insert: "&",
+    afterError: true,
+  },
+  {
+    name: "reserved punctuation lookahead also updates inside a class string",
+    languages: ["js_regex_v"],
+    before: String.raw`[\q{!a}]`,
+    after: String.raw`[\q{!!a}]`,
+    byte: 5,
+    deleteBytes: 0,
+    insert: "!",
+    afterError: true,
+  },
+  {
+    name: "escaping a class string separator merges its alternatives",
+    languages: ["js_regex_v"],
+    before: String.raw`[\q{a|b}]`,
+    after: String.raw`[\q{a\|b}]`,
+    byte: 5,
+    deleteBytes: 0,
+    insert: "\\",
+  },
+  {
+    name: "escaping an early class string closer changes the ownership of its suffix",
+    languages: ["js_regex_v"],
+    before: String.raw`[\q{a}b}]`,
+    after: String.raw`[\q{a\}b}]`,
+    byte: 5,
+    deleteBytes: 0,
+    insert: "\\",
+    beforeError: true,
+  },
+  {
+    name: "removing and restoring a nested class closer updates syntax",
+    languages: ["js_regex_v"],
+    before: "[[a]&&[b]]",
+    after: "[[a&&[b]]",
+    byte: 3,
+    deleteBytes: 1,
+    insert: "",
+    afterError: true,
+  },
+  {
+    name: "an intersection edit after a non-BMP character uses a byte offset",
+    languages: ["js_regex_v"],
+    before: "[😀&b]",
+    after: "[😀&&b]",
+    byte: 6,
+    deleteBytes: 0,
+    insert: "&",
+  },
+  {
+    name: "a second hyphen changes a range into subtraction",
+    languages: ["js_regex_v"],
+    before: "[a-b]",
+    after: "[a--b]",
+    byte: 3,
+    deleteBytes: 0,
+    insert: "-",
+  },
+  {
+    name: "replacing both operator characters changes the set operation",
+    languages: ["js_regex_v"],
+    before: "[a&&b]",
+    after: "[a--b]",
+    byte: 2,
+    deleteBytes: 2,
+    insert: "--",
+  },
+  {
+    name: "a digit following a class string null escape requires recovery",
+    languages: ["js_regex_v"],
+    before: String.raw`[\q{\0}]`,
+    after: String.raw`[\q{\00}]`,
+    byte: 6,
+    deleteBytes: 0,
+    insert: "0",
+    afterError: true,
+  },
 ];
 
-for (const grammar of grammars) {
-  test(`${grammar.name}: NUL, interior FEFF and non-BMP characters retain source byte ranges`, () => {
-    const leaves = sourceCharacterLeaves[grammar.name];
-    const pattern = new RegExp(
-      `^([0-9]+:[0-9]+) +- +([0-9]+:[0-9]+) +(${[...new Set(leaves)].join("|")}) \``,
-    );
-    const result = parse(grammar, "a\uFEFF\0[\0]😀");
-    assert.equal(result.status, 0);
-    const ranges = result.rows.flatMap((line) => {
-      const match = pattern.exec(line);
-      return match ? [[match[3], match[1], match[2]]] : [];
-    });
-    assert.deepEqual(
-      ranges,
-      leaves.map((leaf, index) => [leaf, ...sourceCharacterRanges[index]]),
-    );
-  });
-}
-
-test("js_regex_v: a class string retains NUL and empty alternatives", () => {
-  const path = join(cache, "class-string-nul.txt");
-  writeFileSync(path, "[\\q{\0||a}]");
-  const result = parseFile(path, "js_regex_v");
-  assert.equal(result.status, 0);
-  const ranges = [
-    ...result.cst.matchAll(
-      /^([0-9]+:[0-9]+) +- +([0-9]+:[0-9]+) +(source_character `|"[|]")/gm,
-    ),
-  ].map((match) => [match[1], match[2]]);
-  assert.deepEqual(ranges, [
-    ["0:4", "0:5"],
-    ["0:5", "0:6"],
-    ["0:6", "0:7"],
-    ["0:7", "0:8"],
-  ]);
-});
-
-const ownershipCases = [
-  {
-    name: "scoped normal mode retains NUL literals and escaped NUL",
-    source: "(?-x:\0\\\0)",
-    expected: [
-      ["literal_character `\\0`", "0:5-0:6", "concatenation"],
-      ["literal_escape `\\\\\\0`", "0:6-0:8", "concatenation"],
-    ],
-  },
-  {
-    name: "an escaped NUL in a class leaves the next NUL as a class character",
-    source: "[\\\0\0]",
-    expected: [
-      ["literal_escape `\\\\\\0`", "0:1-0:3", "character_class"],
-      ["class_character `\\0`", "0:3-0:4", "character_class"],
-    ],
-  },
-  {
-    name: "escaped NUL leaves a following NUL as a literal through EOF",
-    source: "\\\0\0",
-    expected: [
-      ["literal_escape `\\\\\\0`", "0:0-0:2", "concatenation"],
-      ["literal_character `\\0`", "0:2-0:3", "concatenation"],
-    ],
-  },
-  {
-    name: "NUL remains inside a capturing group name",
-    source: "(?P<a\0b>x)",
-    expected: [
-      ["name: group_name `a\\0b`", "0:4-0:7", "named_capturing_group"],
-      ['">"', "0:7-0:8", "named_capturing_group"],
-    ],
-  },
-  {
-    name: "NUL remains inside a named backreference",
-    source: "(?P=a\0b)",
-    expected: [
-      ["name: group_name `a\\0b`", "0:4-0:7", "named_backreference"],
-      ['")"', "0:7-0:8", "named_backreference"],
-    ],
-  },
-  {
-    name: "NUL prevents a conditional name from being split into a numeric ID",
-    source: "(?(1\0a)x|y)",
-    expected: [
-      ["condition: group_name `1\\0a`", "0:3-0:6", "conditional_group"],
-    ],
-  },
-  {
-    name: "NUL remains inside a Unicode character name",
-    source: "\\N{A\0B}",
-    expected: [
-      [
-        "name: unicode_character_name `A\\0B`",
-        "0:3-0:6",
-        "named_unicode_escape",
-      ],
-      ['"}"', "0:6-0:7", "named_unicode_escape"],
-    ],
-  },
-  {
-    name: "NUL and escaped NUL leave the comment group closer structural",
-    source: "(?#a\0\\\0b)c",
-    expected: [
-      ["comment_content `a\\0\\\\\\0b`", "0:3-0:8", "comment_group"],
-      ['")"', "0:8-0:9", "comment_group"],
-      ["literal_character `c`", "0:9-0:10", "concatenation"],
-    ],
-  },
-  {
-    name: "NUL and escaped NUL leave the verbose comment newline structural",
-    source: "(?x:#a\0\\\0b\nc)",
-    expected: [
-      ["verbose_comment `#a\\0\\\\\\0b`", "0:4-0:10", "concatenation"],
-      ["verbose_whitespace", "0:10-1:0", "concatenation"],
-      ["literal_character `c`", "1:0-1:1", "concatenation"],
-    ],
-  },
-  {
-    name: "an escaped CR leaves the LF ending a verbose comment structural",
-    source: "(?x:#a\\\r\nb)",
-    expected: [
-      ["verbose_comment `#a\\\\\\r`", "0:4-0:8", "concatenation"],
-      ["verbose_whitespace", "0:8-1:0", "concatenation"],
-      ["literal_character `b`", "1:0-1:1", "concatenation"],
-    ],
-  },
-  {
-    name: "question quantifiers leave a following P as a literal",
-    source: "a?P|b*?P|c??P",
-    expected: [
-      ['"?"', "0:1-0:2", "quantifier: quantifier"],
-      ["literal_character `P`", "0:2-0:3", "concatenation"],
-      ['"?"', "0:6-0:7", "quantifier: quantifier"],
-      ["literal_character `P`", "0:7-0:8", "concatenation"],
-      ['"?"', "0:10-0:11", "quantifier: quantifier"],
-      ['"?"', "0:11-0:12", "quantifier: quantifier"],
-      ["literal_character `P`", "0:12-0:13", "concatenation"],
-    ],
-  },
-  {
-    name: "repetition owns Unicode operand and verbose layout before its quantifier",
-    source: "(?x:é #c\n*)z",
-    expected: [
-      ["operand: literal_character `é`", "0:4-0:6", "repetition"],
-      ["verbose_whitespace ` `", "0:6-0:7", "repetition"],
-      ["verbose_comment `#c`", "0:7-0:9", "repetition"],
-      ["verbose_whitespace", "0:9-1:0", "repetition"],
-      ["quantifier: quantifier", "1:0-1:1", "repetition"],
-      ['"*"', "1:0-1:1", "quantifier: quantifier"],
-      ['")"', "1:1-1:2", "scoped_flags_group"],
-    ],
-  },
-  {
-    name: "conditional branches own their documented yes and no patterns",
-    source: "(?(1)a|b)|z",
-    expected: [
-      ["condition: group_id `1`", "0:3-0:4", "conditional_group"],
-      ['")"', "0:4-0:5", "conditional_group"],
-      ["yes_pattern: concatenation", "0:5-0:6", "conditional_group"],
-      ['"|"', "0:6-0:7", "conditional_group"],
-      ["no_pattern: concatenation", "0:7-0:8", "conditional_group"],
-      ['")"', "0:8-0:9", "conditional_group"],
-      ['"|"', "0:9-0:10", "body: alternation"],
-    ],
-  },
-  {
-    name: "literal ranges use UTF-8 bytes and retain one node per code point",
-    source: "é😀",
-    expected: [
-      ["literal_character `é`", "0:0-0:2", "concatenation"],
-      ["literal_character `😀`", "0:2-0:6", "concatenation"],
-    ],
-  },
-  {
-    name: "Unicode line and paragraph separators remain literal characters",
-    source: "\u2028\u2029",
-    expected: [
-      ["literal_character `\u2028`", "0:0-0:3", "concatenation"],
-      ["literal_character `\u2029`", "0:3-0:6", "concatenation"],
-    ],
-  },
-];
-
-const initialLayoutCases = [
-  {
-    name: "python_re",
-    expected: [
-      ["literal_character ` `", "0:0-0:1", "concatenation"],
-      ["literal_character `#`", "0:1-0:2", "concatenation"],
-      ["literal_character `x`", "0:2-0:3", "concatenation"],
-    ],
-  },
-  {
-    name: "python_re_verbose",
-    expected: [
-      ["verbose_whitespace ` `", "0:0-0:1", "pattern"],
-      ["verbose_comment `#x`", "0:1-0:3", "pattern"],
-    ],
-  },
-];
-
-const initialLayoutLabels = initialLayoutCases.flatMap(({ expected }) =>
-  expected.map(([label]) => label),
-);
-
-for (const grammar of pythonGrammars) {
-  for (const { name, source, expected } of ownershipCases) {
-    test(`${grammar.name}: ${name}`, () => {
-      const result = parse(grammar, source);
-      assert.equal(result.status, 0);
-      assert.deepEqual(
-        selectNodes(
-          result,
-          expected.map(([label]) => label),
-        ),
-        expected,
-      );
-    });
+for (const [index, scenario] of javascriptEditCases.entries()) {
+  const beforeBytes = Buffer.from(scenario.before);
+  const insertion = Buffer.from(scenario.insert);
+  const removed = beforeBytes.subarray(
+    scenario.byte,
+    scenario.byte + scenario.deleteBytes,
+  );
+  assert.equal(
+    applyEdits(scenario.before, [scenario]).toString("utf8"),
+    scenario.after,
+    scenario.name,
+  );
+  for (const language of scenario.languages ?? ["js_regex"]) {
+    for (const reverse of [false, true]) {
+      test(`${language}: ${scenario.name} (${reverse ? "reverse" : "forward"})`, () => {
+        const before = reverse ? scenario.after : scenario.before;
+        const afterText = reverse ? scenario.before : scenario.after;
+        const expectedError = reverse
+          ? scenario.beforeError
+          : scenario.afterError;
+        const edit = {
+          byte: scenario.byte,
+          deleteBytes: reverse ? insertion.length : scenario.deleteBytes,
+          insert: reverse ? removed.toString() : scenario.insert,
+        };
+        const beforePath = join(cache, `${index}-before.txt`);
+        const afterPath = join(cache, `${index}-after.txt`);
+        writeFileSync(beforePath, before);
+        writeFileSync(afterPath, afterText);
+        const fresh = parseFile(afterPath, language);
+        assert.equal(fresh.status, expectedError ? 1 : 0);
+        const incremental = parseFile(beforePath, language, [edit]);
+        assert.equal(incremental.status, fresh.status);
+        if (!expectedError) assert.deepEqual(incremental, fresh);
+        if (reverse ? scenario.afterError : scenario.beforeError) return;
+        const restore = {
+          byte: edit.byte,
+          deleteBytes: Buffer.byteLength(edit.insert),
+          insert: Buffer.from(before)
+            .subarray(edit.byte, edit.byte + edit.deleteBytes)
+            .toString(),
+        };
+        assert.deepEqual(
+          parseFile(beforePath, language, [edit, restore]),
+          parseFile(beforePath, language),
+          "undoing the edit must restore the fresh CST",
+        );
+      });
+    }
   }
 }
 
-for (const { name, expected } of initialLayoutCases) {
-  test(`${name}: whitespace and comment classification follows its initial mode`, () => {
-    const grammar = pythonGrammars.find((grammar) => grammar.name === name);
-    assert.ok(grammar);
-    const result = parse(grammar, " #x");
-    assert.equal(result.status, 0);
-    assert.deepEqual(selectNodes(result, initialLayoutLabels), expected);
-  });
-}
-
-for (const grammar of pythonGrammars) {
-  test(`${grammar.name}: EOF does not supply a character in unfinished groups or escapes`, () => {
-    for (const source of ["(?-x:", "(?-x:a", "(?-x:\0", "\\", "a\\"]) {
-      assert.equal(parseSummary(grammar, source, 100_000).successful, false);
-    }
-    const complete = "(?-x:a)";
-    const deletion = { byte: 6, deleteBytes: 1, insert: "" };
-    const restoration = { byte: 6, deleteBytes: 0, insert: ")" };
-    assert.equal(parse(grammar, complete, [deletion]).status, 1);
-    assert.deepEqual(
-      parse(grammar, complete, [deletion, restoration]),
-      parse(grammar, complete),
-    );
-  });
-
-  test(`${grammar.name}: scoped flags support 2048 nested alternating verbose modes`, () => {
-    const depth = 2048;
-    const headers = Array.from({ length: depth }, (_, index) =>
-      index % 2 === 0 ? "(?x:" : "(?-x:",
-    ).join("");
-    const source = `${headers}a b${") ".repeat(depth)}`;
-    assert.equal(parseSummary(grammar, source).successful, true);
-  });
-}
-
-const profiles = [
-  { name: "js_regex", unicode: false, sets: false },
-  { name: "js_regex_u", unicode: true, sets: false },
-  { name: "js_regex_v", unicode: true, sets: true },
-];
-
-for (const profile of profiles) {
-  const grammar = grammars.find(({ name }) => name === profile.name);
-  const nodes = JSON.parse(
-    readFileSync(join(root, grammar.path, "src", "node-types.json"), "utf8"),
-  );
-  test(`${profile.name}: the root exposes an optional specification disjunction`, () => {
-    assert.deepEqual(
-      nodes.find(({ type }) => type === "pattern"),
+const javascriptEditHistories = [
+  {
+    name: "a dangling backslash exposes its missing reference digit",
+    languages: javascriptLanguages,
+    before: String.raw`()\1`,
+    edits: [
       {
-        type: "pattern",
-        named: true,
-        root: true,
-        fields: {
-          body: {
-            multiple: false,
-            required: false,
-            types: [{ type: "disjunction", named: true }],
-          },
-        },
+        name: "delete the reference digit",
+        byte: 3,
+        deleteBytes: 1,
+        insert: "",
+        after: "()\\",
+        error: true,
       },
-    );
-  });
-  test(`${profile.name}: public escape and set nodes follow its mode`, () => {
-    const names = new Set(
-      nodes.filter(({ named }) => named).map(({ type }) => type),
-    );
-    assert.equal(names.has("legacy_octal_escape_sequence"), !profile.unicode);
-    assert.equal(names.has("extended_atom"), !profile.unicode);
-    assert.equal(names.has("invalid_braced_quantifier"), !profile.unicode);
-    assert.equal(names.has("unicode_surrogate_pair"), !profile.unicode);
-    assert.equal(
-      names.has("unicode_property_value_expression"),
-      profile.unicode,
-    );
-    assert.equal(names.has("code_point"), true);
-    assert.equal(names.has("class_intersection"), profile.sets);
-    assert.equal(names.has("class_subtraction"), profile.sets);
-    assert.equal(names.has("class_string_disjunction"), profile.sets);
-  });
-  test(`${profile.name}: raw identifier characters respect the BMP boundary and supplementary extremes`, () => {
-    for (const { source, expected } of [
-      { source: "(?<\uffff>)(?<a\uffff>)", expected: false },
-      { source: "(?<\u{10000}>)(?<a\u{10000}>)", expected: true },
-      { source: "(?<\u{10ffff}>)(?<a\u{10ffff}>)", expected: !profile.unicode },
-    ]) {
-      assert.equal(parseSummary(grammar, source).successful, expected, source);
-    }
-  });
-}
-
-function readJson(path) {
-  return JSON.parse(readFileSync(join(root, path), "utf8"));
-}
-
-function normalize(value) {
-  if (Array.isArray(value)) {
-    return value
-      .map(normalize)
-      .sort((left, right) =>
-        JSON.stringify(left).localeCompare(JSON.stringify(right)),
-      );
-  }
-  if (value !== null && typeof value === "object") {
-    return Object.fromEntries(
-      Object.entries(value)
-        .sort(([left], [right]) => left.localeCompare(right))
-        .map(([key, child]) => [key, normalize(child)]),
-    );
-  }
-  return value;
-}
-
-function publicSchema(grammar) {
-  const path = join(grammar.path, "src", "node-types.json");
-  const nodeTypes = readJson(path);
-  assert.ok(Array.isArray(nodeTypes), `${path} must be an array`);
-  return normalize(
-    nodeTypes.filter(
-      ({ named, type }) =>
-        named === true && typeof type === "string" && !type.startsWith("_"),
-    ),
-  );
-}
-
-for (const grammar of pythonGrammars.slice(1)) {
-  test(`${grammar.name}: public nodes and fields match ${pythonGrammars[0].name}`, () => {
-    assert.deepEqual(publicSchema(grammar), publicSchema(pythonGrammars[0]));
-  });
-}
-
-const start = new RegExp(`^${unicodeIdStart}$`, "u");
-
-const continuation = new RegExp(`^${unicodeIdContinue}$`, "u");
-
-test("regex: Unicode 17 identifiers include the new scripts and distinguish letters, marks, digits, and gaps", () => {
-  const cases = [
-    { codePoint: 0x10940, expectedStart: true, expectedContinue: true },
-    { codePoint: 0x10959, expectedStart: true, expectedContinue: true },
-    { codePoint: 0x1095a, expectedStart: false, expectedContinue: false },
-    { codePoint: 0x11db0, expectedStart: true, expectedContinue: true },
-    { codePoint: 0x11dd8, expectedStart: true, expectedContinue: true },
-    { codePoint: 0x11dd9, expectedStart: true, expectedContinue: true },
-    { codePoint: 0x11ddb, expectedStart: true, expectedContinue: true },
-    { codePoint: 0x11ddc, expectedStart: false, expectedContinue: false },
-    { codePoint: 0x11de0, expectedStart: false, expectedContinue: true },
-    { codePoint: 0x11de9, expectedStart: false, expectedContinue: true },
-    { codePoint: 0x11dea, expectedStart: false, expectedContinue: false },
-    { codePoint: 0x16ea0, expectedStart: true, expectedContinue: true },
-    { codePoint: 0x16ed3, expectedStart: true, expectedContinue: true },
-    { codePoint: 0x16ed4, expectedStart: false, expectedContinue: false },
-    { codePoint: 0x1e6c0, expectedStart: true, expectedContinue: true },
-    { codePoint: 0x1e6e3, expectedStart: false, expectedContinue: true },
-    { codePoint: 0x1e6f6, expectedStart: false, expectedContinue: false },
-    { codePoint: 0x323b0, expectedStart: true, expectedContinue: true },
-    { codePoint: 0x33479, expectedStart: true, expectedContinue: true },
-    { codePoint: 0x3347a, expectedStart: false, expectedContinue: false },
-  ];
-  for (const { codePoint, expectedStart, expectedContinue } of cases) {
-    const character = String.fromCodePoint(codePoint);
-    const label = `U+${codePoint.toString(16).toUpperCase()}`;
-    assert.equal(start.test(character), expectedStart, `${label} ID_Start`);
-    assert.equal(
-      continuation.test(character),
-      expectedContinue,
-      `${label} ID_Continue`,
-    );
-  }
-});
-
-test("regex: Unicode properties preserve the distinction from ECMAScript identifier additions", () => {
-  const cases = [
-    { character: "A", expectedStart: true, expectedContinue: true },
-    { character: "z", expectedStart: true, expectedContinue: true },
-    { character: "0", expectedStart: false, expectedContinue: true },
-    { character: "$", expectedStart: false, expectedContinue: false },
-    { character: "_", expectedStart: false, expectedContinue: true },
-    { character: "\u0301", expectedStart: false, expectedContinue: true },
-    { character: "\u200c", expectedStart: false, expectedContinue: true },
-    { character: "\u200d", expectedStart: false, expectedContinue: true },
-    { character: "\u0000", expectedStart: false, expectedContinue: false },
-    { character: "\ud800", expectedStart: false, expectedContinue: false },
-    { character: "\udfff", expectedStart: false, expectedContinue: false },
-    { character: "\u{10ffff}", expectedStart: false, expectedContinue: false },
-  ];
-  for (const { character, expectedStart, expectedContinue } of cases) {
-    assert.equal(
-      start.test(character),
-      expectedStart,
-      JSON.stringify(character),
-    );
-    assert.equal(
-      continuation.test(character),
-      expectedContinue,
-      JSON.stringify(character),
-    );
-  }
-});
-
-test("regex: generated classes contain the published Unicode 17 property totals", () => {
-  let starts = 0;
-  let continuations = 0;
-  for (let codePoint = 0; codePoint <= 0x10ffff; codePoint += 1) {
-    const character = String.fromCodePoint(codePoint);
-    if (start.test(character)) starts += 1;
-    if (continuation.test(character)) continuations += 1;
-  }
-  assert.equal(starts, 145916);
-  assert.equal(continuations, 149240);
-});
-
-const malformedCases = [
-  {
-    name: "incomplete inline flag header",
-    languages: ["python_re", "python_re_verbose"],
-    source: "(?x a#b\nc|d\n",
+      {
+        name: "restore the reference digit",
+        byte: 3,
+        deleteBytes: 0,
+        insert: "1",
+        after: String.raw`()\1`,
+      },
+    ],
   },
   {
-    name: "global inline flags after a consuming expression",
-    languages: ["python_re"],
-    source: "a(?x)b c\\\n",
+    name: "ordinary capture state across successive edits",
+    languages: ["js_regex"],
+    before: String.raw`\k<x>(a)`,
+    edits: [
+      {
+        name: "name a later capture",
+        byte: 6,
+        deleteBytes: 0,
+        insert: "?<x>",
+        after: String.raw`\k<x>(?<x>a)`,
+      },
+      {
+        name: "remove the named capture",
+        byte: 5,
+        deleteBytes: 7,
+        insert: "",
+        after: String.raw`\k<x>`,
+      },
+      {
+        name: "move the identity escape into a class",
+        byte: 0,
+        deleteBytes: 5,
+        insert: String.raw`[\k]`,
+        after: String.raw`[\k]`,
+      },
+      {
+        name: "make the earlier class escape invalid",
+        byte: 4,
+        deleteBytes: 0,
+        insert: "(?<x>a)",
+        after: String.raw`[\k](?<x>a)`,
+        error: true,
+      },
+      {
+        name: "recover the earlier class escape",
+        byte: 4,
+        deleteBytes: 7,
+        insert: "",
+        after: String.raw`[\k]`,
+      },
+    ],
   },
   {
-    name: "missing scoped closer",
-    languages: ["python_re"],
-    source: "(?x:a #c\nb\n",
+    name: "Unicode character units across successive edits",
+    languages: unicodeLanguages,
+    before: String.raw`\uD800x\uDC00`,
+    edits: [
+      {
+        name: "join a surrogate pair",
+        byte: 6,
+        deleteBytes: 1,
+        insert: "",
+        after: String.raw`\uD800\uDC00`,
+      },
+      {
+        name: "quantify the pair",
+        byte: 12,
+        deleteBytes: 0,
+        insert: "+",
+        after: String.raw`\uD800\uDC00+`,
+      },
+      {
+        name: "split the pair into two escapes",
+        byte: 3,
+        deleteBytes: 1,
+        insert: "C",
+        after: String.raw`\uDC00\uDC00+`,
+      },
+    ],
   },
   {
-    name: "verbose layout cannot split a scoped flag header",
-    languages: ["python_re_verbose"],
-    source: "(? x:a|b\n",
-  },
-  {
-    name: "layout cannot separate the noncapture introducer from its separator",
-    languages: ["python_re", "python_re_verbose"],
-    source: "(? :a)",
-  },
-  {
-    name: "layout cannot separate the named reference introducer from its operator",
-    languages: ["python_re", "python_re_verbose"],
-    source: "(?P =name)",
-  },
-  {
-    name: "capturing group without a closing parenthesis",
-    languages: ["python_re"],
-    source: "a(z|q\n",
-  },
-  {
-    name: "missing comment group closer",
-    languages: ["python_re", "python_re_verbose"],
-    source: "(?#abc\n",
-  },
-  {
-    name: "incomplete hexadecimal escape before a scoped group closer",
-    languages: ["python_re", "python_re_verbose"],
-    source: "(?x:\\x0)\\\n",
-  },
-  {
-    name: "incomplete hexadecimal escape before a complete escape",
-    languages: ["python_re", "python_re_verbose"],
-    source: "\\x0\\n\\\n",
-  },
-  {
-    name: "hexadecimal escape with a nonhexadecimal digit",
-    languages: ["python_re", "python_re_verbose"],
-    source: "\\xG\\\n",
-  },
-  {
-    name: "Unicode escape without a character name",
-    languages: ["python_re", "python_re_verbose"],
-    source: "\\N{}\\\n",
-  },
-  {
-    name: "unknown ASCII-letter escape",
-    languages: ["python_re", "python_re_verbose"],
-    source: "\\q|z\\\n",
-  },
-  {
-    name: "incomplete hexadecimal escape before an alternative",
-    languages: ["python_re", "python_re_verbose"],
-    source: "\\xF|z\\\n",
-  },
-  {
-    name: "incomplete short Unicode escape",
-    languages: ["python_re", "python_re_verbose"],
-    source: "\\u123|z\\\n",
-  },
-  {
-    name: "incomplete long Unicode escape",
-    languages: ["python_re", "python_re_verbose"],
-    source: "\\U0000000|z\\\n",
-  },
-  {
-    name: "unterminated named Unicode escape",
-    languages: ["python_re", "python_re_verbose"],
-    source: "\\N{NAME|z\\\n",
-  },
-  {
-    name: "unterminated group",
-    languages: ["python_re", "python_re_verbose"],
-    source: "a(\\x41|z\\\n",
-  },
-  {
-    name: "capturing group without a name",
-    languages: ["python_re", "python_re_verbose"],
-    source: "(?P<>a)\\\n",
-  },
-  {
-    name: "capturing group without its closer",
-    languages: ["python_re", "python_re_verbose"],
-    source: "(a|b\\\n",
-  },
-  {
-    name: "non-capturing group without its closer",
-    languages: ["python_re", "python_re_verbose"],
-    source: "(?:a\\\n",
-  },
-  {
-    name: "named group without its closer",
-    languages: ["python_re", "python_re_verbose"],
-    source: "(?P<n>a\\\n",
-  },
-  {
-    name: "nested groups without their closers",
-    languages: ["python_re", "python_re_verbose"],
-    source: "((a\\\n",
-  },
-  {
-    name: "incomplete class escape",
-    languages: ["python_re", "python_re_verbose"],
-    source: "[\\xA]|z\\\n",
-  },
-  {
-    name: "nonoctal numeric escape in a class",
-    languages: ["python_re", "python_re_verbose"],
-    source: "[\\8]",
-  },
-  {
-    name: "missing class closer",
-    languages: ["python_re", "python_re_verbose"],
-    source: "[a|)#\n",
-  },
-  {
-    name: "unknown escape before a class bracket",
-    languages: ["python_re", "python_re_verbose"],
-    source: "[\\q[]\\\n",
-  },
-  {
-    name: "empty named backreference",
-    languages: ["python_re", "python_re_verbose"],
-    source: "(?P=)\\\n",
-  },
-  {
-    name: "conditional group without its closer",
-    languages: ["python_re", "python_re_verbose"],
-    source: "(?P<n>a)(?(n)b|c\\\n",
-  },
-  {
-    name: "unterminated named reference",
-    languages: ["python_re", "python_re_verbose"],
-    source: "(?P=name|z\\\n",
-  },
-  {
-    name: "unexpected closer",
-    languages: ["python_re", "python_re_verbose"],
-    source: "a)b|c\\\n",
-  },
-  {
-    name: "empty conditional",
-    languages: ["python_re", "python_re_verbose"],
-    source: "(?())|z\\\n",
-  },
-  {
-    name: "incomplete conditional condition",
-    languages: ["python_re", "python_re_verbose"],
-    source: "(?(1a|b\\\n",
-  },
-  {
-    name: "extra conditional separator",
-    languages: ["python_re", "python_re_verbose"],
-    source: "(?(1)a|b|)\\\n",
-  },
-  {
-    name: "extra separator inside nested conditional and scoped flags",
-    languages: ["python_re", "python_re_verbose"],
-    source: "(?x:(?(1)[a|)]|b|c)q)\n",
-  },
-  {
-    name: "named group without its name terminator",
-    languages: ["python_re", "python_re_verbose"],
-    source: "((?P<]a)|z\\\n",
-  },
-  {
-    name: "verbose layout cannot split a lookbehind introducer",
-    languages: ["python_re_verbose"],
-    source: "(?< =a)|z\\\n",
-  },
-  {
-    name: "lookahead assertion without its closer",
-    languages: ["python_re", "python_re_verbose"],
-    source: "(?=a\\\n",
-  },
-  {
-    name: "lookbehind assertion without its closer",
-    languages: ["python_re", "python_re_verbose"],
-    source: "(?<=a\\\n",
-  },
-  {
-    name: "atomic group without its closer",
-    languages: ["python_re", "python_re_verbose"],
-    source: "(?>a\\\n",
-  },
-  {
-    name: "whitespace inside a quantifier modifier",
-    languages: ["python_re_verbose"],
-    source: "a{ 2}|a* ?b|c\\\n",
-  },
-  {
-    name: "orphan and nested quantifiers",
-    languages: ["python_re", "python_re_verbose"],
-    source: "*a|{2}b|c**d|e*?+f|g{2}*h\\\n",
-  },
-  {
-    name: "zero-width atoms do not become repetition operands",
-    languages: ["python_re", "python_re_verbose"],
-    source: "^*a|$+b|\\A?c|\\b{2}d\\\n",
+    name: "Unicode set recovery across successive edits",
+    languages: ["js_regex_v"],
+    before: "[a&&b]",
+    edits: [
+      {
+        name: "invalidate the intersection",
+        byte: 4,
+        deleteBytes: 0,
+        insert: "&",
+        after: "[a&&&b]",
+        error: true,
+      },
+      {
+        name: "restore the intersection",
+        byte: 4,
+        deleteBytes: 1,
+        insert: "",
+        after: "[a&&b]",
+      },
+      {
+        name: "replace it with subtraction",
+        byte: 2,
+        deleteBytes: 2,
+        insert: "--",
+        after: "[a--b]",
+      },
+      {
+        name: "open an outer class",
+        byte: 0,
+        deleteBytes: 0,
+        insert: "[",
+        after: "[[a--b]",
+        error: true,
+      },
+      {
+        name: "close the outer class",
+        byte: 7,
+        deleteBytes: 0,
+        insert: "]",
+        after: "[[a--b]]",
+      },
+    ],
   },
 ];
-for (const grammar of pythonGrammars) {
-  for (const { name, languages, source } of malformedCases) {
-    if (!languages.includes(grammar.name)) continue;
-    test(`${grammar.name}: malformed ${name} uses standard recovery`, () => {
-      assert.equal(parse(grammar, source).status, 1);
-    });
+
+for (const [index, history] of javascriptEditHistories.entries()) {
+  let current = history.before;
+  for (const [step, edit] of history.edits.entries()) {
+    assert.equal(
+      applyEdits(current, [edit]).toString("utf8"),
+      edit.after,
+      edit.name,
+    );
+    current = edit.after;
+    for (const language of history.languages) {
+      test(`${language}: ${history.name}: ${edit.name}`, () => {
+        const beforePath = join(cache, `history-${index}-before.txt`);
+        const afterPath = join(cache, `history-${index}-after.txt`);
+        writeFileSync(beforePath, history.before);
+        writeFileSync(afterPath, edit.after);
+        const fresh = parseFile(afterPath, language);
+        assert.equal(fresh.status, edit.error ? 1 : 0);
+        const incremental = parseFile(
+          beforePath,
+          language,
+          history.edits.slice(0, step + 1),
+        );
+        assert.equal(incremental.status, fresh.status);
+        if (!edit.error) assert.deepEqual(incremental, fresh);
+      });
+    }
   }
 }
 
-test("posix_ere: an unmatched close parenthesis is an ordinary character", () => {
-  const grammar = posixGrammars.find(({ name }) => name === "posix_ere");
-  const result = parse(grammar, "(a))");
-  assert.equal(result.status, 0);
-  assert.deepEqual(selectNodes(result, ['")"', "ordinary_character `)`"]), [
-    ['")"', "0:2-0:3", "ere_expression"],
-    ["ordinary_character `)`", "0:3-0:4", "one_char_or_coll_elem_ere"],
-  ]);
-});
-
-test("posix_ere: a group closer cannot supply a missing branch operand", () => {
-  const grammar = posixGrammars.find(({ name }) => name === "posix_ere");
-  for (const source of ["(|a)b)", "(a|)b)", "(|)b)", "(a||b)c)", "(a|)*b)"]) {
-    assert.equal(parse(grammar, source).status, 1, source);
+test("PCRE2 supplementary boundary decisions survive source edits", () => {
+  for (const { source, edit } of [
+    {
+      source: "(*UTF)é",
+      edit: { byte: 5, deleteBytes: 0, insert: "8" },
+    },
+    {
+      source: "(*UTF8)é",
+      edit: { byte: 5, deleteBytes: 1, insert: "" },
+    },
+    {
+      source: "(*UTF8é",
+      edit: { byte: 6, deleteBytes: 0, insert: ")" },
+    },
+    {
+      source: String.raw`\N{2}`,
+      edit: { byte: 3, deleteBytes: 1, insert: "U+41" },
+    },
+    {
+      source: String.raw`\N{U+41}`,
+      edit: { byte: 3, deleteBytes: 4, insert: "2" },
+    },
+    {
+      source: String.raw`\N{2`,
+      edit: { byte: 4, deleteBytes: 0, insert: "}" },
+    },
+    {
+      source: "(?xx)(?x)[a b]",
+      edit: { byte: 7, deleteBytes: 1, insert: "xx" },
+    },
+    { source: "(?i-m:a)", edit: { byte: 4, deleteBytes: 1, insert: "" } },
+    { source: "[[:<:]]", edit: { byte: 7, deleteBytes: 0, insert: "*" } },
+    { source: "(?(?#c)(?=a)b)", edit: { byte: 2, deleteBytes: 5, insert: "" } },
+    { source: "(?(?=a)b)", edit: { byte: 2, deleteBytes: 0, insert: "(?#c)" } },
+    {
+      source: String.raw`\p{^Lu}`,
+      edit: { byte: 3, deleteBytes: 0, insert: "_- " },
+    },
+  ]) {
+    const expected = parse(pcre2Grammar, applyEdits(source, [edit]).toString());
+    assert.equal(expected.status, 0, expected.rows.join("\n"));
+    assert.deepEqual(parse(pcre2Grammar, source, [edit]), expected, source);
   }
 });
 
-test("posix_bre: unescaped parentheses are ordinary characters", () => {
-  const grammar = posixGrammars.find(({ name }) => name === "posix_bre");
-  const result = parse(grammar, "(a))");
-  assert.equal(result.status, 0);
-  assert.deepEqual(
-    selectNodes(result, ["ordinary_character `(`", "ordinary_character `)`"]),
-    [
-      ["ordinary_character `(`", "0:0-0:1", "one_char_or_coll_elem_bre"],
-      ["ordinary_character `)`", "0:2-0:3", "one_char_or_coll_elem_bre"],
-      ["ordinary_character `)`", "0:3-0:4", "one_char_or_coll_elem_bre"],
-    ],
-  );
+test("PCRE2 condition prefix edits reclassify VERSION and R", () => {
+  for (const { source, edit } of [
+    {
+      source: "(?(VERSIONX)a)",
+      edit: { byte: 10, deleteBytes: 1, insert: "=10" },
+    },
+    {
+      source: "(?(VERSIONX)a)",
+      edit: { byte: 3, deleteBytes: 1, insert: "v" },
+    },
+    { source: "(?(Rx)a)", edit: { byte: 4, deleteBytes: 1, insert: "" } },
+    { source: "(?(R)a)", edit: { byte: 4, deleteBytes: 0, insert: "&x" } },
+  ]) {
+    const expected = parse(pcre2Grammar, applyEdits(source, [edit]).toString());
+    assert.equal(expected.status, 0, expected.rows.join("\n"));
+    assert.deepEqual(parse(pcre2Grammar, source, [edit]), expected, source);
+  }
 });
+
+test("PCRE2 repaired name and decimal tokens match fresh parses", () => {
+  for (const { source, edit, expectedSource } of [
+    {
+      source: String.raw`\k<>`,
+      edit: { byte: 3, deleteBytes: 0, insert: "name" },
+      expectedSource: String.raw`\k<name>`,
+    },
+    {
+      source: "(?<>a)",
+      edit: { byte: 3, deleteBytes: 0, insert: "é" },
+      expectedSource: "(?<é>a)",
+    },
+    {
+      source: "(*LIMIT_MATCH=)",
+      edit: { byte: 14, deleteBytes: 0, insert: "001" },
+      expectedSource: "(*LIMIT_MATCH=001)",
+    },
+    {
+      source: "(?(VERSION=)a)",
+      edit: { byte: 11, deleteBytes: 0, insert: "1001" },
+      expectedSource: "(?(VERSION=1001)a)",
+    },
+    {
+      source: "(?(VERSION=10.)a)",
+      edit: { byte: 14, deleteBytes: 0, insert: "01001" },
+      expectedSource: "(?(VERSION=10.01001)a)",
+    },
+  ]) {
+    assert.equal(parse(pcre2Grammar, source).status, 1, source);
+    assert.equal(applyEdits(source, [edit]).toString(), expectedSource);
+    const expected = parse(pcre2Grammar, expectedSource);
+    assert.equal(expected.status, 0, expectedSource);
+    assert.deepEqual(parse(pcre2Grammar, source, [edit]), expected, source);
+  }
+});
+
+test("PCRE2 POSIX delimiters and Unicode group names reparse after edits", () => {
+  for (const { source, edit } of [
+    { source: "[[:alpha]]", edit: { byte: 8, deleteBytes: 0, insert: ":" } },
+    { source: "[[:alpha:]]", edit: { byte: 8, deleteBytes: 1, insert: "" } },
+    { source: "[[.a.]]", edit: { byte: 4, deleteBytes: 1, insert: "" } },
+    { source: "[[=a=]]", edit: { byte: 4, deleteBytes: 1, insert: "" } },
+    {
+      source: "(?<a>b)",
+      edit: { byte: 3, deleteBytes: 1, insert: "\u{10940}\u{11de0}" },
+    },
+    {
+      source: "(?<\u{10940}>b)",
+      edit: { byte: 3, deleteBytes: 4, insert: "a" },
+    },
+  ]) {
+    const expected = parse(pcre2Grammar, applyEdits(source, [edit]).toString());
+    assert.equal(expected.status, 0, expected.rows.join("\n"));
+    assert.deepEqual(parse(pcre2Grammar, source, [edit]), expected, source);
+  }
+});
+
+test("PCRE2 inline option and capture changes survive edits and resets", () => {
+  const noAutoCaptureGroupCount = 11;
+  const branchResetRepetitions = 4;
+  const cases = [
+    ["(?x:a b)c d", { byte: 2, deleteBytes: 1, insert: "xx" }],
+    [
+      "(?n)(a)".repeat(noAutoCaptureGroupCount) + String.raw`\11`,
+      { byte: 2, deleteBytes: 1, insert: "-n" },
+    ],
+    ["(?x)# a\nb c", { byte: 0, deleteBytes: 0, insert: "(*CR)" }],
+    ["(?x)[a b] c", { byte: 2, deleteBytes: 1, insert: "xx" }],
+    [String.raw`\Q(a)\E(b)\11`, { byte: 0, deleteBytes: 2, insert: "" }],
+    [
+      "(?|(a)|(b)(c))(d)".repeat(branchResetRepetitions) + String.raw`\11`,
+      { byte: 2, deleteBytes: 1, insert: ":" },
+    ],
+    ["(?<x>a", { byte: 6, deleteBytes: 0, insert: ")" }],
+  ];
+  for (const [source, edit] of cases) {
+    const expected = parse(pcre2Grammar, applyEdits(source, [edit]).toString());
+    assert.equal(expected.status, 0, expected.rows.join("\n"));
+    const actual = parse(pcre2Grammar, source, [edit]);
+    assert.deepEqual(actual, expected, `${source}`);
+  }
+});
+const posixEdits = [
+  ...posixGrammars.flatMap(({ name }) => {
+    const [opening, closing] =
+      name === "posix_bre" ? ["\\(", "\\)"] : ["(", ")"];
+    const languages = [name];
+    const byte = opening.length;
+    return [
+      {
+        name: "deleting a group body leaves only its delimiters",
+        languages,
+        source: `${opening}a${closing}`,
+        edited: `${opening}${closing}`,
+        edit: { byte, deleteBytes: 1, insert: "" },
+        reverse: { byte, deleteBytes: 0, insert: "a" },
+      },
+      {
+        name: "completing a bodyless group at EOF removes recovery",
+        languages,
+        source: opening,
+        edited: `${opening}${closing}`,
+        edit: { byte, deleteBytes: 0, insert: closing },
+        reverse: { byte, deleteBytes: closing.length, insert: "" },
+        sourceError: true,
+      },
+      {
+        name: "deleting a nested group body preserves its quantifier",
+        languages,
+        source: `${opening}${opening}a${closing}*${closing}`,
+        edited: `${opening}${opening}${closing}*${closing}`,
+        edit: { byte: 2 * byte, deleteBytes: 1, insert: "" },
+        reverse: { byte: 2 * byte, deleteBytes: 0, insert: "a" },
+      },
+    ];
+  }),
+  {
+    name: "an empty group supplies a missing alternative",
+    languages: ["posix_ere"],
+    source: "(a|)",
+    edited: "(a|())",
+    edit: { byte: 3, deleteBytes: 0, insert: "()" },
+    reverse: { byte: 3, deleteBytes: 2, insert: "" },
+    sourceError: true,
+  },
+  {
+    name: "repairing a compound closing marker restores its delimiter leaves",
+    languages: ["posix_bre", "posix_ere"],
+    source: "[[.é].][=😀]x][:alpha:]]",
+    edited: "[[.é].][=😀]=][:alpha:]]",
+    edit: { byte: 15, deleteBytes: 1, insert: "=" },
+    reverse: { byte: 15, deleteBytes: 1, insert: "x" },
+    sourceError: true,
+  },
+  {
+    name: "removing whitespace restores adjacent character class delimiter leaves",
+    languages: ["posix_bre", "posix_ere"],
+    source: "[[:alpha: ]]",
+    edited: "[[:alpha:]]",
+    edit: { byte: 9, deleteBytes: 1, insert: "" },
+    reverse: { byte: 9, deleteBytes: 0, insert: " " },
+    sourceError: true,
+  },
+  {
+    name: "a compound opener replaces a literal opening bracket",
+    languages: ["posix_bre", "posix_ere"],
+    source: "[[:alpha:]]",
+    edited: "[[xalpha:]]",
+    edit: { byte: 2, deleteBytes: 1, insert: "x" },
+    reverse: { byte: 2, deleteBytes: 1, insert: ":" },
+  },
+  {
+    name: "extending a collating element changes single to multi",
+    languages: ["posix_bre", "posix_ere"],
+    source: "[[.a.]]",
+    edited: "[[.ab.]]",
+    edit: { byte: 4, deleteBytes: 0, insert: "b" },
+    reverse: { byte: 4, deleteBytes: 1, insert: "" },
+  },
+  {
+    name: "editing a collating symbol changes its meta classification",
+    languages: ["posix_bre", "posix_ere"],
+    source: "[[.a.]]",
+    edited: "[[.].]]",
+    edit: { byte: 3, deleteBytes: 1, insert: "]" },
+    reverse: { byte: 3, deleteBytes: 1, insert: "a" },
+  },
+  {
+    name: "a trailing literal hyphen becomes a range separator",
+    languages: ["posix_bre", "posix_ere"],
+    source: "[a-]",
+    edited: "[a-z]",
+    edit: { byte: 3, deleteBytes: 0, insert: "z" },
+    reverse: { byte: 3, deleteBytes: 1, insert: "" },
+  },
+  {
+    name: "inserting an opening parenthesis changes an unmatched closer",
+    languages: ["posix_ere"],
+    source: "a)b)",
+    edited: "(a)b)",
+    edit: { byte: 0, deleteBytes: 0, insert: "(" },
+    reverse: { byte: 0, deleteBytes: 1, insert: "" },
+  },
+  {
+    name: "repairing an empty branch restores the original group closer",
+    languages: ["posix_ere"],
+    source: "(a|)b)",
+    edited: "(a|c)b)",
+    edit: { byte: 3, deleteBytes: 0, insert: "c" },
+    reverse: { byte: 3, deleteBytes: 1, insert: "" },
+    sourceError: true,
+  },
+  {
+    name: "appending a character changes a right anchor to a literal",
+    languages: ["posix_bre"],
+    source: "^a$",
+    edited: "^a$b",
+    edit: { byte: 3, deleteBytes: 0, insert: "b" },
+    reverse: { byte: 3, deleteBytes: 1, insert: "" },
+  },
+  {
+    name: "inserting a quoted pipe preserves a literal caret",
+    languages: ["posix_bre"],
+    source: "a^*b",
+    edited: String.raw`a\|^*b`,
+    edit: { byte: 1, deleteBytes: 0, insert: String.raw`\|` },
+    reverse: { byte: 1, deleteBytes: 2, insert: "" },
+  },
+  {
+    name: "appending a quoted pipe changes a right anchor to a literal",
+    languages: ["posix_bre"],
+    source: "^a$",
+    edited: String.raw`^a$\|`,
+    edit: { byte: 3, deleteBytes: 0, insert: String.raw`\|` },
+    reverse: { byte: 3, deleteBytes: 2, insert: "" },
+  },
+  {
+    name: "quoting a pipe preserves its following duplication symbol",
+    languages: ["posix_bre"],
+    source: "|*",
+    edited: String.raw`\|*`,
+    edit: { byte: 0, deleteBytes: 0, insert: "\\" },
+    reverse: { byte: 0, deleteBytes: 1, insert: "" },
+  },
+  {
+    name: "quoting a plus preserves its following interval",
+    languages: ["posix_bre"],
+    source: String.raw`+\{2\}`,
+    edited: String.raw`\+\{2\}`,
+    edit: { byte: 0, deleteBytes: 0, insert: "\\" },
+    reverse: { byte: 0, deleteBytes: 1, insert: "" },
+  },
+  {
+    name: "quoting a question mark preserves a literal operand",
+    languages: ["posix_bre"],
+    source: "a?",
+    edited: String.raw`a\?`,
+    edit: { byte: 1, deleteBytes: 0, insert: "\\" },
+    reverse: { byte: 1, deleteBytes: 1, insert: "" },
+  },
+];
 
 for (const grammar of posixGrammars) {
-  const bre = grammar.name === "posix_bre";
-  test(`${grammar.name}: empty groups remain valid in nested and repeated expressions`, () => {
-    const sources = bre
-      ? [
-          String.raw`\(\)`,
-          String.raw`a\(\)b`,
-          String.raw`\(\(\)\)`,
-          String.raw`\(\)*`,
-          String.raw`\(\)\{2\}`,
-          String.raw`\(\)\1`,
-          String.raw`\(\)*$`,
-        ]
-      : [
-          "()",
-          "a()b",
-          "(())",
-          "()*",
-          "(){2}",
-          "()*?",
-          "()|a",
-          "(a|())",
-          "()a)",
-          "(()))",
-        ];
-    for (const source of sources) {
-      const result = parse(grammar, source);
-      assert.equal(result.status, 0, source);
-      assert.equal(result.recovery, false, source);
-    }
-  });
-
-  const malformed = [
-    ["trailing backslash", "a\\"],
-    ["unknown ASCII-letter escape", String.raw`\q`],
-    ["zero numeric escape", String.raw`\0`],
-    ["unclosed bracket expression", "[abc"],
-    ["empty bracket expression", "[]"],
-    ["negated bracket expression without content", "[^]"],
-    ["empty collating symbol", "[[..]]"],
-    ["empty equivalence class", "[[==]]"],
-    ["empty character class", "[[::]]"],
-    ["character class name starting with a digit", "[[:1:]]"],
-    ["whitespace inside the class closing delimiter", "[[:alpha: ]]"],
-    ["unclosed collating symbol", "[[.ch"],
-    ["unclosed equivalence class", "[[=a"],
-    ["unclosed character class", "[[:alpha"],
-    ["unclosed group", bre ? String.raw`\(a` : "(a"],
-    ["group opener without a body or closer", bre ? String.raw`\(` : "("],
-    ["unclosed interval", bre ? String.raw`a\{1` : "a{1"],
-    ["interval without a minimum", bre ? String.raw`a\{,2\}` : "a{,2}"],
-    ["nonnumeric interval maximum", bre ? String.raw`a\{1,x\}` : "a{1,x}"],
-    ["whitespace inside an interval", bre ? String.raw`a\{1, 2\}` : "a{1, 2}"],
-    ...(bre
-      ? [["unmatched group closer", String.raw`a\)`]]
-      : [
-          ["leading empty alternative", "|a"],
-          ["trailing empty alternative", "a|"],
-          ["empty middle alternative", "a||b"],
-          ["backreference extension", String.raw`\1`],
-          ["duplication symbol without an operand", "*a"],
-        ]),
-  ];
-  for (const [name, source] of malformed) {
-    test(`${grammar.name}: malformed ${name} uses standard recovery`, () => {
-      const result = parse(grammar, source);
-      assert.equal(result.status, 1, result.rows.join("\n"));
-      assert.equal(result.recovery, true, result.rows.join("\n"));
+  for (const fixture of posixEdits) {
+    if (!fixture.languages.includes(grammar.name)) continue;
+    test(`${grammar.name}: incremental ${fixture.name}`, () => {
+      const { source, edited, edit, reverse, sourceError } = fixture;
+      assert.equal(applyEdits(source, [edit]).toString(), edited);
+      assert.equal(applyEdits(edited, [reverse]).toString(), source);
+      const original = parse(grammar, source);
+      assert.equal(original.status, sourceError ? 1 : 0);
+      const changed = parse(grammar, edited);
+      assert.equal(changed.status, 0);
+      assert.deepEqual(parse(grammar, source, [edit]), changed);
+      if (!sourceError)
+        assert.deepEqual(parse(grammar, edited, [reverse]), original);
+      assert.deepEqual(parse(grammar, edited, [reverse, edit]), changed);
     });
   }
+}
 
-  test(`${grammar.name}: single Unicode collating elements retain their scalar and byte boundaries`, () => {
-    const result = parse(grammar, "[[.é.][=😀=]]");
-    assert.equal(result.status, 0);
-    assert.deepEqual(
-      selectNodes(result, [
-        "element: collating_element_single `é`",
-        "element: collating_element_single `😀`",
-      ]),
-      [
-        [
-          "element: collating_element_single `é`",
-          "0:3-0:5",
-          "collating_symbol",
-        ],
-        [
-          "element: collating_element_single `😀`",
-          "0:9-0:13",
-          "equivalence_class",
-        ],
-      ],
-    );
+for (const grammar of pythonGrammars) {
+  test(`${grammar.name}: unfinished groups and escapes finish within the parser timeout`, () => {
+    for (const source of ["(?-x:", "(?-x:a", "(?-x:\0", "\\", "a\\"]) {
+      parseSummary(grammar, source, unfinishedEscapeTimeoutMicros);
+    }
   });
 
-  test(`${grammar.name}: compound delimiters own one-byte leaves around Unicode and bracket payloads`, () => {
-    const result = parse(grammar, "[[.é].][=😀]=][:alpha:]]");
-    assert.equal(result.status, 0);
+  test(`${grammar.name}: a deleted scoped closer can be restored`, () => {
+    const source = "(?-x:a)";
+    const deletion = { byte: 6, deleteBytes: 1, insert: "" };
+    const restoration = { byte: 6, deleteBytes: 0, insert: ")" };
+    assert.equal(parse(grammar, source, [deletion]).status, 1);
     assert.deepEqual(
-      selectNodes(result, [
-        '"["',
-        '"]"',
-        '"."',
-        '"="',
-        '":"',
-        "element: collating_element_multi `é]`",
-        "element: collating_element_multi `😀]`",
-        "name: class_name `alpha`",
-      ]),
-      [
-        ['"["', "0:0-0:1", "bracket_expression"],
-        ['"["', "0:1-0:2", "collating_symbol"],
-        ['"."', "0:2-0:3", "collating_symbol"],
-        [
-          "element: collating_element_multi `é]`",
-          "0:3-0:6",
-          "collating_symbol",
-        ],
-        ['"."', "0:6-0:7", "collating_symbol"],
-        ['"]"', "0:7-0:8", "collating_symbol"],
-        ['"["', "0:8-0:9", "equivalence_class"],
-        ['"="', "0:9-0:10", "equivalence_class"],
-        [
-          "element: collating_element_multi `😀]`",
-          "0:10-0:15",
-          "equivalence_class",
-        ],
-        ['"="', "0:15-0:16", "equivalence_class"],
-        ['"]"', "0:16-0:17", "equivalence_class"],
-        ['"["', "0:17-0:18", "character_class"],
-        ['":"', "0:18-0:19", "character_class"],
-        ["name: class_name `alpha`", "0:19-0:24", "character_class"],
-        ['":"', "0:24-0:25", "character_class"],
-        ['"]"', "0:25-0:26", "character_class"],
-        ['"]"', "0:26-0:27", "bracket_expression"],
-      ],
+      parse(grammar, source, [deletion, restoration]),
+      parse(grammar, source),
     );
-  });
-
-  test(`${grammar.name}: a range endpoint cannot split a compound opener`, () => {
-    for (const source of ["[a-[:alpha:]]", "[a-[=x=]]"]) {
-      assert.equal(parse(grammar, source).status, 1, source);
-    }
-    for (const source of ["[a-[]", "[a-[.z.]]", "[[]"]) {
-      assert.equal(parse(grammar, source).status, 0, source);
-    }
   });
 }
 
-for (const grammar of grammars) {
-  const bre = grammar.name === "posix_bre";
-  const depth = grammar.name === "pcre2" ? 1000 : 2000;
-  const open = bre ? String.raw`\(` : "(";
-  const close = bre ? String.raw`\)` : ")";
-  const repeatedExpression = bre ? String.raw`a\?b\+c\|` : "a|";
+const pythonNumericEscapeEditCases = [
+  {
+    name: "repairing an out-of-range octal escape preserves the following alternative",
+    source: String.raw`\400|z`,
+    edited: String.raw`\377|z`,
+    edit: { byte: 1, deleteBytes: 3, insert: "377" },
+    reverse: { byte: 1, deleteBytes: 3, insert: "400" },
+  },
+  {
+    name: "repairing an out-of-range class octal escape preserves the class",
+    source: String.raw`[\777]`,
+    edited: String.raw`[\377]`,
+    edit: { byte: 2, deleteBytes: 1, insert: "3" },
+    reverse: { byte: 2, deleteBytes: 1, insert: "7" },
+  },
+  {
+    name: "removing a third octal digit restores a numeric backreference",
+    source: String.raw`\400`,
+    edited: String.raw`\40`,
+    edit: { byte: 3, deleteBytes: 1, insert: "" },
+    reverse: { byte: 3, deleteBytes: 0, insert: "0" },
+  },
+  {
+    name: "removing a third octal digit restores a class octal escape",
+    source: String.raw`[\400]`,
+    edited: String.raw`[\40]`,
+    edit: { byte: 4, deleteBytes: 1, insert: "" },
+    reverse: { byte: 4, deleteBytes: 0, insert: "0" },
+  },
+  {
+    name: "repairing a Unicode escape restores the maximum code point",
+    source: String.raw`\U00110000|z`,
+    edited: String.raw`\U0010FFFF|z`,
+    edit: { byte: 2, deleteBytes: 8, insert: "0010FFFF" },
+    reverse: { byte: 2, deleteBytes: 8, insert: "00110000" },
+  },
+  {
+    name: "repairing a class Unicode escape restores the maximum code point",
+    source: String.raw`[\U00110000]`,
+    edited: String.raw`[\U0010FFFF]`,
+    edit: { byte: 3, deleteBytes: 8, insert: "0010FFFF" },
+    reverse: { byte: 3, deleteBytes: 8, insert: "00110000" },
+  },
+];
+for (const grammar of pythonGrammars) {
+  for (const {
+    name,
+    source,
+    edited,
+    edit,
+    reverse,
+  } of pythonNumericEscapeEditCases) {
+    test(`${grammar.name}: incremental ${name}`, () => {
+      assert.equal(applyEdits(source, [edit]).toString(), edited);
+      assert.equal(applyEdits(edited, [reverse]).toString(), source);
+      assert.equal(parse(grammar, source).status, 1);
+      const expected = parse(grammar, edited);
+      assert.equal(expected.status, 0);
+      assert.equal(parse(grammar, edited, [reverse]).status, 1);
+      assert.deepEqual(parse(grammar, source, [edit]), expected);
+      assert.deepEqual(parse(grammar, edited, [reverse, edit]), expected);
+    });
+  }
+}
 
-  test(`${grammar.name}: large expressions and nested groups parse through EOF`, () => {
-    for (const [name, source] of [
-      ["long literal", "x".repeat(80_000)],
-      [
-        bre ? "long quoted literals" : "wide alternatives",
-        `${repeatedExpression.repeat(16_000)}a`,
-      ],
-      ["deep groups", `${open.repeat(depth)}a${close.repeat(depth)}`],
-      ["space-separated atoms", "a ".repeat(40_000)],
-    ]) {
-      assert.equal(parseSummary(grammar, source).successful, true, name);
-    }
-  });
-
-  test(`${grammar.name}: long unterminated constructs parse through EOF with native recovery`, () => {
-    const sources = [`${open}${"x".repeat(80_000)}`];
-    if (posixGrammars.includes(grammar)) sources.push("[[.".repeat(80_000));
-    for (const source of sources) {
-      assert.equal(parseSummary(grammar, source).successful, false);
-    }
-  });
-
-  test(`${grammar.name}: a parser timeout cannot pass as complete recovery`, () => {
-    assert.throws(() =>
-      parseSummary(grammar, repeatedExpression.repeat(16_000), 1),
-    );
-  });
+const pythonEditCases = [
+  {
+    name: "pairing a trailing backslash completes a verbose comment",
+    source: "(?x)#\\",
+    edited: String.raw`(?x)#\\`,
+    edit: { byte: 6, deleteBytes: 0, insert: "\\" },
+    reverse: { byte: 6, deleteBytes: 1, insert: "" },
+  },
+  {
+    name: "an escaped reference name closer requires a second closer",
+    source: String.raw`(?P=a\)`,
+    edited: String.raw`(?P=a\))`,
+    edit: { byte: 7, deleteBytes: 0, insert: ")" },
+    reverse: { byte: 7, deleteBytes: 1, insert: "" },
+  },
+  {
+    name: "an escaped Unicode name brace requires a second closer",
+    source: String.raw`\N{\}`,
+    edited: String.raw`\N{\}}`,
+    edit: { byte: 5, deleteBytes: 0, insert: "}" },
+    reverse: { byte: 5, deleteBytes: 1, insert: "" },
+  },
+  {
+    name: "changing global flags reclassifies trailing whitespace and comments",
+    source: "(?i)a #c\nb",
+    edited: "(?x)a #c\nb",
+    edit: { byte: 2, deleteBytes: 1, insert: "x" },
+    reverse: { byte: 2, deleteBytes: 1, insert: "i" },
+  },
+  {
+    name: "disabling a scoped flag restores the outer mode after the group",
+    source: "(?x:a b)c d",
+    edited: "(?-x:a b)c d",
+    edit: { byte: 2, deleteBytes: 1, insert: "-x" },
+    reverse: { byte: 2, deleteBytes: 2, insert: "x" },
+  },
+  {
+    name: "nested scoped mode edits invalidate descendants without leaking outward",
+    source: "(?x:a(?-x:b c)d e)f g",
+    edited: "(?x:a(?x:b c)d e)f g",
+    edit: { byte: 7, deleteBytes: 1, insert: "" },
+    reverse: { byte: 7, deleteBytes: 0, insert: "-" },
+  },
+  {
+    name: "completing a global flag introducer changes layout classification",
+    source: "(?x a b",
+    edited: "(?x) a b",
+    edit: { byte: 3, deleteBytes: 0, insert: ")" },
+    reverse: { byte: 3, deleteBytes: 1, insert: "" },
+  },
+  {
+    name: "an escaped LF extends a verbose comment across the next line",
+    source: "(?x)a#c\nb|z",
+    edited: "(?x)a#c\\\nb|z",
+    edit: { byte: 7, deleteBytes: 0, insert: "\\" },
+    reverse: { byte: 7, deleteBytes: 1, insert: "" },
+  },
+  {
+    name: "closing a character class restores verbose layout after its bracket",
+    source: "(?x)[a #] b",
+    edited: "(?x)[a] #] b",
+    edit: { byte: 6, deleteBytes: 0, insert: "]" },
+    reverse: { byte: 6, deleteBytes: 1, insert: "" },
+  },
+  {
+    name: "repairing a name introducer preserves the enclosing group boundary",
+    source: "(?P<n>a",
+    edited: "(?P<n>a)",
+    edit: { byte: 7, deleteBytes: 0, insert: ")" },
+    reverse: { byte: 7, deleteBytes: 1, insert: "" },
+  },
+  {
+    name: "repairing a hexadecimal escape preserves the following alternative",
+    source: String.raw`(\x0)|z`,
+    edited: String.raw`(\x01)|z`,
+    edit: { byte: 4, deleteBytes: 0, insert: "1" },
+    reverse: { byte: 4, deleteBytes: 1, insert: "" },
+  },
+  {
+    name: "removing an extra conditional separator keeps the real closer",
+    source: "(?(1)a|b|c)|z",
+    edited: "(?(1)a|bc)|z",
+    edit: { byte: 8, deleteBytes: 1, insert: "" },
+    reverse: { byte: 8, deleteBytes: 0, insert: "|" },
+  },
+  {
+    name: "completing an interval reclassifies literal braces as a quantifier",
+    source: "a{2",
+    edited: "a{2}",
+    edit: { byte: 3, deleteBytes: 0, insert: "}" },
+    reverse: { byte: 3, deleteBytes: 1, insert: "" },
+  },
+  {
+    name: "a third octal digit changes a numeric backreference into an escape",
+    source: String.raw`\12|z`,
+    edited: String.raw`\123|z`,
+    edit: { byte: 3, deleteBytes: 0, insert: "3" },
+    reverse: { byte: 3, deleteBytes: 1, insert: "" },
+  },
+  {
+    name: "UTF-8 edits update byte ranges before a repeated atom",
+    source: "é😀+|z",
+    edited: "éa+|z",
+    edit: { byte: 2, deleteBytes: 4, insert: "a" },
+    reverse: { byte: 2, deleteBytes: 1, insert: "😀" },
+  },
+  {
+    name: "adding real closers completes nested groups",
+    source: "((a",
+    edited: "((a))",
+    edit: { byte: 3, deleteBytes: 0, insert: "))" },
+    reverse: { byte: 3, deleteBytes: 2, insert: "" },
+  },
+];
+for (const grammar of pythonGrammars) {
+  for (const { name, source, edited, edit, reverse } of pythonEditCases) {
+    test(`${grammar.name}: incremental ${name}`, () => {
+      assert.equal(applyEdits(source, [edit]).toString("utf8"), edited);
+      assert.equal(applyEdits(edited, [reverse]).toString("utf8"), source);
+      const original = parse(grammar, source);
+      const changed = parse(grammar, edited);
+      assert.equal(
+        changed.status,
+        0,
+        "the completed source must parse without recovery",
+      );
+      assert.deepEqual(parse(grammar, source, [edit]), changed, "forward edit");
+      const reversed = parse(grammar, edited, [reverse]);
+      const roundTrip = parse(grammar, source, [edit, reverse]);
+      if (original.status === 0) {
+        assert.deepEqual(reversed, original, "reverse edit");
+        assert.deepEqual(roundTrip, original, "edit and undo");
+      }
+    });
+  }
 }

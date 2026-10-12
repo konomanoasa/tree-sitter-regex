@@ -5,7 +5,7 @@ named references and both conditional condition categories expose shared leaves
 ==================
 (?P<n>a)(?P=n)(?(12)b|c)(?(name)d)\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -36,7 +36,7 @@ named references and conditional groups can be repetition operands
 ==================
 (?P<n>a)(?P=n)*(?(1)b|c)+\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -67,7 +67,7 @@ conditional separator ownership excludes nested and outer alternatives
 ==================
 (a)(?(1)(?:b|c)|[|])|d\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -100,7 +100,7 @@ verbose layout belongs to conditional arms and cannot split the header
 (?x)(a)(?(1) b # gap
  | c )\
 
----
+------------------
 
 (pattern
   (global_flags
@@ -132,7 +132,7 @@ conditional arms can be omitted independently
 ==================
 (a)(?(1))(?(1)|)(?(1)a|)(?(1)|b)\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -154,3 +154,775 @@ conditional arms can be omitted independently
         no_pattern: (concatenation
           (literal_character)))
       (literal_escape))))
+
+==================
+PCRE2 conditional assertions retain separate branches
+:language(pcre2)
+==================
+(?(?=a)b|c)
+------------------
+
+(pattern (alternation (concatenation (conditional_group (assertion_condition (alternation (concatenation (literal_character)))) (concatenation (literal_character)) (concatenation (literal_character))))))
+
+==================
+PCRE2 assertion conditions can carry an explicit callout
+:language(pcre2)
+==================
+(?(?C9)(?=x)a|b)
+------------------
+
+(pattern (alternation (concatenation (conditional_group (callout (decimal_digits)) (assertion_condition (alternation (concatenation (literal_character)))) (concatenation (literal_character)) (concatenation (literal_character))))))
+
+==================
+PCRE2 alphabetic lookaround assertions can be conditions
+:language(pcre2)
+==================
+(?(*pla:a)b|c)(?(?C1)(*nlb:d)e)
+------------------
+
+(pattern (alternation (concatenation (conditional_group (assertion_condition (alternation (concatenation (literal_character)))) (concatenation (literal_character)) (concatenation (literal_character))) (conditional_group (callout (decimal_digits)) (assertion_condition (alternation (concatenation (literal_character)))) (concatenation (literal_character))))))
+
+==================
+PCRE2 condition callouts may be followed by ignored comments and quote markers
+:language(pcre2)
+==================
+(?(?C1)(?#c)\E(?=a)b)
+------------------
+
+(pattern (alternation (concatenation (conditional_group (callout (decimal_digits)) (comment_group (comment_content)) (quote_end) (assertion_condition (alternation (concatenation (literal_character)))) (concatenation (literal_character))))))
+
+==================
+PCRE2 quoted VERSION names remain references beside reserved version conditions
+:language(pcre2)
+==================
+(?(<VERSIONX>)a)(?('VERSIONX')b)(?(versionx)c)(?(VERSION=10)d)
+------------------
+
+(pattern (alternation (concatenation (conditional_group (group_name) (concatenation (literal_character))) (conditional_group (group_name) (concatenation (literal_character))) (conditional_group (condition_name) (concatenation (literal_character))) (conditional_group (version_condition (decimal_digits)) (concatenation (literal_character))))))
+
+==================
+PCRE2 VERSION major numbers retain values at and above the engine limit
+:language(pcre2)
+==================
+(?(VERSION=1000)a)(?(VERSION=1001)a)(?(VERSION>=1000)a)(?(VERSION>=1001)a)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (conditional_group
+        condition: (version_condition (decimal_digits))
+        yes_pattern: (concatenation (literal_character)))
+      (conditional_group
+        condition: (version_condition (decimal_digits))
+        yes_pattern: (concatenation (literal_character)))
+      (conditional_group
+        condition: (version_condition (decimal_digits))
+        yes_pattern: (concatenation (literal_character)))
+      (conditional_group
+        condition: (version_condition (decimal_digits))
+        yes_pattern: (concatenation (literal_character))))))
+
+==================
+PCRE2 VERSION minor numbers and long digit strings retain values above the engine limit
+:language(pcre2)
+==================
+(?(VERSION=10.1000)a)(?(VERSION=10.1001)a)(?(VERSION>=10.1000)a)(?(VERSION>=10.1001)a)(?(VERSION=99999999999999999999.0001001)a)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (conditional_group
+        condition: (version_condition (decimal_digits) (decimal_digits))
+        yes_pattern: (concatenation (literal_character)))
+      (conditional_group
+        condition: (version_condition (decimal_digits) (decimal_digits))
+        yes_pattern: (concatenation (literal_character)))
+      (conditional_group
+        condition: (version_condition (decimal_digits) (decimal_digits))
+        yes_pattern: (concatenation (literal_character)))
+      (conditional_group
+        condition: (version_condition (decimal_digits) (decimal_digits))
+        yes_pattern: (concatenation (literal_character)))
+      (conditional_group
+        condition: (version_condition (decimal_digits) (decimal_digits))
+        yes_pattern: (concatenation (literal_character))))))
+
+==================
+PCRE2 conditions preserve numeric bare and quoted names
+:language(pcre2)
+==================
+(?(1)a|b)(?(name)c)(?(<name>)d)(?('name')e)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (conditional_group
+        condition: (group_number)
+        yes_pattern: (concatenation
+          (literal_character))
+        no_pattern: (concatenation
+          (literal_character)))
+      (conditional_group
+        condition: (condition_name)
+        yes_pattern: (concatenation
+          (literal_character)))
+      (conditional_group
+        condition: (group_name)
+        yes_pattern: (concatenation
+          (literal_character)))
+      (conditional_group
+        condition: (group_name)
+        yes_pattern: (concatenation
+          (literal_character))))))
+
+==================
+PCRE2 recursion and DEFINE conditions retain their spelling
+:language(pcre2)
+==================
+(?(R)a)(?(R1)b)(?(R&name)c)(?(DEFINE)d)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (conditional_group
+        condition: (condition_name)
+        yes_pattern: (concatenation
+          (literal_character)))
+      (conditional_group
+        condition: (condition_name)
+        yes_pattern: (concatenation
+          (literal_character)))
+      (conditional_group
+        condition: (recursion_condition
+          name: (group_name))
+        yes_pattern: (concatenation
+          (literal_character)))
+      (conditional_group
+        condition: (define_condition)
+        yes_pattern: (concatenation
+          (literal_character))))))
+
+==================
+PCRE2 version and assertion conditions own their branches
+:language(pcre2)
+==================
+(?(VERSION>=10.49)a|b)(?(?=x)y|z)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (conditional_group
+        condition: (version_condition
+          (decimal_digits)
+          (decimal_digits))
+        yes_pattern: (concatenation
+          (literal_character))
+        no_pattern: (concatenation
+          (literal_character)))
+      (conditional_group
+        condition: (assertion_condition
+          body: (alternation
+            (concatenation
+              (literal_character))))
+        yes_pattern: (concatenation
+          (literal_character))
+        no_pattern: (concatenation
+          (literal_character))))))
+
+==================
+PCRE2 assertion conditions own the explicit callout
+:language(pcre2)
+==================
+(?(?C9)(?=a)abc|def)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (conditional_group
+        (callout
+          number: (decimal_digits))
+        condition: (assertion_condition
+          body: (alternation
+            (concatenation
+              (literal_character))))
+        yes_pattern: (concatenation
+          (literal_character)
+          (literal_character)
+          (literal_character))
+        no_pattern: (concatenation
+          (literal_character)
+          (literal_character)
+          (literal_character))))))
+
+==================
+PCRE2 comment precedes an assertion condition
+:language(pcre2)
+==================
+(?(?#c)(?=a)b)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (conditional_group
+        (comment_group
+          (comment_content))
+        condition: (assertion_condition
+          body: (alternation
+            (concatenation
+              (literal_character))))
+        yes_pattern: (concatenation
+          (literal_character))))))
+
+==================
+PCRE2 multiple comments precede an assertion condition
+:language(pcre2)
+==================
+(?(?#a)(?#b)(?=a)a|b)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (conditional_group
+        (comment_group
+          (comment_content))
+        (comment_group
+          (comment_content))
+        condition: (assertion_condition
+          body: (alternation
+            (concatenation
+              (literal_character))))
+        yes_pattern: (concatenation
+          (literal_character))
+        no_pattern: (concatenation
+          (literal_character))))))
+
+==================
+PCRE2 verbose layout precedes an assertion condition
+:language(pcre2)
+==================
+(?x)(?(?#c) (?=a)a|b)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (global_flags
+        (flag_set))
+      (conditional_group
+        (comment_group
+          (comment_content))
+        (verbose_whitespace)
+        condition: (assertion_condition
+          body: (alternation
+            (concatenation
+              (literal_character))))
+        yes_pattern: (concatenation
+          (literal_character))
+        no_pattern: (concatenation
+          (literal_character))))))
+
+==================
+PCRE2 quote end is ignored before an assertion condition
+:language(pcre2)
+==================
+(?(?#c)\E(?=a)a|b)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (conditional_group
+        (comment_group
+          (comment_content))
+        (quote_end)
+        condition: (assertion_condition
+          body: (alternation
+            (concatenation
+              (literal_character))))
+        yes_pattern: (concatenation
+          (literal_character))
+        no_pattern: (concatenation
+          (literal_character))))))
+
+==================
+PCRE2 empty quotation is ignored before an assertion condition
+:language(pcre2)
+==================
+(?(?#c)\Q\E(?=a)a|b)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (conditional_group
+        (comment_group
+          (comment_content))
+        (quote_start)
+        (quote_end)
+        condition: (assertion_condition
+          body: (alternation
+            (concatenation
+              (literal_character))))
+        yes_pattern: (concatenation
+          (literal_character))
+        no_pattern: (concatenation
+          (literal_character))))))
+
+==================
+PCRE2 comments surround a single callout before an assertion
+:language(pcre2)
+==================
+(?(?#c)(?C1)(?#d)(?=a)a|b)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (conditional_group
+        (comment_group
+          (comment_content))
+        (callout
+          number: (decimal_digits))
+        (comment_group
+          (comment_content))
+        condition: (assertion_condition
+          body: (alternation
+            (concatenation
+              (literal_character))))
+        yes_pattern: (concatenation
+          (literal_character))
+        no_pattern: (concatenation
+          (literal_character))))))
+
+==================
+PCRE2 quoted VERSION name with < remains a reference
+:language(pcre2)
+==================
+(?<VERSIONX>x)(?(<VERSIONX>)a|b)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (named_capturing_group
+        name: (group_name)
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (conditional_group
+        condition: (group_name)
+        yes_pattern: (concatenation
+          (literal_character))
+        no_pattern: (concatenation
+          (literal_character))))))
+
+==================
+PCRE2 quoted VERSION name with ' remains a reference
+:language(pcre2)
+==================
+(?<VERSIONX>x)(?('VERSIONX')a|b)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (named_capturing_group
+        name: (group_name)
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (conditional_group
+        condition: (group_name)
+        yes_pattern: (concatenation
+          (literal_character))
+        no_pattern: (concatenation
+          (literal_character))))))
+
+==================
+PCRE2 lowercase version name remains a reference
+:language(pcre2)
+==================
+(?<versionx>x)(?(versionx)a|b)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (named_capturing_group
+        name: (group_name)
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (conditional_group
+        condition: (condition_name)
+        yes_pattern: (concatenation
+          (literal_character))
+        no_pattern: (concatenation
+          (literal_character))))))
+
+==================
+PCRE2 version comparison has major and minor numbers
+:language(pcre2)
+==================
+(?(VERSION>=10.49)a|b)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (conditional_group
+        condition: (version_condition
+          (decimal_digits)
+          (decimal_digits))
+        yes_pattern: (concatenation
+          (literal_character))
+        no_pattern: (concatenation
+          (literal_character))))))
+
+==================
+PCRE2 version comparison has a major number
+:language(pcre2)
+==================
+(?(VERSION=10)a|b)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (conditional_group
+        condition: (version_condition
+          (decimal_digits))
+        yes_pattern: (concatenation
+          (literal_character))
+        no_pattern: (concatenation
+          (literal_character))))))
+
+==================
+PCRE2 bare R is distinct from explicit recursion
+:language(pcre2)
+:cst
+==================
+(?(R)a)(?R)(?(R&x)b)
+------------------
+
+0:0  - 0:20   pattern
+0:0  - 0:20     body: alternation
+0:0  - 0:20       concatenation
+0:0  - 0:7          conditional_group
+0:0  - 0:1            "("
+0:1  - 0:2            "?"
+0:2  - 0:3            "("
+0:3  - 0:4            condition: condition_name `R`
+0:4  - 0:5            ")"
+0:5  - 0:6            yes_pattern: concatenation
+0:5  - 0:6              literal_character `a`
+0:6  - 0:7            ")"
+0:7  - 0:11         subroutine_call
+0:7  - 0:8            "("
+0:8  - 0:9            "?"
+0:9  - 0:10           "R"
+0:10 - 0:11           ")"
+0:11 - 0:20         conditional_group
+0:11 - 0:12           "("
+0:12 - 0:13           "?"
+0:13 - 0:14           "("
+0:14 - 0:17           condition: recursion_condition
+0:14 - 0:15             "R"
+0:15 - 0:16             "&"
+0:16 - 0:17             name: group_name `x`
+0:17 - 0:18           ")"
+0:18 - 0:19           yes_pattern: concatenation
+0:18 - 0:19             literal_character `b`
+0:19 - 0:20           ")"
+
+==================
+Python escaped parenthesis remains in the condition name
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+(?(a\))b)
+------------------
+
+0:0 - 0:9   pattern
+0:0 - 0:9     body: alternation
+0:0 - 0:9       concatenation
+0:0 - 0:9         conditional_group
+0:0 - 0:1           "("
+0:1 - 0:2           "?"
+0:2 - 0:3           "("
+0:3 - 0:6           condition: group_name `a\\)`
+0:6 - 0:7           ")"
+0:7 - 0:8           yes_pattern: concatenation
+0:7 - 0:8             literal_character `b`
+0:8 - 0:9           ")"
+
+==================
+Python NUL prevents a name from becoming a numeric condition
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+(?(1 a)x|y)
+------------------
+
+0:0  - 0:11   pattern
+0:0  - 0:11     body: alternation
+0:0  - 0:11       concatenation
+0:0  - 0:11         conditional_group
+0:0  - 0:1            "("
+0:1  - 0:2            "?"
+0:2  - 0:3            "("
+0:3  - 0:6            condition: group_name `1\0a`
+0:6  - 0:7            ")"
+0:7  - 0:8            yes_pattern: concatenation
+0:7  - 0:8              literal_character `x`
+0:8  - 0:9            "|"
+0:9  - 0:10           no_pattern: concatenation
+0:9  - 0:10             literal_character `y`
+0:10 - 0:11           ")"
+
+==================
+Python branches retain yes and no ownership
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+(?(1)a|b)|z
+------------------
+
+0:0  - 0:11   pattern
+0:0  - 0:11     body: alternation
+0:0  - 0:9        concatenation
+0:0  - 0:9          conditional_group
+0:0  - 0:1            "("
+0:1  - 0:2            "?"
+0:2  - 0:3            "("
+0:3  - 0:4            condition: group_id `1`
+0:4  - 0:5            ")"
+0:5  - 0:6            yes_pattern: concatenation
+0:5  - 0:6              literal_character `a`
+0:6  - 0:7            "|"
+0:7  - 0:8            no_pattern: concatenation
+0:7  - 0:8              literal_character `b`
+0:8  - 0:9            ")"
+0:9  - 0:10       "|"
+0:10 - 0:11       concatenation
+0:10 - 0:11         literal_character `z`
+
+==================
+pcre2: PCRE2 assertion conditions accept comments before an optional single callout — "(?(?C1)(?C2)(?=a)a|b)"
+:language(pcre2)
+:error
+==================
+(?(?C1)(?C2)(?=a)a|b)
+------------------
+
+
+
+==================
+pcre2: PCRE2 assertion conditions accept comments before an optional single callout — "(?(?#c)(?C1)(?C2)(?=a)a|b)"
+:language(pcre2)
+:error
+==================
+(?(?#c)(?C1)(?C2)(?=a)a|b)
+------------------
+
+
+
+==================
+pcre2: PCRE2 assertion conditions accept comments before an optional single callout — "(?<x>a)?(?(?#c)(x)b|c)"
+:language(pcre2)
+:error
+==================
+(?<x>a)?(?(?#c)(x)b|c)
+------------------
+
+
+
+==================
+pcre2: PCRE2 assertion conditions accept comments before an optional single callout — "(?(?#c)\\Qx\\E(?=a)a|b)"
+:language(pcre2)
+:error
+==================
+(?(?#c)\Qx\E(?=a)a|b)
+------------------
+
+
+
+==================
+pcre2: PCRE2 assertion conditions accept comments before an optional single callout — "(?\\E(?=a)a|b)"
+:language(pcre2)
+:error
+==================
+(?\E(?=a)a|b)
+------------------
+
+
+
+==================
+pcre2: PCRE2 reserves VERSION prefixes only in bare conditions — "(?(VERSIONX)a)"
+:language(pcre2)
+:error
+==================
+(?(VERSIONX)a)
+------------------
+
+
+
+==================
+pcre2: PCRE2 reserves VERSION prefixes only in bare conditions — "(?(VERSION1)a)"
+:language(pcre2)
+:error
+==================
+(?(VERSION1)a)
+------------------
+
+
+
+==================
+pcre2: PCRE2 reserves VERSION prefixes only in bare conditions — "(?(VERSION_)a)"
+:language(pcre2)
+:error
+==================
+(?(VERSION_)a)
+------------------
+
+
+
+==================
+pcre2: PCRE2 reserves VERSION prefixes only in bare conditions — "(?(VERSIONé)a)"
+:language(pcre2)
+:error
+==================
+(?(VERSIONé)a)
+------------------
+
+
+
+==================
+pcre2: PCRE2 reserves VERSION prefixes only in bare conditions — "(?<VERSIONX>x)(?(VERSIONX)a|b)"
+:language(pcre2)
+:error
+==================
+(?<VERSIONX>x)(?(VERSIONX)a|b)
+------------------
+
+
+
+==================
+pcre2: PCRE2 group names use Unicode 17 letters and decimal digits — "(?(𑷠)a)"
+:language(pcre2)
+:error
+==================
+(?(𑷠)a)
+------------------
+
+
+
+==================
+pcre2: PCRE2 rejects incomplete structures using standard recovery — "(?(DEFINE)a|b)"
+:language(pcre2)
+:error
+==================
+(?(DEFINE)a|b)
+------------------
+
+
+
+==================
+python_re: malformed an escaped closer leaves a conditional name unterminated uses standard recovery — "(?(a\\)"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+(?(a\)
+------------------
+
+
+
+==================
+python_re: malformed conditional group without its closer uses standard recovery — "(?P<n>a)(?(n)b|c\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+(?P<n>a)(?(n)b|c\
+
+------------------
+
+
+
+==================
+python_re: malformed empty conditional uses standard recovery — "(?())|z\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+(?())|z\
+
+------------------
+
+
+
+==================
+python_re: malformed incomplete conditional condition uses standard recovery — "(?(1a|b\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+(?(1a|b\
+
+------------------
+
+
+
+==================
+python_re: malformed extra conditional separator uses standard recovery — "(?(1)a|b|)\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+(?(1)a|b|)\
+
+------------------
+
+
+
+==================
+python_re: malformed extra separator inside nested conditional and scoped flags uses standard recovery — "(?x:(?(1)[a|)]|b|c)q)\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+(?x:(?(1)[a|)]|b|c)q)
+
+------------------
+
+
+
+==================
+PCRE2 missing name or number in "(?(VERSION=)a)"
+:language(pcre2)
+:error
+==================
+(?(VERSION=)a)
+------------------
+
+
+
+==================
+PCRE2 missing name or number in "(?(VERSION=10.)a)"
+:language(pcre2)
+:error
+==================
+(?(VERSION=10.)a)
+------------------

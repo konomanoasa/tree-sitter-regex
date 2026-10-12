@@ -1,10 +1,28 @@
 ==================
+PCRE2 default parentheses capture
+:language(pcre2)
+==================
+(a)
+------------------
+
+(pattern (alternation (concatenation (capturing_group (alternation (concatenation (literal_character)))))))
+
+==================
+PCRE2 inline n makes parentheses noncapturing
+:language(pcre2)
+==================
+(?n)(a)
+------------------
+
+(pattern (alternation (concatenation (global_flags (flag_set)) (non_capturing_group (alternation (concatenation (literal_character)))))))
+
+==================
 groups and lookarounds retain body fields and literal boundaries
 :language(js_regex)
 :cst
 ==================
 (a|b)(?:c)(?=d)(?!e)(?<=f)(?<!g)
----
+------------------
 
 0:0  - 0:32   pattern
 0:0  - 0:32     body: disjunction
@@ -95,7 +113,7 @@ groups and lookarounds retain body fields and literal boundaries
 :cst
 ==================
 (a|b)(?:c)(?=d)(?!e)(?<=f)(?<!g)
----
+------------------
 
 0:0  - 0:32   pattern
 0:0  - 0:32     body: disjunction
@@ -184,7 +202,7 @@ groups and lookarounds retain body fields and literal boundaries
 :cst
 ==================
 (a|b)(?:c)(?=d)(?!e)(?<=f)(?<!g)
----
+------------------
 
 0:0  - 0:32   pattern
 0:0  - 0:32     body: alternation
@@ -245,7 +263,7 @@ unescaped group names accept Unicode identifiers and dollar underscore
 :cst
 ==================
 (?<名>a)(?<𐐀x>b)(?<$_0>c)
----
+------------------
 
 0:0  - 0:29   pattern
 0:0  - 0:29     body: disjunction
@@ -323,7 +341,7 @@ unescaped group names accept Unicode identifiers and dollar underscore
 :cst
 ==================
 (?<名>a)(?<𐐀x>b)(?<$_0>c)
----
+------------------
 
 0:0  - 0:29   pattern
 0:0  - 0:29     body: disjunction
@@ -401,7 +419,7 @@ group names accept braced escapes and surrogate pairs in every JavaScript mode
 :cst
 ==================
 (?<\u0061\u{62}_0>c)(?<\uD801\uDC00>d)
----
+------------------
 
 0:0  - 0:38   pattern
 0:0  - 0:38     body: disjunction
@@ -489,7 +507,7 @@ group names accept braced escapes and surrogate pairs in every JavaScript mode
 :cst
 ==================
 (?<\u0061\u{62}_0>c)(?<\uD801\uDC00>d)
----
+------------------
 
 0:0  - 0:38   pattern
 0:0  - 0:38     body: disjunction
@@ -576,7 +594,7 @@ nested groups retain their own alternatives
 :cst
 ==================
 (a(?:b|c))
----
+------------------
 
 0:0  - 0:10   pattern
 0:0  - 0:10     body: disjunction
@@ -617,7 +635,7 @@ nested groups retain their own alternatives
 :cst
 ==================
 (a(?:b|c))
----
+------------------
 
 0:0  - 0:10   pattern
 0:0  - 0:10     body: disjunction
@@ -658,7 +676,7 @@ nested groups share the expression hierarchy
 ==================
 (a|(?:b|c))(?P<name>d)\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -688,7 +706,7 @@ all consuming group categories can be quantified
 ==================
 (a)*(?:b){2}(?P<n>c)+\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -721,7 +739,7 @@ ordinary group names preserve supplementary start and continuation characters
 :cst
 ==================
 (?<𑶰𑷠>x)
----
+------------------
 
 0:0  - 0:14   pattern
 0:0  - 0:14     body: disjunction
@@ -754,7 +772,7 @@ named identifiers support Unicode 17 start and continuation code points
 :cst
 ==================
 (?<𑶰𑷠>x)
----
+------------------
 
 0:0  - 0:14   pattern
 0:0  - 0:14     body: disjunction
@@ -788,7 +806,7 @@ group names allow join control characters after the first character
 :cst
 ==================
 (?<a‌‍b>c)
----
+------------------
 
 0:0  - 0:14   pattern
 0:0  - 0:14     body: disjunction
@@ -829,7 +847,7 @@ group names allow join control characters after the first character
 :cst
 ==================
 (?<a‌‍b>c)
----
+------------------
 
 0:0  - 0:14   pattern
 0:0  - 0:14     body: disjunction
@@ -869,7 +887,7 @@ ordinary raw supplementary names preserve surrogate-pair syntax before early err
 :cst
 ==================
 (?<😀𐐀>)\k<😀𐐀>
----
+------------------
 
 0:0  - 0:25   pattern
 0:0  - 0:25     body: disjunction
@@ -909,7 +927,9 @@ Unicode modes reject a raw supplementary non-identifier at the start of a name
 :error
 ==================
 (?<😀>)
----
+------------------
+
+
 
 ==================
 Unicode modes reject a raw supplementary non-identifier inside a name
@@ -918,7 +938,9 @@ Unicode modes reject a raw supplementary non-identifier inside a name
 :error
 ==================
 (?<a😀>)
----
+------------------
+
+
 
 ==================
 escaped identifier code points preserve syntax before identifier validity checks
@@ -926,7 +948,7 @@ escaped identifier code points preserve syntax before identifier validity checks
 :cst
 ==================
 (?<\u0030>x)
----
+------------------
 
 0:0  - 0:12   pattern
 0:0  - 0:12     body: disjunction
@@ -965,7 +987,7 @@ escaped identifier code points preserve syntax before identifier validity checks
 :cst
 ==================
 (?<\u0030>x)
----
+------------------
 
 0:0  - 0:12   pattern
 0:0  - 0:12     body: disjunction
@@ -1004,7 +1026,7 @@ group names retain source spelling without semantic validation
 ==================
 (?P<a-b>x)(?P<a b>y)\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -1022,42 +1044,12 @@ group names retain source spelling without semantic validation
       (literal_escape))))
 
 ==================
-empty BRE groups own only their delimiters
-:language(posix_bre)
-:cst
-==================
-\(\)
----
-
-0:0 - 0:4   basic_reg_exp
-0:0 - 0:4     bre_branch
-0:0 - 0:4       bre_expression
-0:0 - 0:4         simple_bre
-0:0 - 0:4           nondupl_bre
-0:0 - 0:2             "\\("
-0:2 - 0:4             "\\)"
-
-==================
-empty ERE groups own only their delimiters
-:language(posix_ere)
-:cst
-==================
-()
----
-
-0:0 - 0:2   extended_reg_exp
-0:0 - 0:2     ere_branch
-0:0 - 0:2       ere_expression
-0:0 - 0:1         "("
-0:1 - 0:2         ")"
-
-==================
 empty groups and lookarounds own their introducers and closers
 :language(js_regex)
 :cst
 ==================
 ()(?:)(?=)(?!)(?<=)(?<!)
----
+------------------
 
 0:0  - 0:24   pattern
 0:0  - 0:24     body: disjunction
@@ -1106,7 +1098,7 @@ empty groups and lookarounds own their introducers and closers
 :cst
 ==================
 ()(?:)(?=)(?!)(?<=)(?<!)
----
+------------------
 
 0:0  - 0:24   pattern
 0:0  - 0:24     body: disjunction
@@ -1153,7 +1145,7 @@ empty groups and lookarounds own their introducers and closers
 :cst
 ==================
 ()(?:)(?=)(?!)(?<=)(?<!)
----
+------------------
 
 0:0  - 0:24   pattern
 0:0  - 0:24     body: alternation
@@ -1193,7 +1185,7 @@ empty group bodies are absent in every group form
 :cst
 ==================
 ()(?:)(?<name>)(?ims:)(?-im:)
----
+------------------
 
 0:0  - 0:29   pattern
 0:0  - 0:29     body: disjunction
@@ -1258,7 +1250,7 @@ empty group bodies are absent in every group form
 :cst
 ==================
 ()(?:)(?<name>)(?ims:)(?-im:)
----
+------------------
 
 0:0  - 0:29   pattern
 0:0  - 0:29     body: disjunction
@@ -1323,7 +1315,7 @@ empty bodies preserve each group category
 ==================
 ()(?:)(?P<n>)\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -1341,7 +1333,7 @@ comment groups expose named content with UTF-8 ranges and omit empty content
 :cst
 ==================
 (?#é)(?#)
----
+------------------
 
 0:0  - 0:10   pattern
 0:0  - 0:6      comment_group
@@ -1363,7 +1355,7 @@ comment content skips an escaped parenthesis
 ==================
 (?#\)a)b\
 
----
+------------------
 
 (pattern
   (comment_group
@@ -1380,7 +1372,7 @@ an escaped backslash leaves the comment group closer structural
 ==================
 (?#a\\)b\
 
----
+------------------
 
 (pattern
   (comment_group
@@ -1397,7 +1389,7 @@ comment content can begin with a brace
 ==================
 (?#{} )a\
 
----
+------------------
 
 (pattern
   (comment_group
@@ -1416,7 +1408,7 @@ verbose comment skips an escaped newline
 b
 z)\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -1438,7 +1430,7 @@ an escaped backslash leaves the verbose comment newline structural
 (?x:#a\\
 b)\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -1460,7 +1452,9 @@ an unescaped group name cannot start with an ASCII digit
 :error
 ==================
 (?<0>a)
----
+------------------
+
+
 
 ==================
 group names cannot use hexadecimal character escapes
@@ -1470,7 +1464,9 @@ group names cannot use hexadecimal character escapes
 :error
 ==================
 (?<\x61>a)
----
+------------------
+
+
 
 ==================
 out-of-range code point escapes in group names require recovery
@@ -1480,7 +1476,9 @@ out-of-range code point escapes in group names require recovery
 :error
 ==================
 (?<\u0030>x)(?<\u{110000}>y)
----
+------------------
+
+
 
 ==================
 an extra closing parenthesis requires recovery before following text
@@ -1490,17 +1488,23 @@ an extra closing parenthesis requires recovery before following text
 :error
 ==================
 (a))b
----
+------------------
+
+
 
 ==================
 an opening parenthesis alone remains an incomplete construct
 :language(js_regex)
 :language(js_regex_u)
 :language(js_regex_v)
+:language(pcre2)
+:language(posix_ere)
 :error
 ==================
 (
----
+------------------
+
+
 
 ==================
 an unterminated capturing group requires recovery
@@ -1510,7 +1514,9 @@ an unterminated capturing group requires recovery
 :error
 ==================
 (ab
----
+------------------
+
+
 
 ==================
 a named group without its closing parenthesis requires recovery
@@ -1520,7 +1526,9 @@ a named group without its closing parenthesis requires recovery
 :error
 ==================
 (?<x>a
----
+------------------
+
+
 
 ==================
 a named group without its name terminator requires recovery
@@ -1530,7 +1538,9 @@ a named group without its name terminator requires recovery
 :error
 ==================
 (?<x)a|b
----
+------------------
+
+
 
 ==================
 an incomplete Unicode escape in a group name remains erroneous
@@ -1540,7 +1550,9 @@ an incomplete Unicode escape in a group name remains erroneous
 :error
 ==================
 (?<\u12>a)
----
+------------------
+
+
 
 ==================
 the real closer belongs to the inner group and the missing closer to the outer group
@@ -1550,4 +1562,780 @@ the real closer belongs to the inner group and the missing closer to the outer g
 :error
 ==================
 ((a)
----
+------------------
+
+
+
+==================
+PCRE2 noncapturing and atomic groups remain distinct
+:language(pcre2)
+==================
+(?:a)(?>b)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (non_capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (atomic_group
+        body: (alternation
+          (concatenation
+            (literal_character)))))))
+
+==================
+PCRE2 quote and Python capture spellings remain distinct
+:language(pcre2)
+==================
+(?'foo'a)(?P<bar>b)(?P=bar)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (named_capturing_group
+        name: (group_name)
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (named_capturing_group
+        name: (group_name)
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (backreference
+        group: (group_name)))))
+
+==================
+PCRE2 atomic and script run groups retain their kinds
+:language(pcre2)
+==================
+(*atomic:a)(*sr:b)(*asr:c)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (atomic_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (script_run_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (atomic_script_run_group
+        body: (alternation
+          (concatenation
+            (literal_character)))))))
+
+==================
+PCRE2 Unicode 17 names retain definitions and references
+:language(pcre2)
+==================
+(?<𐥀𑷠>a)\k<𐥀𑷠>(?&𐥀𑷠)(?(𐥀𑷠)b)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (named_capturing_group
+        name: (group_name)
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (backreference
+        group: (group_name))
+      (subroutine_call
+        group: (group_name))
+      (conditional_group
+        condition: (condition_name)
+        yes_pattern: (concatenation
+          (literal_character))))))
+
+==================
+Python escaped angle closer remains in the capture name
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+(?P<a\>>x)
+------------------
+
+0:0  - 0:10   pattern
+0:0  - 0:10     body: alternation
+0:0  - 0:10       concatenation
+0:0  - 0:10         named_capturing_group
+0:0  - 0:1            "("
+0:1  - 0:3            "?P"
+0:3  - 0:4            "<"
+0:4  - 0:7            name: group_name `a\\>`
+0:7  - 0:8            ">"
+0:8  - 0:9            body: alternation
+0:8  - 0:9              concatenation
+0:8  - 0:9                literal_character `x`
+0:9  - 0:10           ")"
+
+==================
+Python NUL remains inside a capture name
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+(?P<a b>x)
+------------------
+
+0:0  - 0:10   pattern
+0:0  - 0:10     body: alternation
+0:0  - 0:10       concatenation
+0:0  - 0:10         named_capturing_group
+0:0  - 0:1            "("
+0:1  - 0:3            "?P"
+0:3  - 0:4            "<"
+0:4  - 0:7            name: group_name `a\0b`
+0:7  - 0:8            ">"
+0:8  - 0:9            body: alternation
+0:8  - 0:9              concatenation
+0:8  - 0:9                literal_character `x`
+0:9  - 0:10           ")"
+
+==================
+posix_bre: unescaped parentheses follow the dialect
+:language(posix_bre)
+:cst
+==================
+(a))
+------------------
+
+0:0 - 0:4   basic_reg_exp
+0:0 - 0:4     bre_branch
+0:0 - 0:1       bre_expression
+0:0 - 0:1         simple_bre
+0:0 - 0:1           nondupl_bre
+0:0 - 0:1             one_char_or_coll_elem_bre
+0:0 - 0:1               ordinary_character `(`
+0:1 - 0:2       bre_expression
+0:1 - 0:2         simple_bre
+0:1 - 0:2           nondupl_bre
+0:1 - 0:2             one_char_or_coll_elem_bre
+0:1 - 0:2               ordinary_character `a`
+0:2 - 0:3       bre_expression
+0:2 - 0:3         simple_bre
+0:2 - 0:3           nondupl_bre
+0:2 - 0:3             one_char_or_coll_elem_bre
+0:2 - 0:3               ordinary_character `)`
+0:3 - 0:4       bre_expression
+0:3 - 0:4         simple_bre
+0:3 - 0:4           nondupl_bre
+0:3 - 0:4             one_char_or_coll_elem_bre
+0:3 - 0:4               ordinary_character `)`
+
+==================
+posix_bre: empty group keeps actual opening and closing
+:language(posix_bre)
+:cst
+==================
+\(\)
+------------------
+
+0:0 - 0:4   basic_reg_exp
+0:0 - 0:4     bre_branch
+0:0 - 0:4       bre_expression
+0:0 - 0:4         simple_bre
+0:0 - 0:4           nondupl_bre
+0:0 - 0:2             "\\("
+0:2 - 0:4             "\\)"
+
+==================
+posix_bre: empty group between literals
+:language(posix_bre)
+==================
+a\(\)b
+------------------
+
+(basic_reg_exp
+  (bre_branch
+    (bre_expression
+      (simple_bre
+        (nondupl_bre
+          (one_char_or_coll_elem_bre
+            (ordinary_character)))))
+    (bre_expression
+      (simple_bre
+        (nondupl_bre)))
+    (bre_expression
+      (simple_bre
+        (nondupl_bre
+          (one_char_or_coll_elem_bre
+            (ordinary_character)))))))
+
+==================
+posix_bre: nested empty groups
+:language(posix_bre)
+==================
+\(\(\)\)
+------------------
+
+(basic_reg_exp
+  (bre_branch
+    (bre_expression
+      (simple_bre
+        (nondupl_bre
+          expression: (basic_reg_exp
+            (bre_branch
+              (bre_expression
+                (simple_bre
+                  (nondupl_bre))))))))))
+
+==================
+posix_ere: unescaped parentheses follow the dialect
+:language(posix_ere)
+:cst
+==================
+(a))
+------------------
+
+0:0 - 0:4   extended_reg_exp
+0:0 - 0:4     ere_branch
+0:0 - 0:3       ere_expression
+0:0 - 0:1         "("
+0:1 - 0:2         expression: extended_reg_exp
+0:1 - 0:2           ere_branch
+0:1 - 0:2             ere_expression
+0:1 - 0:2               one_char_or_coll_elem_ere
+0:1 - 0:2                 ordinary_character `a`
+0:2 - 0:3         ")"
+0:3 - 0:4       ere_expression
+0:3 - 0:4         one_char_or_coll_elem_ere
+0:3 - 0:4           ordinary_character `)`
+
+==================
+posix_ere: empty group keeps actual opening and closing
+:language(posix_ere)
+:cst
+==================
+()
+------------------
+
+0:0 - 0:2   extended_reg_exp
+0:0 - 0:2     ere_branch
+0:0 - 0:2       ere_expression
+0:0 - 0:1         "("
+0:1 - 0:2         ")"
+
+==================
+posix_ere: empty group between literals
+:language(posix_ere)
+==================
+a()b
+------------------
+
+(extended_reg_exp
+  (ere_branch
+    (ere_expression
+      (one_char_or_coll_elem_ere
+        (ordinary_character)))
+    (ere_expression)
+    (ere_expression
+      (one_char_or_coll_elem_ere
+        (ordinary_character)))))
+
+==================
+posix_ere: nested empty groups
+:language(posix_ere)
+==================
+(())
+------------------
+
+(extended_reg_exp
+  (ere_branch
+    (ere_expression
+      expression: (extended_reg_exp
+        (ere_branch
+          (ere_expression))))))
+
+==================
+posix_ere: an empty group may form a nested branch
+:language(posix_ere)
+==================
+(a|())
+------------------
+
+(extended_reg_exp
+  (ere_branch
+    (ere_expression
+      expression: (extended_reg_exp
+        (ere_branch
+          (ere_expression
+            (one_char_or_coll_elem_ere
+              (ordinary_character))))
+        (ere_branch
+          (ere_expression))))))
+
+==================
+posix_ere: an unmatched close after an empty group remains literal
+:language(posix_ere)
+==================
+()a)
+------------------
+
+(extended_reg_exp
+  (ere_branch
+    (ere_expression)
+    (ere_expression
+      (one_char_or_coll_elem_ere
+        (ordinary_character)))
+    (ere_expression
+      (one_char_or_coll_elem_ere
+        (ordinary_character)))))
+
+==================
+posix_ere: an unmatched close after nested empty groups remains literal
+:language(posix_ere)
+==================
+(()))
+------------------
+
+(extended_reg_exp
+  (ere_branch
+    (ere_expression
+      expression: (extended_reg_exp
+        (ere_branch
+          (ere_expression))))
+    (ere_expression
+      (one_char_or_coll_elem_ere
+        (ordinary_character)))))
+
+==================
+js_regex: supplementary identifier 𐀀
+:language(js_regex)
+==================
+(?<𐀀>)(?<a𐀀>)
+------------------
+
+(pattern
+  body: (disjunction
+    (alternative
+      (term
+        operand: (extended_atom
+          (group_specifier
+            (group_name
+              name: (reg_exp_identifier_name
+                (reg_exp_identifier_start
+                  (unicode_surrogate_pair)))))))
+      (term
+        operand: (extended_atom
+          (group_specifier
+            (group_name
+              name: (reg_exp_identifier_name
+                (reg_exp_identifier_start
+                  (identifier_start_char
+                    (unicode_id_start)))
+                (reg_exp_identifier_part
+                  (unicode_surrogate_pair))))))))))
+
+==================
+js_regex: supplementary identifier 􏿿
+:language(js_regex)
+==================
+(?<􏿿>)(?<a􏿿>)
+------------------
+
+(pattern
+  body: (disjunction
+    (alternative
+      (term
+        operand: (extended_atom
+          (group_specifier
+            (group_name
+              name: (reg_exp_identifier_name
+                (reg_exp_identifier_start
+                  (unicode_surrogate_pair)))))))
+      (term
+        operand: (extended_atom
+          (group_specifier
+            (group_name
+              name: (reg_exp_identifier_name
+                (reg_exp_identifier_start
+                  (identifier_start_char
+                    (unicode_id_start)))
+                (reg_exp_identifier_part
+                  (unicode_surrogate_pair))))))))))
+
+==================
+supplementary identifier 𐀀
+:language(js_regex_u)
+:language(js_regex_v)
+==================
+(?<𐀀>)(?<a𐀀>)
+------------------
+
+(pattern
+  body: (disjunction
+    (alternative
+      (term
+        operand: (atom
+          (group_specifier
+            (group_name
+              name: (reg_exp_identifier_name
+                (reg_exp_identifier_start
+                  (identifier_start_char
+                    (unicode_id_start))))))))
+      (term
+        operand: (atom
+          (group_specifier
+            (group_name
+              name: (reg_exp_identifier_name
+                (reg_exp_identifier_start
+                  (identifier_start_char
+                    (unicode_id_start)))
+                (reg_exp_identifier_part
+                  (identifier_part_char
+                    (unicode_id_continue)))))))))))
+
+==================
+raw identifier characters respect the BMP boundary and supplementary extremes — "(?<￿>)(?<a￿>)"
+:language(js_regex)
+:language(js_regex_u)
+:language(js_regex_v)
+:error
+==================
+(?<￿>)(?<a￿>)
+------------------
+
+
+
+==================
+raw identifier characters respect the BMP boundary and supplementary extremes — "(?<􏿿>)(?<a􏿿>)"
+:language(js_regex_u)
+:language(js_regex_v)
+:error
+==================
+(?<􏿿>)(?<a􏿿>)
+------------------
+
+
+
+==================
+pcre2: PCRE2 group names use Unicode 17 letters and decimal digits — "(?<𑷠>a)"
+:language(pcre2)
+:error
+==================
+(?<𑷠>a)
+------------------
+
+
+
+==================
+pcre2: PCRE2 group names use Unicode 17 letters and decimal digits — "(?<á>b)"
+:language(pcre2)
+:error
+==================
+(?<á>b)
+------------------
+
+
+
+==================
+pcre2: PCRE2 group names use Unicode 17 letters and decimal digits — "(?<Ⅰ>a)"
+:language(pcre2)
+:error
+==================
+(?<Ⅰ>a)
+------------------
+
+
+
+==================
+pcre2: PCRE2 group names use Unicode 17 letters and decimal digits — "(?<a²>b)"
+:language(pcre2)
+:error
+==================
+(?<a²>b)
+------------------
+
+
+
+==================
+pcre2: PCRE2 rejects incomplete structures using standard recovery — "(?"
+:language(pcre2)
+:error
+==================
+(?
+------------------
+
+
+
+==================
+pcre2: PCRE2 rejects incomplete structures using standard recovery — "(?<name>"
+:language(pcre2)
+:error
+==================
+(?<name>
+------------------
+
+
+
+==================
+posix_ere: a group closer cannot supply a missing branch operand — "(|a)b)"
+:language(posix_ere)
+:error
+==================
+(|a)b)
+------------------
+
+
+
+==================
+posix_ere: a group closer cannot supply a missing branch operand — "(a|)b)"
+:language(posix_ere)
+:error
+==================
+(a|)b)
+------------------
+
+
+
+==================
+posix_ere: a group closer cannot supply a missing branch operand — "(|)b)"
+:language(posix_ere)
+:error
+==================
+(|)b)
+------------------
+
+
+
+==================
+posix_ere: a group closer cannot supply a missing branch operand — "(a||b)c)"
+:language(posix_ere)
+:error
+==================
+(a||b)c)
+------------------
+
+
+
+==================
+posix_ere: a group closer cannot supply a missing branch operand — "(a|)*b)"
+:language(posix_ere)
+:error
+==================
+(a|)*b)
+------------------
+
+
+
+==================
+posix_bre: malformed unclosed group uses standard recovery — "\\(a"
+:language(posix_bre)
+:error
+==================
+\(a
+------------------
+
+
+
+==================
+posix_bre: malformed group opener without a body or closer uses standard recovery — "\\("
+:language(posix_bre)
+:error
+==================
+\(
+------------------
+
+
+
+==================
+posix_bre: malformed unmatched group closer uses standard recovery — "a\\)"
+:language(posix_bre)
+:error
+==================
+a\)
+------------------
+
+
+
+==================
+posix_ere: malformed unclosed group uses standard recovery — "(a"
+:language(posix_ere)
+:error
+==================
+(a
+------------------
+
+
+
+==================
+python_re: malformed incomplete inline flag header uses standard recovery — "(?x a#b\nc|d\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+(?x a#b
+c|d
+
+------------------
+
+
+
+==================
+python_re: malformed layout cannot separate the noncapture introducer from its separator uses standard recovery — "(? :a)"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+(? :a)
+------------------
+
+
+
+==================
+python_re: malformed capturing group without a closing parenthesis uses standard recovery — "a(z|q\n"
+:language(python_re)
+:error
+==================
+a(z|q
+
+------------------
+
+
+
+==================
+python_re: malformed unterminated group uses standard recovery — "a(\\x41|z\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+a(\x41|z\
+
+------------------
+
+
+
+==================
+python_re: malformed capturing group without a name uses standard recovery — "(?P<>a)\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+(?P<>a)\
+
+------------------
+
+
+
+==================
+python_re: malformed capturing group without its closer uses standard recovery — "(a|b\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+(a|b\
+
+------------------
+
+
+
+==================
+python_re: malformed non-capturing group without its closer uses standard recovery — "(?:a\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+(?:a\
+
+------------------
+
+
+
+==================
+python_re: malformed named group without its closer uses standard recovery — "(?P<n>a\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+(?P<n>a\
+
+------------------
+
+
+
+==================
+python_re: malformed nested groups without their closers uses standard recovery — "((a\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+((a\
+
+------------------
+
+
+
+==================
+python_re: malformed named group without its name terminator uses standard recovery — "((?P<]a)|z\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+((?P<]a)|z\
+
+------------------
+
+
+
+==================
+python_re: malformed atomic group without its closer uses standard recovery — "(?>a\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+(?>a\
+
+------------------
+
+
+
+==================
+PCRE2 missing name or number in "(?<>a)"
+:language(pcre2)
+:error
+==================
+(?<>a)
+------------------
+
+
+
+==================
+python_re: EOF does not complete "(?-x:"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+(?-x:
+------------------
+
+
+
+==================
+python_re: EOF does not complete "(?-x:a"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+(?-x:a
+------------------
+
+
+
+==================
+python_re: EOF does not complete "(?-x:\u0000"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+(?-x: 
+------------------

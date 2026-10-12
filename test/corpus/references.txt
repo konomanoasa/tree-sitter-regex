@@ -4,7 +4,7 @@ numeric references use the total capture count including later captures
 :cst
 ==================
 \2(a)(b)\1
----
+------------------
 
 0:0  - 0:10   pattern
 0:0  - 0:10     body: disjunction
@@ -49,7 +49,7 @@ numeric references use the total capture count including later captures
 :cst
 ==================
 \2(a)(b)\1
----
+------------------
 
 0:0  - 0:10   pattern
 0:0  - 0:10     body: disjunction
@@ -93,7 +93,7 @@ named references keep the same delimiter ownership in all JavaScript modes
 :cst
 ==================
 \k<x>(?<x>a)
----
+------------------
 
 0:0  - 0:12   pattern
 0:0  - 0:12     body: disjunction
@@ -137,7 +137,7 @@ named references keep the same delimiter ownership in all JavaScript modes
 :cst
 ==================
 \k<x>(?<x>a)
----
+------------------
 
 0:0  - 0:12   pattern
 0:0  - 0:12     body: disjunction
@@ -181,7 +181,7 @@ named reference introducer and operator own separate source ranges
 :cst
 ==================
 (?P=name)
----
+------------------
 
 0:0 - 0:9   pattern
 0:0 - 0:9     body: alternation
@@ -199,7 +199,7 @@ named references preserve forward and escaped names
 :cst
 ==================
 \k<x>(?<x>a)\k<\u0078>?
----
+------------------
 
 0:0  - 0:23   pattern
 0:0  - 0:23     body: disjunction
@@ -265,7 +265,7 @@ named references preserve forward and escaped names
 :cst
 ==================
 \k<x>(?<x>a)\k<\u0078>?
----
+------------------
 
 0:0  - 0:23   pattern
 0:0  - 0:23     body: disjunction
@@ -331,7 +331,7 @@ escaped group names and named references retain their own delimiters
 :cst
 ==================
 (?<\u{61}>a)\k<a>
----
+------------------
 
 0:0  - 0:17   pattern
 0:0  - 0:17     body: disjunction
@@ -381,7 +381,7 @@ lookarounds noncapturing groups and modifier groups do not increase the capture 
 :cst
 ==================
 \1(?:)(?=)(?!)(?<=)(?<!)(?i:)
----
+------------------
 
 0:0  - 0:29   pattern
 0:0  - 0:29     body: disjunction
@@ -441,7 +441,7 @@ captures inside every lookaround and modifier body contribute to the total
 :cst
 ==================
 \5\6(?=(a))(?!(b))(?<=(c))(?<!(d))(?i:(e))
----
+------------------
 
 0:0  - 0:42   pattern
 0:0  - 0:42     body: disjunction
@@ -561,7 +561,7 @@ named captures in separate alternatives also contribute to numeric classificatio
 :cst
 ==================
 \2(?<x>a)|(?<x>b)
----
+------------------
 
 0:0  - 0:17   pattern
 0:0  - 0:17     body: disjunction
@@ -620,7 +620,7 @@ named captures in separate alternatives also contribute to numeric classificatio
 :cst
 ==================
 \2(?<x>a)|(?<x>b)
----
+------------------
 
 0:0  - 0:17   pattern
 0:0  - 0:17     body: disjunction
@@ -678,7 +678,7 @@ without named captures k is an identity escape inside and outside classes
 :cst
 ==================
 \k<x>[\k]\k
----
+------------------
 
 0:0  - 0:11   pattern
 0:0  - 0:11     body: disjunction
@@ -732,7 +732,7 @@ a named group spelling in a class cannot enable named references
 :cst
 ==================
 \k<x>[(?<x>)]
----
+------------------
 
 0:0  - 0:13   pattern
 0:0  - 0:13     body: disjunction
@@ -785,7 +785,7 @@ an escaped named group spelling cannot enable named references
 :cst
 ==================
 \k<x>\(\?<x>\)
----
+------------------
 
 0:0  - 0:14   pattern
 0:0  - 0:14     body: disjunction
@@ -853,7 +853,7 @@ escaped parentheses do not create captures
 :cst
 ==================
 \1\(a\)
----
+------------------
 
 0:0 - 0:7   pattern
 0:0 - 0:7     body: disjunction
@@ -893,7 +893,7 @@ parentheses inside a basic class do not create captures
 :cst
 ==================
 \1[(a)]
----
+------------------
 
 0:0 - 0:7   pattern
 0:0 - 0:7     body: disjunction
@@ -928,7 +928,7 @@ encoded parentheses do not create source captures
 :cst
 ==================
 \1\u0028\x28
----
+------------------
 
 0:0  - 0:12   pattern
 0:0  - 0:12     body: disjunction
@@ -969,7 +969,7 @@ an escaped backslash leaves the following parenthesis available to open a captur
 :cst
 ==================
 \1\\(a)
----
+------------------
 
 0:0 - 0:7   pattern
 0:0 - 0:7     body: disjunction
@@ -1006,7 +1006,7 @@ an escaped backslash leaves the following parenthesis available to open a captur
 :cst
 ==================
 \1\\(a)
----
+------------------
 
 0:0 - 0:7   pattern
 0:0 - 0:7     body: disjunction
@@ -1041,7 +1041,7 @@ the entire decimal value is tested before falling back to octal
 :cst
 ==================
 \11\18(a)
----
+------------------
 
 0:0 - 0:9   pattern
 0:0 - 0:9     body: disjunction
@@ -1083,7 +1083,7 @@ eight becomes a reference only when all digits fit the total capture count
 :cst
 ==================
 \8\81\9()()()()()()()()
----
+------------------
 
 0:0  - 0:23   pattern
 0:0  - 0:23     body: disjunction
@@ -1153,7 +1153,7 @@ nine and multidigit decimal references are recognized with enough captures
 :cst
 ==================
 \9\10()()()()()()()()()()
----
+------------------
 
 0:0  - 0:25   pattern
 0:0  - 0:25     body: disjunction
@@ -1219,7 +1219,7 @@ references octal prefixes and remaining digits own distinct source ranges
 :cst
 ==================
 \1(a)\1234\8
----
+------------------
 
 0:0  - 0:12   pattern
 0:0  - 0:12     body: disjunction
@@ -1269,7 +1269,7 @@ numeric references retain maximal digits without resolving captures in Unicode m
 :cst
 ==================
 \1(a)\1234+
----
+------------------
 
 0:0  - 0:11   pattern
 0:0  - 0:11     body: disjunction
@@ -1310,7 +1310,7 @@ named reference classification does not resolve the requested name
 :cst
 ==================
 \k<other>(?<x>a)
----
+------------------
 
 0:0  - 0:16   pattern
 0:0  - 0:16     body: disjunction
@@ -1366,7 +1366,7 @@ named reference classification does not resolve the requested name
 :cst
 ==================
 \k<other>(?<x>a)
----
+------------------
 
 0:0  - 0:16   pattern
 0:0  - 0:16     body: disjunction
@@ -1422,7 +1422,7 @@ reference spelling remains structural without semantic validation
 ==================
 (?P<a-b>x)(?P=a-b)(?(12x)y|z)(?(000)q)\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -1453,7 +1453,7 @@ group and reference payloads can begin with a brace
 ==================
 (?P<{>a)(?P={})(?({)a|b)\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -1479,7 +1479,7 @@ an escaped class closer keeps apparent captures inside the class
 :cst
 ==================
 \1[^\](a)]
----
+------------------
 
 0:0  - 0:10   pattern
 0:0  - 0:10     body: disjunction
@@ -1522,7 +1522,7 @@ the first unescaped closer ends an empty class before a capture
 :cst
 ==================
 \1[]()
----
+------------------
 
 0:0 - 0:6   pattern
 0:0 - 0:6     body: disjunction
@@ -1550,7 +1550,7 @@ the first unescaped closer ends an empty class before a capture
 :cst
 ==================
 \1[]()
----
+------------------
 
 0:0 - 0:6   pattern
 0:0 - 0:6     body: disjunction
@@ -1577,7 +1577,7 @@ an incomplete control escape does not hide the following capture
 :cst
 ==================
 \1\c(a)
----
+------------------
 
 0:0 - 0:7   pattern
 0:0 - 0:7     body: disjunction
@@ -1613,7 +1613,9 @@ numeric references require recovery in Unicode classes
 :error
 ==================
 [\1]
----
+------------------
+
+
 
 ==================
 named references require recovery in Unicode classes
@@ -1622,7 +1624,9 @@ named references require recovery in Unicode classes
 :error
 ==================
 [\k<x>]
----
+------------------
+
+
 
 ==================
 a named capture disables the k identity escape inside a class
@@ -1632,7 +1636,9 @@ a named capture disables the k identity escape inside a class
 :error
 ==================
 [\k](?<x>a)
----
+------------------
+
+
 
 ==================
 a named capture requires the body k escape to introduce a group name
@@ -1642,7 +1648,9 @@ a named capture requires the body k escape to introduce a group name
 :error
 ==================
 \k(?<x>a)
----
+------------------
+
+
 
 ==================
 an unexpected closer before a numeric reference requires recovery
@@ -1652,7 +1660,9 @@ an unexpected closer before a numeric reference requires recovery
 :error
 ==================
 )\1(a)
----
+------------------
+
+
 
 ==================
 an unclosed named reference before an alternative requires recovery
@@ -1661,7 +1671,9 @@ an unclosed named reference before an alternative requires recovery
 :error
 ==================
 (\k<x)|b
----
+------------------
+
+
 
 ==================
 a malformed reference before a complete named capture requires recovery
@@ -1671,7 +1683,9 @@ a malformed reference before a complete named capture requires recovery
 :error
 ==================
 (\k<x)(?<x>a)
----
+------------------
+
+
 
 ==================
 a numeric reference before an unclosed capture requires recovery
@@ -1679,7 +1693,9 @@ a numeric reference before an unclosed capture requires recovery
 :error
 ==================
 \1(
----
+------------------
+
+
 
 ==================
 a numeric reference before an incomplete group introducer requires recovery
@@ -1687,7 +1703,9 @@ a numeric reference before an incomplete group introducer requires recovery
 :error
 ==================
 \1(?
----
+------------------
+
+
 
 ==================
 a named reference before an incomplete named group requires recovery
@@ -1695,7 +1713,9 @@ a named reference before an incomplete named group requires recovery
 :error
 ==================
 \k<x>(?<
----
+------------------
+
+
 
 ==================
 a numeric reference before an unclosed named capture requires recovery
@@ -1705,7 +1725,9 @@ a numeric reference before an unclosed named capture requires recovery
 :error
 ==================
 \1(?<x>a
----
+------------------
+
+
 
 ==================
 apparent captures inside an unclosed class require recovery
@@ -1713,4 +1735,611 @@ apparent captures inside an unclosed class require recovery
 :error
 ==================
 \1[(a)
----
+------------------
+
+
+
+==================
+Python escaped closers remain in names until the next unescaped delimiter
+:language(python_re)
+:language(python_re_verbose)
+==================
+(?P<a\>>x)(?P=a\))(?(a\))b)\N{\}}
+------------------
+
+(pattern (alternation (concatenation (named_capturing_group (group_name) (alternation (concatenation (literal_character)))) (named_backreference (group_name)) (conditional_group (group_name) (concatenation (literal_character))) (named_unicode_escape (unicode_character_name)))))
+
+==================
+PCRE2 named capture and reference keep their names
+:language(pcre2)
+==================
+(?<foo>a)\k<foo>
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (named_capturing_group
+        name: (group_name)
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (backreference
+        group: (group_name)))))
+
+==================
+PCRE2 branch reset with too few captures leaves an octal escape
+:language(pcre2)
+==================
+(?|(a)|(b)(c))\11
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (branch_reset_group
+        body: (alternation
+          (concatenation
+            (capturing_group
+              body: (alternation
+                (concatenation
+                  (literal_character)))))
+          (concatenation
+            (capturing_group
+              body: (alternation
+                (concatenation
+                  (literal_character))))
+            (capturing_group
+              body: (alternation
+                (concatenation
+                  (literal_character)))))))
+      (octal_escape
+        digits: (octal_digits)))))
+
+==================
+PCRE2 backreference spellings retain numbers and names
+:language(pcre2)
+==================
+\g{-1}\g2\g{name}\k'name'
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (backreference
+        group: (group_number))
+      (backreference
+        group: (group_number))
+      (backreference
+        group: (group_name))
+      (backreference
+        group: (group_name)))))
+
+==================
+PCRE2 subroutine calls preserve their source forms
+:language(pcre2)
+==================
+(?R)(?0)(?-1)(?+2)(?&name)(?P>name)\g<name>\g'1'
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (subroutine_call)
+      (subroutine_call
+        group: (group_number))
+      (subroutine_call
+        group: (group_number))
+      (subroutine_call
+        group: (group_number))
+      (subroutine_call
+        group: (group_name))
+      (subroutine_call
+        group: (group_name))
+      (subroutine_call
+        group: (group_name))
+      (subroutine_call
+        group: (group_number)))))
+
+==================
+PCRE2 recursive calls retain their group lists
+:language(pcre2)
+==================
+(?R(1,<name>,'other'))
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (subroutine_call
+        (group_list
+          (group_number)
+          (group_name)
+          (group_name))))))
+
+==================
+PCRE2 a three-digit octal escape wins over an eleven-capture prefix
+:language(pcre2)
+==================
+(a)(a)(a)(a)(a)(a)(a)(a)(a)(a)(a)\118
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (octal_escape
+        digits: (octal_digits))
+      (literal_character))))
+
+==================
+PCRE2 two-digit backreference uses eleven preceding captures
+:language(pcre2)
+==================
+(a)(a)(a)(a)(a)(a)(a)(a)(a)(a)(a)\11
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (numeric_backreference
+        group: (group_number)))))
+
+==================
+PCRE2 branch reset counts the largest branch of 11 captures
+:language(pcre2)
+==================
+(?|()()()()()()()()()()()|())\11
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (branch_reset_group
+        body: (alternation
+          (concatenation
+            (capturing_group)
+            (capturing_group)
+            (capturing_group)
+            (capturing_group)
+            (capturing_group)
+            (capturing_group)
+            (capturing_group)
+            (capturing_group)
+            (capturing_group)
+            (capturing_group)
+            (capturing_group))
+          (concatenation
+            (capturing_group))))
+      (numeric_backreference
+        group: (group_number)))))
+
+==================
+PCRE2 branch reset counts the largest branch of 10 captures
+:language(pcre2)
+==================
+(?|()()()()()()()()()()|())\11
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (branch_reset_group
+        body: (alternation
+          (concatenation
+            (capturing_group)
+            (capturing_group)
+            (capturing_group)
+            (capturing_group)
+            (capturing_group)
+            (capturing_group)
+            (capturing_group)
+            (capturing_group)
+            (capturing_group)
+            (capturing_group))
+          (concatenation
+            (capturing_group))))
+      (octal_escape
+        digits: (octal_digits)))))
+
+==================
+PCRE2 three-digit reference uses 118 preceding captures
+:language(pcre2)
+==================
+()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()\118
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (capturing_group)
+      (numeric_backreference
+        group: (group_number)))))
+
+==================
+Python escaped parenthesis remains in the reference name
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+(?P=a\))
+------------------
+
+0:0 - 0:8   pattern
+0:0 - 0:8     body: alternation
+0:0 - 0:8       concatenation
+0:0 - 0:8         named_backreference
+0:0 - 0:1           "("
+0:1 - 0:3           "?P"
+0:3 - 0:4           "="
+0:4 - 0:7           name: group_name `a\\)`
+0:7 - 0:8           ")"
+
+==================
+Python NUL remains inside a reference name
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+(?P=a b)
+------------------
+
+0:0 - 0:8   pattern
+0:0 - 0:8     body: alternation
+0:0 - 0:8       concatenation
+0:0 - 0:8         named_backreference
+0:0 - 0:1           "("
+0:1 - 0:3           "?P"
+0:3 - 0:4           "="
+0:4 - 0:7           name: group_name `a\0b`
+0:7 - 0:8           ")"
+
+==================
+posix_bre: empty capture may be referenced
+:language(posix_bre)
+==================
+\(\)\1
+------------------
+
+(basic_reg_exp
+  (bre_branch
+    (bre_expression
+      (simple_bre
+        (nondupl_bre)))
+    (bre_expression
+      (simple_bre
+        (nondupl_bre
+          (backreference))))))
+
+==================
+PCRE2 name and decimal leaves preserve nonempty source
+:language(pcre2)
+:cst
+==================
+(?<name>a){012}(?(VERSION=1001.01001)b)\k<name>
+------------------
+
+0:0  - 0:47   pattern
+0:0  - 0:47     body: alternation
+0:0  - 0:47       concatenation
+0:0  - 0:15         repetition
+0:0  - 0:10           operand: named_capturing_group
+0:0  - 0:1              "("
+0:1  - 0:2              "?"
+0:2  - 0:3              "<"
+0:3  - 0:7              name: group_name `name`
+0:7  - 0:8              ">"
+0:8  - 0:9              body: alternation
+0:8  - 0:9                concatenation
+0:8  - 0:9                  literal_character `a`
+0:9  - 0:10             ")"
+0:10 - 0:15           quantifier: quantifier
+0:10 - 0:11             "{"
+0:11 - 0:14             count: decimal_digits `012`
+0:14 - 0:15             "}"
+0:15 - 0:39         conditional_group
+0:15 - 0:16           "("
+0:16 - 0:17           "?"
+0:17 - 0:18           "("
+0:18 - 0:36           condition: version_condition
+0:18 - 0:25             "VERSION"
+0:25 - 0:26             "="
+0:26 - 0:30             decimal_digits `1001`
+0:30 - 0:31             "."
+0:31 - 0:36             decimal_digits `01001`
+0:36 - 0:37           ")"
+0:37 - 0:38           yes_pattern: concatenation
+0:37 - 0:38             literal_character `b`
+0:38 - 0:39           ")"
+0:39 - 0:47         backreference
+0:39 - 0:41           "\\k"
+0:41 - 0:42           "<"
+0:42 - 0:46           group: group_name `name`
+0:46 - 0:47           ">"
+
+==================
+pcre2: PCRE2 rejects incomplete structures using standard recovery — "\\k<1>"
+:language(pcre2)
+:error
+==================
+\k<1>
+------------------
+
+
+
+==================
+pcre2: PCRE2 rejects incomplete structures using standard recovery — "\\k'-1'"
+:language(pcre2)
+:error
+==================
+\k'-1'
+------------------
+
+
+
+==================
+pcre2: PCRE2 rejects incomplete structures using standard recovery — "\\k{ +1 }"
+:language(pcre2)
+:error
+==================
+\k{ +1 }
+------------------
+
+
+
+==================
+posix_ere: malformed backreference extension uses standard recovery — "\\1"
+:language(posix_ere)
+:error
+==================
+\1
+------------------
+
+
+
+==================
+python_re: malformed layout cannot separate the named reference introducer from its operator uses standard recovery — "(?P =name)"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+(?P =name)
+------------------
+
+
+
+==================
+python_re: malformed empty named backreference uses standard recovery — "(?P=)\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+(?P=)\
+
+------------------
+
+
+
+==================
+python_re: malformed unterminated named reference uses standard recovery — "(?P=name|z\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+(?P=name|z\
+
+------------------
+
+
+
+==================
+PCRE2 missing name or number in "\\k<>"
+:language(pcre2)
+:error
+==================
+\k<>
+------------------

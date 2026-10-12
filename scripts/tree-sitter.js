@@ -45,7 +45,12 @@ const grammars = Object.freeze(
       }),
   ),
 );
-const sharedSources = ["javascript/common", "posix/common", "python/common"];
+const grammarDependencies = [
+  "javascript/common",
+  "pcre2/unicode.js",
+  "posix/common",
+  "python/common",
+];
 const missingCliMessage = "Tree-sitter CLI is missing; run npm ci.";
 
 function treeSitterExecutable() {
@@ -229,7 +234,7 @@ function testCorpus(arguments_) {
     copyFiles(
       [
         "package.json",
-        ...sharedSources,
+        ...grammarDependencies,
         ...grammars.flatMap(({ path, externalFiles, highlights }) => [
           join(path, "grammar.js"),
           join(path, "src"),
@@ -381,8 +386,8 @@ export {
   copyFiles,
   createTreeSitter,
   generateParsers,
+  grammarDependencies,
   grammars,
   packageName,
   root,
-  sharedSources,
 };

@@ -1,11 +1,40 @@
 ==================
+PCRE2 property names allow loose spacing before negation and the L& name
+:language(pcre2)
+==================
+\p{L&}\P{ ^ Bi-di class = Al }\p{
+^L
+u}
+------------------
+
+(pattern (alternation (concatenation (unicode_property (property_escape) (property_name)) (unicode_property (property_escape) (property_ignored) (property_name)) (unicode_property (property_escape) (property_ignored) (property_name)))))
+
+==================
+PCRE2 x letters enable class spacing only as an adjacent pair
+:language(pcre2)
+==================
+(?^)(?xix)[ a](?xx)[ b]
+------------------
+
+(pattern (alternation (concatenation (global_flags) (global_flags (flag_set)) (character_class (class_character) (class_character)) (global_flags (flag_set)) (character_class (verbose_whitespace) (class_character)))))
+
+==================
+PCRE2 an empty disabling list does not create an empty flag set
+:language(pcre2)
+==================
+(?-)(?i-)(?-:a)
+------------------
+
+(pattern (alternation (concatenation (global_flags) (global_flags (flag_set)) (scoped_flags_group (alternation (concatenation (literal_character)))))))
+
+==================
 normal mode retains spaces comments and newlines
 :language(python_re)
 ==================
 a b#c
 d
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -26,7 +55,7 @@ initial verbose mode retains ignored source as layout
 a b#c
 d
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -47,7 +76,7 @@ completed global flags change the remaining prefix mode
 (?#p)(?i)(?x) a#c
 d
 
----
+------------------
 
 (pattern
   (comment_group
@@ -72,7 +101,7 @@ scoped x enable restores normal mode
 (?x:a b#c
 d)e #f
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -100,7 +129,7 @@ scoped x disable restores verbose mode
 (?-x:a b#c)d #e
 f
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -127,7 +156,7 @@ nested modifier groups preserve enable disable and body fields
 :cst
 ==================
 (?im-s:a(?s-i:b)c)
----
+------------------
 
 0:0  - 0:18   pattern
 0:0  - 0:18     body: disjunction
@@ -179,7 +208,7 @@ nested modifier groups preserve enable disable and body fields
 :cst
 ==================
 (?im-s:a(?s-i:b)c)
----
+------------------
 
 0:0  - 0:18   pattern
 0:0  - 0:18     body: disjunction
@@ -231,7 +260,7 @@ nested scoped modes restore in stack order
 (?x:a(?-x:b c#d)e #f
 )g #h
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -266,7 +295,7 @@ modifier consistency is left to the consumer
 :cst
 ==================
 (?ii-i:a)(?-:)
----
+------------------
 
 0:0  - 0:14   pattern
 0:0  - 0:14     body: disjunction
@@ -304,7 +333,7 @@ modifier consistency is left to the consumer
 :cst
 ==================
 (?ii-i:a)(?-:)
----
+------------------
 
 0:0  - 0:14   pattern
 0:0  - 0:14     body: disjunction
@@ -341,7 +370,7 @@ modifier spelling remains structural before flag validity checks
 :cst
 ==================
 (?ii-m:x)(?-:)
----
+------------------
 
 0:0  - 0:14   pattern
 0:0  - 0:14     body: disjunction
@@ -379,7 +408,7 @@ modifier spelling remains structural before flag validity checks
 :cst
 ==================
 (?ii-m:x)(?-:)
----
+------------------
 
 0:0  - 0:14   pattern
 0:0  - 0:14     body: disjunction
@@ -416,7 +445,7 @@ x enabled and disabled together keeps normal mode
 ==================
 (?x-x:a b)c
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -438,7 +467,7 @@ x enabled and disabled together keeps verbose mode
 ==================
 (?x-x:a b)c
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -462,7 +491,9 @@ modifier groups accept only i m and s
 :error
 ==================
 (?x:a)
----
+------------------
+
+
 
 ==================
 an incomplete modifier group requires recovery
@@ -472,7 +503,9 @@ an incomplete modifier group requires recovery
 :error
 ==================
 (?i:
----
+------------------
+
+
 
 ==================
 nested modifier groups require all closing parentheses
@@ -482,4 +515,1067 @@ nested modifier groups require all closing parentheses
 :error
 ==================
 (?i:a(?-m:b)
----
+------------------
+
+
+
+==================
+PCRE2 scoped verbose mode restores literal spaces
+:language(pcre2)
+==================
+(?x:a b)c d
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (scoped_flags_group
+        (flag_set)
+        body: (alternation
+          (concatenation
+            (literal_character)
+            (verbose_whitespace)
+            (literal_character))))
+      (literal_character)
+      (literal_character)
+      (literal_character))))
+
+==================
+PCRE2 start options determine subsequent comment layout
+:language(pcre2)
+==================
+(*UTF)(*UCP)(*LIMIT_MATCH=42)(*ANYCRLF)(?x)# helloa
+------------------
+
+(pattern
+  (start_option
+    name: (option_name))
+  (start_option
+    name: (option_name))
+  (start_option
+    name: (option_name)
+    value: (decimal_digits))
+  (start_option
+    name: (option_name))
+  body: (alternation
+    (concatenation
+      (global_flags
+        (flag_set))
+      (verbose_comment)
+      (literal_character))))
+
+==================
+PCRE2 LIMIT_MATCH preserves decimal value 0
+:language(pcre2)
+:cst
+==================
+(*LIMIT_MATCH=0)
+------------------
+
+0:0  - 0:16   pattern
+0:0  - 0:16     start_option
+0:0  - 0:1        "("
+0:1  - 0:2        "*"
+0:2  - 0:13       name: option_name `LIMIT_MATCH`
+0:13 - 0:14       "="
+0:14 - 0:15       value: decimal_digits `0`
+0:15 - 0:16       ")"
+
+==================
+PCRE2 LIMIT_MATCH preserves decimal value 2147483648
+:language(pcre2)
+:cst
+==================
+(*LIMIT_MATCH=2147483648)
+------------------
+
+0:0  - 0:25   pattern
+0:0  - 0:25     start_option
+0:0  - 0:1        "("
+0:1  - 0:2        "*"
+0:2  - 0:13       name: option_name `LIMIT_MATCH`
+0:13 - 0:14       "="
+0:14 - 0:24       value: decimal_digits `2147483648`
+0:24 - 0:25       ")"
+
+==================
+PCRE2 LIMIT_MATCH preserves decimal value 4294967295
+:language(pcre2)
+:cst
+==================
+(*LIMIT_MATCH=4294967295)
+------------------
+
+0:0  - 0:25   pattern
+0:0  - 0:25     start_option
+0:0  - 0:1        "("
+0:1  - 0:2        "*"
+0:2  - 0:13       name: option_name `LIMIT_MATCH`
+0:13 - 0:14       "="
+0:14 - 0:24       value: decimal_digits `4294967295`
+0:24 - 0:25       ")"
+
+==================
+PCRE2 LIMIT_MATCH preserves decimal value 4294967296
+:language(pcre2)
+:cst
+==================
+(*LIMIT_MATCH=4294967296)
+------------------
+
+0:0  - 0:25   pattern
+0:0  - 0:25     start_option
+0:0  - 0:1        "("
+0:1  - 0:2        "*"
+0:2  - 0:13       name: option_name `LIMIT_MATCH`
+0:13 - 0:14       "="
+0:14 - 0:24       value: decimal_digits `4294967296`
+0:24 - 0:25       ")"
+
+==================
+PCRE2 LIMIT_MATCH preserves decimal value 99999999999999999999
+:language(pcre2)
+:cst
+==================
+(*LIMIT_MATCH=99999999999999999999)
+------------------
+
+0:0  - 0:35   pattern
+0:0  - 0:35     start_option
+0:0  - 0:1        "("
+0:1  - 0:2        "*"
+0:2  - 0:13       name: option_name `LIMIT_MATCH`
+0:13 - 0:14       "="
+0:14 - 0:34       value: decimal_digits `99999999999999999999`
+0:34 - 0:35       ")"
+
+==================
+PCRE2 LIMIT_DEPTH preserves decimal value 0
+:language(pcre2)
+:cst
+==================
+(*LIMIT_DEPTH=0)
+------------------
+
+0:0  - 0:16   pattern
+0:0  - 0:16     start_option
+0:0  - 0:1        "("
+0:1  - 0:2        "*"
+0:2  - 0:13       name: option_name `LIMIT_DEPTH`
+0:13 - 0:14       "="
+0:14 - 0:15       value: decimal_digits `0`
+0:15 - 0:16       ")"
+
+==================
+PCRE2 LIMIT_DEPTH preserves decimal value 2147483648
+:language(pcre2)
+:cst
+==================
+(*LIMIT_DEPTH=2147483648)
+------------------
+
+0:0  - 0:25   pattern
+0:0  - 0:25     start_option
+0:0  - 0:1        "("
+0:1  - 0:2        "*"
+0:2  - 0:13       name: option_name `LIMIT_DEPTH`
+0:13 - 0:14       "="
+0:14 - 0:24       value: decimal_digits `2147483648`
+0:24 - 0:25       ")"
+
+==================
+PCRE2 LIMIT_DEPTH preserves decimal value 4294967295
+:language(pcre2)
+:cst
+==================
+(*LIMIT_DEPTH=4294967295)
+------------------
+
+0:0  - 0:25   pattern
+0:0  - 0:25     start_option
+0:0  - 0:1        "("
+0:1  - 0:2        "*"
+0:2  - 0:13       name: option_name `LIMIT_DEPTH`
+0:13 - 0:14       "="
+0:14 - 0:24       value: decimal_digits `4294967295`
+0:24 - 0:25       ")"
+
+==================
+PCRE2 LIMIT_DEPTH preserves decimal value 4294967296
+:language(pcre2)
+:cst
+==================
+(*LIMIT_DEPTH=4294967296)
+------------------
+
+0:0  - 0:25   pattern
+0:0  - 0:25     start_option
+0:0  - 0:1        "("
+0:1  - 0:2        "*"
+0:2  - 0:13       name: option_name `LIMIT_DEPTH`
+0:13 - 0:14       "="
+0:14 - 0:24       value: decimal_digits `4294967296`
+0:24 - 0:25       ")"
+
+==================
+PCRE2 LIMIT_DEPTH preserves decimal value 99999999999999999999
+:language(pcre2)
+:cst
+==================
+(*LIMIT_DEPTH=99999999999999999999)
+------------------
+
+0:0  - 0:35   pattern
+0:0  - 0:35     start_option
+0:0  - 0:1        "("
+0:1  - 0:2        "*"
+0:2  - 0:13       name: option_name `LIMIT_DEPTH`
+0:13 - 0:14       "="
+0:14 - 0:34       value: decimal_digits `99999999999999999999`
+0:34 - 0:35       ")"
+
+==================
+PCRE2 LIMIT_HEAP preserves decimal value 0
+:language(pcre2)
+:cst
+==================
+(*LIMIT_HEAP=0)
+------------------
+
+0:0  - 0:15   pattern
+0:0  - 0:15     start_option
+0:0  - 0:1        "("
+0:1  - 0:2        "*"
+0:2  - 0:12       name: option_name `LIMIT_HEAP`
+0:12 - 0:13       "="
+0:13 - 0:14       value: decimal_digits `0`
+0:14 - 0:15       ")"
+
+==================
+PCRE2 LIMIT_HEAP preserves decimal value 2147483648
+:language(pcre2)
+:cst
+==================
+(*LIMIT_HEAP=2147483648)
+------------------
+
+0:0  - 0:24   pattern
+0:0  - 0:24     start_option
+0:0  - 0:1        "("
+0:1  - 0:2        "*"
+0:2  - 0:12       name: option_name `LIMIT_HEAP`
+0:12 - 0:13       "="
+0:13 - 0:23       value: decimal_digits `2147483648`
+0:23 - 0:24       ")"
+
+==================
+PCRE2 LIMIT_HEAP preserves decimal value 4294967295
+:language(pcre2)
+:cst
+==================
+(*LIMIT_HEAP=4294967295)
+------------------
+
+0:0  - 0:24   pattern
+0:0  - 0:24     start_option
+0:0  - 0:1        "("
+0:1  - 0:2        "*"
+0:2  - 0:12       name: option_name `LIMIT_HEAP`
+0:12 - 0:13       "="
+0:13 - 0:23       value: decimal_digits `4294967295`
+0:23 - 0:24       ")"
+
+==================
+PCRE2 LIMIT_HEAP preserves decimal value 4294967296
+:language(pcre2)
+:cst
+==================
+(*LIMIT_HEAP=4294967296)
+------------------
+
+0:0  - 0:24   pattern
+0:0  - 0:24     start_option
+0:0  - 0:1        "("
+0:1  - 0:2        "*"
+0:2  - 0:12       name: option_name `LIMIT_HEAP`
+0:12 - 0:13       "="
+0:13 - 0:23       value: decimal_digits `4294967296`
+0:23 - 0:24       ")"
+
+==================
+PCRE2 LIMIT_HEAP preserves decimal value 99999999999999999999
+:language(pcre2)
+:cst
+==================
+(*LIMIT_HEAP=99999999999999999999)
+------------------
+
+0:0  - 0:34   pattern
+0:0  - 0:34     start_option
+0:0  - 0:1        "("
+0:1  - 0:2        "*"
+0:2  - 0:12       name: option_name `LIMIT_HEAP`
+0:12 - 0:13       "="
+0:13 - 0:33       value: decimal_digits `99999999999999999999`
+0:33 - 0:34       ")"
+
+==================
+PCRE2 LIMIT_RECURSION preserves decimal value 0
+:language(pcre2)
+:cst
+==================
+(*LIMIT_RECURSION=0)
+------------------
+
+0:0  - 0:20   pattern
+0:0  - 0:20     start_option
+0:0  - 0:1        "("
+0:1  - 0:2        "*"
+0:2  - 0:17       name: option_name `LIMIT_RECURSION`
+0:17 - 0:18       "="
+0:18 - 0:19       value: decimal_digits `0`
+0:19 - 0:20       ")"
+
+==================
+PCRE2 LIMIT_RECURSION preserves decimal value 2147483648
+:language(pcre2)
+:cst
+==================
+(*LIMIT_RECURSION=2147483648)
+------------------
+
+0:0  - 0:29   pattern
+0:0  - 0:29     start_option
+0:0  - 0:1        "("
+0:1  - 0:2        "*"
+0:2  - 0:17       name: option_name `LIMIT_RECURSION`
+0:17 - 0:18       "="
+0:18 - 0:28       value: decimal_digits `2147483648`
+0:28 - 0:29       ")"
+
+==================
+PCRE2 LIMIT_RECURSION preserves decimal value 4294967295
+:language(pcre2)
+:cst
+==================
+(*LIMIT_RECURSION=4294967295)
+------------------
+
+0:0  - 0:29   pattern
+0:0  - 0:29     start_option
+0:0  - 0:1        "("
+0:1  - 0:2        "*"
+0:2  - 0:17       name: option_name `LIMIT_RECURSION`
+0:17 - 0:18       "="
+0:18 - 0:28       value: decimal_digits `4294967295`
+0:28 - 0:29       ")"
+
+==================
+PCRE2 LIMIT_RECURSION preserves decimal value 4294967296
+:language(pcre2)
+:cst
+==================
+(*LIMIT_RECURSION=4294967296)
+------------------
+
+0:0  - 0:29   pattern
+0:0  - 0:29     start_option
+0:0  - 0:1        "("
+0:1  - 0:2        "*"
+0:2  - 0:17       name: option_name `LIMIT_RECURSION`
+0:17 - 0:18       "="
+0:18 - 0:28       value: decimal_digits `4294967296`
+0:28 - 0:29       ")"
+
+==================
+PCRE2 LIMIT_RECURSION preserves decimal value 99999999999999999999
+:language(pcre2)
+:cst
+==================
+(*LIMIT_RECURSION=99999999999999999999)
+------------------
+
+0:0  - 0:39   pattern
+0:0  - 0:39     start_option
+0:0  - 0:1        "("
+0:1  - 0:2        "*"
+0:2  - 0:17       name: option_name `LIMIT_RECURSION`
+0:17 - 0:18       "="
+0:18 - 0:38       value: decimal_digits `99999999999999999999`
+0:38 - 0:39       ")"
+
+==================
+PCRE2 default spaces hash and newline remain literal
+:language(pcre2)
+==================
+a b[a b] #c
+d
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (character_class
+        (class_character)
+        (class_character)
+        (class_character))
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character))))
+
+==================
+PCRE2 x after xx restores literal class spacing
+:language(pcre2)
+==================
+(?xx)(?x)[a b] c
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (global_flags
+        (flag_set))
+      (global_flags
+        (flag_set))
+      (character_class
+        (class_character)
+        (class_character)
+        (class_character))
+      (verbose_whitespace)
+      (literal_character))))
+
+==================
+PCRE2 scoped x restores the outer xx setting
+:language(pcre2)
+==================
+(?xx)(?x:[a b])[c d]
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (global_flags
+        (flag_set))
+      (scoped_flags_group
+        (flag_set)
+        body: (alternation
+          (concatenation
+            (character_class
+              (class_character)
+              (class_character)
+              (class_character)))))
+      (character_class
+        (class_character)
+        (verbose_whitespace)
+        (class_character)))))
+
+==================
+PCRE2 x continues across branches and restores the outer xx setting
+:language(pcre2)
+==================
+(?xx)(?:(?x)q|[a b])[c d]
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (global_flags
+        (flag_set))
+      (non_capturing_group
+        body: (alternation
+          (concatenation
+            (global_flags
+              (flag_set))
+            (literal_character))
+          (concatenation
+            (character_class
+              (class_character)
+              (class_character)
+              (class_character)))))
+      (character_class
+        (class_character)
+        (verbose_whitespace)
+        (class_character)))))
+
+==================
+PCRE2 xxix enables class spacing
+:language(pcre2)
+==================
+(?xxix)[a b]
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (global_flags
+        (flag_set))
+      (character_class
+        (class_character)
+        (verbose_whitespace)
+        (class_character)))))
+
+==================
+PCRE2 xixx enables class spacing
+:language(pcre2)
+==================
+(?xixx)[a b]
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (global_flags
+        (flag_set))
+      (character_class
+        (class_character)
+        (verbose_whitespace)
+        (class_character)))))
+
+==================
+PCRE2 xxx enables class spacing
+:language(pcre2)
+==================
+(?xxx)[a b]
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (global_flags
+        (flag_set))
+      (character_class
+        (class_character)
+        (verbose_whitespace)
+        (class_character)))))
+
+==================
+PCRE2 x retains the no-capture option from nxx
+:language(pcre2)
+==================
+(?nxx)(?x)(a)[b c]
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (global_flags
+        (flag_set))
+      (global_flags
+        (flag_set))
+      (non_capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (character_class
+        (class_character)
+        (class_character)
+        (class_character)))))
+
+==================
+PCRE2 an empty global disabling list preserves captures
+:language(pcre2)
+==================
+(?-)(a)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (global_flags)
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character)))))))
+
+==================
+PCRE2 an empty disabling list follows enabling flags
+:language(pcre2)
+==================
+(?i-)(a)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (global_flags
+        (flag_set))
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character)))))))
+
+==================
+PCRE2 a scoped empty disabling list has no flag set
+:language(pcre2)
+==================
+(?-:a)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (scoped_flags_group
+        body: (alternation
+          (concatenation
+            (literal_character)))))))
+
+==================
+PCRE2 a scoped empty disabling list preserves no-capture mode
+:language(pcre2)
+==================
+(?n)(?-:(a))
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (global_flags
+        (flag_set))
+      (scoped_flags_group
+        body: (alternation
+          (concatenation
+            (non_capturing_group
+              body: (alternation
+                (concatenation
+                  (literal_character))))))))))
+
+==================
+PCRE2 a scoped no-capture flag restores ordinary captures
+:language(pcre2)
+==================
+(?n-:(a))(b)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (scoped_flags_group
+        (flag_set)
+        body: (alternation
+          (concatenation
+            (non_capturing_group
+              body: (alternation
+                (concatenation
+                  (literal_character)))))))
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character)))))))
+
+==================
+PCRE2 no-capture mode continues across branches and restores outside
+:language(pcre2)
+==================
+(?:(?n)(a)|(b))(c)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (non_capturing_group
+        body: (alternation
+          (concatenation
+            (global_flags
+              (flag_set))
+            (non_capturing_group
+              body: (alternation
+                (concatenation
+                  (literal_character)))))
+          (concatenation
+            (non_capturing_group
+              body: (alternation
+                (concatenation
+                  (literal_character)))))))
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character)))))))
+
+==================
+PCRE2 named capture ignores no-capture mode before disabling n
+:language(pcre2)
+==================
+(?n)(?<a>x)(y)(?-n)(z)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (global_flags
+        (flag_set))
+      (named_capturing_group
+        name: (group_name)
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (non_capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (global_flags
+        (flag_set))
+      (capturing_group
+        body: (alternation
+          (concatenation
+            (literal_character)))))))
+
+==================
+PCRE2 reset scope restores captures and literal spaces
+:language(pcre2)
+==================
+(?nxx)(?^:(a b))c d
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (global_flags
+        (flag_set))
+      (scoped_flags_group
+        body: (alternation
+          (concatenation
+            (capturing_group
+              body: (alternation
+                (concatenation
+                  (literal_character)
+                  (literal_character)
+                  (literal_character)))))))
+      (literal_character)
+      (verbose_whitespace)
+      (literal_character))))
+
+==================
+Python disabled verbose scope retains NUL and escaped NUL
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+(?-x: \ )
+------------------
+
+0:0 - 0:9   pattern
+0:0 - 0:9     body: alternation
+0:0 - 0:9       concatenation
+0:0 - 0:9         scoped_flags_group
+0:0 - 0:1           "("
+0:1 - 0:2           "?"
+0:2 - 0:3           "-"
+0:3 - 0:4           disable: flag_set `x`
+0:4 - 0:5           ":"
+0:5 - 0:8           body: alternation
+0:5 - 0:8             concatenation
+0:5 - 0:6               literal_character `\0`
+0:6 - 0:8               literal_escape `\\\0`
+0:8 - 0:9           ")"
+
+==================
+Python initial normal mode treats whitespace and hash as literals
+:language(python_re)
+:cst
+==================
+ #x
+------------------
+
+0:0 - 0:3   pattern
+0:0 - 0:3     body: alternation
+0:0 - 0:3       concatenation
+0:0 - 0:1         literal_character ` `
+0:1 - 0:2         literal_character `#`
+0:2 - 0:3         literal_character `x`
+
+==================
+Python initial verbose mode retains layout at the root
+:language(python_re_verbose)
+:cst
+==================
+ #x
+------------------
+
+0:0 - 0:3   pattern
+0:0 - 0:1     verbose_whitespace ` `
+0:1 - 0:3     verbose_comment `#x`
+
+==================
+pcre2: PCRE2 LIMIT options preserve decimal values independently of engine limits — "(*LIMIT_MATCH=)"
+:language(pcre2)
+:error
+==================
+(*LIMIT_MATCH=)
+------------------
+
+
+
+==================
+pcre2: PCRE2 LIMIT options preserve decimal values independently of engine limits — "(*LIMIT_MATCH=-1)"
+:language(pcre2)
+:error
+==================
+(*LIMIT_MATCH=-1)
+------------------
+
+
+
+==================
+pcre2: PCRE2 LIMIT options preserve decimal values independently of engine limits — "(*LIMIT_MATCH=1a)"
+:language(pcre2)
+:error
+==================
+(*LIMIT_MATCH=1a)
+------------------
+
+
+
+==================
+pcre2: PCRE2 LIMIT options preserve decimal values independently of engine limits — "(*LIMIT_DEPTH=)"
+:language(pcre2)
+:error
+==================
+(*LIMIT_DEPTH=)
+------------------
+
+
+
+==================
+pcre2: PCRE2 LIMIT options preserve decimal values independently of engine limits — "(*LIMIT_DEPTH=-1)"
+:language(pcre2)
+:error
+==================
+(*LIMIT_DEPTH=-1)
+------------------
+
+
+
+==================
+pcre2: PCRE2 LIMIT options preserve decimal values independently of engine limits — "(*LIMIT_DEPTH=1a)"
+:language(pcre2)
+:error
+==================
+(*LIMIT_DEPTH=1a)
+------------------
+
+
+
+==================
+pcre2: PCRE2 LIMIT options preserve decimal values independently of engine limits — "(*LIMIT_HEAP=)"
+:language(pcre2)
+:error
+==================
+(*LIMIT_HEAP=)
+------------------
+
+
+
+==================
+pcre2: PCRE2 LIMIT options preserve decimal values independently of engine limits — "(*LIMIT_HEAP=-1)"
+:language(pcre2)
+:error
+==================
+(*LIMIT_HEAP=-1)
+------------------
+
+
+
+==================
+pcre2: PCRE2 LIMIT options preserve decimal values independently of engine limits — "(*LIMIT_HEAP=1a)"
+:language(pcre2)
+:error
+==================
+(*LIMIT_HEAP=1a)
+------------------
+
+
+
+==================
+pcre2: PCRE2 LIMIT options preserve decimal values independently of engine limits — "(*LIMIT_RECURSION=)"
+:language(pcre2)
+:error
+==================
+(*LIMIT_RECURSION=)
+------------------
+
+
+
+==================
+pcre2: PCRE2 LIMIT options preserve decimal values independently of engine limits — "(*LIMIT_RECURSION=-1)"
+:language(pcre2)
+:error
+==================
+(*LIMIT_RECURSION=-1)
+------------------
+
+
+
+==================
+pcre2: PCRE2 LIMIT options preserve decimal values independently of engine limits — "(*LIMIT_RECURSION=1a)"
+:language(pcre2)
+:error
+==================
+(*LIMIT_RECURSION=1a)
+------------------
+
+
+
+==================
+pcre2: PCRE2 empty disabling lists retain their hyphen without an empty flag set — "(?--)"
+:language(pcre2)
+:error
+==================
+(?--)
+------------------
+
+
+
+==================
+pcre2: PCRE2 empty disabling lists retain their hyphen without an empty flag set — "(?^-)"
+:language(pcre2)
+:error
+==================
+(?^-)
+------------------
+
+
+
+==================
+python_re: malformed global inline flags after a consuming expression uses standard recovery — "a(?x)b c\\\n"
+:language(python_re)
+:error
+==================
+a(?x)b c\
+
+------------------
+
+
+
+==================
+python_re: malformed missing scoped closer uses standard recovery — "(?x:a #c\nb\n"
+:language(python_re)
+:error
+==================
+(?x:a #c
+b
+
+------------------
+
+
+
+==================
+python_re: malformed incomplete hexadecimal escape before a scoped group closer uses standard recovery — "(?x:\\x0)\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+(?x:\x0)\
+
+------------------
+
+
+
+==================
+python_re_verbose: malformed verbose layout cannot split a scoped flag header uses standard recovery — "(? x:a|b\n"
+:language(python_re_verbose)
+:error
+==================
+(? x:a|b
+
+------------------
+
+==================
+PCRE2 UTF8 preserves its spelling among UTF start options
+:language(pcre2)
+:cst
+==================
+(*UTF)(*UTF8)(*UCP)é
+------------------
+
+0:0  - 0:21   pattern
+0:0  - 0:6      start_option
+0:0  - 0:1        "("
+0:1  - 0:2        "*"
+0:2  - 0:5        name: option_name `UTF`
+0:5  - 0:6        ")"
+0:6  - 0:13     start_option
+0:6  - 0:7        "("
+0:7  - 0:8        "*"
+0:8  - 0:12       name: option_name `UTF8`
+0:12 - 0:13       ")"
+0:13 - 0:19     start_option
+0:13 - 0:14       "("
+0:14 - 0:15       "*"
+0:15 - 0:18       name: option_name `UCP`
+0:18 - 0:19       ")"
+0:19 - 0:21     body: alternation
+0:19 - 0:21       concatenation
+0:19 - 0:21         literal_character `é`
+
+==================
+PCRE2 UTF16 is unavailable under the fixed 8-bit conditions
+:language(pcre2)
+:error
+==================
+(*UTF16)a
+------------------
+
+
+
+==================
+PCRE2 UTF32 is unavailable under the fixed 8-bit conditions
+:language(pcre2)
+:error
+==================
+(*UTF32)a
+------------------
+
+
+
+==================
+PCRE2 UTF8 requires uppercase spelling
+:language(pcre2)
+:error
+==================
+(*utf8)a
+------------------
+
+
+
+==================
+PCRE2 UTF8 does not accept a longer option name
+:language(pcre2)
+:error
+==================
+(*UTF80)a
+------------------
+
+
+
+==================
+PCRE2 UTF8 requires its closing parenthesis
+:language(pcre2)
+:error
+==================
+(*UTF8
+------------------
+
+
+
+==================
+PCRE2 UTF8 cannot follow the pattern body
+:language(pcre2)
+:error
+==================
+a(*UTF8)
+------------------
+
+
+
+==================
+PCRE2 UTF8 cannot appear inside a group
+:language(pcre2)
+:error
+==================
+(?:(*UTF8)a)
+------------------

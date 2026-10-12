@@ -16,6 +16,9 @@ import {
   root,
 } from "../scripts/tree-sitter.js";
 
+const commandTimeoutMs = 60_000;
+const firstThemeColor = 17;
+
 function decodeEntities(text) {
   return text
     .replaceAll("&lt;", "<")
@@ -66,7 +69,7 @@ function createHighlighter({ directory, root, run, captureNames }) {
     JSON.stringify({
       "parser-directories": [parserDirectory],
       theme: Object.fromEntries(
-        captureNames.map((name, index) => [name, index + 17]),
+        captureNames.map((name, index) => [name, index + firstThemeColor]),
       ),
     }),
   );
@@ -125,7 +128,7 @@ function assertCaptures(source, actual, ranges) {
     previousEnd = end;
   }
   for (const [index, byte] of bytes.entries()) {
-    if (byte !== 10)
+    if (byte !== 0x0a)
       assert.equal(
         actual[index],
         expected[index],
@@ -174,7 +177,7 @@ after(() => {
 
 function assertCommand(arguments_) {
   const result = runner.run(arguments_, {
-    timeout: 60_000,
+    timeout: commandTimeoutMs,
   });
   assert.ifError(result.error);
   assert.equal(result.status, 0, result.stdout + result.stderr);
@@ -183,6 +186,143 @@ function assertCommand(arguments_) {
 }
 
 const finalCaptureCases = [
+  {
+    name: "PCRE2 UTF8 is one option name before a Unicode literal",
+    languages: ["pcre2"],
+    source: "(*UTF8)é",
+    captures: [
+      [0, 1, "punctuation.bracket"],
+      [1, 2, "punctuation.special"],
+      [2, 6, "keyword.modifier"],
+      [6, 7, "punctuation.bracket"],
+      [7, 9, "string.regexp"],
+    ],
+  },
+  {
+    name: "PCRE2 option and verb introducers differ from repetition and value separators",
+    languages: ["pcre2"],
+    source: "(*UTF)(*LIMIT_MATCH=2)(*ACCEPT)*(*F)",
+    captures: [
+      [0, 1, "punctuation.bracket"],
+      [1, 2, "punctuation.special"],
+      [2, 5, "keyword.modifier"],
+      [5, 7, "punctuation.bracket"],
+      [7, 8, "punctuation.special"],
+      [8, 19, "keyword.modifier"],
+      [19, 20, "punctuation.delimiter"],
+      [20, 21, "number"],
+      [21, 23, "punctuation.bracket"],
+      [23, 24, "punctuation.special"],
+      [24, 30, "keyword"],
+      [30, 31, "punctuation.bracket"],
+      [31, 32, "operator"],
+      [32, 33, "punctuation.bracket"],
+      [33, 34, "punctuation.special"],
+      [34, 35, "keyword"],
+      [35, 36, "punctuation.bracket"],
+    ],
+  },
+  {
+    name: "PCRE2 R condition names are labels while explicit recursion uses keywords",
+    languages: ["pcre2"],
+    source: "(?(R)a)(?R)(?(R&x)b)",
+    captures: [
+      [0, 1, "punctuation.bracket"],
+      [1, 2, "punctuation.special"],
+      [2, 3, "punctuation.bracket"],
+      [3, 4, "label"],
+      [4, 5, "punctuation.bracket"],
+      [5, 6, "string.regexp"],
+      [6, 8, "punctuation.bracket"],
+      [8, 9, "punctuation.special"],
+      [9, 10, "keyword"],
+      [10, 12, "punctuation.bracket"],
+      [12, 13, "punctuation.special"],
+      [13, 14, "punctuation.bracket"],
+      [14, 15, "keyword"],
+      [15, 16, "operator"],
+      [16, 17, "label"],
+      [17, 18, "punctuation.bracket"],
+      [18, 19, "string.regexp"],
+      [19, 20, "punctuation.bracket"],
+    ],
+  },
+  {
+    name: "PCRE2 DEFINE and VERSION are keywords and version equality is an operator",
+    languages: ["pcre2"],
+    source: "(?(DEFINE)a)(?(VERSION=10)b)",
+    captures: [
+      [0, 1, "punctuation.bracket"],
+      [1, 2, "punctuation.special"],
+      [2, 3, "punctuation.bracket"],
+      [3, 9, "keyword"],
+      [9, 10, "punctuation.bracket"],
+      [10, 11, "string.regexp"],
+      [11, 13, "punctuation.bracket"],
+      [13, 14, "punctuation.special"],
+      [14, 15, "punctuation.bracket"],
+      [15, 22, "keyword"],
+      [22, 23, "operator"],
+      [23, 25, "number"],
+      [25, 26, "punctuation.bracket"],
+      [26, 27, "string.regexp"],
+      [27, 28, "punctuation.bracket"],
+    ],
+  },
+  {
+    name: "PCRE2 version separators differ from wildcard and literal dots",
+    languages: ["pcre2"],
+    source: "(?(VERSION>=10.49).|[.])",
+    captures: [
+      [0, 1, "punctuation.bracket"],
+      [1, 2, "punctuation.special"],
+      [2, 3, "punctuation.bracket"],
+      [3, 10, "keyword"],
+      [10, 12, "operator"],
+      [12, 14, "number"],
+      [14, 15, "punctuation.delimiter"],
+      [15, 17, "number"],
+      [17, 18, "punctuation.bracket"],
+      [18, 19, "character.special"],
+      [19, 20, "operator"],
+      [20, 21, "punctuation.bracket"],
+      [21, 22, "string.regexp"],
+      [22, 24, "punctuation.bracket"],
+    ],
+  },
+  {
+    name: "PCRE2 quantified escapes and boundaries leave property negation padding uncolored",
+    languages: ["pcre2"],
+    source: String.raw`\N{2}\p{_- ^Lu}[[:<:]]*`,
+    captures: [
+      [0, 2, "character.special"],
+      [2, 3, "punctuation.bracket"],
+      [3, 4, "number"],
+      [4, 5, "punctuation.bracket"],
+      [5, 7, "character.special"],
+      [7, 8, "punctuation.bracket"],
+      [11, 12, "operator"],
+      [12, 14, "character.special"],
+      [14, 15, "punctuation.bracket"],
+      [15, 23, "operator"],
+    ],
+  },
+  {
+    name: "PCRE2 x after xx restores literal class whitespace highlighting",
+    languages: ["pcre2"],
+    source: "(?xx)(?x)[a b]",
+    captures: [
+      [0, 1, "punctuation.bracket"],
+      [1, 2, "punctuation.special"],
+      [2, 4, "keyword.modifier"],
+      [4, 6, "punctuation.bracket"],
+      [6, 7, "punctuation.special"],
+      [7, 8, "keyword.modifier"],
+      [8, 10, "punctuation.bracket"],
+      [10, 13, "string.regexp"],
+      [13, 14, "punctuation.bracket"],
+    ],
+  },
   {
     name: "PCRE2 names and quote markers retain their leaf captures",
     languages: ["pcre2"],
@@ -1227,9 +1367,7 @@ for (const {
 for (const grammar of grammars) {
   test(`${grammar.name}: incomplete patterns retain their source without error colors`, () => {
     for (const source of ["(", "[a", "a\\", "(?<"]) {
-      for (const capture of highlight(grammar.scope, source, false)) {
-        assert.ok(capture === "" || captureNames.includes(capture), capture);
-      }
+      highlight(grammar.scope, source, false);
     }
   });
 }

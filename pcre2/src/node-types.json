@@ -1345,11 +1345,6 @@
     }
   },
   {
-    "type": "condition_name",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "conditional_group",
     "named": true,
     "fields": {
@@ -1480,11 +1475,6 @@
         }
       ]
     }
-  },
-  {
-    "type": "decimal_digits",
-    "named": true,
-    "fields": {}
   },
   {
     "type": "end_anchor",
@@ -1622,11 +1612,6 @@
         }
       ]
     }
-  },
-  {
-    "type": "group_name",
-    "named": true,
-    "fields": {}
   },
   {
     "type": "hex_escape",
@@ -2094,6 +2079,10 @@
           {
             "type": "wildcard",
             "named": true
+          },
+          {
+            "type": "word_boundary_assertion",
+            "named": true
           }
         ]
       },
@@ -2310,11 +2299,11 @@
       "required": true,
       "types": [
         {
-          "type": "escape_whitespace",
+          "type": "property_escape",
           "named": true
         },
         {
-          "type": "property_escape",
+          "type": "property_ignored",
           "named": true
         }
       ]
@@ -2542,11 +2531,19 @@
     "named": true
   },
   {
+    "type": "condition_name",
+    "named": true
+  },
+  {
     "type": "control_character",
     "named": true
   },
   {
     "type": "control_escape",
+    "named": true
+  },
+  {
+    "type": "decimal_digits",
     "named": true
   },
   {
@@ -2559,6 +2556,10 @@
   },
   {
     "type": "flag_set",
+    "named": true
+  },
+  {
+    "type": "group_name",
     "named": true
   },
   {
@@ -2639,6 +2640,10 @@
   },
   {
     "type": "property_escape",
+    "named": true
+  },
+  {
+    "type": "property_ignored",
     "named": true
   },
   {

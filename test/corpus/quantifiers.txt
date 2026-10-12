@@ -1,10 +1,28 @@
 ==================
+PCRE2 quotation preserves the last repeated character
+:language(pcre2)
+==================
+\Qab\E+
+------------------
+
+(pattern (alternation (concatenation (quote_start) (literal_character) (repetition (literal_character) (quote_end) (quantifier)))))
+
+==================
+PCRE2 non-newline repetition and named Unicode escapes have distinct operands
+:language(pcre2)
+==================
+\N{2}\N{U+41}{2}
+------------------
+
+(pattern (alternation (concatenation (repetition (character_class_escape) (quantifier (decimal_digits))) (repetition (unicode_escape (hexadecimal_digits)) (quantifier (decimal_digits))))))
+
+==================
 simple and lazy quantifiers wrap only their operands
 :language(js_regex)
 :cst
 ==================
 a*b+c?d*?e+?f??
----
+------------------
 
 0:0  - 0:15   pattern
 0:0  - 0:15     body: disjunction
@@ -62,7 +80,7 @@ simple and lazy quantifiers wrap only their operands
 :cst
 ==================
 a*b+c?d*?e+?f??
----
+------------------
 
 0:0  - 0:15   pattern
 0:0  - 0:15     body: disjunction
@@ -120,7 +138,7 @@ simple interval and modified quantifiers share one repetition shape
 ==================
 a*b+?c?+d{2}e{2,4}?f{2,}+g{,4}h{,}\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -162,7 +180,7 @@ quantifiers own count bounds punctuation and lazy modifiers
 :cst
 ==================
 a{2}b{3,}c{4,5}?d*e+?f??
----
+------------------
 
 0:0  - 0:24   pattern
 0:0  - 0:24     body: disjunction
@@ -233,7 +251,7 @@ quantifiers own count bounds punctuation and lazy modifiers
 :cst
 ==================
 a{2}b{3,}c{4,5}?d*e+?f??
----
+------------------
 
 0:0  - 0:24   pattern
 0:0  - 0:24     body: disjunction
@@ -304,7 +322,7 @@ quantifiers own count bounds punctuation and lazy modifiers
 :cst
 ==================
 a{2}b{3,}c{4,5}?d*e+?f??
----
+------------------
 
 0:0  - 0:24   pattern
 0:0  - 0:24     body: alternation
@@ -352,7 +370,7 @@ each group form can be a repetition operand
 :cst
 ==================
 (ab|c)+(?<x>d)?(?:e)*(?i:f){2}
----
+------------------
 
 0:0  - 0:30   pattern
 0:0  - 0:30     body: disjunction
@@ -445,7 +463,7 @@ each group form can be a repetition operand
 :cst
 ==================
 (ab|c)+(?<x>d)?(?:e)*(?i:f){2}
----
+------------------
 
 0:0  - 0:30   pattern
 0:0  - 0:30     body: disjunction
@@ -538,7 +556,7 @@ representative consuming atom categories can be quantified
 ==================
 .*\d+[ab]?(?x:c){2}\1+\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -574,7 +592,7 @@ positive and negative lookahead assertions can be repetition operands in ordinar
 :cst
 ==================
 (?=a)+(?!b){2}?
----
+------------------
 
 0:0  - 0:15   pattern
 0:0  - 0:15     body: disjunction
@@ -621,7 +639,7 @@ comment group layout joins the following quantifier relation only
 ==================
 a(?#gap)b(?#gap)*\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -643,7 +661,7 @@ initial verbose layout belongs to the following quantifier relation
 a # gap
  *\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -664,7 +682,7 @@ scoped verbose layout belongs to the following quantifier relation
 (?x:a # gap
  *)\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -687,7 +705,7 @@ interval bounds retain spelling and leave value checks to the consumer
 :cst
 ==================
 a{0}b{2,}c{2,4}?d{4,2}e{01,002}
----
+------------------
 
 0:0  - 0:31   pattern
 0:0  - 0:31     body: disjunction
@@ -764,7 +782,7 @@ interval bounds retain spelling and leave value checks to the consumer
 :cst
 ==================
 a{0}b{2,}c{2,4}?d{4,2}e{01,002}
----
+------------------
 
 0:0  - 0:31   pattern
 0:0  - 0:31     body: disjunction
@@ -841,7 +859,7 @@ quantifier bounds retain source spelling without semantic validation
 ==================
 a{0002}b{4,2}c{12345678901234567890}\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -867,7 +885,7 @@ a quantified non-BMP source character keeps its complete byte range
 :cst
 ==================
 😀+
----
+------------------
 
 0:0 - 0:5   pattern
 0:0 - 0:5     body: disjunction
@@ -887,7 +905,7 @@ a quantified non-BMP source character keeps its complete byte range
 :cst
 ==================
 😀+
----
+------------------
 
 0:0 - 0:5   pattern
 0:0 - 0:5     body: disjunction
@@ -907,7 +925,7 @@ quantifier punctuation remains ordinary inside a character class
 ==================
 [*+?{}]\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -926,7 +944,7 @@ raw closing brackets and noninterval braces are ordinary body characters
 :cst
 ==================
 ]{x}}
----
+------------------
 
 0:0 - 0:5   pattern
 0:0 - 0:5     body: disjunction
@@ -958,7 +976,7 @@ incomplete intervals and omitted lower bounds are literal source characters
 :cst
 ==================
 a{2|a{2,|{,2}|{}
----
+------------------
 
 0:0  - 0:16   pattern
 0:0  - 0:16     body: disjunction
@@ -1029,7 +1047,7 @@ incomplete interval-like spellings remain ordinary characters
 ==================
 a{2|b{2,|c{2,3,}|d{}|e}f\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -1066,7 +1084,7 @@ orphan braced quantifiers remain structural in Annex B
 :cst
 ==================
 {2}a
----
+------------------
 
 0:0 - 0:4   pattern
 0:0 - 0:4     body: disjunction
@@ -1089,7 +1107,7 @@ an operandless interval retains an invalid braced quantifier node in ordinary mo
 :cst
 ==================
 {2}
----
+------------------
 
 0:0 - 0:3   pattern
 0:0 - 0:3     body: disjunction
@@ -1108,7 +1126,7 @@ a second interval retains an invalid braced quantifier node in ordinary mode
 :cst
 ==================
 a{1}{2}
----
+------------------
 
 0:0 - 0:7   pattern
 0:0 - 0:7     body: disjunction
@@ -1137,7 +1155,7 @@ an interval after an anchor retains an invalid braced quantifier node in ordinar
 :cst
 ==================
 ^{2}
----
+------------------
 
 0:0 - 0:4   pattern
 0:0 - 0:4     body: disjunction
@@ -1161,7 +1179,9 @@ adjacent quantifiers require recovery before following text
 :error
 ==================
 a**b
----
+------------------
+
+
 
 ==================
 a possessive quantifier suffix is not accepted
@@ -1171,7 +1191,9 @@ a possessive quantifier suffix is not accepted
 :error
 ==================
 a++b
----
+------------------
+
+
 
 ==================
 an anchor cannot be a repetition operand
@@ -1181,7 +1203,9 @@ an anchor cannot be a repetition operand
 :error
 ==================
 ^*b
----
+------------------
+
+
 
 ==================
 a lookahead cannot be quantified in Unicode modes
@@ -1190,7 +1214,9 @@ a lookahead cannot be quantified in Unicode modes
 :error
 ==================
 (?=a)+b
----
+------------------
+
+
 
 ==================
 lookbehind assertions cannot be quantified in JavaScript
@@ -1200,7 +1226,9 @@ lookbehind assertions cannot be quantified in JavaScript
 :error
 ==================
 (?<=a)+
----
+------------------
+
+
 
 ==================
 a word boundary cannot be quantified in JavaScript
@@ -1210,7 +1238,9 @@ a word boundary cannot be quantified in JavaScript
 :error
 ==================
 \b?
----
+------------------
+
+
 
 ==================
 a complete interval without an operand cannot become literal braces
@@ -1219,7 +1249,9 @@ a complete interval without an operand cannot become literal braces
 :error
 ==================
 {2}
----
+------------------
+
+
 
 ==================
 a second complete interval cannot become literal braces after a quantifier
@@ -1228,7 +1260,9 @@ a second complete interval cannot become literal braces after a quantifier
 :error
 ==================
 a{1}{2}
----
+------------------
+
+
 
 ==================
 a complete interval cannot quantify an anchor
@@ -1237,7 +1271,9 @@ a complete interval cannot quantify an anchor
 :error
 ==================
 ^{2}
----
+------------------
+
+
 
 ==================
 a noninterval opening brace requires recovery in Unicode modes
@@ -1246,7 +1282,9 @@ a noninterval opening brace requires recovery in Unicode modes
 :error
 ==================
 {a}
----
+------------------
+
+
 
 ==================
 an unclosed interval requires recovery in Unicode modes
@@ -1255,7 +1293,9 @@ an unclosed interval requires recovery in Unicode modes
 :error
 ==================
 a{2
----
+------------------
+
+
 
 ==================
 an operandless quantifier inside nested groups requires recovery
@@ -1264,7 +1304,9 @@ an operandless quantifier inside nested groups requires recovery
 :error
 ==================
 ((())((?:?))
----
+------------------
+
+
 
 ==================
 every complete orphan quantifier including its lazy suffix remains an error
@@ -1273,7 +1315,9 @@ every complete orphan quantifier including its lazy suffix remains an error
 :error
 ==================
 (*)(+)(?=)?(?:*?)(?:+?)(?:??)(?:{2})(?:{2,})(?:{2,3}?)(?:{3,2})
----
+------------------
+
+
 
 ==================
 an invalid lookahead quantifier does not move the real inner group closer
@@ -1282,7 +1326,9 @@ an invalid lookahead quantifier does not move the real inner group closer
 :error
 ==================
 (-((?!)?&)
----
+------------------
+
+
 
 ==================
 duplication symbols follow an expression base
@@ -1290,7 +1336,7 @@ duplication symbols follow an expression base
 :cst
 ==================
 a*b+c?
----
+------------------
 
 0:0 - 0:6   extended_reg_exp
 0:0 - 0:6     ere_branch
@@ -1316,7 +1362,7 @@ intervals own their counts
 :cst
 ==================
 a{3}b{2,}c{1,4}
----
+------------------
 
 0:0  - 0:15   extended_reg_exp
 0:0  - 0:15     ere_branch
@@ -1351,7 +1397,7 @@ a question mark after a duplication symbol is the repetition modifier
 :cst
 ==================
 a*?b{2,3}?
----
+------------------
 
 0:0  - 0:10   extended_reg_exp
 0:0  - 0:10     ere_branch
@@ -1378,7 +1424,7 @@ adjacent duplication symbols stay separate
 :cst
 ==================
 a**
----
+------------------
 
 0:0 - 0:3   extended_reg_exp
 0:0 - 0:3     ere_branch
@@ -1396,7 +1442,7 @@ quoted plus and question mark remain operands
 :cst
 ==================
 a*b\+c\?
----
+------------------
 
 0:0 - 0:8   basic_reg_exp
 0:0 - 0:8     bre_branch
@@ -1434,7 +1480,7 @@ intervals own their counts
 :cst
 ==================
 a\{3\}b\{2,\}c\{1,4\}
----
+------------------
 
 0:0  - 0:21   basic_reg_exp
 0:0  - 0:21     bre_branch
@@ -1475,7 +1521,7 @@ an asterisk after a subexpression caret is a duplication symbol
 :cst
 ==================
 \(^*\)
----
+------------------
 
 0:0 - 0:6   basic_reg_exp
 0:0 - 0:6     bre_branch
@@ -1500,7 +1546,7 @@ a quoted pipe does not restart a branch
 :cst
 ==================
 *a\|^*b
----
+------------------
 
 0:0 - 0:7   basic_reg_exp
 0:0 - 0:7     bre_branch
@@ -1538,7 +1584,7 @@ quoted question mark plus and pipe accept duplication symbols
 :cst
 ==================
 \?*\+\{2\}\|*
----
+------------------
 
 0:0  - 0:13   basic_reg_exp
 0:0  - 0:13     bre_branch
@@ -1572,7 +1618,7 @@ an asterisk is ordinary after an initial anchor or subexpression opener
 :cst
 ==================
 ^*\(*a\)
----
+------------------
 
 0:0 - 0:8   basic_reg_exp
 0:0 - 0:8     bre_branch
@@ -1599,3 +1645,520 @@ an asterisk is ordinary after an initial anchor or subexpression opener
 0:5 - 0:6                       one_char_or_coll_elem_bre
 0:5 - 0:6                         ordinary_character `a`
 0:6 - 0:8             "\\)"
+
+==================
+PCRE2 group alternatives are the operand of repetition
+:language(pcre2)
+==================
+a(b|c)*
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (literal_character)
+      (repetition
+        operand: (capturing_group
+          body: (alternation
+            (concatenation
+              (literal_character))
+            (concatenation
+              (literal_character))))
+        quantifier: (quantifier)))))
+
+==================
+PCRE2 intervals preserve whitespace bounds and modifiers
+:language(pcre2)
+==================
+a{ 2 , 4 }?b{,3}+c{4,}d{12}
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (repetition
+        operand: (literal_character)
+        quantifier: (quantifier
+          (quantifier_whitespace)
+          minimum: (decimal_digits)
+          (quantifier_whitespace)
+          (quantifier_whitespace)
+          maximum: (decimal_digits)
+          (quantifier_whitespace)))
+      (repetition
+        operand: (literal_character)
+        quantifier: (quantifier
+          maximum: (decimal_digits)))
+      (repetition
+        operand: (literal_character)
+        quantifier: (quantifier
+          minimum: (decimal_digits)))
+      (repetition
+        operand: (literal_character)
+        quantifier: (quantifier
+          count: (decimal_digits))))))
+
+==================
+PCRE2 incomplete interval spellings remain literal
+:language(pcre2)
+==================
+a{,}b{no}c{1
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character))))
+
+==================
+PCRE2 non-newline escape accepts interval 2,
+:language(pcre2)
+==================
+\N{2}
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (repetition
+        operand: (character_class_escape)
+        quantifier: (quantifier
+          count: (decimal_digits))))))
+
+==================
+PCRE2 non-newline escape accepts interval 0,
+:language(pcre2)
+==================
+\N{0}
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (repetition
+        operand: (character_class_escape)
+        quantifier: (quantifier
+          count: (decimal_digits))))))
+
+==================
+PCRE2 non-newline escape accepts interval 1,
+:language(pcre2)
+==================
+\N{1,}
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (repetition
+        operand: (character_class_escape)
+        quantifier: (quantifier
+          minimum: (decimal_digits))))))
+
+==================
+PCRE2 non-newline escape accepts interval ,2
+:language(pcre2)
+==================
+\N{,2}
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (repetition
+        operand: (character_class_escape)
+        quantifier: (quantifier
+          maximum: (decimal_digits))))))
+
+==================
+PCRE2 non-newline escape accepts interval 1,2? with spaces
+:language(pcre2)
+==================
+\N{ 1 , 2 }?
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (repetition
+        operand: (character_class_escape)
+        quantifier: (quantifier
+          (quantifier_whitespace)
+          minimum: (decimal_digits)
+          (quantifier_whitespace)
+          (quantifier_whitespace)
+          maximum: (decimal_digits)
+          (quantifier_whitespace))))))
+
+==================
+PCRE2 named Unicode escape is the repetition operand
+:language(pcre2)
+==================
+\N{U+41}{2}
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (repetition
+        operand: (unicode_escape
+          digits: (hexadecimal_digits))
+        quantifier: (quantifier
+          count: (decimal_digits))))))
+
+==================
+Python question modifiers leave a following P literal
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+a?P|b*?P|c??P
+------------------
+
+0:0  - 0:13   pattern
+0:0  - 0:13     body: alternation
+0:0  - 0:3        concatenation
+0:0  - 0:2          repetition
+0:0  - 0:1            operand: literal_character `a`
+0:1  - 0:2            quantifier: quantifier
+0:1  - 0:2              "?"
+0:2  - 0:3          literal_character `P`
+0:3  - 0:4        "|"
+0:4  - 0:8        concatenation
+0:4  - 0:7          repetition
+0:4  - 0:5            operand: literal_character `b`
+0:5  - 0:7            quantifier: quantifier
+0:5  - 0:6              "*"
+0:6  - 0:7              "?"
+0:7  - 0:8          literal_character `P`
+0:8  - 0:9        "|"
+0:9  - 0:13       concatenation
+0:9  - 0:12         repetition
+0:9  - 0:10           operand: literal_character `c`
+0:10 - 0:12           quantifier: quantifier
+0:10 - 0:11             "?"
+0:11 - 0:12             "?"
+0:12 - 0:13         literal_character `P`
+
+==================
+Python Unicode operand and verbose layout belong to repetition
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+(?x:é #c
+*)z
+------------------
+
+0:0 - 1:3   pattern
+0:0 - 1:3     body: alternation
+0:0 - 1:3       concatenation
+0:0 - 1:2         scoped_flags_group
+0:0 - 0:1           "("
+0:1 - 0:2           "?"
+0:2 - 0:3           enable: flag_set `x`
+0:3 - 0:4           ":"
+0:4 - 1:1           body: alternation
+0:4 - 1:1             concatenation
+0:4 - 1:1               repetition
+0:4 - 0:6                 operand: literal_character `é`
+0:6 - 0:7                 verbose_whitespace ` `
+0:7 - 0:9                 verbose_comment `#c`
+0:9 - 1:0                 verbose_whitespace
+0:9 - 0:10                   `\n`
+1:0 - 1:1                 quantifier: quantifier
+1:0 - 1:1                   "*"
+1:1 - 1:2           ")"
+1:2 - 1:3         literal_character `z`
+
+==================
+posix_bre: empty group may repeat
+:language(posix_bre)
+==================
+\(\)*
+------------------
+
+(basic_reg_exp
+  (bre_branch
+    (bre_expression
+      (simple_bre
+        (nondupl_bre)
+        (bre_dupl_symbol)))))
+
+==================
+posix_bre: empty group may have an interval
+:language(posix_bre)
+==================
+\(\)\{2\}
+------------------
+
+(basic_reg_exp
+  (bre_branch
+    (bre_expression
+      (simple_bre
+        (nondupl_bre)
+        (bre_dupl_symbol
+          minimum: (duplication_count))))))
+
+==================
+posix_bre: nested group fields resolve directly
+:language(posix_bre)
+:cst
+==================
+\(\(a\)\)\{2,3\}
+------------------
+
+0:0  - 0:16   basic_reg_exp
+0:0  - 0:16     bre_branch
+0:0  - 0:16       bre_expression
+0:0  - 0:16         simple_bre
+0:0  - 0:9            nondupl_bre
+0:0  - 0:2              "\\("
+0:2  - 0:7              expression: basic_reg_exp
+0:2  - 0:7                bre_branch
+0:2  - 0:7                  bre_expression
+0:2  - 0:7                    simple_bre
+0:2  - 0:7                      nondupl_bre
+0:2  - 0:4                        "\\("
+0:4  - 0:5                        expression: basic_reg_exp
+0:4  - 0:5                          bre_branch
+0:4  - 0:5                            bre_expression
+0:4  - 0:5                              simple_bre
+0:4  - 0:5                                nondupl_bre
+0:4  - 0:5                                  one_char_or_coll_elem_bre
+0:4  - 0:5                                    ordinary_character `a`
+0:5  - 0:7                        "\\)"
+0:7  - 0:9              "\\)"
+0:9  - 0:16           bre_dupl_symbol
+0:9  - 0:11             "\\{"
+0:11 - 0:12             minimum: duplication_count `2`
+0:12 - 0:13             ","
+0:13 - 0:14             maximum: duplication_count `3`
+0:14 - 0:16             "\\}"
+
+==================
+posix_bre: empty group repetition may precede the right anchor
+:language(posix_bre)
+==================
+\(\)*$
+------------------
+
+(basic_reg_exp
+  (bre_branch
+    (bre_expression
+      (simple_bre
+        (nondupl_bre)
+        (bre_dupl_symbol)))))
+
+==================
+posix_ere: empty group may repeat
+:language(posix_ere)
+==================
+()*
+------------------
+
+(extended_reg_exp
+  (ere_branch
+    (ere_expression
+      (ere_dupl_symbol))))
+
+==================
+posix_ere: empty group may have an interval
+:language(posix_ere)
+==================
+(){2}
+------------------
+
+(extended_reg_exp
+  (ere_branch
+    (ere_expression
+      (ere_dupl_symbol
+        minimum: (duplication_count)))))
+
+==================
+posix_ere: nested group fields resolve directly
+:language(posix_ere)
+:cst
+==================
+((a)){2,3}?
+------------------
+
+0:0  - 0:11   extended_reg_exp
+0:0  - 0:11     ere_branch
+0:0  - 0:11       ere_expression
+0:0  - 0:1          "("
+0:1  - 0:4          expression: extended_reg_exp
+0:1  - 0:4            ere_branch
+0:1  - 0:4              ere_expression
+0:1  - 0:2                "("
+0:2  - 0:3                expression: extended_reg_exp
+0:2  - 0:3                  ere_branch
+0:2  - 0:3                    ere_expression
+0:2  - 0:3                      one_char_or_coll_elem_ere
+0:2  - 0:3                        ordinary_character `a`
+0:3  - 0:4                ")"
+0:4  - 0:5          ")"
+0:5  - 0:11         ere_dupl_symbol
+0:5  - 0:6            "{"
+0:6  - 0:7            minimum: duplication_count `2`
+0:7  - 0:8            ","
+0:8  - 0:9            maximum: duplication_count `3`
+0:9  - 0:10           "}"
+0:10 - 0:11           modifier: repetition_modifier `?`
+
+==================
+posix_ere: empty group may have a lazy repetition modifier
+:language(posix_ere)
+==================
+()*?
+------------------
+
+(extended_reg_exp
+  (ere_branch
+    (ere_expression
+      (ere_dupl_symbol
+        modifier: (repetition_modifier)))))
+
+==================
+pcre2: PCRE2 distinguishes non-newline quantifiers from named Unicode escapes — "\\N{abc}"
+:language(pcre2)
+:error
+==================
+\N{abc}
+------------------
+
+
+
+==================
+pcre2: PCRE2 distinguishes non-newline quantifiers from named Unicode escapes — "\\N{2"
+:language(pcre2)
+:error
+==================
+\N{2
+------------------
+
+
+
+==================
+posix_bre: malformed unclosed interval uses standard recovery — "a\\{1"
+:language(posix_bre)
+:error
+==================
+a\{1
+------------------
+
+
+
+==================
+posix_bre: malformed interval without a minimum uses standard recovery — "a\\{,2\\}"
+:language(posix_bre)
+:error
+==================
+a\{,2\}
+------------------
+
+
+
+==================
+posix_bre: malformed nonnumeric interval maximum uses standard recovery — "a\\{1,x\\}"
+:language(posix_bre)
+:error
+==================
+a\{1,x\}
+------------------
+
+
+
+==================
+posix_bre: malformed whitespace inside an interval uses standard recovery — "a\\{1, 2\\}"
+:language(posix_bre)
+:error
+==================
+a\{1, 2\}
+------------------
+
+
+
+==================
+posix_ere: malformed unclosed interval uses standard recovery — "a{1"
+:language(posix_ere)
+:error
+==================
+a{1
+------------------
+
+
+
+==================
+posix_ere: malformed interval without a minimum uses standard recovery — "a{,2}"
+:language(posix_ere)
+:error
+==================
+a{,2}
+------------------
+
+
+
+==================
+posix_ere: malformed nonnumeric interval maximum uses standard recovery — "a{1,x}"
+:language(posix_ere)
+:error
+==================
+a{1,x}
+------------------
+
+
+
+==================
+posix_ere: malformed whitespace inside an interval uses standard recovery — "a{1, 2}"
+:language(posix_ere)
+:error
+==================
+a{1, 2}
+------------------
+
+
+
+==================
+python_re: malformed orphan and nested quantifiers uses standard recovery — "*a|{2}b|c**d|e*?+f|g{2}*h\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+*a|{2}b|c**d|e*?+f|g{2}*h\
+
+------------------
+
+
+
+==================
+python_re: malformed zero-width atoms do not become repetition operands uses standard recovery — "^*a|$+b|\\A?c|\\b{2}d\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+^*a|$+b|\A?c|\b{2}d\
+
+------------------
+
+
+
+==================
+python_re_verbose: malformed whitespace inside a quantifier modifier uses standard recovery — "a{ 2}|a* ?b|c\\\n"
+:language(python_re_verbose)
+:error
+==================
+a{ 2}|a* ?b|c\
+
+------------------

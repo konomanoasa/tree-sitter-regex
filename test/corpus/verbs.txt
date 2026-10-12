@@ -1,0 +1,59 @@
+==================
+PCRE2 ACCEPT can repeat and optional verb arguments can be empty
+:language(pcre2)
+==================
+(*ACCEPT)??(*PRUNE:)
+------------------
+
+(pattern (alternation (concatenation (repetition (control_verb (verb_name)) (quantifier)) (control_verb (verb_name)))))
+
+==================
+PCRE2 ACCEPT repeats and optional arguments may be empty
+:language(pcre2)
+==================
+(*ACCEPT)??(*PRUNE:)(*ACCEPT:)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (repetition
+        operand: (control_verb
+          name: (verb_name))
+        quantifier: (quantifier))
+      (control_verb
+        name: (verb_name))
+      (control_verb
+        name: (verb_name)))))
+
+==================
+PCRE2 control verbs retain optional arguments
+:language(pcre2)
+==================
+(*ACCEPT)(*FAIL)(*F)(*COMMIT)(*PRUNE:tag)(*SKIP:tag)(*THEN)(*MARK:tag)(*:tag)
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (control_verb
+        name: (verb_name))
+      (control_verb
+        name: (verb_name))
+      (control_verb
+        name: (verb_name))
+      (control_verb
+        name: (verb_name))
+      (control_verb
+        name: (verb_name)
+        (verb_argument))
+      (control_verb
+        name: (verb_name)
+        (verb_argument))
+      (control_verb
+        name: (verb_name))
+      (control_verb
+        name: (verb_name)
+        (verb_argument))
+      (control_verb
+        (verb_argument)))))

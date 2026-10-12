@@ -7,6 +7,7 @@
   (character_class_escape)
   (property_escape)
   (property_name)
+  (class_name)
 ] @character.special
 
 (wildcard
@@ -101,6 +102,7 @@
   "?"
   "?P"
   "?C"
+  "*"
   "\\g"
   "\\k"
 ] @punctuation.special
@@ -113,7 +115,6 @@
   "^"
   "$"
   "-"
-  "*"
   "+"
   "="
   "!"
@@ -132,42 +133,17 @@
   ">" @operator)
 
 (quantifier
-  "?" @operator)
+  [
+    "*"
+    "?"
+  ] @operator)
 
-[
-  (atomic_group
-    "*" @punctuation.special)
-  (atomic_script_run_group
-    "*" @punctuation.special)
-  (script_run_group
-    "*" @punctuation.special)
-  (positive_lookahead_assertion
-    "*" @punctuation.special)
-  (negative_lookahead_assertion
-    "*" @punctuation.special)
-  (positive_lookbehind_assertion
-    "*" @punctuation.special)
-  (negative_lookbehind_assertion
-    "*" @punctuation.special)
-  (non_atomic_lookahead_assertion
-    "*" @punctuation.special
-    [
-      "napla"
-      "non_atomic_positive_lookahead"
-    ])
-  (non_atomic_lookbehind_assertion
-    "*" @punctuation.special)
-  (scan_substring_assertion
-    "*" @punctuation.special)
-  (assertion_condition
-    "*" @punctuation.special)
-]
+(non_atomic_lookahead_assertion
+  "?"
+  "*" @operator)
 
 (numeric_backreference
   group: (group_number) @string.escape)
-
-(posix_character_class
-  name: (class_name) @character.special)
 
 (callout_string
   [
@@ -187,5 +163,8 @@
     ">"
   ] @operator)
 
-(condition_name
-  "R" @label)
+(start_option
+  "=" @punctuation.delimiter)
+
+(version_condition
+  "." @punctuation.delimiter)

@@ -16,19 +16,18 @@ npm install @konomanoasa/tree-sitter-regex
 
 ## Grammars
 
-ECMAScript input is the body of a regular expression literal (`/.../`).
-Python input is a pattern in a raw `str` literal.
+Syntax differs across languages and options, so we use separate grammars.
 
-| Grammar              | Description                             |
-| -------------------- | --------------------------------------- |
-| `js_regex`           | ECMAScript 2026, neither `u` nor `v` |
-| `js_regex_u`         | ECMAScript 2026, `u` |
-| `js_regex_v`         | ECMAScript 2026, `v` |
-| `pcre2`              | PCRE2 10.49, fixed initial options      |
-| `posix_bre`          | POSIX.1-2024 BRE                        |
-| `posix_ere`          | POSIX.1-2024 ERE                        |
-| `python_re`          | Python 3.14, initial `VERBOSE` disabled |
-| `python_re_verbose`  | Python 3.14, initial `VERBOSE` enabled  |
+| Grammar             | Description                             |
+| ------------------- | --------------------------------------- |
+| `js_regex`          | ECMAScript 2026, neither `u` nor `v`    |
+| `js_regex_u`        | ECMAScript 2026, `u`                    |
+| `js_regex_v`        | ECMAScript 2026, `v`                    |
+| `pcre2`             | PCRE2 10.49, fixed initial options      |
+| `posix_bre`         | POSIX.1-2024 BRE                        |
+| `posix_ere`         | POSIX.1-2024 ERE                        |
+| `python_re`         | Python 3.14, initial `VERBOSE` disabled |
+| `python_re_verbose` | Python 3.14, initial `VERBOSE` enabled  |
 
 ## Development
 

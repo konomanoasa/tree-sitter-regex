@@ -1,10 +1,28 @@
 ==================
+PCRE2 normal hexadecimal braces form one escape
+:language(pcre2)
+==================
+\x{41}
+------------------
+
+(pattern (alternation (concatenation (hex_escape (hexadecimal_digits)))))
+
+==================
+PCRE2 ignored property prefixes are separate from negation and the property name
+:language(pcre2)
+==================
+\p{-^Lu}\p{_^Lu}
+------------------
+
+(pattern (alternation (concatenation (unicode_property (property_escape) (property_ignored) (property_name)) (unicode_property (property_escape) (property_ignored) (property_name)))))
+
+==================
 common character escapes preserve their syntactic categories
 :language(js_regex)
 :cst
 ==================
 \f\n\r\t\v\cA\cz\0\x41\u0042\d\D\s\S\w\W
----
+------------------
 
 0:0  - 0:40   pattern
 0:0  - 0:40     body: disjunction
@@ -118,7 +136,7 @@ common character escapes preserve their syntactic categories
 :cst
 ==================
 \f\n\r\t\v\cA\cz\0\x41\u0042\d\D\s\S\w\W
----
+------------------
 
 0:0  - 0:40   pattern
 0:0  - 0:40     body: disjunction
@@ -233,7 +251,7 @@ fixed escapes remain atoms in both Python modes
 ==================
 \ \#\!\a\f\n\r\t\v\d\D\s\S\w\W\A\z\Z\b\B\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -266,7 +284,7 @@ hexadecimal and Unicode escapes own fixed introducers and digit fields
 :cst
 ==================
 \x41\u0042
----
+------------------
 
 0:0  - 0:10   pattern
 0:0  - 0:10     body: disjunction
@@ -300,7 +318,7 @@ hexadecimal and Unicode escapes own fixed introducers and digit fields
 :cst
 ==================
 \x41\u0042
----
+------------------
 
 0:0  - 0:10   pattern
 0:0  - 0:10     body: disjunction
@@ -335,7 +353,7 @@ hexadecimal and Unicode escapes own fixed introducers and digit fields
 :cst
 ==================
 \x41\u0042
----
+------------------
 
 0:0  - 0:10   pattern
 0:0  - 0:10     body: alternation
@@ -354,7 +372,7 @@ hex escapes expose their digits in both Python modes
 ==================
 \x00|\xAf\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -373,7 +391,7 @@ fixed and named Unicode escapes expose their fields
 ==================
 \u0041|\U00000042|\N{LATIN CAPITAL LETTER A}\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -394,7 +412,7 @@ every syntax character and the literal delimiter can be escaped
 :cst
 ==================
 \^\$\\\.\*\+\?\(\)\[\]\{\}\|\/
----
+------------------
 
 0:0  - 0:30   pattern
 0:0  - 0:30     body: disjunction
@@ -527,7 +545,7 @@ every syntax character and the literal delimiter can be escaped
 :cst
 ==================
 \^\$\\\.\*\+\?\(\)\[\]\{\}\|\/
----
+------------------
 
 0:0  - 0:30   pattern
 0:0  - 0:30     body: disjunction
@@ -645,7 +663,7 @@ property escapes retain lone and assigned property spellings
 :cst
 ==================
 \p{ASCII}\P{General_Category=Lu}\p{Script_Extensions=Hiragana}\p{sc=Latn}
----
+------------------
 
 0:0  - 0:73   pattern
 0:0  - 0:73     body: disjunction
@@ -837,7 +855,7 @@ null escapes can be quantified and followed by an alternative
 :cst
 ==================
 \0?|\0
----
+------------------
 
 0:0 - 0:6   pattern
 0:0 - 0:6     body: disjunction
@@ -867,7 +885,7 @@ null escapes can be quantified and followed by an alternative
 :cst
 ==================
 \0?|\0
----
+------------------
 
 0:0 - 0:6   pattern
 0:0 - 0:6     body: disjunction
@@ -895,9 +913,9 @@ numeric escapes follow octal and backreference boundaries
 :language(python_re)
 :language(python_re_verbose)
 ==================
-\0|\00|\000|\0000|\08|\1234|\128|\400|\777|\1|\12|\8|\99|\999\
+\0|\00|\000|\0000|\08|\1234|\128|\300|\377|\1|\12|\8|\99|\999\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -951,12 +969,88 @@ numeric escapes follow octal and backreference boundaries
       (literal_escape))))
 
 ==================
+Python numeric escape limits retain their digit fields
+:language(python_re)
+:language(python_re_verbose)
+==================
+\377\U0010FFFF
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (octal_escape
+        digits: (octal_digits))
+      (unicode_escape
+        digits: (hexadecimal_digits)))))
+
+==================
+Python Unicode escapes admit surrogate code points
+:language(python_re)
+:language(python_re_verbose)
+==================
+\uD800\U0000DFFF
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (unicode_escape
+        digits: (hexadecimal_digits))
+      (unicode_escape
+        digits: (hexadecimal_digits)))))
+
+==================
+a Python octal escape above the byte maximum requires recovery
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+\400
+------------------
+
+
+
+==================
+a Python class octal escape above the byte maximum requires recovery
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+[\777]
+------------------
+
+
+
+==================
+a Python Unicode escape above the code point maximum requires recovery
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+\U00110000
+------------------
+
+
+
+==================
+a Python class Unicode escape above the code point maximum requires recovery
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+[\UFFFFFFFF]
+------------------
+
+
+
+==================
 ordinary mode keeps surrogate escapes separate and quantifies the trailing escape
 :language(js_regex)
 :cst
 ==================
 \uD800\uDC00+\uD800\uD801\uDC00\uDC00\uDbFf\udFff
----
+------------------
 
 0:0  - 0:49   pattern
 0:0  - 0:49     body: disjunction
@@ -1068,7 +1162,7 @@ only adjacent leading and trailing surrogate escapes combine in Unicode modes
 :cst
 ==================
 \uD800\uDC00+\uD800\uD801\uDC00\uDC00\uDbFf\udFff
----
+------------------
 
 0:0  - 0:49   pattern
 0:0  - 0:49     body: disjunction
@@ -1170,7 +1264,7 @@ braced and reversed surrogate spellings do not combine
 :cst
 ==================
 \uDC00\uD800\u{DC00}\u{D800}\uDC00
----
+------------------
 
 0:0  - 0:34   pattern
 0:0  - 0:34     body: disjunction
@@ -1252,7 +1346,7 @@ surrogate pair escapes own both spellings before the quantifier
 :cst
 ==================
 \uD83D\uDE00+\x41
----
+------------------
 
 0:0  - 0:17   pattern
 0:0  - 0:17     body: disjunction
@@ -1296,7 +1390,7 @@ fixed width hexadecimal escapes leave subsequent digits as literals
 :cst
 ==================
 \x412\u00423
----
+------------------
 
 0:0  - 0:12   pattern
 0:0  - 0:12     body: disjunction
@@ -1338,7 +1432,7 @@ fixed width hexadecimal escapes leave subsequent digits as literals
 :cst
 ==================
 \x412\u00423
----
+------------------
 
 0:0  - 0:12   pattern
 0:0  - 0:12     body: disjunction
@@ -1380,7 +1474,7 @@ an escaped backslash prevents the following spelling from becoming an escape
 :cst
 ==================
 \\b\\u0041
----
+------------------
 
 0:0  - 0:10   pattern
 0:0  - 0:10     body: disjunction
@@ -1433,7 +1527,7 @@ an escaped backslash prevents the following spelling from becoming an escape
 :cst
 ==================
 \\b\\u0041
----
+------------------
 
 0:0  - 0:10   pattern
 0:0  - 0:10     body: disjunction
@@ -1484,7 +1578,7 @@ named Unicode payload can begin with a brace
 ==================
 \N{{}}\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -1501,7 +1595,7 @@ named Unicode payload owns separators through its closing brace
 ==================
 \N{A|B}|z\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -1520,7 +1614,7 @@ complete named Unicode escape owns an internal newline
 \N{A
 B}\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -1535,7 +1629,7 @@ a null escape is complete at end of input
 :cst
 ==================
 \0
----
+------------------
 
 0:0 - 0:2   pattern
 0:0 - 0:2     body: disjunction
@@ -1554,7 +1648,7 @@ a null escape is complete at end of input
 :cst
 ==================
 \0
----
+------------------
 
 0:0 - 0:2   pattern
 0:0 - 0:2     body: disjunction
@@ -1572,7 +1666,7 @@ null escape lookahead preserves following nondecimal characters and escapes
 :cst
 ==================
 \0a\0_\0😀\0\0
----
+------------------
 
 0:0  - 0:16   pattern
 0:0  - 0:16     body: disjunction
@@ -1627,7 +1721,7 @@ null escape lookahead preserves following nondecimal characters and escapes
 :cst
 ==================
 \0a\0_\0😀\0\0
----
+------------------
 
 0:0  - 0:16   pattern
 0:0  - 0:16     body: disjunction
@@ -1682,7 +1776,7 @@ code point escapes preserve leading zeroes up to the permitted lexical maximum
 :cst
 ==================
 \u{0}\u{000041}\u{10FFFF}\u{00000010FFFF}
----
+------------------
 
 0:0  - 0:41   pattern
 0:0  - 0:41     body: disjunction
@@ -1764,7 +1858,7 @@ property existence and string set restrictions are left to the consumer
 :cst
 ==================
 \p{Not_A_Property}\p{1}\P{RGI_Emoji}\p{Age=V15_0}
----
+------------------
 
 0:0  - 0:49   pattern
 0:0  - 0:49     body: disjunction
@@ -1913,7 +2007,9 @@ a null escape cannot precede an octal digit in Unicode modes
 :error
 ==================
 \01
----
+------------------
+
+
 
 ==================
 a null escape cannot precede a nonoctal decimal digit inside a Unicode class
@@ -1922,7 +2018,9 @@ a null escape cannot precede a nonoctal decimal digit inside a Unicode class
 :error
 ==================
 [\09]
----
+------------------
+
+
 
 ==================
 a body identity escape cannot quote an ordinary letter in Unicode modes
@@ -1931,7 +2029,9 @@ a body identity escape cannot quote an ordinary letter in Unicode modes
 :error
 ==================
 \a
----
+------------------
+
+
 
 ==================
 an escaped hyphen is only accepted in class context in Unicode modes
@@ -1940,7 +2040,9 @@ an escaped hyphen is only accepted in class context in Unicode modes
 :error
 ==================
 \-
----
+------------------
+
+
 
 ==================
 a control letter escape requires an ASCII letter
@@ -1949,7 +2051,9 @@ a control letter escape requires an ASCII letter
 :error
 ==================
 \c1
----
+------------------
+
+
 
 ==================
 the nonboundary assertion escape requires recovery in Unicode classes
@@ -1958,7 +2062,9 @@ the nonboundary assertion escape requires recovery in Unicode classes
 :error
 ==================
 [\B]
----
+------------------
+
+
 
 ==================
 additional class control digits require recovery in Unicode modes
@@ -1967,7 +2073,9 @@ additional class control digits require recovery in Unicode modes
 :error
 ==================
 [\c1]
----
+------------------
+
+
 
 ==================
 a hexadecimal escape requires two hexadecimal digits
@@ -1976,7 +2084,9 @@ a hexadecimal escape requires two hexadecimal digits
 :error
 ==================
 \x4G
----
+------------------
+
+
 
 ==================
 an unbraced Unicode escape requires four hexadecimal digits
@@ -1985,7 +2095,9 @@ an unbraced Unicode escape requires four hexadecimal digits
 :error
 ==================
 \u004G
----
+------------------
+
+
 
 ==================
 a code point escape requires nonempty hexadecimal digits
@@ -1994,7 +2106,9 @@ a code point escape requires nonempty hexadecimal digits
 :error
 ==================
 \u{}
----
+------------------
+
+
 
 ==================
 a code point escape above the Unicode maximum requires recovery
@@ -2003,7 +2117,9 @@ a code point escape above the Unicode maximum requires recovery
 :error
 ==================
 \u{0}\u{000041}\u{10FFFF}\u{110000}
----
+------------------
+
+
 
 ==================
 a Unicode property name before equals cannot contain a digit
@@ -2012,7 +2128,9 @@ a Unicode property name before equals cannot contain a digit
 :error
 ==================
 \p{Sc1=Latin}
----
+------------------
+
+
 
 ==================
 a Unicode property value after equals cannot be empty
@@ -2021,7 +2139,9 @@ a Unicode property value after equals cannot be empty
 :error
 ==================
 \p{Script=}
----
+------------------
+
+
 
 ==================
 a Unicode property value cannot contain a hyphen
@@ -2030,7 +2150,9 @@ a Unicode property value cannot contain a hyphen
 :error
 ==================
 \p{Script=Old-Italic}
----
+------------------
+
+
 
 ==================
 a lone Unicode property spelling cannot be empty
@@ -2039,7 +2161,9 @@ a lone Unicode property spelling cannot be empty
 :error
 ==================
 \p{}
----
+------------------
+
+
 
 ==================
 a dangling body backslash is not a complete escape
@@ -2049,7 +2173,9 @@ a dangling body backslash is not a complete escape
 :error
 ==================
 ab\
----
+------------------
+
+
 
 ==================
 a dangling backslash inside a class requires recovery
@@ -2058,7 +2184,9 @@ a dangling backslash inside a class requires recovery
 :error
 ==================
 [a\
----
+------------------
+
+
 
 ==================
 a short hexadecimal escape inside a class requires recovery
@@ -2066,7 +2194,9 @@ a short hexadecimal escape inside a class requires recovery
 :error
 ==================
 [\x4]b
----
+------------------
+
+
 
 ==================
 a nonhexadecimal escape digit inside nested groups requires recovery
@@ -2075,7 +2205,9 @@ a nonhexadecimal escape digit inside nested groups requires recovery
 :error
 ==================
 ((a\xG1)b)c
----
+------------------
+
+
 
 ==================
 a short Unicode escape before a group closer requires recovery
@@ -2084,7 +2216,9 @@ a short Unicode escape before a group closer requires recovery
 :error
 ==================
 (\u12)|b
----
+------------------
+
+
 
 ==================
 an unclosed code point escape inside a class requires recovery
@@ -2092,7 +2226,9 @@ an unclosed code point escape inside a class requires recovery
 :error
 ==================
 [\u{41]b
----
+------------------
+
+
 
 ==================
 an unclosed property escape inside a class requires recovery
@@ -2100,7 +2236,9 @@ an unclosed property escape inside a class requires recovery
 :error
 ==================
 [\p{ASCII]b
----
+------------------
+
+
 
 ==================
 every quoted character is a single token
@@ -2108,7 +2246,7 @@ every quoted character is a single token
 :cst
 ==================
 \^\.\[\]\$\(\)\|\*\+\?\{\}\\
----
+------------------
 
 0:0  - 0:28   extended_reg_exp
 0:0  - 0:28     ere_branch
@@ -2161,7 +2299,7 @@ every quoted character is a single token
 :cst
 ==================
 \?\+\|\^\.\*\[\]\$\\
----
+------------------
 
 0:0  - 0:20   basic_reg_exp
 0:0  - 0:20     bre_branch
@@ -2222,7 +2360,7 @@ a back-reference keeps its spelling
 :cst
 ==================
 \(a\)\1
----
+------------------
 
 0:0 - 0:7   basic_reg_exp
 0:0 - 0:7     bre_branch
@@ -2242,3 +2380,696 @@ a back-reference keeps its spelling
 0:5 - 0:7         simple_bre
 0:5 - 0:7           nondupl_bre
 0:5 - 0:7             backreference `\\1`
+
+==================
+PCRE2 quotation leaves the last character as the repeated operand
+:language(pcre2)
+==================
+\Qabc\E+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (quote_start)
+      (literal_character)
+      (literal_character)
+      (repetition
+        operand: (literal_character)
+        (quote_end)
+        quantifier: (quantifier)))))
+
+==================
+PCRE2 hexadecimal octal Unicode and property escapes keep payloads
+:language(pcre2)
+==================
+\x41\x{1F600}\o{101}\N{U+41}\p{sc: Latin}\PL
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (hex_escape
+        digits: (hexadecimal_digits))
+      (hex_escape
+        digits: (hexadecimal_digits))
+      (octal_escape
+        digits: (octal_digits))
+      (unicode_escape
+        digits: (hexadecimal_digits))
+      (unicode_property
+        (property_escape)
+        name: (property_name))
+      (unicode_property
+        (property_escape)
+        name: (property_name)))))
+
+==================
+PCRE2 control numeric and assertion escapes remain distinct
+:language(pcre2)
+==================
+\a\e\f\n\r\t\cA\0\777\8\A\b\B\K\R\X\C\N\z
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (control_escape)
+      (control_escape)
+      (control_escape)
+      (control_escape)
+      (control_escape)
+      (control_escape)
+      (control_character_escape
+        character: (control_character))
+      (octal_escape
+        digits: (octal_digits))
+      (octal_escape
+        digits: (octal_digits))
+      (numeric_backreference
+        group: (group_number))
+      (anchor_escape)
+      (word_boundary_escape)
+      (word_boundary_escape)
+      (match_reset)
+      (character_class_escape)
+      (character_class_escape)
+      (character_class_escape)
+      (character_class_escape)
+      (anchor_escape))))
+
+==================
+PCRE2 NUL and non-BMP characters retain their source
+:language(pcre2)
+:cst
+==================
+ \ 😀[ 😀]
+------------------
+
+0:0  - 0:14   pattern
+0:0  - 0:14     body: alternation
+0:0  - 0:14       concatenation
+0:0  - 0:1          literal_character `\0`
+0:1  - 0:3          literal_escape `\\\0`
+0:3  - 0:7          literal_character `😀`
+0:7  - 0:14         character_class
+0:7  - 0:8            "["
+0:8  - 0:9            class_character `\0`
+0:9  - 0:13           class_character `😀`
+0:13 - 0:14           "]"
+
+==================
+PCRE2 braced escape and reference padding remains source
+:language(pcre2)
+==================
+\x4Z\o{ 101 }\N{ U+41 }\g{ -1 }\k{ name }
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (hex_escape
+        digits: (hexadecimal_digits))
+      (literal_character)
+      (octal_escape
+        (escape_whitespace)
+        digits: (octal_digits)
+        (escape_whitespace))
+      (unicode_escape
+        (escape_whitespace)
+        digits: (hexadecimal_digits)
+        (escape_whitespace))
+      (backreference
+        (escape_whitespace)
+        group: (group_number)
+        (escape_whitespace))
+      (backreference
+        (escape_whitespace)
+        group: (group_name)
+        (escape_whitespace)))))
+
+==================
+PCRE2 property names preserve ignored vertical whitespace
+:language(pcre2)
+==================
+\p{^Lu}
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (unicode_property
+        (property_escape)
+        (property_ignored)
+        name: (property_name)))))
+
+==================
+PCRE2 quoted plus remains literal after a named reference
+:language(pcre2)
+==================
+(?<x>a)\k<x>\Q+\E
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (named_capturing_group
+        name: (group_name)
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (backreference
+        group: (group_name))
+      (quote_start)
+      (literal_character)
+      (quote_end))))
+
+==================
+PCRE2 property prefix "\\p-" precedes negation
+:language(pcre2)
+==================
+\p{-^Lu}
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (unicode_property
+        (property_escape)
+        (property_ignored)
+        name: (property_name)))))
+
+==================
+PCRE2 property prefix "\\p_" precedes negation
+:language(pcre2)
+==================
+\p{_^Lu}
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (unicode_property
+        (property_escape)
+        (property_ignored)
+        name: (property_name)))))
+
+==================
+PCRE2 property prefix "\\p_- " precedes negation
+:language(pcre2)
+==================
+\p{_- ^ _L-u}
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (unicode_property
+        (property_escape)
+        (property_ignored)
+        name: (property_name)))))
+
+==================
+PCRE2 property prefix "\\P-" precedes negation
+:language(pcre2)
+==================
+\P{-^Lu}
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (unicode_property
+        (property_escape)
+        (property_ignored)
+        name: (property_name)))))
+
+==================
+Python escaped brace remains in the Unicode name
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+\N{\}}
+------------------
+
+0:0 - 0:6   pattern
+0:0 - 0:6     body: alternation
+0:0 - 0:6       concatenation
+0:0 - 0:6         named_unicode_escape
+0:0 - 0:2           "\\N"
+0:2 - 0:3           "{"
+0:3 - 0:5           name: unicode_character_name `\\}`
+0:5 - 0:6           "}"
+
+==================
+Python escaped NUL leaves a following literal NUL
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+\  
+------------------
+
+0:0 - 0:3   pattern
+0:0 - 0:3     body: alternation
+0:0 - 0:3       concatenation
+0:0 - 0:2         literal_escape `\\\0`
+0:2 - 0:3         literal_character `\0`
+
+==================
+Python NUL remains inside a Unicode name
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+\N{A B}
+------------------
+
+0:0 - 0:7   pattern
+0:0 - 0:7     body: alternation
+0:0 - 0:7       concatenation
+0:0 - 0:7         named_unicode_escape
+0:0 - 0:2           "\\N"
+0:2 - 0:3           "{"
+0:3 - 0:6           name: unicode_character_name `A\0B`
+0:6 - 0:7           "}"
+
+==================
+Python \377 preserves bounded digits
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+\3770
+------------------
+
+0:0 - 0:5   pattern
+0:0 - 0:5     body: alternation
+0:0 - 0:5       concatenation
+0:0 - 0:4         octal_escape
+0:0 - 0:1           "\\"
+0:1 - 0:4           digits: octal_digits `377`
+0:4 - 0:5         literal_character `0`
+
+==================
+Python \uD800 preserves bounded digits
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+\uD800
+------------------
+
+0:0 - 0:6   pattern
+0:0 - 0:6     body: alternation
+0:0 - 0:6       concatenation
+0:0 - 0:6         unicode_escape
+0:0 - 0:2           "\\u"
+0:2 - 0:6           digits: hexadecimal_digits `D800`
+
+==================
+Python \uDFFF preserves bounded digits
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+\uDFFF
+------------------
+
+0:0 - 0:6   pattern
+0:0 - 0:6     body: alternation
+0:0 - 0:6       concatenation
+0:0 - 0:6         unicode_escape
+0:0 - 0:2           "\\u"
+0:2 - 0:6           digits: hexadecimal_digits `DFFF`
+
+==================
+Python \U0000D800 preserves bounded digits
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+\U0000D800
+------------------
+
+0:0  - 0:10   pattern
+0:0  - 0:10     body: alternation
+0:0  - 0:10       concatenation
+0:0  - 0:10         unicode_escape
+0:0  - 0:2            "\\U"
+0:2  - 0:10           digits: hexadecimal_digits `0000D800`
+
+==================
+Python \U0000DFFF preserves bounded digits
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+\U0000DFFF
+------------------
+
+0:0  - 0:10   pattern
+0:0  - 0:10     body: alternation
+0:0  - 0:10       concatenation
+0:0  - 0:10         unicode_escape
+0:0  - 0:2            "\\U"
+0:2  - 0:10           digits: hexadecimal_digits `0000DFFF`
+
+==================
+Python \U000FFFFF preserves bounded digits
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+\U000FFFFF
+------------------
+
+0:0  - 0:10   pattern
+0:0  - 0:10     body: alternation
+0:0  - 0:10       concatenation
+0:0  - 0:10         unicode_escape
+0:0  - 0:2            "\\U"
+0:2  - 0:10           digits: hexadecimal_digits `000FFFFF`
+
+==================
+Python \U00100000 preserves bounded digits
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+\U00100000
+------------------
+
+0:0  - 0:10   pattern
+0:0  - 0:10     body: alternation
+0:0  - 0:10       concatenation
+0:0  - 0:10         unicode_escape
+0:0  - 0:2            "\\U"
+0:2  - 0:10           digits: hexadecimal_digits `00100000`
+
+==================
+Python \U0010FFFF preserves bounded digits
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+\U0010FFFF0
+------------------
+
+0:0  - 0:11   pattern
+0:0  - 0:11     body: alternation
+0:0  - 0:11       concatenation
+0:0  - 0:10         unicode_escape
+0:0  - 0:2            "\\U"
+0:2  - 0:10           digits: hexadecimal_digits `0010FFFF`
+0:10 - 0:11         literal_character `0`
+
+==================
+Python \U0010ffff preserves bounded digits
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+\U0010ffff
+------------------
+
+0:0  - 0:10   pattern
+0:0  - 0:10     body: alternation
+0:0  - 0:10       concatenation
+0:0  - 0:10         unicode_escape
+0:0  - 0:2            "\\U"
+0:2  - 0:10           digits: hexadecimal_digits `0010ffff`
+
+==================
+pcre2: PCRE2 property negation separates leading ignored characters from the name — "\\p{-^^Lu}"
+:language(pcre2)
+:error
+==================
+\p{-^^Lu}
+------------------
+
+
+
+==================
+pcre2: PCRE2 rejects alternate escapes and invalid Unicode scalars — "\\x{110000}"
+:language(pcre2)
+:error
+==================
+\x{110000}
+------------------
+
+
+
+==================
+pcre2: PCRE2 rejects alternate escapes and invalid Unicode scalars — "\\x{D800}"
+:language(pcre2)
+:error
+==================
+\x{D800}
+------------------
+
+
+
+==================
+pcre2: PCRE2 rejects alternate escapes and invalid Unicode scalars — "\\uD800"
+:language(pcre2)
+:error
+==================
+\uD800
+------------------
+
+
+
+==================
+pcre2: PCRE2 rejects alternate escapes and invalid Unicode scalars — "\\u{110000}"
+:language(pcre2)
+:error
+==================
+\u{110000}
+------------------
+
+
+
+==================
+pcre2: PCRE2 rejects alternate escapes and invalid Unicode scalars — "\\u0041"
+:language(pcre2)
+:error
+==================
+\u0041
+------------------
+
+
+
+==================
+pcre2: PCRE2 rejects alternate escapes and invalid Unicode scalars — "\\u{41}"
+:language(pcre2)
+:error
+==================
+\u{41}
+------------------
+
+
+
+==================
+pcre2: PCRE2 rejects alternate escapes and invalid Unicode scalars — "\\U"
+:language(pcre2)
+:error
+==================
+\U
+------------------
+
+
+
+==================
+malformed unknown ASCII-letter escape uses standard recovery — "\\q"
+:language(posix_bre)
+:language(posix_ere)
+:error
+==================
+\q
+------------------
+
+
+
+==================
+malformed zero numeric escape uses standard recovery — "\\0"
+:language(posix_bre)
+:language(posix_ere)
+:error
+==================
+\0
+------------------
+
+
+
+==================
+python_re: out-of-range numeric escapes cannot split into shorter escapes or references — "\\777"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+\777
+------------------
+
+
+
+==================
+python_re: out-of-range numeric escapes cannot split into shorter escapes or references — "\\4000"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+\4000
+------------------
+
+
+
+==================
+python_re: out-of-range numeric escapes cannot split into shorter escapes or references — "\\7777"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+\7777
+------------------
+
+
+
+==================
+python_re: out-of-range numeric escapes cannot split into shorter escapes or references — "\\UFFFFFFFF"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+\UFFFFFFFF
+------------------
+
+
+
+==================
+python_re: malformed an escaped closer leaves a capturing name unterminated uses standard recovery — "(?P<a\\>"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+(?P<a\>
+------------------
+
+
+
+==================
+python_re: malformed an escaped closer leaves a reference name unterminated uses standard recovery — "(?P=a\\)"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+(?P=a\)
+------------------
+
+
+
+==================
+python_re: malformed an escaped brace leaves a Unicode character name unterminated uses standard recovery — "\\N{\\}"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+\N{\}
+------------------
+
+
+
+==================
+python_re: malformed incomplete hexadecimal escape before a complete escape uses standard recovery — "\\x0\\n\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+\x0\n\
+
+------------------
+
+
+
+==================
+python_re: malformed hexadecimal escape with a nonhexadecimal digit uses standard recovery — "\\xG\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+\xG\
+
+------------------
+
+
+
+==================
+python_re: malformed Unicode escape without a character name uses standard recovery — "\\N{}\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+\N{}\
+
+------------------
+
+
+
+==================
+python_re: malformed unknown ASCII-letter escape uses standard recovery — "\\q|z\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+\q|z\
+
+------------------
+
+
+
+==================
+python_re: malformed incomplete hexadecimal escape before an alternative uses standard recovery — "\\xF|z\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+\xF|z\
+
+------------------
+
+
+
+==================
+python_re: malformed incomplete short Unicode escape uses standard recovery — "\\u123|z\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+\u123|z\
+
+------------------
+
+
+
+==================
+python_re: malformed incomplete long Unicode escape uses standard recovery — "\\U0000000|z\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+\U0000000|z\
+
+------------------
+
+
+
+==================
+python_re: malformed unterminated named Unicode escape uses standard recovery — "\\N{NAME|z\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+\N{NAME|z\
+
+------------------

@@ -3,25 +3,24 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { after, before } from "node:test";
-import { createTreeSitter, grammars, root } from "../../scripts/tree-sitter.js";
+import { createTreeSitter, grammars } from "../../scripts/tree-sitter.js";
+import { parseCst, sourceEndPoint } from "./cst.js";
 
-const rootNodes = new Map(
-  grammars.map(({ name, path }) => [
-    name,
-    Object.keys(
-      JSON.parse(readFileSync(join(root, path, "src", "grammar.json"), "utf8"))
-        .rules,
-    )[0],
-  ]),
-);
+const commandTimeoutMs = 60_000;
+const cstOutputLimitBytes = 16 * 1024 * 1024;
+const summaryTimeoutMicros = 10_000_000;
 
 let cache;
-
 let runner;
 
 before(() => {
   cache = mkdtempSync(join(tmpdir(), "tree-sitter-regex-parser-"));
-  runner = createTreeSitter();
+  try {
+    runner = createTreeSitter();
+  } catch (error) {
+    rmSync(cache, { recursive: true, force: true });
+    throw error;
+  }
 });
 
 after(() => {
@@ -63,13 +62,6 @@ function formatEdit({ byte, deleteBytes, insert }) {
   return `${byte} ${deleteBytes} ${insert}`;
 }
 
-function sourceEndPoint(source) {
-  const bytes = Buffer.from(source);
-  let row = 0;
-  for (const byte of bytes) if (byte === 10) row += 1;
-  return `${row}:${bytes.length - bytes.lastIndexOf(10) - 1}`;
-}
-
 function runParse(paths, language, edits) {
   const grammar = grammars.find(({ name }) => name === language);
   assert.ok(grammar, language);
@@ -87,8 +79,8 @@ function runParse(paths, language, edits) {
   }
   const result = runner.run(arguments_, {
     encoding: "utf8",
-    maxBuffer: 16 * 1024 * 1024,
-    timeout: 60_000,
+    maxBuffer: cstOutputLimitBytes,
+    timeout: commandTimeoutMs,
   });
   assert.ifError(result.error);
   assert.ok(
@@ -109,17 +101,7 @@ function parseSequence(paths, language) {
 
 function parseFile(path, language, edits = []) {
   const { cst, status } = runParse([path], language, edits);
-  const end = /^[0-9]+:[0-9]+ +- +([0-9]+:[0-9]+)/.exec(cst)?.[1];
-  assert.equal(
-    end,
-    sourceEndPoint(applyEdits(readFileSync(path), edits)),
-    "root must reach the edited source end",
-  );
-  if (status === 0) {
-    assert.ok(cst.includes(rootNodes.get(language)), cst);
-  }
-  const recovery = hasRecovery(cst);
-  return { status: recovery ? 1 : status, cst, recovery };
+  return parseCst(cst, applyEdits(readFileSync(path), edits), language, status);
 }
 
 const javascriptLanguages = ["js_regex", "js_regex_u", "js_regex_v"];
@@ -143,26 +125,7 @@ function parse(grammar, source, edits = []) {
   };
 }
 
-function selectNodes(result, labels) {
-  const stack = [];
-  const selected = [];
-  for (const line of result.rows) {
-    const match = /^([0-9]+:[0-9]+) +- +([0-9]+:[0-9]+) +/.exec(line);
-    assert.ok(match, line);
-    const column = match[0].length;
-    const label = line.slice(column);
-    while (stack.length > 0 && stack.at(-1).column >= column) {
-      stack.pop();
-    }
-    if (labels.includes(label)) {
-      selected.push([label, `${match[1]}-${match[2]}`, stack.at(-1)?.label]);
-    }
-    stack.push({ column, label });
-  }
-  return selected;
-}
-
-function parseSummary(grammar, source, timeout = 10_000_000) {
+function parseSummary(grammar, source, timeoutMicros = summaryTimeoutMicros) {
   const sourcePath = join(cache, "summary.txt");
   writeFileSync(sourcePath, source);
   const result = runner.run(
@@ -175,10 +138,10 @@ function parseSummary(grammar, source, timeout = 10_000_000) {
       "--quiet",
       "--json-summary",
       "--timeout",
-      String(timeout),
+      String(timeoutMicros),
       sourcePath,
     ],
-    { encoding: "utf8", timeout: 60_000 },
+    { encoding: "utf8", timeout: commandTimeoutMs },
   );
   assert.ifError(result.error);
   assert.ok(
@@ -203,14 +166,9 @@ function parseSummary(grammar, source, timeout = 10_000_000) {
   return summary;
 }
 
-function hasRecovery(cst) {
-  return /^[0-9: \t-]+•/m.test(cst);
-}
-
 export {
   applyEdits,
   cache,
-  hasRecovery,
   javascriptLanguages,
   parse,
   parseFile,
@@ -218,7 +176,5 @@ export {
   parseSummary,
   posixGrammars,
   pythonGrammars,
-  runner,
-  selectNodes,
   unicodeLanguages,
 };

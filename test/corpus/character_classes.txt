@@ -1,11 +1,56 @@
 ==================
+PCRE2 class negation does not consume a later literal caret
+:language(pcre2)
+==================
+[^^]
+------------------
+
+(pattern (alternation (concatenation (character_class (class_character)))))
+
+==================
+PCRE2 a literal hyphen after a range can start the next range
+:language(pcre2)
+==================
+[a-z--0]
+------------------
+
+(pattern (alternation (concatenation (character_class (class_range (class_character) (class_character)) (class_range (class_character) (class_character))))))
+
+==================
+PCRE2 quoted class hyphens and brackets stay literal
+:language(pcre2)
+==================
+[a\Q-\Ez][\Q]\E]
+------------------
+
+(pattern (alternation (concatenation (character_class (class_character) (quote_start) (class_character) (quote_end) (class_character)) (character_class (quote_start) (class_character) (quote_end)))))
+
+==================
+PCRE2 class negation follows ignored quote markers and extended whitespace
+:language(pcre2)
+==================
+[\E^a](?xx)[ ^b]
+------------------
+
+(pattern (alternation (concatenation (character_class (quote_end) (class_character)) (global_flags (flag_set)) (character_class (verbose_whitespace) (class_character)))))
+
+==================
+PCRE2 incomplete POSIX prefixes retain literal class characters and the first closing bracket
+:language(pcre2)
+==================
+[[:alpha]][[:][[.a][[=a]
+------------------
+
+(pattern (alternation (concatenation (character_class (class_character) (class_character) (class_character) (class_character) (class_character) (class_character) (class_character)) (literal_character) (character_class (class_character) (class_character)) (character_class (class_character) (class_character) (class_character)) (character_class (class_character) (class_character) (class_character)))))
+
+==================
 class boundaries preserve positional punctuation
 :language(python_re)
 :language(python_re_verbose)
 ==================
 [^a][]][-a][a-]\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -28,7 +73,7 @@ carets after the leading negation are ordinary class members
 :cst
 ==================
 [^^a][a^]
----
+------------------
 
 0:0 - 0:9   pattern
 0:0 - 0:9     body: disjunction
@@ -67,7 +112,7 @@ carets after the leading negation are ordinary class members
 :cst
 ==================
 [^^a][a^]
----
+------------------
 
 0:0 - 0:9   pattern
 0:0 - 0:9     body: disjunction
@@ -106,7 +151,7 @@ carets after the leading negation are ordinary class members
 :cst
 ==================
 [^^a][a^]
----
+------------------
 
 0:0 - 0:9   pattern
 0:0 - 0:9     body: disjunction
@@ -145,7 +190,7 @@ basic classes treat doubled ampersands as ordinary members
 :cst
 ==================
 [a&&b]
----
+------------------
 
 0:0 - 0:6   pattern
 0:0 - 0:6     body: disjunction
@@ -174,7 +219,7 @@ basic classes treat doubled ampersands as ordinary members
 :cst
 ==================
 [a&&b]
----
+------------------
 
 0:0 - 0:6   pattern
 0:0 - 0:6     body: disjunction
@@ -203,7 +248,7 @@ groups alternatives whitespace and opening brackets are ordinary inside basic cl
 :cst
 ==================
 [()|.$*+?{}[ #]
----
+------------------
 
 0:0  - 0:15   pattern
 0:0  - 0:15     body: disjunction
@@ -250,7 +295,7 @@ groups alternatives whitespace and opening brackets are ordinary inside basic cl
 :cst
 ==================
 [()|.$*+?{}[ #]
----
+------------------
 
 0:0  - 0:15   pattern
 0:0  - 0:15     body: disjunction
@@ -297,7 +342,7 @@ class escapes distinguish backspace and escaped brackets from delimiters
 :cst
 ==================
 [\b\d\s\w\x41\u0042\cA\0\-\]\[]
----
+------------------
 
 0:0  - 0:31   pattern
 0:0  - 0:31     body: disjunction
@@ -385,7 +430,7 @@ class escapes distinguish backspace and escaped brackets from delimiters
 :cst
 ==================
 [\b\d\s\w\x41\u0042\cA\0\-\]\[]
----
+------------------
 
 0:0  - 0:31   pattern
 0:0  - 0:31     body: disjunction
@@ -469,7 +514,7 @@ class escapes distinguish backspace and escaped brackets from delimiters
 :cst
 ==================
 [\b\d\s\w\x41\u0042\cA\0\-\]\[]
----
+------------------
 
 0:0  - 0:31   pattern
 0:0  - 0:31     body: disjunction
@@ -551,7 +596,7 @@ class escapes expose class-specific nodes and fields
 ==================
 [\b\1\12\1234\d\a-\x42]\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -578,7 +623,7 @@ class ranges own literal and escaped endpoints
 :cst
 ==================
 [a-z\x41-\u005A]
----
+------------------
 
 0:0  - 0:16   pattern
 0:0  - 0:16     body: disjunction
@@ -625,7 +670,7 @@ class ranges own literal and escaped endpoints
 :cst
 ==================
 [a-z\x41-\u005A]
----
+------------------
 
 0:0  - 0:16   pattern
 0:0  - 0:16     body: disjunction
@@ -673,7 +718,7 @@ class ranges own literal and escaped endpoints
 :cst
 ==================
 [a-z\x41-\u005A]
----
+------------------
 
 0:0  - 0:16   pattern
 0:0  - 0:16     body: disjunction
@@ -719,7 +764,7 @@ class ranges own literal and escaped endpoints
 :cst
 ==================
 [a-z\x41-\u005A]
----
+------------------
 
 0:0  - 0:16   pattern
 0:0  - 0:16     body: alternation
@@ -746,7 +791,7 @@ consecutive class ranges retain separate endpoints
 :cst
 ==================
 [a-zA-Z0-9]+
----
+------------------
 
 0:0  - 0:12   pattern
 0:0  - 0:12     body: disjunction
@@ -788,7 +833,7 @@ consecutive class ranges retain separate endpoints
 :cst
 ==================
 [a-zA-Z0-9]+
----
+------------------
 
 0:0  - 0:12   pattern
 0:0  - 0:12     body: disjunction
@@ -830,7 +875,7 @@ consecutive class ranges retain separate endpoints
 :cst
 ==================
 [a-zA-Z0-9]+
----
+------------------
 
 0:0  - 0:12   pattern
 0:0  - 0:12     body: disjunction
@@ -871,7 +916,7 @@ ranges bind from left to right
 ==================
 [a-z][]-a][--a][a-b-c][a--b]\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -907,7 +952,7 @@ hyphens can be ordinary members or range endpoints
 :cst
 ==================
 [-a][a-][--][--a][a--]
----
+------------------
 
 0:0  - 0:22   pattern
 0:0  - 0:22     body: disjunction
@@ -978,7 +1023,7 @@ hyphens can be ordinary members or range endpoints
 :cst
 ==================
 [-a][a-][--][--a][a--]
----
+------------------
 
 0:0  - 0:22   pattern
 0:0  - 0:22     body: disjunction
@@ -1049,7 +1094,7 @@ members after a completed range begin a new range only with another separator
 :cst
 ==================
 [a-b-c][a-b--c]
----
+------------------
 
 0:0  - 0:15   pattern
 0:0  - 0:15     body: disjunction
@@ -1099,7 +1144,7 @@ members after a completed range begin a new range only with another separator
 :cst
 ==================
 [a-b-c][a-b--c]
----
+------------------
 
 0:0  - 0:15   pattern
 0:0  - 0:15     body: disjunction
@@ -1150,7 +1195,7 @@ str profiles allow Unicode escapes as range endpoints
 ==================
 [\u0041-\N{B}]\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -1169,7 +1214,7 @@ class range endpoints preserve escape kinds and leave set validation to the cons
 :cst
 ==================
 [\x41-\u005a\b-\cZ\d-a-z]
----
+------------------
 
 0:0  - 0:25   pattern
 0:0  - 0:25     body: disjunction
@@ -1237,7 +1282,7 @@ class range endpoints preserve escape kinds and leave set validation to the cons
 :cst
 ==================
 [\x41-\u005a\b-\cZ\d-a-z]
----
+------------------
 
 0:0  - 0:25   pattern
 0:0  - 0:25     body: disjunction
@@ -1306,7 +1351,7 @@ property escapes and Unicode code points remain distinct class members
 :cst
 ==================
 [\p{ASCII}\P{Script=Greek}\u{61}-\u{7A}]
----
+------------------
 
 0:0  - 0:40   pattern
 0:0  - 0:40     body: disjunction
@@ -1417,7 +1462,7 @@ property escapes and Unicode code points remain distinct class members
 :cst
 ==================
 [\p{ASCII}\P{Script=Greek}\u{61}-\u{7A}]
----
+------------------
 
 0:0  - 0:40   pattern
 0:0  - 0:40     body: disjunction
@@ -1527,7 +1572,7 @@ verbose mode keeps class whitespace and comment spellings as members
 (?x:[ (?#|)
 ])\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -1552,7 +1597,7 @@ property range validity in Unicode mode is left to the consumer
 :cst
 ==================
 [\p{ASCII}-z]
----
+------------------
 
 0:0  - 0:13   pattern
 0:0  - 0:13     body: disjunction
@@ -1601,7 +1646,7 @@ nested-set warning spellings retain current class structure
 ==================
 [[a][a&&b][a~~b][a||b][a--b]\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -1638,7 +1683,7 @@ hyphens beside class escapes remain members first, last, and after a range
 ==================
 [-\d][\d-][a-b-\d]\
 
----
+------------------
 
 (pattern
   body: (alternation
@@ -1658,22 +1703,16 @@ hyphens beside class escapes remain members first, last, and after a range
       (literal_escape))))
 
 ==================
-a class escape cannot begin a character range
-:language(python_re)
-:language(python_re_verbose)
-:error
-==================
-[\d-a]
----
-
-==================
 a class escape cannot end a character range
 :language(python_re)
 :language(python_re_verbose)
+:language(pcre2)
 :error
 ==================
 [a-\d]
----
+------------------
+
+
 
 ==================
 a class escape cannot be either endpoint of a range starting with an escape or a hyphen
@@ -1682,7 +1721,9 @@ a class escape cannot be either endpoint of a range starting with an escape or a
 :error
 ==================
 [\d-\w][\d--][a-b--\d]
----
+------------------
+
+
 
 ==================
 empty classes own separate bracket and negation tokens and a body caret stays an anchor
@@ -1690,7 +1731,7 @@ empty classes own separate bracket and negation tokens and a body caret stays an
 :cst
 ==================
 [][^][a]^
----
+------------------
 
 0:0 - 0:9   pattern
 0:0 - 0:9     body: disjunction
@@ -1725,7 +1766,7 @@ empty classes own separate bracket and negation tokens and a body caret stays an
 :cst
 ==================
 [][^][a]^
----
+------------------
 
 0:0 - 0:9   pattern
 0:0 - 0:9     body: disjunction
@@ -1760,7 +1801,7 @@ empty classes own separate bracket and negation tokens and a body caret stays an
 :cst
 ==================
 [][^][a]^
----
+------------------
 
 0:0 - 0:9   pattern
 0:0 - 0:9     body: disjunction
@@ -1796,7 +1837,7 @@ ordinary mode assigns class range endpoints to individual surrogate escapes
 :cst
 ==================
 [\uD83D\uDE00-\uD83D\uDE4F]
----
+------------------
 
 0:0  - 0:27   pattern
 0:0  - 0:27     body: disjunction
@@ -1864,7 +1905,7 @@ surrogate escapes combine before class range endpoints in Unicode mode
 :cst
 ==================
 [\uD83D\uDE00-\uD83D\uDE4F]
----
+------------------
 
 0:0  - 0:27   pattern
 0:0  - 0:27     body: disjunction
@@ -1923,7 +1964,7 @@ surrogate escapes combine before class range endpoints in Unicode mode
 :cst
 ==================
 [\uD83D\uDE00-\uD83D\uDE4F]
----
+------------------
 
 0:0  - 0:27   pattern
 0:0  - 0:27     body: disjunction
@@ -1980,7 +2021,7 @@ non-BMP class endpoints and null escape lookahead preserve exact byte ranges
 :cst
 ==================
 [😀-🙏]\0a
----
+------------------
 
 0:0  - 0:14   pattern
 0:0  - 0:14     body: disjunction
@@ -2015,7 +2056,7 @@ non-BMP class endpoints and null escape lookahead preserve exact byte ranges
 :cst
 ==================
 [😀-🙏]\0a
----
+------------------
 
 0:0  - 0:14   pattern
 0:0  - 0:14     body: disjunction
@@ -2050,7 +2091,7 @@ non-BMP class endpoints and null escape lookahead preserve exact byte ranges
 :cst
 ==================
 [😀-🙏]\0a
----
+------------------
 
 0:0  - 0:14   pattern
 0:0  - 0:14     body: disjunction
@@ -2086,7 +2127,9 @@ a raw body closing bracket requires recovery in Unicode modes
 :error
 ==================
 ]
----
+------------------
+
+
 
 ==================
 an unterminated character class requires recovery
@@ -2095,7 +2138,9 @@ an unterminated character class requires recovery
 :error
 ==================
 [ab
----
+------------------
+
+
 
 ==================
 an unclosed class inside a group requires recovery
@@ -2104,7 +2149,9 @@ an unclosed class inside a group requires recovery
 :error
 ==================
 ([a)|b
----
+------------------
+
+
 
 ==================
 a bracket expression owns its outer delimiters
@@ -2112,7 +2159,7 @@ a bracket expression owns its outer delimiters
 :cst
 ==================
 [abc]
----
+------------------
 
 0:0 - 0:5   extended_reg_exp
 0:0 - 0:5     ere_branch
@@ -2143,7 +2190,7 @@ a nonmatching list allows a leading close bracket and a trailing hyphen
 :cst
 ==================
 [^]a-]
----
+------------------
 
 0:0 - 0:6   extended_reg_exp
 0:0 - 0:6     ere_branch
@@ -2172,7 +2219,7 @@ a range separator belongs to the start of the range
 :cst
 ==================
 [a-z]
----
+------------------
 
 0:0 - 0:5   extended_reg_exp
 0:0 - 0:5     ere_branch
@@ -2199,7 +2246,7 @@ a hyphen can end a range
 :cst
 ==================
 [a--]
----
+------------------
 
 0:0 - 0:5   extended_reg_exp
 0:0 - 0:5     ere_branch
@@ -2225,7 +2272,7 @@ compound bracket elements keep their own delimiters
 :cst
 ==================
 [[.ch.][=a=][:alpha:]]
----
+------------------
 
 0:0  - 0:22   extended_reg_exp
 0:0  - 0:22     ere_branch
@@ -2269,7 +2316,7 @@ a collating symbol can carry a meta character payload
 :cst
 ==================
 [[.].]]
----
+------------------
 
 0:0 - 0:7   extended_reg_exp
 0:0 - 0:7     ere_branch
@@ -2297,7 +2344,7 @@ a bracket expression owns its outer delimiters
 :cst
 ==================
 [abc]
----
+------------------
 
 0:0 - 0:5   basic_reg_exp
 0:0 - 0:5     bre_branch
@@ -2330,7 +2377,7 @@ compound bracket elements keep their own delimiters
 :cst
 ==================
 [[.ch.][=a=][:alpha:]]
----
+------------------
 
 0:0  - 0:22   basic_reg_exp
 0:0  - 0:22     bre_branch
@@ -2369,3 +2416,1086 @@ compound bracket elements keep their own delimiters
 0:19 - 0:20                             ":"
 0:20 - 0:21                             "]"
 0:21 - 0:22                 "]"
+
+==================
+PCRE2 ranges and character escapes are separate members
+:language(pcre2)
+==================
+[a-z\d]
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (character_class
+        (class_range
+          start: (class_character)
+          end: (class_character))
+        (character_class_escape)))))
+
+==================
+PCRE2 leading close and trailing hyphen remain members
+:language(pcre2)
+==================
+[]a-]
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (character_class
+        (class_character)
+        (class_character)
+        (class_character)))))
+
+==================
+PCRE2 POSIX class names retain negation
+:language(pcre2)
+==================
+[[:alpha:][:^digit:]]
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (character_class
+        (posix_character_class
+          name: (class_name))
+        (posix_character_class
+          name: (class_name))))))
+
+==================
+PCRE2 property prefix inside a class precedes negation
+:language(pcre2)
+==================
+[\p{_^Lu}]
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (character_class
+        (unicode_property
+          (property_escape)
+          (property_ignored)
+          name: (property_name))))))
+
+==================
+PCRE2 incomplete POSIX ":alpha" prefix stays literal
+:language(pcre2)
+==================
+[[:alpha]]
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (character_class
+        (class_character)
+        (class_character)
+        (class_character)
+        (class_character)
+        (class_character)
+        (class_character)
+        (class_character))
+      (literal_character))))
+
+==================
+PCRE2 incomplete POSIX ":" prefix stays literal
+:language(pcre2)
+==================
+[[:]
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (character_class
+        (class_character)
+        (class_character)))))
+
+==================
+PCRE2 incomplete POSIX ".a" prefix stays literal
+:language(pcre2)
+==================
+[[.a]
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (character_class
+        (class_character)
+        (class_character)
+        (class_character)))))
+
+==================
+PCRE2 incomplete POSIX "=a" prefix stays literal
+:language(pcre2)
+==================
+[[=a]
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (character_class
+        (class_character)
+        (class_character)
+        (class_character)))))
+
+==================
+PCRE2 incomplete POSIX ":[:" prefix stays literal
+:language(pcre2)
+==================
+[[:[:]
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (character_class
+        (class_character)
+        (class_character)
+        (class_character)
+        (class_character)))))
+
+==================
+PCRE2 complete POSIX delimiter pair forms a class
+:language(pcre2)
+==================
+[[:alpha:]]
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (character_class
+        (posix_character_class
+          name: (class_name))))))
+
+==================
+PCRE2 escaped bracket cannot introduce a collating symbol
+:language(pcre2)
+==================
+[\[.a.]
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (character_class
+        (literal_escape)
+        (class_character)
+        (class_character)
+        (class_character)))))
+
+==================
+PCRE2 quoted bracket cannot introduce a collating symbol
+:language(pcre2)
+==================
+[\Q[.a.]\E]
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (character_class
+        (quote_start)
+        (class_character)
+        (class_character)
+        (class_character)
+        (class_character)
+        (class_character)
+        (quote_end)))))
+
+==================
+PCRE2 escaped nested bracket keeps the POSIX prefix literal
+:language(pcre2)
+==================
+[[:a\[:]
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (character_class
+        (class_character)
+        (class_character)
+        (class_character)
+        (literal_escape)
+        (class_character)))))
+
+==================
+PCRE2 a backslash pair leaves a closing bracket structural
+:language(pcre2)
+==================
+[[:a\\]:]]
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (character_class
+        (class_character)
+        (class_character)
+        (class_character)
+        (literal_escape))
+      (literal_character)
+      (literal_character)
+      (literal_character))))
+
+==================
+PCRE2 a later complete POSIX pair closes after its own name
+:language(pcre2)
+==================
+[[:a[:alpha:]]
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (character_class
+        (class_character)
+        (class_character)
+        (class_character)
+        (posix_character_class
+          name: (class_name))))))
+
+==================
+Python escaped NUL does not consume the following NUL
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+[\  ]
+------------------
+
+0:0 - 0:5   pattern
+0:0 - 0:5     body: alternation
+0:0 - 0:5       concatenation
+0:0 - 0:5         character_class
+0:0 - 0:1           "["
+0:1 - 0:3           literal_escape `\\\0`
+0:3 - 0:4           class_character `\0`
+0:4 - 0:5           "]"
+
+==================
+Python \377 preserves bounded digits inside a class
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+[\3770]
+------------------
+
+0:0 - 0:7   pattern
+0:0 - 0:7     body: alternation
+0:0 - 0:7       concatenation
+0:0 - 0:7         character_class
+0:0 - 0:1           "["
+0:1 - 0:5           octal_escape
+0:1 - 0:2             "\\"
+0:2 - 0:5             digits: octal_digits `377`
+0:5 - 0:6           class_character `0`
+0:6 - 0:7           "]"
+
+==================
+Python \uD800 preserves bounded digits inside a class
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+[\uD800]
+------------------
+
+0:0 - 0:8   pattern
+0:0 - 0:8     body: alternation
+0:0 - 0:8       concatenation
+0:0 - 0:8         character_class
+0:0 - 0:1           "["
+0:1 - 0:7           unicode_escape
+0:1 - 0:3             "\\u"
+0:3 - 0:7             digits: hexadecimal_digits `D800`
+0:7 - 0:8           "]"
+
+==================
+Python \uDFFF preserves bounded digits inside a class
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+[\uDFFF]
+------------------
+
+0:0 - 0:8   pattern
+0:0 - 0:8     body: alternation
+0:0 - 0:8       concatenation
+0:0 - 0:8         character_class
+0:0 - 0:1           "["
+0:1 - 0:7           unicode_escape
+0:1 - 0:3             "\\u"
+0:3 - 0:7             digits: hexadecimal_digits `DFFF`
+0:7 - 0:8           "]"
+
+==================
+Python \U0000D800 preserves bounded digits inside a class
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+[\U0000D800]
+------------------
+
+0:0  - 0:12   pattern
+0:0  - 0:12     body: alternation
+0:0  - 0:12       concatenation
+0:0  - 0:12         character_class
+0:0  - 0:1            "["
+0:1  - 0:11           unicode_escape
+0:1  - 0:3              "\\U"
+0:3  - 0:11             digits: hexadecimal_digits `0000D800`
+0:11 - 0:12           "]"
+
+==================
+Python \U0000DFFF preserves bounded digits inside a class
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+[\U0000DFFF]
+------------------
+
+0:0  - 0:12   pattern
+0:0  - 0:12     body: alternation
+0:0  - 0:12       concatenation
+0:0  - 0:12         character_class
+0:0  - 0:1            "["
+0:1  - 0:11           unicode_escape
+0:1  - 0:3              "\\U"
+0:3  - 0:11             digits: hexadecimal_digits `0000DFFF`
+0:11 - 0:12           "]"
+
+==================
+Python \U000FFFFF preserves bounded digits inside a class
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+[\U000FFFFF]
+------------------
+
+0:0  - 0:12   pattern
+0:0  - 0:12     body: alternation
+0:0  - 0:12       concatenation
+0:0  - 0:12         character_class
+0:0  - 0:1            "["
+0:1  - 0:11           unicode_escape
+0:1  - 0:3              "\\U"
+0:3  - 0:11             digits: hexadecimal_digits `000FFFFF`
+0:11 - 0:12           "]"
+
+==================
+Python \U00100000 preserves bounded digits inside a class
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+[\U00100000]
+------------------
+
+0:0  - 0:12   pattern
+0:0  - 0:12     body: alternation
+0:0  - 0:12       concatenation
+0:0  - 0:12         character_class
+0:0  - 0:1            "["
+0:1  - 0:11           unicode_escape
+0:1  - 0:3              "\\U"
+0:3  - 0:11             digits: hexadecimal_digits `00100000`
+0:11 - 0:12           "]"
+
+==================
+Python \U0010FFFF preserves bounded digits inside a class
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+[\U0010FFFF0]
+------------------
+
+0:0  - 0:13   pattern
+0:0  - 0:13     body: alternation
+0:0  - 0:13       concatenation
+0:0  - 0:13         character_class
+0:0  - 0:1            "["
+0:1  - 0:11           unicode_escape
+0:1  - 0:3              "\\U"
+0:3  - 0:11             digits: hexadecimal_digits `0010FFFF`
+0:11 - 0:12           class_character `0`
+0:12 - 0:13           "]"
+
+==================
+Python \U0010ffff preserves bounded digits inside a class
+:language(python_re)
+:language(python_re_verbose)
+:cst
+==================
+[\U0010ffff]
+------------------
+
+0:0  - 0:12   pattern
+0:0  - 0:12     body: alternation
+0:0  - 0:12       concatenation
+0:0  - 0:12         character_class
+0:0  - 0:1            "["
+0:1  - 0:11           unicode_escape
+0:1  - 0:3              "\\U"
+0:3  - 0:11             digits: hexadecimal_digits `0010ffff`
+0:11 - 0:12           "]"
+
+==================
+posix_bre: single Unicode collating payloads retain byte ranges
+:language(posix_bre)
+:cst
+==================
+[[.é.][=😀=]]
+------------------
+
+0:0  - 0:16   basic_reg_exp
+0:0  - 0:16     bre_branch
+0:0  - 0:16       bre_expression
+0:0  - 0:16         simple_bre
+0:0  - 0:16           nondupl_bre
+0:0  - 0:16             one_char_or_coll_elem_bre
+0:0  - 0:16               bracket_expression
+0:0  - 0:1                  "["
+0:1  - 0:15                 matching_list
+0:1  - 0:15                   bracket_list
+0:1  - 0:15                     follow_list
+0:1  - 0:7                        expression_term
+0:1  - 0:7                          single_expression
+0:1  - 0:7                            end_range
+0:1  - 0:7                              collating_symbol
+0:1  - 0:2                                "["
+0:2  - 0:3                                "."
+0:3  - 0:5                                element: collating_element_single `é`
+0:5  - 0:6                                "."
+0:6  - 0:7                                "]"
+0:7  - 0:15                       expression_term
+0:7  - 0:15                         single_expression
+0:7  - 0:15                           equivalence_class
+0:7  - 0:8                              "["
+0:8  - 0:9                              "="
+0:9  - 0:13                             element: collating_element_single `😀`
+0:13 - 0:14                             "="
+0:14 - 0:15                             "]"
+0:15 - 0:16                 "]"
+
+==================
+posix_bre: compound delimiters retain one-byte leaves
+:language(posix_bre)
+:cst
+==================
+[[.é].][=😀]=][:alpha:]]
+------------------
+
+0:0  - 0:27   basic_reg_exp
+0:0  - 0:27     bre_branch
+0:0  - 0:27       bre_expression
+0:0  - 0:27         simple_bre
+0:0  - 0:27           nondupl_bre
+0:0  - 0:27             one_char_or_coll_elem_bre
+0:0  - 0:27               bracket_expression
+0:0  - 0:1                  "["
+0:1  - 0:26                 matching_list
+0:1  - 0:26                   bracket_list
+0:1  - 0:26                     follow_list
+0:1  - 0:8                        expression_term
+0:1  - 0:8                          single_expression
+0:1  - 0:8                            end_range
+0:1  - 0:8                              collating_symbol
+0:1  - 0:2                                "["
+0:2  - 0:3                                "."
+0:3  - 0:6                                element: collating_element_multi `é]`
+0:6  - 0:7                                "."
+0:7  - 0:8                                "]"
+0:8  - 0:17                       expression_term
+0:8  - 0:17                         single_expression
+0:8  - 0:17                           equivalence_class
+0:8  - 0:9                              "["
+0:9  - 0:10                             "="
+0:10 - 0:15                             element: collating_element_multi `😀]`
+0:15 - 0:16                             "="
+0:16 - 0:17                             "]"
+0:17 - 0:26                       expression_term
+0:17 - 0:26                         single_expression
+0:17 - 0:26                           character_class
+0:17 - 0:18                             "["
+0:18 - 0:19                             ":"
+0:19 - 0:24                             name: class_name `alpha`
+0:24 - 0:25                             ":"
+0:25 - 0:26                             "]"
+0:26 - 0:27                 "]"
+
+==================
+posix_bre: range endpoint [ remains whole
+:language(posix_bre)
+==================
+[a-[]
+------------------
+
+(basic_reg_exp
+  (bre_branch
+    (bre_expression
+      (simple_bre
+        (nondupl_bre
+          (one_char_or_coll_elem_bre
+            (bracket_expression
+              (matching_list
+                (bracket_list
+                  (follow_list
+                    (expression_term
+                      (range_expression
+                        (start_range
+                          (end_range
+                            (collating_element_single)))
+                        (end_range
+                          (collating_element_single))))))))))))))
+
+==================
+posix_bre: range endpoint [.z.] remains whole
+:language(posix_bre)
+==================
+[a-[.z.]]
+------------------
+
+(basic_reg_exp
+  (bre_branch
+    (bre_expression
+      (simple_bre
+        (nondupl_bre
+          (one_char_or_coll_elem_bre
+            (bracket_expression
+              (matching_list
+                (bracket_list
+                  (follow_list
+                    (expression_term
+                      (range_expression
+                        (start_range
+                          (end_range
+                            (collating_element_single)))
+                        (end_range
+                          (collating_symbol
+                            element: (collating_element_single)))))))))))))))
+
+==================
+posix_bre: an incomplete compound opener remains a bracket member
+:language(posix_bre)
+==================
+[[]
+------------------
+
+(basic_reg_exp
+  (bre_branch
+    (bre_expression
+      (simple_bre
+        (nondupl_bre
+          (one_char_or_coll_elem_bre
+            (bracket_expression
+              (matching_list
+                (bracket_list
+                  (follow_list
+                    (expression_term
+                      (single_expression
+                        (end_range
+                          (collating_element_single))))))))))))))
+
+==================
+posix_ere: single Unicode collating payloads retain byte ranges
+:language(posix_ere)
+:cst
+==================
+[[.é.][=😀=]]
+------------------
+
+0:0  - 0:16   extended_reg_exp
+0:0  - 0:16     ere_branch
+0:0  - 0:16       ere_expression
+0:0  - 0:16         one_char_or_coll_elem_ere
+0:0  - 0:16           bracket_expression
+0:0  - 0:1              "["
+0:1  - 0:15             matching_list
+0:1  - 0:15               bracket_list
+0:1  - 0:15                 follow_list
+0:1  - 0:7                    expression_term
+0:1  - 0:7                      single_expression
+0:1  - 0:7                        end_range
+0:1  - 0:7                          collating_symbol
+0:1  - 0:2                            "["
+0:2  - 0:3                            "."
+0:3  - 0:5                            element: collating_element_single `é`
+0:5  - 0:6                            "."
+0:6  - 0:7                            "]"
+0:7  - 0:15                   expression_term
+0:7  - 0:15                     single_expression
+0:7  - 0:15                       equivalence_class
+0:7  - 0:8                          "["
+0:8  - 0:9                          "="
+0:9  - 0:13                         element: collating_element_single `😀`
+0:13 - 0:14                         "="
+0:14 - 0:15                         "]"
+0:15 - 0:16             "]"
+
+==================
+posix_ere: compound delimiters retain one-byte leaves
+:language(posix_ere)
+:cst
+==================
+[[.é].][=😀]=][:alpha:]]
+------------------
+
+0:0  - 0:27   extended_reg_exp
+0:0  - 0:27     ere_branch
+0:0  - 0:27       ere_expression
+0:0  - 0:27         one_char_or_coll_elem_ere
+0:0  - 0:27           bracket_expression
+0:0  - 0:1              "["
+0:1  - 0:26             matching_list
+0:1  - 0:26               bracket_list
+0:1  - 0:26                 follow_list
+0:1  - 0:8                    expression_term
+0:1  - 0:8                      single_expression
+0:1  - 0:8                        end_range
+0:1  - 0:8                          collating_symbol
+0:1  - 0:2                            "["
+0:2  - 0:3                            "."
+0:3  - 0:6                            element: collating_element_multi `é]`
+0:6  - 0:7                            "."
+0:7  - 0:8                            "]"
+0:8  - 0:17                   expression_term
+0:8  - 0:17                     single_expression
+0:8  - 0:17                       equivalence_class
+0:8  - 0:9                          "["
+0:9  - 0:10                         "="
+0:10 - 0:15                         element: collating_element_multi `😀]`
+0:15 - 0:16                         "="
+0:16 - 0:17                         "]"
+0:17 - 0:26                   expression_term
+0:17 - 0:26                     single_expression
+0:17 - 0:26                       character_class
+0:17 - 0:18                         "["
+0:18 - 0:19                         ":"
+0:19 - 0:24                         name: class_name `alpha`
+0:24 - 0:25                         ":"
+0:25 - 0:26                         "]"
+0:26 - 0:27             "]"
+
+==================
+posix_ere: range endpoint [ remains whole
+:language(posix_ere)
+==================
+[a-[]
+------------------
+
+(extended_reg_exp
+  (ere_branch
+    (ere_expression
+      (one_char_or_coll_elem_ere
+        (bracket_expression
+          (matching_list
+            (bracket_list
+              (follow_list
+                (expression_term
+                  (range_expression
+                    (start_range
+                      (end_range
+                        (collating_element_single)))
+                    (end_range
+                      (collating_element_single))))))))))))
+
+==================
+posix_ere: range endpoint [.z.] remains whole
+:language(posix_ere)
+==================
+[a-[.z.]]
+------------------
+
+(extended_reg_exp
+  (ere_branch
+    (ere_expression
+      (one_char_or_coll_elem_ere
+        (bracket_expression
+          (matching_list
+            (bracket_list
+              (follow_list
+                (expression_term
+                  (range_expression
+                    (start_range
+                      (end_range
+                        (collating_element_single)))
+                    (end_range
+                      (collating_symbol
+                        element: (collating_element_single)))))))))))))
+
+==================
+posix_ere: an incomplete compound opener remains a bracket member
+:language(posix_ere)
+==================
+[[]
+------------------
+
+(extended_reg_exp
+  (ere_branch
+    (ere_expression
+      (one_char_or_coll_elem_ere
+        (bracket_expression
+          (matching_list
+            (bracket_list
+              (follow_list
+                (expression_term
+                  (single_expression
+                    (end_range
+                      (collating_element_single))))))))))))
+
+==================
+pcre2: PCRE2 distinguishes non-newline quantifiers from named Unicode escapes — "[\\N{2}]"
+:language(pcre2)
+:error
+==================
+[\N{2}]
+------------------
+
+
+
+==================
+pcre2: PCRE2 class brackets introduce POSIX syntax only with a complete delimiter pair — "[[.a.]]"
+:language(pcre2)
+:error
+==================
+[[.a.]]
+------------------
+
+
+
+==================
+pcre2: PCRE2 class brackets introduce POSIX syntax only with a complete delimiter pair — "[[=a=]]"
+:language(pcre2)
+:error
+==================
+[[=a=]]
+------------------
+
+
+
+==================
+pcre2: PCRE2 class brackets introduce POSIX syntax only with a complete delimiter pair — "[z[.ch.]]"
+:language(pcre2)
+:error
+==================
+[z[.ch.]]
+------------------
+
+
+
+==================
+pcre2: PCRE2 class brackets introduce POSIX syntax only with a complete delimiter pair — "[[:unknown:]]"
+:language(pcre2)
+:error
+==================
+[[:unknown:]]
+------------------
+
+
+
+==================
+pcre2: PCRE2 class brackets introduce POSIX syntax only with a complete delimiter pair — "[[:a\\]:]]"
+:language(pcre2)
+:error
+==================
+[[:a\]:]]
+------------------
+
+
+
+==================
+pcre2: PCRE2 class brackets introduce POSIX syntax only with a complete delimiter pair — "[[.a\\].]]"
+:language(pcre2)
+:error
+==================
+[[.a\].]]
+------------------
+
+
+
+==================
+pcre2: PCRE2 class brackets introduce POSIX syntax only with a complete delimiter pair — "[[:a[.b:]]"
+:language(pcre2)
+:error
+==================
+[[:a[.b:]]
+------------------
+
+
+
+==================
+pcre2: PCRE2 rejects incomplete structures using standard recovery — "["
+:language(pcre2)
+:error
+==================
+[
+------------------
+
+
+
+==================
+rejects incomplete structures using standard recovery — "[]"
+:language(pcre2)
+:language(posix_bre)
+:language(posix_ere)
+:error
+==================
+[]
+------------------
+
+
+
+==================
+pcre2: PCRE2 rejects incomplete structures using standard recovery — "[a-\\Q]"
+:language(pcre2)
+:error
+==================
+[a-\Q]
+------------------
+
+
+
+==================
+pcre2: PCRE2 rejects incomplete structures using standard recovery — "[\\d-\\Q]"
+:language(pcre2)
+:error
+==================
+[\d-\Q]
+------------------
+
+
+
+==================
+malformed unclosed bracket expression uses standard recovery — "[abc"
+:language(posix_bre)
+:language(posix_ere)
+:error
+==================
+[abc
+------------------
+
+
+
+==================
+malformed negated bracket expression without content uses standard recovery — "[^]"
+:language(posix_bre)
+:language(posix_ere)
+:error
+==================
+[^]
+------------------
+
+
+
+==================
+malformed empty collating symbol uses standard recovery — "[[..]]"
+:language(posix_bre)
+:language(posix_ere)
+:error
+==================
+[[..]]
+------------------
+
+
+
+==================
+malformed empty equivalence class uses standard recovery — "[[==]]"
+:language(posix_bre)
+:language(posix_ere)
+:error
+==================
+[[==]]
+------------------
+
+
+
+==================
+malformed empty character class uses standard recovery — "[[::]]"
+:language(posix_bre)
+:language(posix_ere)
+:error
+==================
+[[::]]
+------------------
+
+
+
+==================
+malformed character class name starting with a digit uses standard recovery — "[[:1:]]"
+:language(posix_bre)
+:language(posix_ere)
+:error
+==================
+[[:1:]]
+------------------
+
+
+
+==================
+malformed whitespace inside the class closing delimiter uses standard recovery — "[[:alpha: ]]"
+:language(posix_bre)
+:language(posix_ere)
+:error
+==================
+[[:alpha: ]]
+------------------
+
+
+
+==================
+malformed unclosed collating symbol uses standard recovery — "[[.ch"
+:language(posix_bre)
+:language(posix_ere)
+:error
+==================
+[[.ch
+------------------
+
+
+
+==================
+malformed unclosed equivalence class uses standard recovery — "[[=a"
+:language(posix_bre)
+:language(posix_ere)
+:error
+==================
+[[=a
+------------------
+
+
+
+==================
+malformed unclosed character class uses standard recovery — "[[:alpha"
+:language(posix_bre)
+:language(posix_ere)
+:error
+==================
+[[:alpha
+------------------
+
+
+
+==================
+a range endpoint cannot split a compound opener — "[a-[:alpha:]]"
+:language(posix_bre)
+:language(posix_ere)
+:error
+==================
+[a-[:alpha:]]
+------------------
+
+
+
+==================
+a range endpoint cannot split a compound opener — "[a-[=x=]]"
+:language(posix_bre)
+:language(posix_ere)
+:error
+==================
+[a-[=x=]]
+------------------
+
+
+
+==================
+python_re: out-of-range numeric escapes cannot split into shorter escapes or references — "[\\400]"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+[\400]
+------------------
+
+
+
+==================
+python_re: out-of-range numeric escapes cannot split into shorter escapes or references — "[\\4000]"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+[\4000]
+------------------
+
+
+
+==================
+python_re: out-of-range numeric escapes cannot split into shorter escapes or references — "[\\7777]"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+[\7777]
+------------------
+
+
+
+==================
+python_re: out-of-range numeric escapes cannot split into shorter escapes or references — "[\\U00110000]"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+[\U00110000]
+------------------
+
+
+
+==================
+python_re: malformed incomplete class escape uses standard recovery — "[\\xA]|z\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+[\xA]|z\
+
+------------------
+
+
+
+==================
+python_re: malformed nonoctal numeric escape in a class uses standard recovery — "[\\8]"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+[\8]
+------------------
+
+
+
+==================
+python_re: malformed missing class closer uses standard recovery — "[a|)#\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+[a|)#
+
+------------------
+
+
+
+==================
+python_re: malformed unknown escape before a class bracket uses standard recovery — "[\\q[]\\\n"
+:language(python_re)
+:language(python_re_verbose)
+:error
+==================
+[\q[]\
+
+------------------

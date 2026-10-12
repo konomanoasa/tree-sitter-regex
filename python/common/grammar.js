@@ -1,7 +1,3 @@
-const TWO_HEXADECIMAL_DIGITS = /[0-9A-Fa-f]{2}/;
-const FOUR_HEXADECIMAL_DIGITS = /[0-9A-Fa-f]{4}/;
-const EIGHT_HEXADECIMAL_DIGITS = /[0-9A-Fa-f]{8}/;
-
 function alternation(first, following = first) {
   return choice(
     first,
@@ -47,32 +43,56 @@ function digitsEscape(prefix, digits, kind) {
   return seq(prefix, field("digits", alias(token(digits), kind)));
 }
 
+function hexadecimalEscape($, prefix, count) {
+  return digitsEscape(
+    prefix,
+    new RegExp(`[0-9A-Fa-f]{${count}}`),
+    $.hexadecimal_digits,
+  );
+}
+
+function textUnit(excluded) {
+  return choice(
+    new RegExp(`[^\\\\${excluded}]`),
+    prec(1, "\0"),
+    seq("\\", choice(/./, "\n", prec(1, "\0"))),
+  );
+}
+
 function globalFlags($, flags) {
   return seq("(", "?", field("flags", alias(flags, $.flag_set)), ")");
 }
 
 function scopedFlags($, outerVerbose) {
-  const branch = (enable, disable, verbose) =>
+  const none = { flags: null, x: false };
+  const enables = [
+    { flags: $._enable_flags_with_x, x: true },
+    { flags: $._enable_flags_without_x, x: false },
+  ];
+  const disables = [
+    { flags: $._disable_flags_with_x, x: true },
+    { flags: $._disable_flags_without_x, x: false },
+  ];
+  const branch = (enable, disable) =>
     seq(
       "(",
       "?",
-      ...(enable === null ? [] : [field("enable", alias(enable, $.flag_set))]),
-      ...(disable === null
-        ? []
-        : ["-", field("disable", alias(disable, $.flag_set))]),
+      ...(enable.flags
+        ? [field("enable", alias(enable.flags, $.flag_set))]
+        : []),
+      ...(disable.flags
+        ? ["-", field("disable", alias(disable.flags, $.flag_set))]
+        : []),
       ":",
-      body($, verbose),
+      body($, enable.x === disable.x ? outerVerbose : enable.x),
       ")",
     );
   return choice(
-    branch($._enable_flags_with_x, null, true),
-    branch($._enable_flags_without_x, null, outerVerbose),
-    branch($._enable_flags_with_x, $._disable_flags_with_x, outerVerbose),
-    branch($._enable_flags_with_x, $._disable_flags_without_x, true),
-    branch($._enable_flags_without_x, $._disable_flags_with_x, false),
-    branch($._enable_flags_without_x, $._disable_flags_without_x, outerVerbose),
-    branch(null, $._disable_flags_with_x, false),
-    branch(null, $._disable_flags_without_x, outerVerbose),
+    ...enables.map((enable) => branch(enable, none)),
+    ...enables.flatMap((enable) =>
+      disables.map((disable) => branch(enable, disable)),
+    ),
+    ...disables.map((disable) => branch(none, disable)),
   );
 }
 
@@ -99,7 +119,7 @@ function rootRules(verbose) {
 
 function modeRules(verbose) {
   const rule = (name) => modeRule(name, verbose);
-  const concreteGroups = [
+  const simpleGroups = [
     ["capturing_group"],
     ["non_capturing_group", "?", ":"],
     ["positive_lookahead_assertion", "?", "="],
@@ -144,14 +164,14 @@ function modeRules(verbose) {
         alias($._outside_octal_escape, $.octal_escape),
         alias($._outside_numeric_backreference, $.numeric_backreference),
         $.character_class,
-        ...concreteGroups.map(([name]) => modeNode($, name, verbose)),
+        ...simpleGroups.map(([name]) => modeNode($, name, verbose)),
         modeNode($, "named_capturing_group", verbose),
         $.named_backreference,
         modeNode($, "conditional_group", verbose),
         modeNode($, "scoped_flags_group", verbose),
       ),
     ...Object.fromEntries(
-      concreteGroups.map(([name, ...introducer]) => [
+      simpleGroups.map(([name, ...introducer]) => [
         rule(name),
         ($) => seq("(", ...introducer, body($, verbose), ")"),
       ]),
@@ -207,6 +227,7 @@ export default function defineGrammar(name, mode) {
       $._literal_open_brace,
       $._nul_character,
       $._escaped_nul_character,
+      $._numeric_escape_start,
       $._error_sentinel,
     ],
     conflicts: ($) => [
@@ -249,12 +270,15 @@ export default function defineGrammar(name, mode) {
         ),
       control_escape: () =>
         token(choice("\\a", "\\f", "\\n", "\\r", "\\t", "\\v")),
-      hex_escape: ($) =>
-        digitsEscape("\\x", TWO_HEXADECIMAL_DIGITS, $.hexadecimal_digits),
+      hex_escape: ($) => hexadecimalEscape($, "\\x", 2),
       unicode_escape: ($) =>
         choice(
-          digitsEscape("\\u", FOUR_HEXADECIMAL_DIGITS, $.hexadecimal_digits),
-          digitsEscape("\\U", EIGHT_HEXADECIMAL_DIGITS, $.hexadecimal_digits),
+          hexadecimalEscape($, "\\u", 4),
+          digitsEscape(
+            "\\U",
+            /00(0[0-9A-Fa-f]|10)[0-9A-Fa-f]{4}/,
+            $.hexadecimal_digits,
+          ),
         ),
       named_unicode_escape: ($) =>
         seq(
@@ -270,9 +294,16 @@ export default function defineGrammar(name, mode) {
       anchor_escape: () => token(choice("\\A", "\\z", "\\Z")),
       word_boundary_escape: () => token(choice("\\b", "\\B")),
       _outside_octal_escape: ($) =>
-        digitsEscape("\\", /0[0-7]{0,2}|[1-7][0-7]{2}/, $.octal_digits),
+        digitsEscape(
+          alias($._numeric_escape_start, "\\"),
+          /0[0-7]{0,2}|[1-7][0-7]{2}/,
+          $.octal_digits,
+        ),
       _outside_numeric_backreference: ($) =>
-        seq("\\", field("group", alias(token(/[1-9][0-9]?/), $.group_id))),
+        seq(
+          alias($._numeric_escape_start, "\\"),
+          field("group", alias(token(/[1-9][0-9]?/), $.group_id)),
+        ),
       character_class: ($) => seq("[", optional("^"), $._class_body, "]"),
       _class_body: ($) =>
         classMembers(
@@ -320,7 +351,11 @@ export default function defineGrammar(name, mode) {
       class_character: () => token(choice(/[^\\\]-]/, prec(1, "\0"))),
       backspace_escape: () => "\\b",
       _class_octal_escape: ($) =>
-        digitsEscape("\\", /[0-7]{1,3}/, $.octal_digits),
+        digitsEscape(
+          alias($._numeric_escape_start, "\\"),
+          /[0-7]{1,3}/,
+          $.octal_digits,
+        ),
       quantifier: ($) =>
         seq(
           choice(
@@ -357,20 +392,12 @@ export default function defineGrammar(name, mode) {
       _enable_flags_without_x: () => /[aiLmsu]+/,
       _disable_flags_with_x: () => /[ims]*x[imsx]*/,
       _disable_flags_without_x: () => /[ims]+/,
-      _angle_group_name: () => token(repeat1(choice(/[^>]/, prec(1, "\0")))),
-      _parenthesized_group_name: () =>
-        token(repeat1(choice(/[^)]/, prec(1, "\0")))),
+      _angle_group_name: () => token(repeat1(textUnit(">"))),
+      _parenthesized_group_name: () => token(repeat1(textUnit(")"))),
       _conditional_group_id: () => /[0-9]+/,
       _conditional_group_name: () =>
-        token(
-          seq(
-            repeat(/[0-9]/),
-            choice(/[^0-9)]/, prec(1, "\0")),
-            repeat(choice(/[^)]/, prec(1, "\0"))),
-          ),
-        ),
-      _unicode_character_name: () =>
-        token(repeat1(choice(/[^}]/, prec(1, "\0")))),
+        token(seq(repeat(/[0-9]/), textUnit("0-9)"), repeat(textUnit(")")))),
+      _unicode_character_name: () => token(repeat1(textUnit("}"))),
       comment_group: ($) =>
         seq(
           "(",
@@ -380,36 +407,8 @@ export default function defineGrammar(name, mode) {
           ")",
         ),
       verbose_whitespace: () => /[ \t\n\v\f\r]+/,
-      _comment_group_content: () =>
-        token(
-          choice(
-            "\\",
-            seq(
-              repeat1(
-                choice(
-                  /[^\\)]/,
-                  prec(1, "\0"),
-                  seq("\\", choice(/./, "\n", prec(1, "\0"))),
-                ),
-              ),
-              optional("\\"),
-            ),
-          ),
-        ),
-      verbose_comment: () =>
-        token(
-          seq(
-            "#",
-            repeat(
-              choice(
-                /[^\\\n]/,
-                prec(1, "\0"),
-                seq("\\", choice(/./, "\n", prec(1, "\0"))),
-              ),
-            ),
-            optional("\\"),
-          ),
-        ),
+      _comment_group_content: () => token(repeat1(textUnit(")"))),
+      verbose_comment: () => token(seq("#", repeat(textUnit("\n")))),
     },
   });
 }

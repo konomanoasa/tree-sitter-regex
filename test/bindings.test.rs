@@ -157,6 +157,37 @@ fn posix_group_and_repetition_fields_resolve_to_direct_children() {
 }
 
 #[test]
+fn pcre2_name_and_decimal_leaves_are_nonempty_unless_missing() {
+  let mut parser = Parser::new();
+  parser
+    .set_language(&grammar::LANGUAGE_PCRE2.into())
+    .unwrap();
+  for source in [
+    r"(?<name>a){012}(?(VERSION=1001.01001)b)\k<name>",
+    r"\k<>",
+    "(?<>a)",
+    "(*LIMIT_MATCH=)",
+    "(?(VERSION=)a)",
+    "(?(VERSION=10.)a)",
+  ] {
+    let tree = parser.parse(source, None).unwrap();
+    let mut pending = vec![tree.root_node()];
+    while let Some(node) = pending.pop() {
+      if matches!(node.kind(), "group_name" | "decimal_digits") {
+        assert_eq!(node.child_count(), 0, "{source}: {}", node.kind());
+        assert_eq!(
+          node.byte_range().is_empty(),
+          node.is_missing(),
+          "{source}: {}",
+          node.kind()
+        );
+      }
+      pending.extend(node.children(&mut node.walk()));
+    }
+  }
+}
+
+#[test]
 fn uses_distinct_grammars() {
   let languages = [
     grammar::LANGUAGE_JS,

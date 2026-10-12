@@ -110,48 +110,49 @@ function breRules() {
   };
 }
 
-function ereRules() {
-  const rules = {};
-  for (const nested of [false, true]) {
-    const name = (rule) => (nested ? `_nested_${rule}` : rule);
-    const reference = ($, rule) =>
-      nested ? alias($[name(rule)], $[rule]) : $[rule];
-    Object.assign(rules, {
-      [name("extended_reg_exp")]: ($) =>
-        seq(
-          reference($, "ere_branch"),
-          repeat(seq("|", reference($, "ere_branch"))),
-        ),
-      [name("ere_branch")]: ($) => repeat1(reference($, "ere_expression")),
-      [name("ere_expression")]: ($) =>
-        seq(
-          choice(
-            reference($, "one_char_or_coll_elem_ere"),
-            "^",
-            "$",
-            seq(
-              field("opening", "("),
-              optional(
-                field(
-                  "expression",
-                  alias($._nested_extended_reg_exp, $.extended_reg_exp),
-                ),
-              ),
-              field("closing", ")"),
-            ),
-          ),
-          repeat($.ere_dupl_symbol),
-        ),
-      [name("one_char_or_coll_elem_ere")]: ($) =>
-        oneCharOrCollElem(
-          $,
-          $.ordinary_character,
-          ...(nested ? [] : [alias(")", $.ordinary_character)]),
-        ),
-    });
-  }
+function ereLevelRules(nested) {
+  const name = (rule) => (nested ? `_nested_${rule}` : rule);
+  const reference = ($, rule) =>
+    nested ? alias($[name(rule)], $[rule]) : $[rule];
   return {
-    ...rules,
+    [name("extended_reg_exp")]: ($) =>
+      seq(
+        reference($, "ere_branch"),
+        repeat(seq("|", reference($, "ere_branch"))),
+      ),
+    [name("ere_branch")]: ($) => repeat1(reference($, "ere_expression")),
+    [name("ere_expression")]: ($) =>
+      seq(
+        choice(
+          reference($, "one_char_or_coll_elem_ere"),
+          "^",
+          "$",
+          seq(
+            field("opening", "("),
+            optional(
+              field(
+                "expression",
+                alias($._nested_extended_reg_exp, $.extended_reg_exp),
+              ),
+            ),
+            field("closing", ")"),
+          ),
+        ),
+        repeat($.ere_dupl_symbol),
+      ),
+    [name("one_char_or_coll_elem_ere")]: ($) =>
+      oneCharOrCollElem(
+        $,
+        $.ordinary_character,
+        ...(nested ? [] : [alias(")", $.ordinary_character)]),
+      ),
+  };
+}
+
+function ereRules() {
+  return {
+    ...ereLevelRules(false),
+    ...ereLevelRules(true),
     ere_dupl_symbol: ($) =>
       prec.right(
         seq(
@@ -161,6 +162,32 @@ function ereRules() {
       ),
     ordinary_character: () => ERE_ORDINARY_CHARACTER,
     quoted_character: () => ERE_QUOTED_CHARACTER,
+  };
+}
+
+function expressionTermRules(first) {
+  const name = (rule) => (first ? `_leading_${rule}` : rule);
+  const reference = ($, rule) => (first ? leading($, rule) : $[rule]);
+  return {
+    [name("expression_term")]: ($) =>
+      choice(
+        reference($, "single_expression"),
+        reference($, "range_expression"),
+      ),
+    [name("single_expression")]: ($) =>
+      choice(reference($, "end_range"), $.character_class, $.equivalence_class),
+    [name("range_expression")]: ($) =>
+      seq(reference($, "start_range"), choice($.end_range, "-")),
+    [name("start_range")]: ($) => seq(reference($, "end_range"), "-"),
+    [name("end_range")]: ($) =>
+      choice(
+        first
+          ? alias($._leading_bracket_character, $.collating_element_single)
+          : $.collating_element_single,
+        nul($, "collating_element_single"),
+        alias($._bracket_open_character, $.collating_element_single),
+        $.collating_symbol,
+      ),
   };
 }
 
@@ -176,33 +203,8 @@ function sharedRules() {
       seq($.follow_list, optional(alias($._trailing_bracket_hyphen, "-"))),
     follow_list: ($) =>
       seq(leading($, "expression_term"), repeat($.expression_term)),
-    expression_term: ($) => choice($.single_expression, $.range_expression),
-    single_expression: ($) =>
-      choice($.end_range, $.character_class, $.equivalence_class),
-    range_expression: ($) => seq($.start_range, choice($.end_range, "-")),
-    start_range: ($) => seq($.end_range, "-"),
-    end_range: ($) =>
-      choice(
-        $.collating_element_single,
-        nul($, "collating_element_single"),
-        alias($._bracket_open_character, $.collating_element_single),
-        $.collating_symbol,
-      ),
-
-    _leading_expression_term: ($) =>
-      choice(leading($, "single_expression"), leading($, "range_expression")),
-    _leading_single_expression: ($) =>
-      choice(leading($, "end_range"), $.character_class, $.equivalence_class),
-    _leading_range_expression: ($) =>
-      seq(leading($, "start_range"), choice($.end_range, "-")),
-    _leading_start_range: ($) => seq(leading($, "end_range"), "-"),
-    _leading_end_range: ($) =>
-      choice(
-        alias($._leading_bracket_character, $.collating_element_single),
-        nul($, "collating_element_single"),
-        alias($._bracket_open_character, $.collating_element_single),
-        $.collating_symbol,
-      ),
+    ...expressionTermRules(false),
+    ...expressionTermRules(true),
     _leading_bracket_character: () => BRACKET_CHARACTER,
 
     collating_symbol: ($) =>

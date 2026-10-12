@@ -45,10 +45,102 @@ function lookaround($, operators) {
   return seq("(", "?", operators, optional(field("body", $.disjunction)), ")");
 }
 
+function classRangesRules(unicode) {
+  return {
+    nonempty_class_ranges: ($) =>
+      choice(
+        seq(repeat1($._class_range), optional($._class_tail)),
+        $._class_tail,
+      ),
+    _class_range: ($) => classRange($.class_atom, $.class_atom),
+    _class_tail: ($) =>
+      seq($.class_atom, optional($.nonempty_class_ranges_no_dash)),
+    nonempty_class_ranges_no_dash: ($) =>
+      seq(
+        repeat($.class_atom_no_dash),
+        choice(
+          $.class_atom,
+          seq(
+            classRange($.class_atom_no_dash, $.class_atom),
+            optional($.nonempty_class_ranges),
+          ),
+        ),
+      ),
+    class_atom: ($) => choice("-", $.class_atom_no_dash),
+    class_atom_no_dash: ($) =>
+      choice(
+        alias(new RustRegex(String.raw`[^\\\]-]`), $.source_character),
+        alias("\0", $.source_character),
+        seq("\\", $.class_escape),
+        ...(!unicode ? [alias($._class_literal_backslash, "\\")] : []),
+      ),
+    class_escape: ($) =>
+      choice(
+        "b",
+        $.character_class_escape,
+        $.character_escape,
+        ...(unicode
+          ? ["-"]
+          : [seq(alias($._class_control_start, "c"), $.class_control_letter)]),
+      ),
+    ...(!unicode
+      ? { class_control_letter: ($) => choice($.decimal_digit, "_") }
+      : {}),
+  };
+}
+
+function classSetRules() {
+  return {
+    class_set_expression: ($) =>
+      choice($.class_union, $.class_intersection, $.class_subtraction),
+    class_union: ($) => repeat1(choice($.class_set_range, $.class_set_operand)),
+    class_intersection: ($) =>
+      seq(
+        $.class_set_operand,
+        repeat1(seq(alias($._class_intersection, "&&"), $.class_set_operand)),
+      ),
+    class_subtraction: ($) =>
+      seq(
+        $.class_set_operand,
+        repeat1(seq(alias($._class_subtraction, "--"), $.class_set_operand)),
+      ),
+    class_set_range: ($) =>
+      classRange($.class_set_character, $.class_set_character),
+    class_set_operand: ($) =>
+      choice($.nested_class, $.class_string_disjunction, $.class_set_character),
+    nested_class: ($) =>
+      choice(
+        seq(
+          "[",
+          optional(alias($._class_negation, "^")),
+          optional($.class_set_expression),
+          "]",
+        ),
+        seq("\\", $.character_class_escape),
+      ),
+    class_string_disjunction: ($) =>
+      seq("\\q", "{", optional($.class_string_disjunction_contents), "}"),
+    class_string_disjunction_contents: ($) =>
+      alternation($.non_empty_class_string),
+    non_empty_class_string: ($) => repeat1($.class_set_character),
+    class_set_character: ($) =>
+      choice(
+        alias($._class_set_raw_character, $.source_character),
+        seq("\\", $.character_escape),
+        seq("\\", $.class_set_reserved_punctuator),
+        "\\b",
+      ),
+    class_set_reserved_punctuator: () => /[&\-!#%,:;<=>@`~]/,
+  };
+}
+
 export default function defineGrammar(name, mode) {
   const unicode = mode !== "ordinary";
   const sets = mode === "v";
   const atomName = unicode ? "atom" : "extended_atom";
+  const patternCharacterName = unicode
+    ? "pattern_character"
+    : "extended_pattern_character";
   const identifierCharacters = (characters) =>
     new RustRegex(
       unicode ? characters : String.raw`[${characters}&&[\u{0}-\u{ffff}]]`,
@@ -154,7 +246,7 @@ export default function defineGrammar(name, mode) {
         : {}),
       [atomName]: ($) =>
         choice(
-          unicode ? $.pattern_character : $.extended_pattern_character,
+          $[patternCharacterName],
           ".",
           seq("\\", $.atom_escape),
           $.character_class,
@@ -182,7 +274,7 @@ export default function defineGrammar(name, mode) {
             ? [alias($._literal_backslash, "\\"), $.invalid_braced_quantifier]
             : []),
         ),
-      [unicode ? "pattern_character" : "extended_pattern_character"]: ($) =>
+      [patternCharacterName]: ($) =>
         choice(
           alias(
             new RustRegex(
@@ -331,109 +423,7 @@ export default function defineGrammar(name, mode) {
           optional(sets ? $.class_set_expression : $.nonempty_class_ranges),
           "]",
         ),
-      ...(!sets
-        ? {
-            nonempty_class_ranges: ($) =>
-              choice(
-                seq(repeat1($._class_range), optional($._class_tail)),
-                $._class_tail,
-              ),
-            _class_range: ($) => classRange($.class_atom, $.class_atom),
-            _class_tail: ($) =>
-              seq($.class_atom, optional($.nonempty_class_ranges_no_dash)),
-            nonempty_class_ranges_no_dash: ($) =>
-              seq(
-                repeat($.class_atom_no_dash),
-                choice(
-                  $.class_atom,
-                  seq(
-                    classRange($.class_atom_no_dash, $.class_atom),
-                    optional($.nonempty_class_ranges),
-                  ),
-                ),
-              ),
-            class_atom: ($) => choice("-", $.class_atom_no_dash),
-            class_atom_no_dash: ($) =>
-              choice(
-                alias(new RustRegex(String.raw`[^\\\]-]`), $.source_character),
-                alias("\0", $.source_character),
-                seq("\\", $.class_escape),
-                ...(!unicode ? [alias($._class_literal_backslash, "\\")] : []),
-              ),
-            class_escape: ($) =>
-              choice(
-                "b",
-                $.character_class_escape,
-                $.character_escape,
-                ...(unicode
-                  ? ["-"]
-                  : [
-                      seq(
-                        alias($._class_control_start, "c"),
-                        $.class_control_letter,
-                      ),
-                    ]),
-              ),
-            ...(!unicode
-              ? { class_control_letter: ($) => choice($.decimal_digit, "_") }
-              : {}),
-          }
-        : {
-            class_set_expression: ($) =>
-              choice($.class_union, $.class_intersection, $.class_subtraction),
-            class_union: ($) =>
-              repeat1(choice($.class_set_range, $.class_set_operand)),
-            class_intersection: ($) =>
-              seq(
-                $.class_set_operand,
-                repeat1(
-                  seq(alias($._class_intersection, "&&"), $.class_set_operand),
-                ),
-              ),
-            class_subtraction: ($) =>
-              seq(
-                $.class_set_operand,
-                repeat1(
-                  seq(alias($._class_subtraction, "--"), $.class_set_operand),
-                ),
-              ),
-            class_set_range: ($) =>
-              classRange($.class_set_character, $.class_set_character),
-            class_set_operand: ($) =>
-              choice(
-                $.nested_class,
-                $.class_string_disjunction,
-                $.class_set_character,
-              ),
-            nested_class: ($) =>
-              choice(
-                seq(
-                  "[",
-                  optional(alias($._class_negation, "^")),
-                  optional($.class_set_expression),
-                  "]",
-                ),
-                seq("\\", $.character_class_escape),
-              ),
-            class_string_disjunction: ($) =>
-              seq(
-                "\\q",
-                "{",
-                optional($.class_string_disjunction_contents),
-                "}",
-              ),
-            class_string_disjunction_contents: ($) =>
-              alternation($.non_empty_class_string),
-            non_empty_class_string: ($) => repeat1($.class_set_character),
-            class_set_character: ($) =>
-              choice(
-                alias($._class_set_raw_character, $.source_character),
-                seq("\\", $.character_escape),
-                seq("\\", $.class_set_reserved_punctuator),
-                "\\b",
-              ),
-            class_set_reserved_punctuator: () => /[&\-!#%,:;<=>@`~]/,
-          }),
+      ...(sets ? classSetRules() : classRangesRules(unicode)),
     },
   });
 }

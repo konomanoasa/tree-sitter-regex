@@ -1,3 +1,30 @@
+import { unicodeDecimalDigit, unicodeLetter } from "./unicode.js";
+
+const groupName = new RegExp(
+  `(?:_|${unicodeLetter})(?:_|${unicodeLetter}|${unicodeDecimalDigit})*`,
+  "u",
+);
+
+const LOOKAROUNDS = {
+  positive_lookahead_assertion: ["=", "pla", "positive_lookahead"],
+  negative_lookahead_assertion: ["!", "nla", "negative_lookahead"],
+  positive_lookbehind_assertion: ["<=", "plb", "positive_lookbehind"],
+  negative_lookbehind_assertion: ["<!", "nlb", "negative_lookbehind"],
+};
+
+const NON_ATOMIC_LOOKAROUNDS = {
+  non_atomic_lookahead_assertion: [
+    "*",
+    "napla",
+    "non_atomic_positive_lookahead",
+  ],
+  non_atomic_lookbehind_assertion: [
+    "<*",
+    "naplb",
+    "non_atomic_positive_lookbehind",
+  ],
+};
+
 function body($) {
   return optional(field("body", $.alternation));
 }
@@ -15,15 +42,19 @@ function item($, ...content) {
   return seq(alias($._item_open, "("), ...content, ")");
 }
 
-function reference($, open, close, group) {
-  const spacing = open === "{" ? [optional($._escape_space)] : [];
-  return seq(
-    open,
-    ...spacing,
-    field("group", group ?? choice($.group_name, $.group_number)),
-    ...spacing,
-    close,
-  );
+function braced($, ...content) {
+  return [
+    "{",
+    optional($._escape_space),
+    ...content,
+    optional($._escape_space),
+    "}",
+  ];
+}
+
+function reference($, open, close, target) {
+  const group = field("group", target ?? choice($.group_name, $.group_number));
+  return seq(...(open === "{" ? braced($, group) : [open, group, close]));
 }
 
 function classRange($, start) {
@@ -80,7 +111,7 @@ export default grammar({
     $._quantifier_star,
     $._quantifier_plus,
     $._quantifier_question,
-    $._property_space,
+    $._property_ignored,
     $._posix_open,
     $._error_sentinel,
   ],
@@ -118,7 +149,6 @@ export default grammar({
         $.end_anchor,
         $.anchor_escape,
         $.word_boundary_escape,
-        $.word_boundary_assertion,
         $.match_reset,
         $.global_flags,
         $.callout,
@@ -131,6 +161,7 @@ export default grammar({
         $._character_escape,
         $.character_class_escape,
         $.unicode_property,
+        $.word_boundary_assertion,
         $.numeric_backreference,
         $.backreference,
         $.subroutine_call,
@@ -178,36 +209,15 @@ export default grammar({
     branch_reset_group: ($) => group($, "?", "|"),
     atomic_group: ($) =>
       choice(group($, "?", ">"), group($, "*", "atomic", ":")),
-    positive_lookahead_assertion: ($) =>
-      choice(
-        group($, "?", "="),
-        group($, "*", choice("pla", "positive_lookahead"), ":"),
+    ...Object.fromEntries(
+      Object.entries({ ...LOOKAROUNDS, ...NON_ATOMIC_LOOKAROUNDS }).map(
+        ([rule, [symbol, ...names]]) => [
+          rule,
+          ($) =>
+            choice(group($, "?", symbol), group($, "*", choice(...names), ":")),
+        ],
       ),
-    negative_lookahead_assertion: ($) =>
-      choice(
-        group($, "?", "!"),
-        group($, "*", choice("nla", "negative_lookahead"), ":"),
-      ),
-    positive_lookbehind_assertion: ($) =>
-      choice(
-        group($, "?", "<="),
-        group($, "*", choice("plb", "positive_lookbehind"), ":"),
-      ),
-    negative_lookbehind_assertion: ($) =>
-      choice(
-        group($, "?", "<!"),
-        group($, "*", choice("nlb", "negative_lookbehind"), ":"),
-      ),
-    non_atomic_lookahead_assertion: ($) =>
-      choice(
-        group($, "?", "*"),
-        group($, "*", choice("napla", "non_atomic_positive_lookahead"), ":"),
-      ),
-    non_atomic_lookbehind_assertion: ($) =>
-      choice(
-        group($, "?", "<*"),
-        group($, "*", choice("naplb", "non_atomic_positive_lookbehind"), ":"),
-      ),
+    ),
     script_run_group: ($) => group($, "*", choice("sr", "script_run"), ":"),
     atomic_script_run_group: ($) =>
       group($, "*", choice("asr", "atomic_script_run"), ":"),
@@ -221,62 +231,64 @@ export default grammar({
         seq("<", $.group_name, ">"),
         seq("'", $.group_name, "'"),
       ),
-    group_name: () => /[_\p{L}][_\p{L}\p{Nd}]*/u,
+    group_name: () => groupName,
     group_number: () => /[-+]?[0-9]+/,
     global_flags: ($) => item($, "?", optional($._flags)),
     scoped_flags_group: ($) => group($, "?", $._flags, ":"),
-    _flags: ($) =>
-      choice(
-        seq(
-          alias($._enable_flags, $.flag_set),
-          optional(seq("-", alias($._disable_flags, $.flag_set))),
-        ),
-        seq("-", alias($._disable_flags, $.flag_set)),
-        seq(
-          alias($._reset_flags, "^"),
-          optional(alias($._enable_flags, $.flag_set)),
-        ),
-      ),
-    conditional_group: ($) =>
-      seq(
+    _flags: ($) => {
+      const enable = alias($._enable_flags, $.flag_set);
+      const disable = seq("-", optional(alias($._disable_flags, $.flag_set)));
+      return choice(
+        seq(enable, optional(disable)),
+        disable,
+        seq(alias($._reset_flags, "^"), optional(enable)),
+      );
+    },
+    conditional_group: ($) => {
+      const condition = (content) => [
+        alias($._condition_open, "("),
+        content,
+        alias($._scope_close, ")"),
+      ];
+      const yesPattern = optional(field("yes_pattern", $.concatenation));
+      return seq(
         alias($._scope_open, "("),
         "?",
         choice(
-          seq(
-            alias($._condition_open, "("),
-            field("condition", $.define_condition),
-            alias($._scope_close, ")"),
-            optional(field("yes_pattern", $.concatenation)),
-          ),
+          seq(...condition(field("condition", $.define_condition)), yesPattern),
           seq(
             choice(
               seq(
-                alias($._condition_open, "("),
-                choice(
-                  field(
-                    "condition",
-                    choice(
-                      $.condition_name,
-                      $.group_number,
-                      $.recursion_condition,
-                      $.version_condition,
-                      $.assertion_condition,
+                ...condition(
+                  choice(
+                    field(
+                      "condition",
+                      choice(
+                        $._condition_name,
+                        $.group_number,
+                        $.recursion_condition,
+                        $.version_condition,
+                        $.assertion_condition,
+                      ),
                     ),
+                    seq("<", field("condition", $.group_name), ">"),
+                    seq("'", field("condition", $.group_name), "'"),
                   ),
-                  seq("<", field("condition", $.group_name), ">"),
-                  seq("'", field("condition", $.group_name), "'"),
                 ),
-                alias($._scope_close, ")"),
               ),
               seq(
-                $.callout,
-                repeat($._layout),
-                alias($._condition_open, "("),
-                field("condition", $.assertion_condition),
-                alias($._scope_close, ")"),
+                choice(
+                  seq($.callout, repeat($._layout)),
+                  seq(
+                    $.comment_group,
+                    repeat($._layout),
+                    optional(seq($.callout, repeat($._layout))),
+                  ),
+                ),
+                ...condition(field("condition", $.assertion_condition)),
               ),
             ),
-            optional(field("yes_pattern", $.concatenation)),
+            yesPattern,
             optional(
               seq(
                 alias($._pipe, "|"),
@@ -286,40 +298,38 @@ export default grammar({
           ),
         ),
         alias($._scope_close, ")"),
+      );
+    },
+    _condition_name: ($) =>
+      choice(
+        alias("R", $.condition_name),
+        alias($.group_name, $.condition_name),
       ),
-    condition_name: () => choice("R", /[_\p{L}][_\p{L}\p{Nd}]*/u),
     define_condition: () => "DEFINE",
     recursion_condition: ($) => seq("R", "&", field("name", $.group_name)),
     version_condition: ($) =>
       seq(
-        "VERSION",
+        token(prec(1, "VERSION")),
         choice("=", ">="),
         $.decimal_digits,
         optional(seq(".", $.decimal_digits)),
       ),
-    assertion_condition: ($) =>
-      choice(
-        seq("?", choice("=", "!", "<=", "<!"), body($)),
+    assertion_condition: ($) => {
+      const forms = Object.values(LOOKAROUNDS);
+      return choice(
+        seq("?", choice(...forms.map(([symbol]) => symbol)), body($)),
         seq(
           "*",
-          choice(
-            "pla",
-            "positive_lookahead",
-            "nla",
-            "negative_lookahead",
-            "plb",
-            "positive_lookbehind",
-            "nlb",
-            "negative_lookbehind",
-          ),
+          choice(...forms.flatMap(([, ...names]) => names)),
           ":",
           body($),
         ),
-      ),
+      );
+    },
     numeric_backreference: ($) =>
       seq(
         alias($._decimal_prefix, "\\"),
-        field("group", alias(/[0-9]+/, $.group_number)),
+        field("group", alias($.decimal_digits, $.group_number)),
       ),
     backreference: ($) =>
       choice(
@@ -373,11 +383,7 @@ export default grammar({
         ),
         seq(
           alias($._octal_brace_prefix, "\\o"),
-          "{",
-          optional($._escape_space),
-          field("digits", alias(/[0-7]+/, $.octal_digits)),
-          optional($._escape_space),
-          "}",
+          ...braced($, field("digits", alias(/[0-7]+/, $.octal_digits))),
         ),
       ),
     hex_escape: ($) =>
@@ -391,20 +397,18 @@ export default grammar({
     unicode_escape: ($) =>
       seq(
         alias($._named_unicode_prefix, "\\N"),
-        "{",
-        optional($._escape_space),
-        "U+",
-        field("digits", alias(/[0-9A-Fa-f]+/, $.hexadecimal_digits)),
-        optional($._escape_space),
-        "}",
+        ...braced(
+          $,
+          "U+",
+          field("digits", alias(/[0-9A-Fa-f]+/, $.hexadecimal_digits)),
+        ),
       ),
     _braced_hexadecimal: ($) =>
       seq(
-        "{",
-        optional($._escape_space),
-        field("digits", alias(/[0-9A-Fa-f]+/, $.hexadecimal_digits)),
-        optional($._escape_space),
-        "}",
+        ...braced(
+          $,
+          field("digits", alias(/[0-9A-Fa-f]+/, $.hexadecimal_digits)),
+        ),
       ),
     _escape_space: ($) => alias(/[ \t]+/, $.escape_whitespace),
     unicode_property: ($) =>
@@ -415,7 +419,10 @@ export default grammar({
           seq(
             "{",
             optional(
-              seq(optional(alias($._property_space, $.escape_whitespace)), "^"),
+              seq(
+                optional(alias($._property_ignored, $.property_ignored)),
+                "^",
+              ),
             ),
             field(
               "name",
@@ -509,6 +516,11 @@ export default grammar({
           repeat($._class_layout),
           $._class_following,
         ),
+        seq(
+          alias($._class_range_from_hyphen, $.class_range),
+          repeat($._class_layout),
+          optional($._class_after_range),
+        ),
       ),
     _class_member: ($) =>
       choice(
@@ -522,6 +534,8 @@ export default grammar({
     class_range: ($) => classRange($, $._class_endpoint),
     _class_range_from_first: ($) =>
       classRange($, alias($._first_class_character, $.class_character)),
+    _class_range_from_hyphen: ($) =>
+      classRange($, alias("-", $.class_character)),
     posix_character_class: ($) =>
       seq(
         alias($._posix_open, "["),
@@ -704,6 +718,7 @@ export default grammar({
             alias(
               choice(
                 "UTF",
+                "UTF8",
                 "UCP",
                 "NOTEMPTY",
                 "NOTEMPTY_ATSTART",
