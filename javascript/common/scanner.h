@@ -200,7 +200,6 @@ static bool scan_pattern_start(Scanner *scanner, TSLexer *lexer) {
   return true;
 }
 
-// The first digit is the token; the whole number selects its kind.
 static bool
 scan_digits(const Scanner *scanner, TSLexer *lexer, const bool *valid) {
   const bool unicode = JS_REGEX_MODE != 0;

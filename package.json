@@ -39,10 +39,10 @@
     "tree-sitter": "node scripts/tree-sitter.js"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.14",
-    "@types/node": "26.5.1",
+    "@biomejs/biome": "2.5.15",
+    "@types/node": "26.6.5",
     "@unicode/unicode-17.0.0": "1.6.17",
-    "tree-sitter-cli": "0.27.0",
+    "tree-sitter-cli": "0.27.1",
     "typescript": "7.0.2"
   },
   "allowScripts": {

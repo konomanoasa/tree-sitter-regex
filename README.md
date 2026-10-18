@@ -16,14 +16,14 @@ npm install @konomanoasa/tree-sitter-regex
 
 ## Grammars
 
-Syntax differs across languages and options, so we use separate grammars.
+Syntax differs across languages and options, so separate grammars are provided.
 
 | Grammar             | Description                             |
 | ------------------- | --------------------------------------- |
 | `js_regex`          | ECMAScript 2026, neither `u` nor `v`    |
 | `js_regex_u`        | ECMAScript 2026, `u`                    |
 | `js_regex_v`        | ECMAScript 2026, `v`                    |
-| `pcre2`             | PCRE2 10.49, fixed initial options      |
+| `pcre2`             | PCRE2 10.49                             |
 | `posix_bre`         | POSIX.1-2024 BRE                        |
 | `posix_ere`         | POSIX.1-2024 ERE                        |
 | `python_re`         | Python 3.14, initial `VERBOSE` disabled |

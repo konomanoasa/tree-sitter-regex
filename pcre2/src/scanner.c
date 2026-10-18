@@ -734,7 +734,7 @@ static bool restore(Scanner *scanner, const char *buffer, unsigned length) {
   return offset == length;
 }
 
-// Scopes at or above depth are unread; reset only fixed state.
+// Scopes from depth onward are unread.
 static void reset(Scanner *scanner) {
   scanner->captures = 0;
   scanner->depth = 0;
