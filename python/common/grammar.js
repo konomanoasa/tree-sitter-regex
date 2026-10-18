@@ -1,8 +1,9 @@
-function alternation(first, following = first) {
-  return choice(
-    first,
-    seq(optional(first), repeat1(seq("|", optional(following)))),
-  );
+function alternation(first, alternative) {
+  return choice(first, seq(optional(first), repeat1(alternative)));
+}
+
+function leftSequence(previous, first, following = first) {
+  return choice(first, seq(previous, following));
 }
 
 function classRange(start, end) {
@@ -17,16 +18,9 @@ function modeNode($, name, verbose) {
   return alias($[modeRule(name, verbose)], $[name]);
 }
 
-function body($, verbose) {
-  return optional(field("body", modeNode($, "alternation", verbose)));
-}
-
-function rootBody($, verbose) {
+function body($, verbose, name = "alternation") {
   return optional(
-    field(
-      "body",
-      alias($[modeRule("root_alternation", verbose)], $.alternation),
-    ),
+    field("body", alias($[modeRule(name, verbose)], $.alternation)),
   );
 }
 
@@ -40,7 +34,7 @@ function classMembers($, starts, ranges) {
 }
 
 function digitsEscape(prefix, digits, kind) {
-  return seq(prefix, field("digits", alias(token(digits), kind)));
+  return seq(prefix, field("digits", alias(digits, kind)));
 }
 
 function hexadecimalEscape($, prefix, count) {
@@ -110,10 +104,14 @@ function rootRules(verbose) {
     [rule("root_alternation")]: ($) =>
       alternation(
         alias($[rule("root_concatenation")], $.concatenation),
-        modeNode($, "concatenation", verbose),
+        $[rule("alternative")],
       ),
     [rule("root_concatenation")]: ($) =>
-      seq($[rule("term")], repeat(choice($[rule("term")], $[rule("layout")]))),
+      leftSequence(
+        $[rule("root_concatenation")],
+        $[rule("term")],
+        choice($[rule("term")], $[rule("layout")]),
+      ),
   };
 }
 
@@ -130,9 +128,19 @@ function modeRules(verbose) {
   ];
   return {
     [rule("alternation")]: ($) =>
-      alternation(modeNode($, "concatenation", verbose)),
+      alternation(
+        modeNode($, "concatenation", verbose),
+        $[rule("alternative")],
+      ),
+    // Resumed balancing after a progress cancel can misplace aliases inside a
+    // multi-symbol repeat element, so repeat this single rule instead.
+    [rule("alternative")]: ($) =>
+      seq("|", optional(modeNode($, "concatenation", verbose))),
     [rule("concatenation")]: ($) =>
-      repeat1(choice($[rule("term")], $[rule("layout")])),
+      leftSequence(
+        $[rule("concatenation")],
+        choice($[rule("term")], $[rule("layout")]),
+      ),
     [rule("term")]: ($) =>
       choice($[rule("atom")], modeNode($, "repetition", verbose)),
     [rule("repetition")]: ($) =>
@@ -145,9 +153,7 @@ function modeRules(verbose) {
       choice($[rule("quantifiable_atom")], $._non_quantifiable_atom),
     [rule("literal_character")]: ($) =>
       choice(
-        token(
-          verbose ? /[^.^$\\()\x5b*+?|{# \t\r\n\v\f]/ : /[^.^$\\()\x5b*+?|{]/,
-        ),
+        verbose ? /[^.^$\\()\x5b*+?|{# \t\r\n\v\f]/ : /[^.^$\\()\x5b*+?|{]/,
         $._nul_character,
         $._literal_open_brace,
       ),
@@ -238,15 +244,18 @@ export default function defineGrammar(name, mode) {
     rules: {
       pattern: ($) =>
         verbose
-          ? seq(optional($._root_prefix_verbose), rootBody($, true))
+          ? seq(
+              optional($._root_prefix_verbose),
+              body($, true, "root_alternation"),
+            )
           : seq(
               optional($._root_prefix_normal),
               choice(
-                rootBody($, false),
+                body($, false, "root_alternation"),
                 seq(
                   alias($._global_flags_with_x, $.global_flags),
                   optional($._root_prefix_verbose),
-                  rootBody($, true),
+                  body($, true, "root_alternation"),
                 ),
               ),
             ),
@@ -265,7 +274,7 @@ export default function defineGrammar(name, mode) {
       end_anchor: () => "$",
       _literal_escape: ($) =>
         choice(
-          alias(token(/\\[^A-Za-z0-9]/), $.literal_escape),
+          alias(/\\[^A-Za-z0-9]/, $.literal_escape),
           alias($._escaped_nul_character, $.literal_escape),
         ),
       control_escape: () =>
@@ -302,7 +311,7 @@ export default function defineGrammar(name, mode) {
       _outside_numeric_backreference: ($) =>
         seq(
           alias($._numeric_escape_start, "\\"),
-          field("group", alias(token(/[1-9][0-9]?/), $.group_id)),
+          field("group", alias(/[1-9][0-9]?/, $.group_id)),
         ),
       character_class: ($) => seq("[", optional("^"), $._class_body, "]"),
       _class_body: ($) =>
@@ -364,14 +373,14 @@ export default function defineGrammar(name, mode) {
             "?",
             seq(
               alias($._open_brace, "{"),
-              field("count", $.decimal_digits),
-              "}",
-            ),
-            seq(
-              alias($._open_brace, "{"),
-              optional(field("minimum", $.decimal_digits)),
-              ",",
-              optional(field("maximum", $.decimal_digits)),
+              choice(
+                field("count", $.decimal_digits),
+                seq(
+                  optional(field("minimum", $.decimal_digits)),
+                  ",",
+                  optional(field("maximum", $.decimal_digits)),
+                ),
+              ),
               "}",
             ),
           ),

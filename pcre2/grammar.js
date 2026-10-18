@@ -29,13 +29,16 @@ function body($) {
   return optional(field("body", $.alternation));
 }
 
-function group($, ...prefix) {
-  return seq(
-    alias($._scope_open, "("),
-    ...prefix,
-    body($),
-    alias($._scope_close, ")"),
-  );
+function resumePattern($, ...content) {
+  return seq(...content, optional($._pattern_context));
+}
+
+function group(name, prefix) {
+  const header = `_${name}_header`;
+  return {
+    [name]: ($) => seq($[header], body($), alias($._scope_close, ")")),
+    [header]: ($) => resumePattern($, alias($._scope_open, "("), prefix($)),
+  };
 }
 
 function item($, ...content) {
@@ -113,6 +116,10 @@ export default grammar({
     $._quantifier_question,
     $._property_ignored,
     $._posix_open,
+    $._class_open,
+    $._g_prefix,
+    $._k_prefix,
+    $._pattern_context,
     $._error_sentinel,
   ],
   extras: () => [],
@@ -126,7 +133,7 @@ export default grammar({
     [$.class_symmetric_difference, $.class_intersection],
   ],
   rules: {
-    pattern: ($) => seq(repeat($.start_option), body($)),
+    pattern: ($) => seq(repeat(resumePattern($, $.start_option)), body($)),
     alternation: ($) =>
       choice(
         $.concatenation,
@@ -135,7 +142,11 @@ export default grammar({
           repeat1(seq(alias($._pipe, "|"), optional($.concatenation))),
         ),
       ),
-    concatenation: ($) => repeat1(choice($._atom, $.repetition, $._layout)),
+    concatenation: ($) => $._concatenation,
+    _concatenation: ($) => {
+      const term = choice($._atom, $.repetition, resumePattern($, $._layout));
+      return choice(term, seq($._concatenation, term));
+    },
     repetition: ($) =>
       seq(
         field("operand", $._quantifiable),
@@ -150,23 +161,27 @@ export default grammar({
         $.anchor_escape,
         $.word_boundary_escape,
         $.match_reset,
-        $.global_flags,
-        $.callout,
-        $.control_verb,
+        resumePattern($, choice($.global_flags, $.callout, $.control_verb)),
       ),
     _quantifiable: ($) =>
       choice(
         $.literal_character,
         $.wildcard,
-        $._character_escape,
         $.character_class_escape,
-        $.unicode_property,
-        $.word_boundary_assertion,
-        $.numeric_backreference,
-        $.backreference,
-        $.subroutine_call,
-        $.character_class,
-        $.extended_character_class,
+        resumePattern(
+          $,
+          choice(
+            $._character_escape,
+            $.unicode_property,
+            $.word_boundary_assertion,
+            $.numeric_backreference,
+            $.backreference,
+            $.subroutine_call,
+            $.character_class,
+            $.extended_character_class,
+            alias($._accept_verb, $.control_verb),
+          ),
+        ),
         $.capturing_group,
         $.non_capturing_group,
         $.named_capturing_group,
@@ -183,46 +198,59 @@ export default grammar({
         $.script_run_group,
         $.atomic_script_run_group,
         $.conditional_group,
-        alias($._accept_verb, $.control_verb),
       ),
     wildcard: () => ".",
     start_anchor: () => "^",
     end_anchor: () => "$",
     word_boundary_assertion: ($) =>
-      seq("[", alias($._posix_open, "["), ":", choice("<", ">"), ":", "]", "]"),
+      seq(
+        alias($._class_open, "["),
+        alias($._posix_open, "["),
+        ":",
+        choice("<", ">"),
+        ":",
+        "]",
+        "]",
+      ),
     capturing_group: ($) =>
       seq(alias($._capture_open, "("), body($), alias($._scope_close, ")")),
     non_capturing_group: ($) =>
-      choice(
-        seq(
-          alias($._no_capture_open, "("),
-          body($),
-          alias($._scope_close, ")"),
-        ),
-        group($, "?", ":"),
+      seq(
+        choice(alias($._no_capture_open, "("), $._non_capturing_group_header),
+        body($),
+        alias($._scope_close, ")"),
       ),
-    named_capturing_group: ($) =>
+    _non_capturing_group_header: ($) =>
+      resumePattern($, alias($._scope_open, "("), "?", ":"),
+    ...group("named_capturing_group", ($) =>
       choice(
-        group($, choice("?", "?P"), "<", field("name", $.group_name), ">"),
-        group($, "?", "'", field("name", $.group_name), "'"),
-      ),
-    branch_reset_group: ($) => group($, "?", "|"),
-    atomic_group: ($) =>
-      choice(group($, "?", ">"), group($, "*", "atomic", ":")),
-    ...Object.fromEntries(
-      Object.entries({ ...LOOKAROUNDS, ...NON_ATOMIC_LOOKAROUNDS }).map(
-        ([rule, [symbol, ...names]]) => [
-          rule,
-          ($) =>
-            choice(group($, "?", symbol), group($, "*", choice(...names), ":")),
-        ],
+        seq(choice("?", "?P"), "<", field("name", $.group_name), ">"),
+        seq("?", "'", field("name", $.group_name), "'"),
       ),
     ),
-    script_run_group: ($) => group($, "*", choice("sr", "script_run"), ":"),
-    atomic_script_run_group: ($) =>
-      group($, "*", choice("asr", "atomic_script_run"), ":"),
-    scan_substring_assertion: ($) =>
-      group($, "*", choice("scs", "scan_substring"), ":", $.group_list),
+    ...group("branch_reset_group", () => seq("?", "|")),
+    ...group("atomic_group", () =>
+      choice(seq("?", ">"), seq("*", "atomic", ":")),
+    ),
+    ...Object.fromEntries(
+      Object.entries({ ...LOOKAROUNDS, ...NON_ATOMIC_LOOKAROUNDS }).flatMap(
+        ([rule, [symbol, ...names]]) =>
+          Object.entries(
+            group(rule, () =>
+              choice(seq("?", symbol), seq("*", choice(...names), ":")),
+            ),
+          ),
+      ),
+    ),
+    ...group("script_run_group", () =>
+      seq("*", choice("sr", "script_run"), ":"),
+    ),
+    ...group("atomic_script_run_group", () =>
+      seq("*", choice("asr", "atomic_script_run"), ":"),
+    ),
+    ...group("scan_substring_assertion", ($) =>
+      seq("*", choice("scs", "scan_substring"), ":", $.group_list),
+    ),
     group_list: ($) =>
       seq("(", $._group_list_item, repeat(seq(",", $._group_list_item)), ")"),
     _group_list_item: ($) =>
@@ -234,7 +262,7 @@ export default grammar({
     group_name: () => groupName,
     group_number: () => /[-+]?[0-9]+/,
     global_flags: ($) => item($, "?", optional($._flags)),
-    scoped_flags_group: ($) => group($, "?", $._flags, ":"),
+    ...group("scoped_flags_group", ($) => seq("?", $._flags, ":")),
     _flags: ($) => {
       const enable = alias($._enable_flags, $.flag_set);
       const disable = seq("-", optional(alias($._disable_flags, $.flag_set)));
@@ -245,49 +273,12 @@ export default grammar({
       );
     },
     conditional_group: ($) => {
-      const condition = (content) => [
-        alias($._condition_open, "("),
-        content,
-        alias($._scope_close, ")"),
-      ];
       const yesPattern = optional(field("yes_pattern", $.concatenation));
       return seq(
-        alias($._scope_open, "("),
-        "?",
         choice(
-          seq(...condition(field("condition", $.define_condition)), yesPattern),
+          seq($._define_group_header, yesPattern),
           seq(
-            choice(
-              seq(
-                ...condition(
-                  choice(
-                    field(
-                      "condition",
-                      choice(
-                        $._condition_name,
-                        $.group_number,
-                        $.recursion_condition,
-                        $.version_condition,
-                        $.assertion_condition,
-                      ),
-                    ),
-                    seq("<", field("condition", $.group_name), ">"),
-                    seq("'", field("condition", $.group_name), "'"),
-                  ),
-                ),
-              ),
-              seq(
-                choice(
-                  seq($.callout, repeat($._layout)),
-                  seq(
-                    $.comment_group,
-                    repeat($._layout),
-                    optional(seq($.callout, repeat($._layout))),
-                  ),
-                ),
-                ...condition(field("condition", $.assertion_condition)),
-              ),
-            ),
+            $._conditional_group_header,
             yesPattern,
             optional(
               seq(
@@ -298,6 +289,53 @@ export default grammar({
           ),
         ),
         alias($._scope_close, ")"),
+      );
+    },
+    _define_group_header: ($) =>
+      seq(
+        alias($._scope_open, "("),
+        "?",
+        alias($._condition_open, "("),
+        field("condition", $.define_condition),
+        alias($._scope_close, ")"),
+      ),
+    _conditional_group_header: ($) => {
+      const condition = (content) =>
+        seq(alias($._condition_open, "("), content, alias($._scope_close, ")"));
+      const named = (open, close) =>
+        seq(open, field("condition", $.group_name), close);
+      const check = choice(
+        field(
+          "condition",
+          choice(
+            $._condition_name,
+            $.group_number,
+            $.recursion_condition,
+            $.version_condition,
+            $.assertion_condition,
+          ),
+        ),
+        named("<", ">"),
+        named("'", "'"),
+      );
+      const assertionPrefix = choice(
+        seq($.callout, repeat($._layout)),
+        seq(
+          $.comment_group,
+          repeat($._layout),
+          optional(seq($.callout, repeat($._layout))),
+        ),
+      );
+      return seq(
+        alias($._scope_open, "("),
+        "?",
+        choice(
+          condition(check),
+          seq(
+            assertionPrefix,
+            condition(field("condition", $.assertion_condition)),
+          ),
+        ),
       );
     },
     _condition_name: ($) =>
@@ -314,15 +352,14 @@ export default grammar({
         $.decimal_digits,
         optional(seq(".", $.decimal_digits)),
       ),
-    assertion_condition: ($) => {
+    assertion_condition: ($) => seq($._assertion_condition_header, body($)),
+    _assertion_condition_header: ($) => {
       const forms = Object.values(LOOKAROUNDS);
-      return choice(
-        seq("?", choice(...forms.map(([symbol]) => symbol)), body($)),
-        seq(
-          "*",
-          choice(...forms.flatMap(([, ...names]) => names)),
-          ":",
-          body($),
+      return resumePattern(
+        $,
+        choice(
+          seq("?", choice(...forms.map(([symbol]) => symbol))),
+          seq("*", choice(...forms.flatMap(([, ...names]) => names)), ":"),
         ),
       );
     },
@@ -333,10 +370,12 @@ export default grammar({
       ),
     backreference: ($) =>
       choice(
-        seq("\\g", field("group", $.group_number)),
-        seq("\\g", reference($, "{", "}")),
         seq(
-          "\\k",
+          alias($._g_prefix, "\\g"),
+          choice(field("group", $.group_number), reference($, "{", "}")),
+        ),
+        seq(
+          alias($._k_prefix, "\\k"),
           choice(
             reference($, "<", ">", $.group_name),
             reference($, "'", "'", $.group_name),
@@ -359,7 +398,10 @@ export default grammar({
           field("group", $.group_name),
           optional($.group_list),
         ),
-        seq("\\g", choice(reference($, "<", ">"), reference($, "'", "'"))),
+        seq(
+          alias($._g_prefix, "\\g"),
+          choice(reference($, "<", ">"), reference($, "'", "'")),
+        ),
       ),
     _character_escape: ($) =>
       choice(
@@ -438,7 +480,8 @@ export default grammar({
           alias($._quantifier_star, "*"),
           alias($._quantifier_plus, "+"),
           alias($._quantifier_question, "?"),
-          seq(
+          resumePattern(
+            $,
             alias($._quantifier_open, "{"),
             optional($._quantifier_space),
             choice(
@@ -469,7 +512,7 @@ export default grammar({
     decimal_digits: () => /[0-9]+/,
     character_class: ($) =>
       seq(
-        "[",
+        alias($._class_open, "["),
         repeat($._class_layout),
         optional(seq(alias($._class_negation, "^"), repeat($._class_layout))),
         $._class_members,
@@ -566,11 +609,11 @@ export default grammar({
         ":",
         "]",
       ),
+    _extended_character_class_header: ($) =>
+      seq(alias($._scope_open, "("), "?", "["),
     extended_character_class: ($) =>
       seq(
-        alias($._scope_open, "("),
-        "?",
-        "[",
+        $._extended_character_class_header,
         repeat($._class_layout),
         field("expression", $._set_expression),
         repeat($._class_layout),

@@ -133,11 +133,13 @@ static void assert_scans_decline(void *scanner, const bool *valid_symbols) {
   assert_scan_declines(scanner, valid_symbols, nul, sizeof(nul) - 1);
 }
 
-static void test_disabled_and_recovery_scans_preserve_state(void) {
+static void test_disabled_and_blocked_recovery_scans_preserve_state(void) {
   void *scanner = REGEX_SCANNER(create)();
 #if defined(JS_REGEX_MODE) && JS_REGEX_MODE == 0
   *(Scanner *)scanner =
     (Scanner){.capture_count = 2, .has_named_capture = true};
+#elif defined(PCRE2_SCANNER)
+  ((Scanner *)scanner)->can_recover_pattern = false;
 #endif
   bool valid_symbols[TOKEN_COUNT] = {false};
   assert_scans_decline(scanner, valid_symbols);
@@ -151,6 +153,9 @@ static void test_disabled_and_recovery_scans_preserve_state(void) {
 #if (defined(JS_REGEX_MODE) && JS_REGEX_MODE == 0) || defined(PCRE2_SCANNER)
 static void test_unallocated_payload_declines_without_state(void) {
   void *scanner = REGEX_SCANNER(create)();
+#if defined(JS_REGEX_MODE) && JS_REGEX_MODE == 0
+  ((Scanner *)scanner)->capture_count = 1;
+#endif
   char buffer[TREE_SITTER_SERIALIZATION_BUFFER_SIZE];
   unsigned length = serialize_state(scanner, buffer);
   assert(length > 0);
@@ -215,7 +220,6 @@ static void check_token(
 static void test_serialization_and_reset(void) {
   Scanner *scanner = REGEX_SCANNER(create)();
   assert(scanner != NULL);
-  const unsigned serialized_capture_state_bytes = 5;
   const uint32_t counts[] = {
     0,
     1,
@@ -233,8 +237,11 @@ static void test_serialization_and_reset(void) {
       };
       char buffer[TREE_SITTER_SERIALIZATION_BUFFER_SIZE];
       unsigned length = serialize_state(scanner, buffer);
-      assert(length == serialized_capture_state_bytes);
-      Scanner restored = {0};
+      assert((length == 0) == (counts[index] == 0 && flags == 0));
+      Scanner restored = {
+        .capture_count = UINT32_MAX,
+        .has_named_capture = true
+      };
       REGEX_SCANNER(deserialize)(&restored, buffer, length);
       assert(restored.capture_count == counts[index]);
       assert(restored.has_named_capture == scanner->has_named_capture);
@@ -634,6 +641,119 @@ static bool scan_pcre2(void *scanner, const char *source, TSSymbol token) {
   return emitted;
 }
 
+static void check_pcre2_recovery(
+  void *scanner,
+  const char *source,
+  TSSymbol token,
+  size_t end
+) {
+  bool valid[TOKEN_COUNT];
+  for (unsigned i = 0; i < TOKEN_COUNT; i++) valid[i] = true;
+  if (token == ERROR_SENTINEL) {
+    assert_scan_declines(scanner, valid, source, strlen(source));
+    return;
+  }
+  MockLexer mock = make_lexer(source, strlen(source));
+  assert(REGEX_SCANNER(scan)(scanner, &mock.lexer, valid));
+  assert(mock.lexer.result_symbol == token);
+  assert((mock.mark == SIZE_MAX ? mock.offset : mock.mark) == end);
+}
+
+static void test_pcre2_recovery_respects_serialized_lexical_context(void) {
+  void *scanner = REGEX_SCANNER(create)();
+  void *restored = REGEX_SCANNER(create)();
+  char buffer[TREE_SITTER_SERIALIZATION_BUFFER_SIZE];
+  const struct {
+    const char *source;
+    TSSymbol token;
+  } blocked[] = {
+    {"[", CLASS_OPEN},
+    {"(?<name>", SCOPE_OPEN},
+    {"(?#", ITEM_OPEN},
+    {"\\g<", G_PREFIX},
+    {"\\k<", K_PREFIX},
+    {"\\c)", CONTROL_PREFIX},
+    {"\\p{L}", PROPERTY_PREFIX},
+    {"{2}", QUANTIFIER_OPEN},
+  };
+  for (unsigned i = 0; i < sizeof(blocked) / sizeof(blocked[0]); i++) {
+    REGEX_SCANNER(deserialize)(scanner, NULL, 0);
+    assert(scan_pcre2(scanner, "(", CAPTURE_OPEN));
+    assert(scan_pcre2(scanner, "a", LITERAL_CHARACTER));
+    assert(scan_pcre2(scanner, blocked[i].source, blocked[i].token));
+    unsigned length = serialize_state(scanner, buffer);
+    REGEX_SCANNER(deserialize)(restored, buffer, length);
+    check_pcre2_recovery(restored, ")", ERROR_SENTINEL, 0);
+    check_pcre2_recovery(restored, "|", ERROR_SENTINEL, 0);
+
+    bool valid[TOKEN_COUNT] = {false};
+    valid[PATTERN_CONTEXT] = true;
+    assert_scan_declines(restored, valid, "", 0);
+    MockLexer mock = make_lexer("*", 1);
+    assert(REGEX_SCANNER(scan)(restored, &mock.lexer, valid));
+    assert(mock.lexer.result_symbol == PATTERN_CONTEXT);
+    assert(mock.offset == 0);
+    assert_scan_declines(restored, valid, "*", 1);
+    ((Scanner *)scanner)->can_recover_pattern = true;
+    char expected[TREE_SITTER_SERIALIZATION_BUFFER_SIZE];
+    unsigned expected_length = serialize_state(scanner, expected);
+    length = serialize_state(restored, buffer);
+    assert(length == expected_length);
+    assert(memcmp(buffer, expected, length) == 0);
+    REGEX_SCANNER(deserialize)(scanner, buffer, length);
+    check_pcre2_recovery(scanner, "|", PIPE, 1);
+    check_pcre2_recovery(scanner, ")", SCOPE_CLOSE, 1);
+  }
+
+  for (unsigned in_class = 0; in_class < 2; in_class++) {
+    REGEX_SCANNER(deserialize)(scanner, NULL, 0);
+    assert(scan_pcre2(scanner, "(", CAPTURE_OPEN));
+    bool valid[TOKEN_COUNT] = {false};
+    valid[HEX_SHORT_PREFIX] = true;
+    valid[CLASS_CHARACTER] = in_class;
+    MockLexer mock = make_lexer("\\xG", 3);
+    assert(REGEX_SCANNER(scan)(scanner, &mock.lexer, valid));
+    assert(mock.lexer.result_symbol == HEX_SHORT_PREFIX);
+    assert(mock.mark == 2);
+    unsigned length = serialize_state(scanner, buffer);
+    REGEX_SCANNER(deserialize)(restored, buffer, length);
+    check_pcre2_recovery(restored, "G", ERROR_SENTINEL, 0);
+    check_pcre2_recovery(restored, "4", ERROR_SENTINEL, 0);
+    check_pcre2_recovery(restored, "|", in_class ? ERROR_SENTINEL : PIPE, 1);
+    check_pcre2_recovery(
+      restored,
+      ")",
+      in_class ? ERROR_SENTINEL : SCOPE_CLOSE,
+      1
+    );
+  }
+
+  REGEX_SCANNER(deserialize)(scanner, NULL, 0);
+  assert(scan_pcre2(scanner, "(?|", SCOPE_OPEN));
+  assert(scan_pcre2(scanner, "nxx", ENABLE_FLAGS));
+  assert(scan_pcre2(scanner, "(?<name>", SCOPE_OPEN));
+  assert(scan_pcre2(scanner, "a", LITERAL_CHARACTER));
+  unsigned length = serialize_state(scanner, buffer);
+  REGEX_SCANNER(deserialize)(restored, buffer, length);
+  check_pcre2_recovery(restored, "\\j", ERROR_SENTINEL, 0);
+  check_pcre2_recovery(restored, "\\Q", QUOTE_START, 2);
+  length = serialize_state(restored, buffer);
+  REGEX_SCANNER(deserialize)(scanner, buffer, length);
+  check_pcre2_recovery(scanner, ")", LITERAL_CHARACTER, 1);
+  check_pcre2_recovery(scanner, "|", LITERAL_CHARACTER, 1);
+  check_pcre2_recovery(scanner, "\\E", QUOTE_END, 2);
+  check_pcre2_recovery(scanner, ")", SCOPE_CLOSE, 1);
+  check_pcre2_recovery(scanner, "|", PIPE, 1);
+  assert(((Scanner *)scanner)->captures == 0);
+  assert(((Scanner *)scanner)->flags == (NO_CAPTURE | EXTENDED_MORE));
+  check_pcre2_recovery(scanner, ")", SCOPE_CLOSE, 1);
+  assert(((Scanner *)scanner)->captures == 1);
+  assert(((Scanner *)scanner)->flags == 0);
+  check_pcre2_recovery(scanner, ")", ERROR_SENTINEL, 0);
+  REGEX_SCANNER(destroy)(scanner);
+  REGEX_SCANNER(destroy)(restored);
+}
+
 static void test_pcre2_complete_state_roundtrip_and_scope_limit(void) {
   const unsigned guaranteed_scope_depth = 1000;
   void *scanner = REGEX_SCANNER(create)();
@@ -691,7 +811,7 @@ static void test_reuse_allocator_contract(void) {
 #endif
 
 int main(void) {
-  test_disabled_and_recovery_scans_preserve_state();
+  test_disabled_and_blocked_recovery_scans_preserve_state();
 #if (defined(JS_REGEX_MODE) && JS_REGEX_MODE == 0) || defined(PCRE2_SCANNER)
   test_unallocated_payload_declines_without_state();
 #endif
@@ -718,6 +838,7 @@ int main(void) {
   test_token_ranges_follow_the_grammar_context();
   test_invalid_tokens_are_not_emitted();
 #elif defined(PCRE2_SCANNER)
+  test_pcre2_recovery_respects_serialized_lexical_context();
   test_pcre2_complete_state_roundtrip_and_scope_limit();
 #endif
 #ifdef TREE_SITTER_REUSE_ALLOCATOR

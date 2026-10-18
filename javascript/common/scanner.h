@@ -400,7 +400,8 @@ void REGEX_SCANNER(destroy)(void *payload) {
 
 unsigned REGEX_SCANNER(serialize)(void *payload, char *buffer) {
   const Scanner *scanner = payload;
-  if (!scanner) return 0;
+  if (!scanner || (scanner->capture_count == 0 && !scanner->has_named_capture))
+    return 0;
   for (unsigned i = 0; i < 4; i++)
     buffer[i] = (char)(scanner->capture_count >> (8 * i));
   buffer[4] = (char)scanner->has_named_capture;

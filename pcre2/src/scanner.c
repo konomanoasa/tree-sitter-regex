@@ -49,6 +49,10 @@ enum TokenType {
   QUANTIFIER_QUESTION,
   PROPERTY_IGNORED,
   POSIX_OPEN,
+  CLASS_OPEN,
+  G_PREFIX,
+  K_PREFIX,
+  PATTERN_CONTEXT,
   ERROR_SENTINEL,
 };
 
@@ -93,6 +97,7 @@ typedef struct {
   uint8_t flags;
   uint8_t newline;
   bool quoted;
+  bool can_recover_pattern;
   Scope scopes[TREE_SITTER_SERIALIZATION_BUFFER_SIZE - SERIAL_HEADER];
 } Scanner;
 
@@ -265,7 +270,7 @@ static Opening scan_opening(const Scanner *scanner, TSLexer *lexer) {
 static bool scan_open(Scanner *scanner, TSLexer *lexer, const bool *valid) {
   advance(lexer);
   lexer->mark_end(lexer);
-  if (valid[CONDITION_OPEN]) {
+  if (valid[CONDITION_OPEN] && !valid[ERROR_SENTINEL]) {
     if (valid[ITEM_OPEN] && lexer->lookahead == '?') {
       advance(lexer);
       if (lexer->lookahead == 'C' || lexer->lookahead == '#')
@@ -518,6 +523,8 @@ static bool scan_escape(
     return lexer->lookahead >= ' ' &&
       lexer->lookahead <= '~' &&
       emit(lexer, valid, CONTROL_PREFIX);
+  if (!in_class && (c == 'g' || c == 'k'))
+    return emit(lexer, valid, c == 'g' ? G_PREFIX : K_PREFIX);
   if (c == 'p' || c == 'P') return emit(lexer, valid, PROPERTY_PREFIX);
   if (c == 'x') {
     if (lexer->lookahead != '{') return emit(lexer, valid, HEX_SHORT_PREFIX);
@@ -667,12 +674,35 @@ scan_pattern_token(Scanner *scanner, TSLexer *lexer, const bool *valid) {
   return emit(lexer, valid, LITERAL_CHARACTER);
 }
 
-static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid) {
-  if (valid[ERROR_SENTINEL] || lexer->eof(lexer)) return false;
-  const bool in_class = valid[CLASS_CHARACTER] ||
-    valid[FIRST_CLASS_CHARACTER] ||
-    valid[CLASS_WHITESPACE];
+static bool
+scan_token(Scanner *scanner, TSLexer *lexer, const bool *valid, bool in_class) {
+  if (lexer->eof(lexer)) return false;
+  if (valid[ERROR_SENTINEL]) {
+    if (!scanner->can_recover_pattern) return false;
+    if (scanner->quoted) return scan_quoted(scanner, lexer, valid, false);
+    if (lexer->lookahead == '\\')
+      return scan_escape(scanner, lexer, valid, false);
+    if (lexer->lookahead == '(') return scan_open(scanner, lexer, valid);
+    if (lexer->lookahead == ')') return scan_close(scanner, lexer, valid);
+    if (lexer->lookahead == '|') return scan_pipe(scanner, lexer, valid);
+    if (lexer->lookahead == '[') {
+      advance(lexer);
+      return emit(lexer, valid, CLASS_OPEN);
+    }
+    if (lexer->lookahead == '#' && (scanner->flags & LAYOUT_MASK))
+      return scan_comment(scanner, lexer, valid);
+    return false;
+  }
   if (scanner->quoted) return scan_quoted(scanner, lexer, valid, in_class);
+  if (lexer->lookahead == '[' && valid[CLASS_OPEN]) {
+    advance(lexer);
+    lexer->mark_end(lexer);
+    return emit(
+      lexer,
+      valid,
+      valid[POSIX_OPEN] && scan_posix_close(lexer) ? POSIX_OPEN : CLASS_OPEN
+    );
+  }
   if (valid[COMMENT_CONTENT] || valid[VERB_ARGUMENT])
     return scan_parenthesized_text(lexer, valid);
   const int32_t c = lexer->lookahead;
@@ -690,6 +720,52 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid) {
   if (c == '\\') return scan_escape(scanner, lexer, valid, in_class);
   return in_class ? scan_class_token(scanner, lexer, valid)
                   : scan_pattern_token(scanner, lexer, valid);
+}
+
+static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid) {
+  // Recovery supplies no token at EOF, so a notification there would only
+  // change which standard recovery is selected.
+  if (
+    !valid[ERROR_SENTINEL] &&
+    valid[PATTERN_CONTEXT] &&
+    !scanner->can_recover_pattern &&
+    !lexer->eof(lexer)
+  ) {
+    scanner->can_recover_pattern = true;
+    return emit(lexer, valid, PATTERN_CONTEXT);
+  }
+  const bool in_class = !valid[ERROR_SENTINEL] &&
+    (valid[CLASS_CHARACTER] ||
+      valid[FIRST_CLASS_CHARACTER] ||
+      valid[CLASS_WHITESPACE]);
+  if (!scan_token(scanner, lexer, valid, in_class)) return false;
+  switch (lexer->result_symbol) {
+    case HEX_SHORT_PREFIX:
+    case LITERAL_CHARACTER:
+    case LITERAL_ESCAPE:
+    case CONTROL_ESCAPE:
+    case ANCHOR_ESCAPE:
+    case WORD_BOUNDARY_ESCAPE:
+    case MATCH_RESET:
+    case CHARACTER_CLASS_ESCAPE:
+    case VERBOSE_WHITESPACE:
+    case VERBOSE_COMMENT:
+    case QUOTE_START:
+    case QUOTE_END:
+    case QUANTIFIER_STAR:
+    case QUANTIFIER_PLUS:
+    case QUANTIFIER_QUESTION:
+    case SCOPE_CLOSE:
+    case PIPE:
+    case CAPTURE_OPEN:
+    case NO_CAPTURE_OPEN:
+      scanner->can_recover_pattern = !in_class;
+      break;
+    default:
+      scanner->can_recover_pattern = false;
+      break;
+  }
+  return true;
 }
 
 static void
@@ -712,7 +788,9 @@ static bool restore(Scanner *scanner, const char *buffer, unsigned length) {
   unsigned offset = 0;
   scanner->flags = (uint8_t)read_integer(buffer, &offset, 1);
   scanner->newline = (uint8_t)read_integer(buffer, &offset, 1);
-  scanner->quoted = read_integer(buffer, &offset, 1);
+  uint8_t context = (uint8_t)read_integer(buffer, &offset, 1);
+  scanner->quoted = context & 1;
+  scanner->can_recover_pattern = context & 2;
   scanner->captures = read_integer(buffer, &offset, 4);
   scanner->depth = (uint16_t)read_integer(buffer, &offset, 2);
   scanner->scope_bytes = (uint16_t)read_integer(buffer, &offset, 2);
@@ -742,10 +820,13 @@ static void reset(Scanner *scanner) {
   scanner->flags = 0;
   scanner->newline = NEWLINE_LF;
   scanner->quoted = false;
+  scanner->can_recover_pattern = true;
 }
 
 void *tree_sitter_pcre2_external_scanner_create(void) {
-  return ts_calloc(1, sizeof(Scanner));
+  Scanner *scanner = ts_calloc(1, sizeof(Scanner));
+  if (scanner) reset(scanner);
+  return scanner;
 }
 
 void tree_sitter_pcre2_external_scanner_destroy(void *payload) {
@@ -767,7 +848,12 @@ tree_sitter_pcre2_external_scanner_serialize(void *payload, char *buffer) {
   unsigned offset = 0;
   write_integer(buffer, &offset, scanner->flags, 1);
   write_integer(buffer, &offset, scanner->newline, 1);
-  write_integer(buffer, &offset, scanner->quoted, 1);
+  write_integer(
+    buffer,
+    &offset,
+    scanner->quoted | (scanner->can_recover_pattern << 1),
+    1
+  );
   write_integer(buffer, &offset, scanner->captures, 4);
   write_integer(buffer, &offset, scanner->depth, 2);
   write_integer(buffer, &offset, scanner->scope_bytes, 2);

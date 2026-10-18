@@ -505,24 +505,20 @@
       ]
     },
     "reg_exp_identifier_name": {
-      "type": "PREC_RIGHT",
-      "value": 0,
-      "content": {
-        "type": "SEQ",
-        "members": [
-          {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "reg_exp_identifier_start"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
             "type": "SYMBOL",
-            "name": "reg_exp_identifier_start"
-          },
-          {
-            "type": "REPEAT",
-            "content": {
-              "type": "SYMBOL",
-              "name": "reg_exp_identifier_part"
-            }
+            "name": "reg_exp_identifier_part"
           }
-        ]
-      }
+        }
+      ]
     },
     "reg_exp_identifier_start": {
       "type": "CHOICE",
@@ -807,14 +803,10 @@
       ]
     },
     "decimal_digits": {
-      "type": "PREC_RIGHT",
-      "value": 0,
+      "type": "REPEAT1",
       "content": {
-        "type": "REPEAT1",
-        "content": {
-          "type": "SYMBOL",
-          "name": "decimal_digit"
-        }
+        "type": "SYMBOL",
+        "name": "decimal_digit"
       }
     },
     "decimal_digit": {
@@ -864,34 +856,30 @@
       ]
     },
     "decimal_escape": {
-      "type": "PREC_RIGHT",
-      "value": 0,
-      "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "ALIAS",
-            "content": {
-              "type": "SYMBOL",
-              "name": "_decimal_start"
-            },
-            "named": true,
-            "value": "non_zero_digit"
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_decimal_start"
           },
-          {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "decimal_digits"
-              },
-              {
-                "type": "BLANK"
-              }
-            ]
-          }
-        ]
-      }
+          "named": true,
+          "value": "non_zero_digit"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "decimal_digits"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        }
+      ]
     },
     "character_escape": {
       "type": "CHOICE",
@@ -1147,14 +1135,10 @@
       "name": "hex_digits"
     },
     "hex_digits": {
-      "type": "PREC_RIGHT",
-      "value": 0,
+      "type": "REPEAT1",
       "content": {
-        "type": "REPEAT1",
-        "content": {
-          "type": "SYMBOL",
-          "name": "hex_digit"
-        }
+        "type": "SYMBOL",
+        "name": "hex_digit"
       }
     },
     "hex_digit": {

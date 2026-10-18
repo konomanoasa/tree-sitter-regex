@@ -1,8 +1,8 @@
 import { readFileSync, writeFileSync } from "node:fs";
-import idContinue from "@unicode/unicode-17.0.0/Binary_Property/ID_Continue/code-points.js";
-import idStart from "@unicode/unicode-17.0.0/Binary_Property/ID_Start/code-points.js";
-import decimalDigits from "@unicode/unicode-17.0.0/General_Category/Decimal_Number/code-points.js";
-import letters from "@unicode/unicode-17.0.0/General_Category/Letter/code-points.js";
+import idContinue from "@unicode/unicode-17.0.0/Binary_Property/ID_Continue/code-points.mjs";
+import idStart from "@unicode/unicode-17.0.0/Binary_Property/ID_Start/code-points.mjs";
+import decimalDigits from "@unicode/unicode-17.0.0/General_Category/Decimal_Number/code-points.mjs";
+import letters from "@unicode/unicode-17.0.0/General_Category/Letter/code-points.mjs";
 
 const outputs = [
   {

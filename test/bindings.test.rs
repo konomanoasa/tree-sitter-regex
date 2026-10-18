@@ -1,5 +1,8 @@
 use konomanoasa_tree_sitter_regex as grammar;
-use tree_sitter::{Language, Parser, Query};
+use std::ops::ControlFlow;
+use tree_sitter::{
+  InputEdit, Language, ParseOptions, ParseState, Parser, Point, Query,
+};
 
 #[test]
 fn parses_valid_source() {
@@ -184,6 +187,84 @@ fn pcre2_name_and_decimal_leaves_are_nonempty_unless_missing() {
       }
       pending.extend(node.children(&mut node.walk()));
     }
+  }
+}
+
+#[test]
+fn fresh_parse_after_prefix_deletion_excludes_the_new_initial_bom() {
+  let edited_source = "\u{feff}a";
+  for (language, prefix) in [
+    (grammar::LANGUAGE_POSIX_ERE, "a|"),
+    (grammar::LANGUAGE_JS_U, "a|"),
+    (grammar::LANGUAGE_JS_V, "a|"),
+    (grammar::LANGUAGE_PYTHON, "a|"),
+    (grammar::LANGUAGE_PYTHON_VERBOSE, "a|"),
+    (grammar::LANGUAGE_PCRE2, "^"),
+  ] {
+    let source = format!("{prefix}{edited_source}");
+    let mut parser = Parser::new();
+    parser.set_language(&language.into()).unwrap();
+    let mut old_tree = parser.parse(&source, None).unwrap();
+    assert!(!old_tree.root_node().has_error());
+    old_tree.edit(&InputEdit {
+      start_byte: 0,
+      old_end_byte: prefix.len(),
+      new_end_byte: 0,
+      start_position: Point::new(0, 0),
+      old_end_position: Point::new(0, prefix.len()),
+      new_end_position: Point::new(0, 0),
+    });
+
+    let tree = parser.parse(edited_source, None).unwrap();
+    assert!(!tree.root_node().has_error());
+    let mut pending = vec![tree.root_node()];
+    let mut leaves = Vec::new();
+    while let Some(node) = pending.pop() {
+      assert_eq!(node.byte_range(), 3..4);
+      assert_eq!(node.start_position(), Point::new(0, 3));
+      assert_eq!(node.end_position(), Point::new(0, 4));
+      if node.child_count() == 0 {
+        leaves.push(node.utf8_text(edited_source.as_bytes()).unwrap());
+      }
+      pending.extend(node.children(&mut node.walk()));
+    }
+    assert_eq!(leaves, ["a"]);
+  }
+}
+
+#[test]
+fn python_alternations_resumed_after_cancels_match_uninterrupted_parses() {
+  for language in [grammar::LANGUAGE_PYTHON, grammar::LANGUAGE_PYTHON_VERBOSE] {
+    let mut parser = Parser::new();
+    parser.set_language(&language.into()).unwrap();
+    let mut cancels = 0;
+    for count in 2..=64 {
+      let alternatives = vec!["a"; count].join("|");
+      for source in [format!("x{alternatives}"), format!("({alternatives})")] {
+        let expected = parser.parse(&source, None).unwrap();
+        assert!(!expected.root_node().has_error(), "{source}");
+        let bytes = source.as_bytes();
+        let tree = loop {
+          let mut cancel = |_: &ParseState| {
+            cancels += 1;
+            ControlFlow::Break(())
+          };
+          if let Some(tree) = parser.parse_with_options(
+            &mut |byte, _| bytes.get(byte..).unwrap_or_default(),
+            None,
+            Some(ParseOptions::new().progress_callback(&mut cancel)),
+          ) {
+            break tree;
+          }
+        };
+        assert_eq!(
+          tree.root_node().to_sexp(),
+          expected.root_node().to_sexp(),
+          "{source}"
+        );
+      }
+    }
+    assert!(cancels > 0);
   }
 }
 

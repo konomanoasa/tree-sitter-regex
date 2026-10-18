@@ -29,6 +29,10 @@ function oneCharOrCollElem($, ...ordinary) {
   );
 }
 
+function leftSequence(previous, first, following = first) {
+  return choice(first, seq(previous, following));
+}
+
 function rightAnchor($) {
   return alias($._bre_right_anchor, "$");
 }
@@ -49,14 +53,23 @@ function breRules() {
     bre_branch: ($) =>
       choice(
         alias($._bre_anchor_only_expression, $.bre_expression),
-        seq(leading($, "bre_expression"), repeat($.bre_expression)),
+        $._bre_sequence,
+      ),
+    _bre_sequence: ($) =>
+      leftSequence(
+        $._bre_sequence,
+        leading($, "bre_expression"),
+        $.bre_expression,
       ),
     _bre_anchor_only_expression: ($) => seq("^", optional(rightAnchor($))),
     _leading_bre_expression: ($) =>
       prec.right(
         choice(
-          seq("^", leading($, "simple_bre"), optional(rightAnchor($))),
-          seq(leading($, "simple_bre"), optional(rightAnchor($))),
+          seq(
+            optional("^"),
+            leading($, "simple_bre"),
+            optional(rightAnchor($)),
+          ),
           rightAnchor($),
         ),
       ),
@@ -68,7 +81,12 @@ function breRules() {
     _nested_bre_branch: ($) =>
       seq(
         alias($._nested_leading_bre_expression, $.bre_expression),
-        repeat(alias($._nested_bre_expression, $.bre_expression)),
+        optional($._nested_bre_tail),
+      ),
+    _nested_bre_tail: ($) =>
+      leftSequence(
+        $._nested_bre_tail,
+        alias($._nested_bre_expression, $.bre_expression),
       ),
     _nested_leading_bre_expression: ($) => leading($, "simple_bre"),
     _nested_bre_expression: ($) => $.simple_bre,
@@ -112,6 +130,7 @@ function breRules() {
 
 function ereLevelRules(nested) {
   const name = (rule) => (nested ? `_nested_${rule}` : rule);
+  const sequence = nested ? "_nested_ere_sequence" : "_ere_sequence";
   const reference = ($, rule) =>
     nested ? alias($[name(rule)], $[rule]) : $[rule];
   return {
@@ -120,7 +139,9 @@ function ereLevelRules(nested) {
         reference($, "ere_branch"),
         repeat(seq("|", reference($, "ere_branch"))),
       ),
-    [name("ere_branch")]: ($) => repeat1(reference($, "ere_expression")),
+    [name("ere_branch")]: ($) => $[sequence],
+    [sequence]: ($) =>
+      leftSequence($[sequence], reference($, "ere_expression")),
     [name("ere_expression")]: ($) =>
       seq(
         choice(

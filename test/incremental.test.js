@@ -24,6 +24,50 @@ const randomOutputShift = 32n;
 const randomMultiplier = 6364136223846793005n;
 const randomIncrement = 1n;
 
+for (const grammar of grammars.filter(({ name }) =>
+  [
+    "pcre2",
+    "posix_bre",
+    "posix_ere",
+    "python_re",
+    "python_re_verbose",
+    "js_regex_u",
+    "js_regex_v",
+  ].includes(name),
+)) {
+  test(`${grammar.name}: long concatenations preserve CST through UTF-8 edits and undo`, () => {
+    const repetitions = 256;
+    const units = ["a", "a[bc]*d"];
+    if (grammar.name.startsWith("js_regex"))
+      units.push("a{2,3}?b", String.raw`a\u{41}b`, "a(?<x>b)c");
+    if (grammar.name === "posix_bre")
+      units.push(String.raw`a\{2,3\}b`, String.raw`a\(bc\)d`);
+    const wrappers = [["", ""]];
+    if (grammar.name === "posix_bre")
+      wrappers.push([String.raw`x\(`, String.raw`\)y`]);
+    for (const unit of units) {
+      for (const [opening, closing] of wrappers) {
+        const source = `${opening}${unit.repeat(repetitions)}${closing}`;
+        const original = parse(grammar, source);
+        assert.equal(original.status, 0);
+        for (const index of [0, repetitions / 2, repetitions - 1]) {
+          const byte = opening.length + index * unit.length;
+          const edited = `${source.slice(0, byte)}é${source.slice(byte + 1)}`;
+          const forward = { byte, deleteBytes: 1, insert: "é" };
+          const reverse = { byte, deleteBytes: 2, insert: "a" };
+          const expected = parse(grammar, edited);
+          assert.equal(expected.status, 0);
+          assert.deepEqual(parse(grammar, source, [forward]), expected);
+          assert.deepEqual(
+            parse(grammar, source, [forward, reverse]),
+            original,
+          );
+        }
+      }
+    }
+  });
+}
+
 for (const language of javascriptLanguages) {
   test(`${language}: replacing every fragment at every position preserves incremental CST`, () => {
     const fragments = ["a", "b", "(c)", "[d-f]", String.raw`\d`, "x?"];

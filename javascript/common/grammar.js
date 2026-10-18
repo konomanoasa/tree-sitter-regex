@@ -210,7 +210,12 @@ export default function defineGrammar(name, mode) {
           ? optional(field("body", $.disjunction))
           : seq($._pattern_start, optional(field("body", $.disjunction))),
       disjunction: ($) => alternation($.alternative),
-      alternative: ($) => repeat1($.term),
+      alternative: ($) => (unicode ? $._alternative : repeat1($.term)),
+      ...(unicode
+        ? {
+            _alternative: ($) => choice($.term, seq($._alternative, $.term)),
+          }
+        : {}),
       term: ($) =>
         choice(
           $.assertion,
@@ -293,9 +298,7 @@ export default function defineGrammar(name, mode) {
       group_name: ($) =>
         seq("<", field("name", $.reg_exp_identifier_name), ">"),
       reg_exp_identifier_name: ($) =>
-        prec.right(
-          seq($.reg_exp_identifier_start, repeat($.reg_exp_identifier_part)),
-        ),
+        seq($.reg_exp_identifier_start, repeat($.reg_exp_identifier_part)),
       reg_exp_identifier_start: ($) =>
         identifierChar($, $.identifier_start_char),
       reg_exp_identifier_part: ($) => identifierChar($, $.identifier_part_char),
@@ -312,7 +315,7 @@ export default function defineGrammar(name, mode) {
       quantifier: ($) => seq($.quantifier_prefix, optional("?")),
       quantifier_prefix: ($) => choice("*", "+", "?", bracedQuantifier($)),
       ...(!unicode ? { invalid_braced_quantifier: bracedQuantifier } : {}),
-      decimal_digits: ($) => prec.right(repeat1($.decimal_digit)),
+      decimal_digits: ($) => repeat1($.decimal_digit),
       decimal_digit: () => token(prec(1, /[0-9]/)),
       atom_escape: ($) =>
         choice(
@@ -322,11 +325,9 @@ export default function defineGrammar(name, mode) {
           seq(alias($._named_reference_start, "k"), $.group_name),
         ),
       decimal_escape: ($) =>
-        prec.right(
-          seq(
-            alias($._decimal_start, $.non_zero_digit),
-            optional($.decimal_digits),
-          ),
+        seq(
+          alias($._decimal_start, $.non_zero_digit),
+          optional($.decimal_digits),
         ),
       character_escape: ($) =>
         choice(
@@ -355,7 +356,7 @@ export default function defineGrammar(name, mode) {
       hex4_digits: ($) =>
         seq($.hex_digit, $.hex_digit, $.hex_digit, $.hex_digit),
       code_point: ($) => $.hex_digits,
-      hex_digits: ($) => prec.right(repeat1($.hex_digit)),
+      hex_digits: ($) => repeat1($.hex_digit),
       hex_digit: () => /[0-9A-Fa-f]/,
       identity_escape: ($) =>
         unicode

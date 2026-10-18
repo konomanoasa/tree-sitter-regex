@@ -796,6 +796,146 @@ test("PCRE2 repaired name and decimal tokens match fresh parses", () => {
   }
 });
 
+test("PCRE2 repairs preserve lexical context and scope state", () => {
+  for (const { source, edit, expectedSource } of [
+    {
+      source: "(a**)b",
+      edit: { byte: 3, deleteBytes: 1, insert: "" },
+      expectedSource: "(a*)b",
+    },
+    {
+      source: "(a{2}*)b",
+      edit: { byte: 5, deleteBytes: 1, insert: "" },
+      expectedSource: "(a{2})b",
+    },
+    {
+      source: "(?:^*)b",
+      edit: { byte: 4, deleteBytes: 1, insert: "" },
+      expectedSource: "(?:^)b",
+    },
+    {
+      source: "(?:(?#x)*)b",
+      edit: { byte: 8, deleteBytes: 1, insert: "" },
+      expectedSource: "(?:(?#x))b",
+    },
+    {
+      source: String.raw`(\x{41}\j)b`,
+      edit: { byte: 8, deleteBytes: 1, insert: "n" },
+      expectedSource: String.raw`(\x{41}\n)b`,
+    },
+    {
+      source: String.raw`(?|(a{2}*)|(b))\2`,
+      edit: { byte: 8, deleteBytes: 1, insert: "" },
+      expectedSource: String.raw`(?|(a{2})|(b))\2`,
+    },
+    {
+      source: "(?x:a**) b",
+      edit: { byte: 6, deleteBytes: 1, insert: "" },
+      expectedSource: "(?x:a*) b",
+    },
+    {
+      source: "(?n:a**)(b)",
+      edit: { byte: 6, deleteBytes: 1, insert: "" },
+      expectedSource: "(?n:a*)(b)",
+    },
+    {
+      source: String.raw`(?|(a)**|(b))\2`,
+      edit: { byte: 7, deleteBytes: 1, insert: "" },
+      expectedSource: String.raw`(?|(a)*|(b))\2`,
+    },
+    {
+      source: String.raw`(a\j)b`,
+      edit: { byte: 3, deleteBytes: 1, insert: "n" },
+      expectedSource: String.raw`(a\n)b`,
+    },
+    {
+      source: String.raw`(a\xG)b`,
+      edit: { byte: 4, deleteBytes: 1, insert: "41" },
+      expectedSource: String.raw`(a\x41)b`,
+    },
+    {
+      source: String.raw`(a\xG\Q)|b\E)c`,
+      edit: { byte: 4, deleteBytes: 1, insert: "41" },
+      expectedSource: String.raw`(a\x41\Q)|b\E)c`,
+    },
+    {
+      source: String.raw`([a\xG)|x])b`,
+      edit: { byte: 5, deleteBytes: 1, insert: "41" },
+      expectedSource: String.raw`([a\x41)|x])b`,
+    },
+    {
+      source: String.raw`([a-\d)|x])b`,
+      edit: { byte: 3, deleteBytes: 1, insert: "" },
+      expectedSource: String.raw`([a\d)|x])b`,
+    },
+    {
+      source: String.raw`(a**\Q)|b\E)c`,
+      edit: { byte: 3, deleteBytes: 1, insert: "" },
+      expectedSource: String.raw`(a*\Q)|b\E)c`,
+    },
+    {
+      source: "(a**(?#|)b)c",
+      edit: { byte: 3, deleteBytes: 1, insert: "" },
+      expectedSource: "(a*(?#|)b)c",
+    },
+    {
+      source: String.raw`(a\k<)|b>)c`,
+      edit: { byte: 5, deleteBytes: 2, insert: "" },
+      expectedSource: String.raw`(a\k<b>)c`,
+    },
+    {
+      source: String.raw`(a\g{)|b})c`,
+      edit: { byte: 5, deleteBytes: 2, insert: "" },
+      expectedSource: String.raw`(a\g{b})c`,
+    },
+  ]) {
+    assert.equal(parse(pcre2Grammar, source).status, 1, source);
+    assert.equal(applyEdits(source, [edit]).toString(), expectedSource);
+    const expected = parse(pcre2Grammar, expectedSource);
+    assert.equal(expected.status, 0, expectedSource);
+    assert.deepEqual(parse(pcre2Grammar, source, [edit]), expected, source);
+  }
+});
+
+test("PCRE2 completed nested group headers preserve fields after closing repairs", () => {
+  for (const opening of [
+    "(?:",
+    "(?<name>",
+    "(?P<name>",
+    "(?'name'",
+    "(?|",
+    "(?>",
+    "(*atomic:",
+    "(?nxx:",
+    "(?=",
+    "(?<=",
+    "(*napla:",
+    "(*sr:",
+    "(*asr:",
+    "(*scs:(1)",
+    "(?(1)",
+    "(?(DEFINE)",
+    "(?(?=a)",
+    "(?(?#c)(?=a)",
+  ]) {
+    for (const depth of [1, 4, 20]) {
+      const source = `z${opening.repeat(depth)}a`;
+      const closing = ")".repeat(depth);
+      const expectedSource = `${source}${closing}b`;
+      const edit = {
+        byte: source.length,
+        deleteBytes: 0,
+        insert: `${closing}b`,
+      };
+      assert.equal(parse(pcre2Grammar, source).status, 1, source);
+      assert.equal(applyEdits(source, [edit]).toString(), expectedSource);
+      const expected = parse(pcre2Grammar, expectedSource);
+      assert.equal(expected.status, 0, expectedSource);
+      assert.deepEqual(parse(pcre2Grammar, source, [edit]), expected, source);
+    }
+  }
+});
+
 test("PCRE2 POSIX delimiters and Unicode group names reparse after edits", () => {
   for (const { source, edit } of [
     { source: "[[:alpha]]", edit: { byte: 8, deleteBytes: 0, insert: ":" } },
@@ -876,6 +1016,24 @@ const posixEdits = [
       },
     ];
   }),
+  {
+    name: "completing a BRE group closer after several terms restores the surrounding expressions",
+    languages: ["posix_bre"],
+    source: "a\\(bcd\\",
+    edited: String.raw`a\(bcd\)`,
+    edit: { byte: 7, deleteBytes: 0, insert: ")" },
+    reverse: { byte: 7, deleteBytes: 1, insert: "" },
+    sourceError: true,
+  },
+  {
+    name: "appending a missing BRE group closer restores the surrounding expressions",
+    languages: ["posix_bre"],
+    source: String.raw`a\(bcd`,
+    edited: String.raw`a\(bcd\)`,
+    edit: { byte: 6, deleteBytes: 0, insert: String.raw`\)` },
+    reverse: { byte: 6, deleteBytes: 2, insert: "" },
+    sourceError: true,
+  },
   {
     name: "an empty group supplies a missing alternative",
     languages: ["posix_ere"],

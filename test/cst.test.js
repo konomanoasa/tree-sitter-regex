@@ -258,6 +258,18 @@ for (const grammar of grammars) {
         `${repeatedExpression.repeat(repeatedExpressionCount)}a`,
       ],
       ["deep groups", `${open.repeat(depth)}a${close.repeat(depth)}`],
+      ...(bre
+        ? [
+            [
+              "long group body",
+              `${open}${"x".repeat(largeLiteralCharacters)}${close}`,
+            ],
+            [
+              "deep groups with concatenated bodies",
+              `${open.repeat(depth)}abc${`${close}de`.repeat(depth)}`,
+            ],
+          ]
+        : []),
       ["space-separated atoms", "a ".repeat(spacedAtomCount)],
     ]) {
       assert.equal(parseSummary(grammar, source).successful, true, name);
