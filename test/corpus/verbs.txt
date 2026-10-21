@@ -1,13 +1,4 @@
 ==================
-PCRE2 ACCEPT can repeat and optional verb arguments can be empty
-:language(pcre2)
-==================
-(*ACCEPT)??(*PRUNE:)
-------------------
-
-(pattern (alternation (concatenation (repetition (control_verb (verb_name)) (quantifier)) (control_verb (verb_name)))))
-
-==================
 PCRE2 ACCEPT repeats and optional arguments may be empty
 :language(pcre2)
 ==================

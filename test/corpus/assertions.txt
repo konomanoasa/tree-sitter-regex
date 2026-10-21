@@ -1,15 +1,6 @@
 ==================
-PCRE2 quantified compatibility word boundaries preserve the source operands
-:language(pcre2)
-==================
-[[:<:]]*[[:>:]]{0}
-------------------
-
-(pattern (alternation (concatenation (repetition (word_boundary_assertion) (quantifier)) (repetition (word_boundary_assertion) (quantifier (decimal_digits))))))
-
-==================
 anchors word boundaries and lookarounds remain assertions
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 ^\ba\B$(?=b)(?!c)(?<=d)(?<!e)
@@ -86,9 +77,47 @@ anchors word boundaries and lookarounds remain assertions
 0:28 - 0:29             ")"
 
 ==================
+every lookaround supports an empty body
+:language(ecmaregex)
+:cst
+==================
+(?=)(?!)(?<=)(?<!)
+------------------
+
+0:0  - 0:18   pattern
+0:0  - 0:18     body: disjunction
+0:0  - 0:18       alternative
+0:0  - 0:4          term
+0:0  - 0:4            assertion
+0:0  - 0:4              quantifiable_assertion
+0:0  - 0:1                "("
+0:1  - 0:2                "?"
+0:2  - 0:3                "="
+0:3  - 0:4                ")"
+0:4  - 0:8          term
+0:4  - 0:8            assertion
+0:4  - 0:8              quantifiable_assertion
+0:4  - 0:5                "("
+0:5  - 0:6                "?"
+0:6  - 0:7                "!"
+0:7  - 0:8                ")"
+0:8  - 0:13         term
+0:8  - 0:13           assertion
+0:8  - 0:9              "("
+0:9  - 0:10             "?"
+0:10 - 0:12             "<="
+0:12 - 0:13             ")"
+0:13 - 0:18         term
+0:13 - 0:18           assertion
+0:13 - 0:14             "("
+0:14 - 0:15             "?"
+0:15 - 0:17             "<!"
+0:17 - 0:18             ")"
+
+==================
 anchors word boundaries and lookarounds remain assertions
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :cst
 ==================
 ^\ba\B$(?=b)(?!c)(?<=d)(?<!e)
@@ -163,160 +192,9 @@ anchors word boundaries and lookarounds remain assertions
 0:28 - 0:29             ")"
 
 ==================
-lookaround direction polarity and atomic groups have distinct public nodes
-:language(python_re)
-:language(python_re_verbose)
-==================
-(?=a)(?!b)(?<=c)(?<!d)(?>e)\
-
-------------------
-
-(pattern
-  body: (alternation
-    (concatenation
-      (positive_lookahead_assertion
-        body: (alternation
-          (concatenation
-            (literal_character))))
-      (negative_lookahead_assertion
-        body: (alternation
-          (concatenation
-            (literal_character))))
-      (positive_lookbehind_assertion
-        body: (alternation
-          (concatenation
-            (literal_character))))
-      (negative_lookbehind_assertion
-        body: (alternation
-          (concatenation
-            (literal_character))))
-      (atomic_group
-        body: (alternation
-          (concatenation
-            (literal_character))))
-      (literal_escape))))
-
-==================
-assertions and atomic groups can be repetition operands
-:language(python_re)
-:language(python_re_verbose)
-==================
-(?=a)*(?!b)+(?<=c)?(?<!d){2}(?>e)*\
-
-------------------
-
-(pattern
-  body: (alternation
-    (concatenation
-      (repetition
-        operand: (positive_lookahead_assertion
-          body: (alternation
-            (concatenation
-              (literal_character))))
-        quantifier: (quantifier))
-      (repetition
-        operand: (negative_lookahead_assertion
-          body: (alternation
-            (concatenation
-              (literal_character))))
-        quantifier: (quantifier))
-      (repetition
-        operand: (positive_lookbehind_assertion
-          body: (alternation
-            (concatenation
-              (literal_character))))
-        quantifier: (quantifier))
-      (repetition
-        operand: (negative_lookbehind_assertion
-          body: (alternation
-            (concatenation
-              (literal_character))))
-        quantifier: (quantifier
-          count: (decimal_digits)))
-      (repetition
-        operand: (atomic_group
-          body: (alternation
-            (concatenation
-              (literal_character))))
-        quantifier: (quantifier))
-      (literal_escape))))
-
-==================
-scoped verbose mode flows through assertion and atomic bodies
-:language(python_re)
-:language(python_re_verbose)
-==================
-(?x:(?= a # gap
- b)(?> c ))\
-
-------------------
-
-(pattern
-  body: (alternation
-    (concatenation
-      (scoped_flags_group
-        enable: (flag_set)
-        body: (alternation
-          (concatenation
-            (positive_lookahead_assertion
-              body: (alternation
-                (concatenation
-                  (verbose_whitespace)
-                  (literal_character)
-                  (verbose_whitespace)
-                  (verbose_comment)
-                  (verbose_whitespace)
-                  (literal_character))))
-            (atomic_group
-              body: (alternation
-                (concatenation
-                  (verbose_whitespace)
-                  (literal_character)
-                  (verbose_whitespace)))))))
-      (literal_escape))))
-
-==================
 every lookaround supports an empty body
-:language(js_regex)
-:cst
-==================
-(?=)(?!)(?<=)(?<!)
-------------------
-
-0:0  - 0:18   pattern
-0:0  - 0:18     body: disjunction
-0:0  - 0:18       alternative
-0:0  - 0:4          term
-0:0  - 0:4            assertion
-0:0  - 0:4              quantifiable_assertion
-0:0  - 0:1                "("
-0:1  - 0:2                "?"
-0:2  - 0:3                "="
-0:3  - 0:4                ")"
-0:4  - 0:8          term
-0:4  - 0:8            assertion
-0:4  - 0:8              quantifiable_assertion
-0:4  - 0:5                "("
-0:5  - 0:6                "?"
-0:6  - 0:7                "!"
-0:7  - 0:8                ")"
-0:8  - 0:13         term
-0:8  - 0:13           assertion
-0:8  - 0:9              "("
-0:9  - 0:10             "?"
-0:10 - 0:12             "<="
-0:12 - 0:13             ")"
-0:13 - 0:18         term
-0:13 - 0:18           assertion
-0:13 - 0:14             "("
-0:14 - 0:15             "?"
-0:15 - 0:17             "<!"
-0:17 - 0:18             ")"
-
-==================
-every lookaround supports an empty body
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :cst
 ==================
 (?=)(?!)(?<=)(?<!)
@@ -351,56 +229,13 @@ every lookaround supports an empty body
 0:17 - 0:18             ")"
 
 ==================
-empty bodies preserve every assertion and atomic category
-:language(python_re)
-:language(python_re_verbose)
+PCRE2 quantified compatibility word boundaries preserve the source operands
+:language(pcre2)
 ==================
-(?=)(?!)(?<=)(?<!)(?>)\
-
+[[:<:]]*[[:>:]]{0}
 ------------------
 
-(pattern
-  body: (alternation
-    (concatenation
-      (positive_lookahead_assertion)
-      (negative_lookahead_assertion)
-      (positive_lookbehind_assertion)
-      (negative_lookbehind_assertion)
-      (atomic_group)
-      (literal_escape))))
-
-==================
-lookbehind length and atomic matching semantics remain outside the CST
-:language(python_re)
-:language(python_re_verbose)
-==================
-(?<=a*)(?<!a|bc)(?>a|b)\
-
-------------------
-
-(pattern
-  body: (alternation
-    (concatenation
-      (positive_lookbehind_assertion
-        body: (alternation
-          (concatenation
-            (repetition
-              operand: (literal_character)
-              quantifier: (quantifier)))))
-      (negative_lookbehind_assertion
-        body: (alternation
-          (concatenation
-            (literal_character))
-          (concatenation
-            (literal_character)
-            (literal_character))))
-      (atomic_group
-        body: (alternation
-          (concatenation
-            (literal_character))
-          (concatenation
-            (literal_character))))
-      (literal_escape))))
+(pattern (alternation (concatenation (repetition (word_boundary_assertion) (quantifier)) (repetition (word_boundary_assertion) (quantifier (decimal_digits))))))
 
 ==================
 PCRE2 compatibility boundaries surround literal text
@@ -586,9 +421,174 @@ PCRE2 verbose layout remains inside word-boundary repetition
           maximum: (decimal_digits))))))
 
 ==================
-python_re: malformed lookahead assertion without its closer uses standard recovery — "(?=a\\\n"
-:language(python_re)
-:language(python_re_verbose)
+lookaround direction polarity and atomic groups have distinct public nodes
+:language(pyregex)
+:language(pyregex_verbose)
+==================
+(?=a)(?!b)(?<=c)(?<!d)(?>e)\
+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (positive_lookahead_assertion
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (negative_lookahead_assertion
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (positive_lookbehind_assertion
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (negative_lookbehind_assertion
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (atomic_group
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (literal_escape))))
+
+==================
+assertions and atomic groups can be repetition operands
+:language(pyregex)
+:language(pyregex_verbose)
+==================
+(?=a)*(?!b)+(?<=c)?(?<!d){2}(?>e)*\
+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (repetition
+        operand: (positive_lookahead_assertion
+          body: (alternation
+            (concatenation
+              (literal_character))))
+        quantifier: (quantifier))
+      (repetition
+        operand: (negative_lookahead_assertion
+          body: (alternation
+            (concatenation
+              (literal_character))))
+        quantifier: (quantifier))
+      (repetition
+        operand: (positive_lookbehind_assertion
+          body: (alternation
+            (concatenation
+              (literal_character))))
+        quantifier: (quantifier))
+      (repetition
+        operand: (negative_lookbehind_assertion
+          body: (alternation
+            (concatenation
+              (literal_character))))
+        quantifier: (quantifier
+          count: (decimal_digits)))
+      (repetition
+        operand: (atomic_group
+          body: (alternation
+            (concatenation
+              (literal_character))))
+        quantifier: (quantifier))
+      (literal_escape))))
+
+==================
+scoped verbose mode flows through assertion and atomic bodies
+:language(pyregex)
+:language(pyregex_verbose)
+==================
+(?x:(?= a # gap
+ b)(?> c ))\
+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (scoped_flags_group
+        enable: (flag_set)
+        body: (alternation
+          (concatenation
+            (positive_lookahead_assertion
+              body: (alternation
+                (concatenation
+                  (verbose_whitespace)
+                  (literal_character)
+                  (verbose_whitespace)
+                  (verbose_comment)
+                  (verbose_whitespace)
+                  (literal_character))))
+            (atomic_group
+              body: (alternation
+                (concatenation
+                  (verbose_whitespace)
+                  (literal_character)
+                  (verbose_whitespace)))))))
+      (literal_escape))))
+
+==================
+empty bodies preserve every assertion and atomic category
+:language(pyregex)
+:language(pyregex_verbose)
+==================
+(?=)(?!)(?<=)(?<!)(?>)\
+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (positive_lookahead_assertion)
+      (negative_lookahead_assertion)
+      (positive_lookbehind_assertion)
+      (negative_lookbehind_assertion)
+      (atomic_group)
+      (literal_escape))))
+
+==================
+lookbehind length and atomic matching semantics remain outside the CST
+:language(pyregex)
+:language(pyregex_verbose)
+==================
+(?<=a*)(?<!a|bc)(?>a|b)\
+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (positive_lookbehind_assertion
+        body: (alternation
+          (concatenation
+            (repetition
+              operand: (literal_character)
+              quantifier: (quantifier)))))
+      (negative_lookbehind_assertion
+        body: (alternation
+          (concatenation
+            (literal_character))
+          (concatenation
+            (literal_character)
+            (literal_character))))
+      (atomic_group
+        body: (alternation
+          (concatenation
+            (literal_character))
+          (concatenation
+            (literal_character))))
+      (literal_escape))))
+
+==================
+pyregex: malformed lookahead assertion without its closer uses standard recovery — "(?=a\\\n"
+:language(pyregex)
+:language(pyregex_verbose)
 :error
 ==================
 (?=a\
@@ -598,9 +598,9 @@ python_re: malformed lookahead assertion without its closer uses standard recove
 
 
 ==================
-python_re: malformed lookbehind assertion without its closer uses standard recovery — "(?<=a\\\n"
-:language(python_re)
-:language(python_re_verbose)
+pyregex: malformed lookbehind assertion without its closer uses standard recovery — "(?<=a\\\n"
+:language(pyregex)
+:language(pyregex_verbose)
 :error
 ==================
 (?<=a\
@@ -610,8 +610,8 @@ python_re: malformed lookbehind assertion without its closer uses standard recov
 
 
 ==================
-python_re_verbose: malformed verbose layout cannot split a lookbehind introducer uses standard recovery — "(?< =a)|z\\\n"
-:language(python_re_verbose)
+pyregex_verbose: malformed verbose layout cannot split a lookbehind introducer uses standard recovery — "(?< =a)|z\\\n"
+:language(pyregex_verbose)
 :error
 ==================
 (?< =a)|z\

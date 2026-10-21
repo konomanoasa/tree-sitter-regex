@@ -6,7 +6,7 @@ import letters from "@unicode/unicode-17.0.0/General_Category/Letter/code-points
 
 const outputs = [
   {
-    path: "../javascript/common/unicode.js",
+    path: "../ecmascript/common/unicode.js",
     classes: { unicodeIdStart: idStart, unicodeIdContinue: idContinue },
   },
   {

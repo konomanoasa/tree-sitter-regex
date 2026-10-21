@@ -2,31 +2,31 @@
   "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
   "grammars": [
     {
-      "name": "js_regex",
-      "title": "JavaScript regex literal body",
-      "scope": "source.js-regex",
-      "path": "javascript/regex",
-      "injection-regex": "^js_regex$",
-      "highlights": "javascript/regex/queries/highlights.scm",
-      "external-files": ["javascript/common/scanner.h"]
+      "name": "ecmaregex",
+      "title": "ECMAScript regex literal body",
+      "scope": "source.ecmaregex",
+      "path": "ecmascript/ecmaregex",
+      "injection-regex": "^ecmaregex$",
+      "highlights": "ecmascript/ecmaregex/queries/highlights.scm",
+      "external-files": ["ecmascript/common/scanner.h"]
     },
     {
-      "name": "js_regex_u",
-      "title": "JavaScript regex literal body (u)",
-      "scope": "source.js-regex.u",
-      "path": "javascript/regex_u",
-      "injection-regex": "^js_regex_u$",
-      "highlights": "javascript/regex_u/queries/highlights.scm",
-      "external-files": ["javascript/common/scanner.h"]
+      "name": "ecmaregex_u",
+      "title": "ECMAScript regex literal body (u)",
+      "scope": "source.ecmaregex.u",
+      "path": "ecmascript/ecmaregex_u",
+      "injection-regex": "^ecmaregex_u$",
+      "highlights": "ecmascript/ecmaregex_u/queries/highlights.scm",
+      "external-files": ["ecmascript/common/scanner.h"]
     },
     {
-      "name": "js_regex_v",
-      "title": "JavaScript regex literal body (v)",
-      "scope": "source.js-regex.v",
-      "path": "javascript/regex_v",
-      "injection-regex": "^js_regex_v$",
-      "highlights": "javascript/regex_v/queries/highlights.scm",
-      "external-files": ["javascript/common/scanner.h"]
+      "name": "ecmaregex_v",
+      "title": "ECMAScript regex literal body (v)",
+      "scope": "source.ecmaregex.v",
+      "path": "ecmascript/ecmaregex_v",
+      "injection-regex": "^ecmaregex_v$",
+      "highlights": "ecmascript/ecmaregex_v/queries/highlights.scm",
+      "external-files": ["ecmascript/common/scanner.h"]
     },
     {
       "name": "pcre2",
@@ -55,28 +55,28 @@
       "external-files": ["posix/common/scanner.h"]
     },
     {
-      "name": "python_re",
+      "name": "pyregex",
       "title": "Python re",
-      "scope": "source.python-re",
-      "path": "python/re",
-      "injection-regex": "^python_re$",
-      "highlights": "python/re/queries/highlights.scm",
+      "scope": "source.pyregex",
+      "path": "python/pyregex",
+      "injection-regex": "^pyregex$",
+      "highlights": "python/pyregex/queries/highlights.scm",
       "external-files": ["python/common/scanner.h"]
     },
     {
-      "name": "python_re_verbose",
+      "name": "pyregex_verbose",
       "title": "Python re (VERBOSE)",
-      "scope": "source.python-re.verbose",
-      "path": "python/re_verbose",
-      "injection-regex": "^python_re_verbose$",
-      "highlights": "python/re_verbose/queries/highlights.scm",
+      "scope": "source.pyregex.verbose",
+      "path": "python/pyregex_verbose",
+      "injection-regex": "^pyregex_verbose$",
+      "highlights": "python/pyregex_verbose/queries/highlights.scm",
       "external-files": ["python/common/scanner.h"]
     }
   ],
   "metadata": {
     "version": "0.10.1",
     "license": "MIT",
-    "description": "Tree-sitter grammars for JavaScript regex, PCRE2, POSIX BRE/ERE, and Python re.",
+    "description": "Tree-sitter grammars for ECMAScript regex, PCRE2, POSIX BRE/ERE, and Python re.",
     "links": {
       "repository": "https://github.com/konomanoasa/tree-sitter-regex"
     }

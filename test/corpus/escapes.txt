@@ -1,24 +1,6 @@
 ==================
-PCRE2 normal hexadecimal braces form one escape
-:language(pcre2)
-==================
-\x{41}
-------------------
-
-(pattern (alternation (concatenation (hex_escape (hexadecimal_digits)))))
-
-==================
-PCRE2 ignored property prefixes are separate from negation and the property name
-:language(pcre2)
-==================
-\p{-^Lu}\p{_^Lu}
-------------------
-
-(pattern (alternation (concatenation (unicode_property (property_escape) (property_ignored) (property_name)) (unicode_property (property_escape) (property_ignored) (property_name)))))
-
-==================
 common character escapes preserve their syntactic categories
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \f\n\r\t\v\cA\cz\0\x41\u0042\d\D\s\S\w\W
@@ -130,157 +112,8 @@ common character escapes preserve their syntactic categories
 0:39 - 0:40               character_class_escape `W`
 
 ==================
-common character escapes preserve their syntactic categories
-:language(js_regex_u)
-:language(js_regex_v)
-:cst
-==================
-\f\n\r\t\v\cA\cz\0\x41\u0042\d\D\s\S\w\W
-------------------
-
-0:0  - 0:40   pattern
-0:0  - 0:40     body: disjunction
-0:0  - 0:40       alternative
-0:0  - 0:2          term
-0:0  - 0:2            operand: atom
-0:0  - 0:1              "\\"
-0:1  - 0:2              atom_escape
-0:1  - 0:2                character_escape
-0:1  - 0:2                  control_escape `f`
-0:2  - 0:4          term
-0:2  - 0:4            operand: atom
-0:2  - 0:3              "\\"
-0:3  - 0:4              atom_escape
-0:3  - 0:4                character_escape
-0:3  - 0:4                  control_escape `n`
-0:4  - 0:6          term
-0:4  - 0:6            operand: atom
-0:4  - 0:5              "\\"
-0:5  - 0:6              atom_escape
-0:5  - 0:6                character_escape
-0:5  - 0:6                  control_escape `r`
-0:6  - 0:8          term
-0:6  - 0:8            operand: atom
-0:6  - 0:7              "\\"
-0:7  - 0:8              atom_escape
-0:7  - 0:8                character_escape
-0:7  - 0:8                  control_escape `t`
-0:8  - 0:10         term
-0:8  - 0:10           operand: atom
-0:8  - 0:9              "\\"
-0:9  - 0:10             atom_escape
-0:9  - 0:10               character_escape
-0:9  - 0:10                 control_escape `v`
-0:10 - 0:13         term
-0:10 - 0:13           operand: atom
-0:10 - 0:11             "\\"
-0:11 - 0:13             atom_escape
-0:11 - 0:13               character_escape
-0:11 - 0:12                 "c"
-0:12 - 0:13                 ascii_letter `A`
-0:13 - 0:16         term
-0:13 - 0:16           operand: atom
-0:13 - 0:14             "\\"
-0:14 - 0:16             atom_escape
-0:14 - 0:16               character_escape
-0:14 - 0:15                 "c"
-0:15 - 0:16                 ascii_letter `z`
-0:16 - 0:18         term
-0:16 - 0:18           operand: atom
-0:16 - 0:17             "\\"
-0:17 - 0:18             atom_escape
-0:17 - 0:18               character_escape
-0:17 - 0:18                 "0"
-0:18 - 0:22         term
-0:18 - 0:22           operand: atom
-0:18 - 0:19             "\\"
-0:19 - 0:22             atom_escape
-0:19 - 0:22               character_escape
-0:19 - 0:22                 hex_escape_sequence
-0:19 - 0:20                   "x"
-0:20 - 0:21                   hex_digit `4`
-0:21 - 0:22                   hex_digit `1`
-0:22 - 0:28         term
-0:22 - 0:28           operand: atom
-0:22 - 0:23             "\\"
-0:23 - 0:28             atom_escape
-0:23 - 0:28               character_escape
-0:23 - 0:28                 reg_exp_unicode_escape_sequence
-0:23 - 0:24                   "u"
-0:24 - 0:28                   hex_non_surrogate
-0:24 - 0:28                     hex4_digits
-0:24 - 0:25                       hex_digit `0`
-0:25 - 0:26                       hex_digit `0`
-0:26 - 0:27                       hex_digit `4`
-0:27 - 0:28                       hex_digit `2`
-0:28 - 0:30         term
-0:28 - 0:30           operand: atom
-0:28 - 0:29             "\\"
-0:29 - 0:30             atom_escape
-0:29 - 0:30               character_class_escape `d`
-0:30 - 0:32         term
-0:30 - 0:32           operand: atom
-0:30 - 0:31             "\\"
-0:31 - 0:32             atom_escape
-0:31 - 0:32               character_class_escape `D`
-0:32 - 0:34         term
-0:32 - 0:34           operand: atom
-0:32 - 0:33             "\\"
-0:33 - 0:34             atom_escape
-0:33 - 0:34               character_class_escape `s`
-0:34 - 0:36         term
-0:34 - 0:36           operand: atom
-0:34 - 0:35             "\\"
-0:35 - 0:36             atom_escape
-0:35 - 0:36               character_class_escape `S`
-0:36 - 0:38         term
-0:36 - 0:38           operand: atom
-0:36 - 0:37             "\\"
-0:37 - 0:38             atom_escape
-0:37 - 0:38               character_class_escape `w`
-0:38 - 0:40         term
-0:38 - 0:40           operand: atom
-0:38 - 0:39             "\\"
-0:39 - 0:40             atom_escape
-0:39 - 0:40               character_class_escape `W`
-
-==================
-fixed escapes remain atoms in both Python modes
-:language(python_re)
-:language(python_re_verbose)
-==================
-\ \#\!\a\f\n\r\t\v\d\D\s\S\w\W\A\z\Z\b\B\
-
-------------------
-
-(pattern
-  body: (alternation
-    (concatenation
-      (literal_escape)
-      (literal_escape)
-      (literal_escape)
-      (control_escape)
-      (control_escape)
-      (control_escape)
-      (control_escape)
-      (control_escape)
-      (control_escape)
-      (character_class_escape)
-      (character_class_escape)
-      (character_class_escape)
-      (character_class_escape)
-      (character_class_escape)
-      (character_class_escape)
-      (anchor_escape)
-      (anchor_escape)
-      (anchor_escape)
-      (word_boundary_escape)
-      (word_boundary_escape)
-      (literal_escape))))
-
-==================
 hexadecimal and Unicode escapes own fixed introducers and digit fields
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \x41\u0042
@@ -312,103 +145,8 @@ hexadecimal and Unicode escapes own fixed introducers and digit fields
 0:9  - 0:10                     hex_digit `2`
 
 ==================
-hexadecimal and Unicode escapes own fixed introducers and digit fields
-:language(js_regex_u)
-:language(js_regex_v)
-:cst
-==================
-\x41\u0042
-------------------
-
-0:0  - 0:10   pattern
-0:0  - 0:10     body: disjunction
-0:0  - 0:10       alternative
-0:0  - 0:4          term
-0:0  - 0:4            operand: atom
-0:0  - 0:1              "\\"
-0:1  - 0:4              atom_escape
-0:1  - 0:4                character_escape
-0:1  - 0:4                  hex_escape_sequence
-0:1  - 0:2                    "x"
-0:2  - 0:3                    hex_digit `4`
-0:3  - 0:4                    hex_digit `1`
-0:4  - 0:10         term
-0:4  - 0:10           operand: atom
-0:4  - 0:5              "\\"
-0:5  - 0:10             atom_escape
-0:5  - 0:10               character_escape
-0:5  - 0:10                 reg_exp_unicode_escape_sequence
-0:5  - 0:6                    "u"
-0:6  - 0:10                   hex_non_surrogate
-0:6  - 0:10                     hex4_digits
-0:6  - 0:7                        hex_digit `0`
-0:7  - 0:8                        hex_digit `0`
-0:8  - 0:9                        hex_digit `4`
-0:9  - 0:10                       hex_digit `2`
-
-==================
-hexadecimal and Unicode escapes own fixed introducers and digit fields
-:language(python_re)
-:language(python_re_verbose)
-:cst
-==================
-\x41\u0042
-------------------
-
-0:0  - 0:10   pattern
-0:0  - 0:10     body: alternation
-0:0  - 0:10       concatenation
-0:0  - 0:4          hex_escape
-0:0  - 0:2            "\\x"
-0:2  - 0:4            digits: hexadecimal_digits `41`
-0:4  - 0:10         unicode_escape
-0:4  - 0:6            "\\u"
-0:6  - 0:10           digits: hexadecimal_digits `0042`
-
-==================
-hex escapes expose their digits in both Python modes
-:language(python_re)
-:language(python_re_verbose)
-==================
-\x00|\xAf\
-
-------------------
-
-(pattern
-  body: (alternation
-    (concatenation
-      (hex_escape
-        digits: (hexadecimal_digits)))
-    (concatenation
-      (hex_escape
-        digits: (hexadecimal_digits))
-      (literal_escape))))
-
-==================
-fixed and named Unicode escapes expose their fields
-:language(python_re)
-:language(python_re_verbose)
-==================
-\u0041|\U00000042|\N{LATIN CAPITAL LETTER A}\
-
-------------------
-
-(pattern
-  body: (alternation
-    (concatenation
-      (unicode_escape
-        digits: (hexadecimal_digits)))
-    (concatenation
-      (unicode_escape
-        digits: (hexadecimal_digits)))
-    (concatenation
-      (named_unicode_escape
-        name: (unicode_character_name))
-      (literal_escape))))
-
-==================
 every syntax character and the literal delimiter can be escaped
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \^\$\\\.\*\+\?\(\)\[\]\{\}\|\/
@@ -539,9 +277,517 @@ every syntax character and the literal delimiter can be escaped
 0:29 - 0:30                     source_character `/`
 
 ==================
+null escapes can be quantified and followed by an alternative
+:language(ecmaregex)
+:cst
+==================
+\0?|\0
+------------------
+
+0:0 - 0:6   pattern
+0:0 - 0:6     body: disjunction
+0:0 - 0:3       alternative
+0:0 - 0:3         term
+0:0 - 0:2           operand: extended_atom
+0:0 - 0:1             "\\"
+0:1 - 0:2             atom_escape
+0:1 - 0:2               character_escape
+0:1 - 0:2                 "0"
+0:2 - 0:3           quantifier: quantifier
+0:2 - 0:3             quantifier_prefix
+0:2 - 0:3               "?"
+0:3 - 0:4       "|"
+0:4 - 0:6       alternative
+0:4 - 0:6         term
+0:4 - 0:6           operand: extended_atom
+0:4 - 0:5             "\\"
+0:5 - 0:6             atom_escape
+0:5 - 0:6               character_escape
+0:5 - 0:6                 "0"
+
+==================
+ordinary mode keeps surrogate escapes separate and quantifies the trailing escape
+:language(ecmaregex)
+:cst
+==================
+\uD800\uDC00+\uD800\uD801\uDC00\uDC00\uDbFf\udFff
+------------------
+
+0:0  - 0:49   pattern
+0:0  - 0:49     body: disjunction
+0:0  - 0:49       alternative
+0:0  - 0:6          term
+0:0  - 0:6            operand: extended_atom
+0:0  - 0:1              "\\"
+0:1  - 0:6              atom_escape
+0:1  - 0:6                character_escape
+0:1  - 0:6                  reg_exp_unicode_escape_sequence
+0:1  - 0:2                    "u"
+0:2  - 0:6                    hex4_digits
+0:2  - 0:3                      hex_digit `D`
+0:3  - 0:4                      hex_digit `8`
+0:4  - 0:5                      hex_digit `0`
+0:5  - 0:6                      hex_digit `0`
+0:6  - 0:13         term
+0:6  - 0:12           operand: extended_atom
+0:6  - 0:7              "\\"
+0:7  - 0:12             atom_escape
+0:7  - 0:12               character_escape
+0:7  - 0:12                 reg_exp_unicode_escape_sequence
+0:7  - 0:8                    "u"
+0:8  - 0:12                   hex4_digits
+0:8  - 0:9                      hex_digit `D`
+0:9  - 0:10                     hex_digit `C`
+0:10 - 0:11                     hex_digit `0`
+0:11 - 0:12                     hex_digit `0`
+0:12 - 0:13           quantifier: quantifier
+0:12 - 0:13             quantifier_prefix
+0:12 - 0:13               "+"
+0:13 - 0:19         term
+0:13 - 0:19           operand: extended_atom
+0:13 - 0:14             "\\"
+0:14 - 0:19             atom_escape
+0:14 - 0:19               character_escape
+0:14 - 0:19                 reg_exp_unicode_escape_sequence
+0:14 - 0:15                   "u"
+0:15 - 0:19                   hex4_digits
+0:15 - 0:16                     hex_digit `D`
+0:16 - 0:17                     hex_digit `8`
+0:17 - 0:18                     hex_digit `0`
+0:18 - 0:19                     hex_digit `0`
+0:19 - 0:25         term
+0:19 - 0:25           operand: extended_atom
+0:19 - 0:20             "\\"
+0:20 - 0:25             atom_escape
+0:20 - 0:25               character_escape
+0:20 - 0:25                 reg_exp_unicode_escape_sequence
+0:20 - 0:21                   "u"
+0:21 - 0:25                   hex4_digits
+0:21 - 0:22                     hex_digit `D`
+0:22 - 0:23                     hex_digit `8`
+0:23 - 0:24                     hex_digit `0`
+0:24 - 0:25                     hex_digit `1`
+0:25 - 0:31         term
+0:25 - 0:31           operand: extended_atom
+0:25 - 0:26             "\\"
+0:26 - 0:31             atom_escape
+0:26 - 0:31               character_escape
+0:26 - 0:31                 reg_exp_unicode_escape_sequence
+0:26 - 0:27                   "u"
+0:27 - 0:31                   hex4_digits
+0:27 - 0:28                     hex_digit `D`
+0:28 - 0:29                     hex_digit `C`
+0:29 - 0:30                     hex_digit `0`
+0:30 - 0:31                     hex_digit `0`
+0:31 - 0:37         term
+0:31 - 0:37           operand: extended_atom
+0:31 - 0:32             "\\"
+0:32 - 0:37             atom_escape
+0:32 - 0:37               character_escape
+0:32 - 0:37                 reg_exp_unicode_escape_sequence
+0:32 - 0:33                   "u"
+0:33 - 0:37                   hex4_digits
+0:33 - 0:34                     hex_digit `D`
+0:34 - 0:35                     hex_digit `C`
+0:35 - 0:36                     hex_digit `0`
+0:36 - 0:37                     hex_digit `0`
+0:37 - 0:43         term
+0:37 - 0:43           operand: extended_atom
+0:37 - 0:38             "\\"
+0:38 - 0:43             atom_escape
+0:38 - 0:43               character_escape
+0:38 - 0:43                 reg_exp_unicode_escape_sequence
+0:38 - 0:39                   "u"
+0:39 - 0:43                   hex4_digits
+0:39 - 0:40                     hex_digit `D`
+0:40 - 0:41                     hex_digit `b`
+0:41 - 0:42                     hex_digit `F`
+0:42 - 0:43                     hex_digit `f`
+0:43 - 0:49         term
+0:43 - 0:49           operand: extended_atom
+0:43 - 0:44             "\\"
+0:44 - 0:49             atom_escape
+0:44 - 0:49               character_escape
+0:44 - 0:49                 reg_exp_unicode_escape_sequence
+0:44 - 0:45                   "u"
+0:45 - 0:49                   hex4_digits
+0:45 - 0:46                     hex_digit `d`
+0:46 - 0:47                     hex_digit `F`
+0:47 - 0:48                     hex_digit `f`
+0:48 - 0:49                     hex_digit `f`
+
+==================
+fixed width hexadecimal escapes leave subsequent digits as literals
+:language(ecmaregex)
+:cst
+==================
+\x412\u00423
+------------------
+
+0:0  - 0:12   pattern
+0:0  - 0:12     body: disjunction
+0:0  - 0:12       alternative
+0:0  - 0:4          term
+0:0  - 0:4            operand: extended_atom
+0:0  - 0:1              "\\"
+0:1  - 0:4              atom_escape
+0:1  - 0:4                character_escape
+0:1  - 0:4                  hex_escape_sequence
+0:1  - 0:2                    "x"
+0:2  - 0:3                    hex_digit `4`
+0:3  - 0:4                    hex_digit `1`
+0:4  - 0:5          term
+0:4  - 0:5            operand: extended_atom
+0:4  - 0:5              extended_pattern_character
+0:4  - 0:5                source_character `2`
+0:5  - 0:11         term
+0:5  - 0:11           operand: extended_atom
+0:5  - 0:6              "\\"
+0:6  - 0:11             atom_escape
+0:6  - 0:11               character_escape
+0:6  - 0:11                 reg_exp_unicode_escape_sequence
+0:6  - 0:7                    "u"
+0:7  - 0:11                   hex4_digits
+0:7  - 0:8                      hex_digit `0`
+0:8  - 0:9                      hex_digit `0`
+0:9  - 0:10                     hex_digit `4`
+0:10 - 0:11                     hex_digit `2`
+0:11 - 0:12         term
+0:11 - 0:12           operand: extended_atom
+0:11 - 0:12             extended_pattern_character
+0:11 - 0:12               source_character `3`
+
+==================
+an escaped backslash prevents the following spelling from becoming an escape
+:language(ecmaregex)
+:cst
+==================
+\\b\\u0041
+------------------
+
+0:0  - 0:10   pattern
+0:0  - 0:10     body: disjunction
+0:0  - 0:10       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: extended_atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                character_escape
+0:1  - 0:2                  identity_escape
+0:1  - 0:2                    source_character_identity_escape
+0:1  - 0:2                      source_character `\\`
+0:2  - 0:3          term
+0:2  - 0:3            operand: extended_atom
+0:2  - 0:3              extended_pattern_character
+0:2  - 0:3                source_character `b`
+0:3  - 0:5          term
+0:3  - 0:5            operand: extended_atom
+0:3  - 0:4              "\\"
+0:4  - 0:5              atom_escape
+0:4  - 0:5                character_escape
+0:4  - 0:5                  identity_escape
+0:4  - 0:5                    source_character_identity_escape
+0:4  - 0:5                      source_character `\\`
+0:5  - 0:6          term
+0:5  - 0:6            operand: extended_atom
+0:5  - 0:6              extended_pattern_character
+0:5  - 0:6                source_character `u`
+0:6  - 0:7          term
+0:6  - 0:7            operand: extended_atom
+0:6  - 0:7              extended_pattern_character
+0:6  - 0:7                source_character `0`
+0:7  - 0:8          term
+0:7  - 0:8            operand: extended_atom
+0:7  - 0:8              extended_pattern_character
+0:7  - 0:8                source_character `0`
+0:8  - 0:9          term
+0:8  - 0:9            operand: extended_atom
+0:8  - 0:9              extended_pattern_character
+0:8  - 0:9                source_character `4`
+0:9  - 0:10         term
+0:9  - 0:10           operand: extended_atom
+0:9  - 0:10             extended_pattern_character
+0:9  - 0:10               source_character `1`
+
+==================
+a null escape is complete at end of input
+:language(ecmaregex)
+:cst
+==================
+\0
+------------------
+
+0:0 - 0:2   pattern
+0:0 - 0:2     body: disjunction
+0:0 - 0:2       alternative
+0:0 - 0:2         term
+0:0 - 0:2           operand: extended_atom
+0:0 - 0:1             "\\"
+0:1 - 0:2             atom_escape
+0:1 - 0:2               character_escape
+0:1 - 0:2                 "0"
+
+==================
+null escape lookahead preserves following nondecimal characters and escapes
+:language(ecmaregex)
+:cst
+==================
+\0a\0_\0😀\0\0
+------------------
+
+0:0  - 0:16   pattern
+0:0  - 0:16     body: disjunction
+0:0  - 0:16       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: extended_atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                character_escape
+0:1  - 0:2                  "0"
+0:2  - 0:3          term
+0:2  - 0:3            operand: extended_atom
+0:2  - 0:3              extended_pattern_character
+0:2  - 0:3                source_character `a`
+0:3  - 0:5          term
+0:3  - 0:5            operand: extended_atom
+0:3  - 0:4              "\\"
+0:4  - 0:5              atom_escape
+0:4  - 0:5                character_escape
+0:4  - 0:5                  "0"
+0:5  - 0:6          term
+0:5  - 0:6            operand: extended_atom
+0:5  - 0:6              extended_pattern_character
+0:5  - 0:6                source_character `_`
+0:6  - 0:8          term
+0:6  - 0:8            operand: extended_atom
+0:6  - 0:7              "\\"
+0:7  - 0:8              atom_escape
+0:7  - 0:8                character_escape
+0:7  - 0:8                  "0"
+0:8  - 0:12         term
+0:8  - 0:12           operand: extended_atom
+0:8  - 0:12             extended_pattern_character
+0:8  - 0:12               source_character `😀`
+0:12 - 0:14         term
+0:12 - 0:14           operand: extended_atom
+0:12 - 0:13             "\\"
+0:13 - 0:14             atom_escape
+0:13 - 0:14               character_escape
+0:13 - 0:14                 "0"
+0:14 - 0:16         term
+0:14 - 0:16           operand: extended_atom
+0:14 - 0:15             "\\"
+0:15 - 0:16             atom_escape
+0:15 - 0:16               character_escape
+0:15 - 0:16                 "0"
+
+==================
+a dangling backslash inside a class requires recovery
+:language(ecmaregex)
+:language(ecmaregex_u)
+:error
+==================
+[a\
+------------------
+
+
+
+==================
+a dangling body backslash is not a complete escape
+:language(ecmaregex)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:error
+==================
+ab\
+------------------
+
+
+
+==================
+a short hexadecimal escape inside a class requires recovery
+:language(ecmaregex_u)
+:error
+==================
+[\x4]b
+------------------
+
+
+
+==================
+an unclosed code point escape inside a class requires recovery
+:language(ecmaregex_u)
+:error
+==================
+[\u{41]b
+------------------
+
+
+
+==================
+an unclosed property escape inside a class requires recovery
+:language(ecmaregex_u)
+:error
+==================
+[\p{ASCII]b
+------------------
+
+
+
+==================
+common character escapes preserve their syntactic categories
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:cst
+==================
+\f\n\r\t\v\cA\cz\0\x41\u0042\d\D\s\S\w\W
+------------------
+
+0:0  - 0:40   pattern
+0:0  - 0:40     body: disjunction
+0:0  - 0:40       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                character_escape
+0:1  - 0:2                  control_escape `f`
+0:2  - 0:4          term
+0:2  - 0:4            operand: atom
+0:2  - 0:3              "\\"
+0:3  - 0:4              atom_escape
+0:3  - 0:4                character_escape
+0:3  - 0:4                  control_escape `n`
+0:4  - 0:6          term
+0:4  - 0:6            operand: atom
+0:4  - 0:5              "\\"
+0:5  - 0:6              atom_escape
+0:5  - 0:6                character_escape
+0:5  - 0:6                  control_escape `r`
+0:6  - 0:8          term
+0:6  - 0:8            operand: atom
+0:6  - 0:7              "\\"
+0:7  - 0:8              atom_escape
+0:7  - 0:8                character_escape
+0:7  - 0:8                  control_escape `t`
+0:8  - 0:10         term
+0:8  - 0:10           operand: atom
+0:8  - 0:9              "\\"
+0:9  - 0:10             atom_escape
+0:9  - 0:10               character_escape
+0:9  - 0:10                 control_escape `v`
+0:10 - 0:13         term
+0:10 - 0:13           operand: atom
+0:10 - 0:11             "\\"
+0:11 - 0:13             atom_escape
+0:11 - 0:13               character_escape
+0:11 - 0:12                 "c"
+0:12 - 0:13                 ascii_letter `A`
+0:13 - 0:16         term
+0:13 - 0:16           operand: atom
+0:13 - 0:14             "\\"
+0:14 - 0:16             atom_escape
+0:14 - 0:16               character_escape
+0:14 - 0:15                 "c"
+0:15 - 0:16                 ascii_letter `z`
+0:16 - 0:18         term
+0:16 - 0:18           operand: atom
+0:16 - 0:17             "\\"
+0:17 - 0:18             atom_escape
+0:17 - 0:18               character_escape
+0:17 - 0:18                 "0"
+0:18 - 0:22         term
+0:18 - 0:22           operand: atom
+0:18 - 0:19             "\\"
+0:19 - 0:22             atom_escape
+0:19 - 0:22               character_escape
+0:19 - 0:22                 hex_escape_sequence
+0:19 - 0:20                   "x"
+0:20 - 0:21                   hex_digit `4`
+0:21 - 0:22                   hex_digit `1`
+0:22 - 0:28         term
+0:22 - 0:28           operand: atom
+0:22 - 0:23             "\\"
+0:23 - 0:28             atom_escape
+0:23 - 0:28               character_escape
+0:23 - 0:28                 reg_exp_unicode_escape_sequence
+0:23 - 0:24                   "u"
+0:24 - 0:28                   hex_non_surrogate
+0:24 - 0:28                     hex4_digits
+0:24 - 0:25                       hex_digit `0`
+0:25 - 0:26                       hex_digit `0`
+0:26 - 0:27                       hex_digit `4`
+0:27 - 0:28                       hex_digit `2`
+0:28 - 0:30         term
+0:28 - 0:30           operand: atom
+0:28 - 0:29             "\\"
+0:29 - 0:30             atom_escape
+0:29 - 0:30               character_class_escape `d`
+0:30 - 0:32         term
+0:30 - 0:32           operand: atom
+0:30 - 0:31             "\\"
+0:31 - 0:32             atom_escape
+0:31 - 0:32               character_class_escape `D`
+0:32 - 0:34         term
+0:32 - 0:34           operand: atom
+0:32 - 0:33             "\\"
+0:33 - 0:34             atom_escape
+0:33 - 0:34               character_class_escape `s`
+0:34 - 0:36         term
+0:34 - 0:36           operand: atom
+0:34 - 0:35             "\\"
+0:35 - 0:36             atom_escape
+0:35 - 0:36               character_class_escape `S`
+0:36 - 0:38         term
+0:36 - 0:38           operand: atom
+0:36 - 0:37             "\\"
+0:37 - 0:38             atom_escape
+0:37 - 0:38               character_class_escape `w`
+0:38 - 0:40         term
+0:38 - 0:40           operand: atom
+0:38 - 0:39             "\\"
+0:39 - 0:40             atom_escape
+0:39 - 0:40               character_class_escape `W`
+
+==================
+hexadecimal and Unicode escapes own fixed introducers and digit fields
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:cst
+==================
+\x41\u0042
+------------------
+
+0:0  - 0:10   pattern
+0:0  - 0:10     body: disjunction
+0:0  - 0:10       alternative
+0:0  - 0:4          term
+0:0  - 0:4            operand: atom
+0:0  - 0:1              "\\"
+0:1  - 0:4              atom_escape
+0:1  - 0:4                character_escape
+0:1  - 0:4                  hex_escape_sequence
+0:1  - 0:2                    "x"
+0:2  - 0:3                    hex_digit `4`
+0:3  - 0:4                    hex_digit `1`
+0:4  - 0:10         term
+0:4  - 0:10           operand: atom
+0:4  - 0:5              "\\"
+0:5  - 0:10             atom_escape
+0:5  - 0:10               character_escape
+0:5  - 0:10                 reg_exp_unicode_escape_sequence
+0:5  - 0:6                    "u"
+0:6  - 0:10                   hex_non_surrogate
+0:6  - 0:10                     hex4_digits
+0:6  - 0:7                        hex_digit `0`
+0:7  - 0:8                        hex_digit `0`
+0:8  - 0:9                        hex_digit `4`
+0:9  - 0:10                       hex_digit `2`
+
+==================
 every syntax character and the literal delimiter can be escaped
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :cst
 ==================
 \^\$\\\.\*\+\?\(\)\[\]\{\}\|\/
@@ -658,8 +904,8 @@ every syntax character and the literal delimiter can be escaped
 
 ==================
 property escapes retain lone and assigned property spellings
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :cst
 ==================
 \p{ASCII}\P{General_Category=Lu}\p{Script_Extensions=Hiragana}\p{sc=Latn}
@@ -851,37 +1097,8 @@ property escapes retain lone and assigned property spellings
 
 ==================
 null escapes can be quantified and followed by an alternative
-:language(js_regex)
-:cst
-==================
-\0?|\0
-------------------
-
-0:0 - 0:6   pattern
-0:0 - 0:6     body: disjunction
-0:0 - 0:3       alternative
-0:0 - 0:3         term
-0:0 - 0:2           operand: extended_atom
-0:0 - 0:1             "\\"
-0:1 - 0:2             atom_escape
-0:1 - 0:2               character_escape
-0:1 - 0:2                 "0"
-0:2 - 0:3           quantifier: quantifier
-0:2 - 0:3             quantifier_prefix
-0:2 - 0:3               "?"
-0:3 - 0:4       "|"
-0:4 - 0:6       alternative
-0:4 - 0:6         term
-0:4 - 0:6           operand: extended_atom
-0:4 - 0:5             "\\"
-0:5 - 0:6             atom_escape
-0:5 - 0:6               character_escape
-0:5 - 0:6                 "0"
-
-==================
-null escapes can be quantified and followed by an alternative
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :cst
 ==================
 \0?|\0
@@ -909,256 +1126,9 @@ null escapes can be quantified and followed by an alternative
 0:5 - 0:6                 "0"
 
 ==================
-numeric escapes follow octal and backreference boundaries
-:language(python_re)
-:language(python_re_verbose)
-==================
-\0|\00|\000|\0000|\08|\1234|\128|\300|\377|\1|\12|\8|\99|\999\
-
-------------------
-
-(pattern
-  body: (alternation
-    (concatenation
-      (octal_escape
-        digits: (octal_digits)))
-    (concatenation
-      (octal_escape
-        digits: (octal_digits)))
-    (concatenation
-      (octal_escape
-        digits: (octal_digits)))
-    (concatenation
-      (octal_escape
-        digits: (octal_digits))
-      (literal_character))
-    (concatenation
-      (octal_escape
-        digits: (octal_digits))
-      (literal_character))
-    (concatenation
-      (octal_escape
-        digits: (octal_digits))
-      (literal_character))
-    (concatenation
-      (numeric_backreference
-        group: (group_id))
-      (literal_character))
-    (concatenation
-      (octal_escape
-        digits: (octal_digits)))
-    (concatenation
-      (octal_escape
-        digits: (octal_digits)))
-    (concatenation
-      (numeric_backreference
-        group: (group_id)))
-    (concatenation
-      (numeric_backreference
-        group: (group_id)))
-    (concatenation
-      (numeric_backreference
-        group: (group_id)))
-    (concatenation
-      (numeric_backreference
-        group: (group_id)))
-    (concatenation
-      (numeric_backreference
-        group: (group_id))
-      (literal_character)
-      (literal_escape))))
-
-==================
-Python numeric escape limits retain their digit fields
-:language(python_re)
-:language(python_re_verbose)
-==================
-\377\U0010FFFF
-------------------
-
-(pattern
-  body: (alternation
-    (concatenation
-      (octal_escape
-        digits: (octal_digits))
-      (unicode_escape
-        digits: (hexadecimal_digits)))))
-
-==================
-Python Unicode escapes admit surrogate code points
-:language(python_re)
-:language(python_re_verbose)
-==================
-\uD800\U0000DFFF
-------------------
-
-(pattern
-  body: (alternation
-    (concatenation
-      (unicode_escape
-        digits: (hexadecimal_digits))
-      (unicode_escape
-        digits: (hexadecimal_digits)))))
-
-==================
-a Python octal escape above the byte maximum requires recovery
-:language(python_re)
-:language(python_re_verbose)
-:error
-==================
-\400
-------------------
-
-
-
-==================
-a Python class octal escape above the byte maximum requires recovery
-:language(python_re)
-:language(python_re_verbose)
-:error
-==================
-[\777]
-------------------
-
-
-
-==================
-a Python Unicode escape above the code point maximum requires recovery
-:language(python_re)
-:language(python_re_verbose)
-:error
-==================
-\U00110000
-------------------
-
-
-
-==================
-a Python class Unicode escape above the code point maximum requires recovery
-:language(python_re)
-:language(python_re_verbose)
-:error
-==================
-[\UFFFFFFFF]
-------------------
-
-
-
-==================
-ordinary mode keeps surrogate escapes separate and quantifies the trailing escape
-:language(js_regex)
-:cst
-==================
-\uD800\uDC00+\uD800\uD801\uDC00\uDC00\uDbFf\udFff
-------------------
-
-0:0  - 0:49   pattern
-0:0  - 0:49     body: disjunction
-0:0  - 0:49       alternative
-0:0  - 0:6          term
-0:0  - 0:6            operand: extended_atom
-0:0  - 0:1              "\\"
-0:1  - 0:6              atom_escape
-0:1  - 0:6                character_escape
-0:1  - 0:6                  reg_exp_unicode_escape_sequence
-0:1  - 0:2                    "u"
-0:2  - 0:6                    hex4_digits
-0:2  - 0:3                      hex_digit `D`
-0:3  - 0:4                      hex_digit `8`
-0:4  - 0:5                      hex_digit `0`
-0:5  - 0:6                      hex_digit `0`
-0:6  - 0:13         term
-0:6  - 0:12           operand: extended_atom
-0:6  - 0:7              "\\"
-0:7  - 0:12             atom_escape
-0:7  - 0:12               character_escape
-0:7  - 0:12                 reg_exp_unicode_escape_sequence
-0:7  - 0:8                    "u"
-0:8  - 0:12                   hex4_digits
-0:8  - 0:9                      hex_digit `D`
-0:9  - 0:10                     hex_digit `C`
-0:10 - 0:11                     hex_digit `0`
-0:11 - 0:12                     hex_digit `0`
-0:12 - 0:13           quantifier: quantifier
-0:12 - 0:13             quantifier_prefix
-0:12 - 0:13               "+"
-0:13 - 0:19         term
-0:13 - 0:19           operand: extended_atom
-0:13 - 0:14             "\\"
-0:14 - 0:19             atom_escape
-0:14 - 0:19               character_escape
-0:14 - 0:19                 reg_exp_unicode_escape_sequence
-0:14 - 0:15                   "u"
-0:15 - 0:19                   hex4_digits
-0:15 - 0:16                     hex_digit `D`
-0:16 - 0:17                     hex_digit `8`
-0:17 - 0:18                     hex_digit `0`
-0:18 - 0:19                     hex_digit `0`
-0:19 - 0:25         term
-0:19 - 0:25           operand: extended_atom
-0:19 - 0:20             "\\"
-0:20 - 0:25             atom_escape
-0:20 - 0:25               character_escape
-0:20 - 0:25                 reg_exp_unicode_escape_sequence
-0:20 - 0:21                   "u"
-0:21 - 0:25                   hex4_digits
-0:21 - 0:22                     hex_digit `D`
-0:22 - 0:23                     hex_digit `8`
-0:23 - 0:24                     hex_digit `0`
-0:24 - 0:25                     hex_digit `1`
-0:25 - 0:31         term
-0:25 - 0:31           operand: extended_atom
-0:25 - 0:26             "\\"
-0:26 - 0:31             atom_escape
-0:26 - 0:31               character_escape
-0:26 - 0:31                 reg_exp_unicode_escape_sequence
-0:26 - 0:27                   "u"
-0:27 - 0:31                   hex4_digits
-0:27 - 0:28                     hex_digit `D`
-0:28 - 0:29                     hex_digit `C`
-0:29 - 0:30                     hex_digit `0`
-0:30 - 0:31                     hex_digit `0`
-0:31 - 0:37         term
-0:31 - 0:37           operand: extended_atom
-0:31 - 0:32             "\\"
-0:32 - 0:37             atom_escape
-0:32 - 0:37               character_escape
-0:32 - 0:37                 reg_exp_unicode_escape_sequence
-0:32 - 0:33                   "u"
-0:33 - 0:37                   hex4_digits
-0:33 - 0:34                     hex_digit `D`
-0:34 - 0:35                     hex_digit `C`
-0:35 - 0:36                     hex_digit `0`
-0:36 - 0:37                     hex_digit `0`
-0:37 - 0:43         term
-0:37 - 0:43           operand: extended_atom
-0:37 - 0:38             "\\"
-0:38 - 0:43             atom_escape
-0:38 - 0:43               character_escape
-0:38 - 0:43                 reg_exp_unicode_escape_sequence
-0:38 - 0:39                   "u"
-0:39 - 0:43                   hex4_digits
-0:39 - 0:40                     hex_digit `D`
-0:40 - 0:41                     hex_digit `b`
-0:41 - 0:42                     hex_digit `F`
-0:42 - 0:43                     hex_digit `f`
-0:43 - 0:49         term
-0:43 - 0:49           operand: extended_atom
-0:43 - 0:44             "\\"
-0:44 - 0:49             atom_escape
-0:44 - 0:49               character_escape
-0:44 - 0:49                 reg_exp_unicode_escape_sequence
-0:44 - 0:45                   "u"
-0:45 - 0:49                   hex4_digits
-0:45 - 0:46                     hex_digit `d`
-0:46 - 0:47                     hex_digit `F`
-0:47 - 0:48                     hex_digit `f`
-0:48 - 0:49                     hex_digit `f`
-
-==================
 only adjacent leading and trailing surrogate escapes combine in Unicode modes
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :cst
 ==================
 \uD800\uDC00+\uD800\uD801\uDC00\uDC00\uDbFf\udFff
@@ -1259,8 +1229,8 @@ only adjacent leading and trailing surrogate escapes combine in Unicode modes
 
 ==================
 braced and reversed surrogate spellings do not combine
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :cst
 ==================
 \uDC00\uD800\u{DC00}\u{D800}\uDC00
@@ -1341,8 +1311,8 @@ braced and reversed surrogate spellings do not combine
 
 ==================
 surrogate pair escapes own both spellings before the quantifier
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :cst
 ==================
 \uD83D\uDE00+\x41
@@ -1386,49 +1356,8 @@ surrogate pair escapes own both spellings before the quantifier
 
 ==================
 fixed width hexadecimal escapes leave subsequent digits as literals
-:language(js_regex)
-:cst
-==================
-\x412\u00423
-------------------
-
-0:0  - 0:12   pattern
-0:0  - 0:12     body: disjunction
-0:0  - 0:12       alternative
-0:0  - 0:4          term
-0:0  - 0:4            operand: extended_atom
-0:0  - 0:1              "\\"
-0:1  - 0:4              atom_escape
-0:1  - 0:4                character_escape
-0:1  - 0:4                  hex_escape_sequence
-0:1  - 0:2                    "x"
-0:2  - 0:3                    hex_digit `4`
-0:3  - 0:4                    hex_digit `1`
-0:4  - 0:5          term
-0:4  - 0:5            operand: extended_atom
-0:4  - 0:5              extended_pattern_character
-0:4  - 0:5                source_character `2`
-0:5  - 0:11         term
-0:5  - 0:11           operand: extended_atom
-0:5  - 0:6              "\\"
-0:6  - 0:11             atom_escape
-0:6  - 0:11               character_escape
-0:6  - 0:11                 reg_exp_unicode_escape_sequence
-0:6  - 0:7                    "u"
-0:7  - 0:11                   hex4_digits
-0:7  - 0:8                      hex_digit `0`
-0:8  - 0:9                      hex_digit `0`
-0:9  - 0:10                     hex_digit `4`
-0:10 - 0:11                     hex_digit `2`
-0:11 - 0:12         term
-0:11 - 0:12           operand: extended_atom
-0:11 - 0:12             extended_pattern_character
-0:11 - 0:12               source_character `3`
-
-==================
-fixed width hexadecimal escapes leave subsequent digits as literals
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :cst
 ==================
 \x412\u00423
@@ -1470,60 +1399,8 @@ fixed width hexadecimal escapes leave subsequent digits as literals
 
 ==================
 an escaped backslash prevents the following spelling from becoming an escape
-:language(js_regex)
-:cst
-==================
-\\b\\u0041
-------------------
-
-0:0  - 0:10   pattern
-0:0  - 0:10     body: disjunction
-0:0  - 0:10       alternative
-0:0  - 0:2          term
-0:0  - 0:2            operand: extended_atom
-0:0  - 0:1              "\\"
-0:1  - 0:2              atom_escape
-0:1  - 0:2                character_escape
-0:1  - 0:2                  identity_escape
-0:1  - 0:2                    source_character_identity_escape
-0:1  - 0:2                      source_character `\\`
-0:2  - 0:3          term
-0:2  - 0:3            operand: extended_atom
-0:2  - 0:3              extended_pattern_character
-0:2  - 0:3                source_character `b`
-0:3  - 0:5          term
-0:3  - 0:5            operand: extended_atom
-0:3  - 0:4              "\\"
-0:4  - 0:5              atom_escape
-0:4  - 0:5                character_escape
-0:4  - 0:5                  identity_escape
-0:4  - 0:5                    source_character_identity_escape
-0:4  - 0:5                      source_character `\\`
-0:5  - 0:6          term
-0:5  - 0:6            operand: extended_atom
-0:5  - 0:6              extended_pattern_character
-0:5  - 0:6                source_character `u`
-0:6  - 0:7          term
-0:6  - 0:7            operand: extended_atom
-0:6  - 0:7              extended_pattern_character
-0:6  - 0:7                source_character `0`
-0:7  - 0:8          term
-0:7  - 0:8            operand: extended_atom
-0:7  - 0:8              extended_pattern_character
-0:7  - 0:8                source_character `0`
-0:8  - 0:9          term
-0:8  - 0:9            operand: extended_atom
-0:8  - 0:9              extended_pattern_character
-0:8  - 0:9                source_character `4`
-0:9  - 0:10         term
-0:9  - 0:10           operand: extended_atom
-0:9  - 0:10             extended_pattern_character
-0:9  - 0:10               source_character `1`
-
-==================
-an escaped backslash prevents the following spelling from becoming an escape
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :cst
 ==================
 \\b\\u0041
@@ -1572,79 +1449,9 @@ an escaped backslash prevents the following spelling from becoming an escape
 0:9  - 0:10               source_character `1`
 
 ==================
-named Unicode payload can begin with a brace
-:language(python_re)
-:language(python_re_verbose)
-==================
-\N{{}}\
-
-------------------
-
-(pattern
-  body: (alternation
-    (concatenation
-      (named_unicode_escape
-        name: (unicode_character_name))
-      (literal_character)
-      (literal_escape))))
-
-==================
-named Unicode payload owns separators through its closing brace
-:language(python_re)
-:language(python_re_verbose)
-==================
-\N{A|B}|z\
-
-------------------
-
-(pattern
-  body: (alternation
-    (concatenation
-      (named_unicode_escape
-        name: (unicode_character_name)))
-    (concatenation
-      (literal_character)
-      (literal_escape))))
-
-==================
-complete named Unicode escape owns an internal newline
-:language(python_re)
-:language(python_re_verbose)
-==================
-\N{A
-B}\
-
-------------------
-
-(pattern
-  body: (alternation
-    (concatenation
-      (named_unicode_escape
-        name: (unicode_character_name))
-      (literal_escape))))
-
-==================
 a null escape is complete at end of input
-:language(js_regex)
-:cst
-==================
-\0
-------------------
-
-0:0 - 0:2   pattern
-0:0 - 0:2     body: disjunction
-0:0 - 0:2       alternative
-0:0 - 0:2         term
-0:0 - 0:2           operand: extended_atom
-0:0 - 0:1             "\\"
-0:1 - 0:2             atom_escape
-0:1 - 0:2               character_escape
-0:1 - 0:2                 "0"
-
-==================
-a null escape is complete at end of input
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :cst
 ==================
 \0
@@ -1662,62 +1469,8 @@ a null escape is complete at end of input
 
 ==================
 null escape lookahead preserves following nondecimal characters and escapes
-:language(js_regex)
-:cst
-==================
-\0a\0_\0😀\0\0
-------------------
-
-0:0  - 0:16   pattern
-0:0  - 0:16     body: disjunction
-0:0  - 0:16       alternative
-0:0  - 0:2          term
-0:0  - 0:2            operand: extended_atom
-0:0  - 0:1              "\\"
-0:1  - 0:2              atom_escape
-0:1  - 0:2                character_escape
-0:1  - 0:2                  "0"
-0:2  - 0:3          term
-0:2  - 0:3            operand: extended_atom
-0:2  - 0:3              extended_pattern_character
-0:2  - 0:3                source_character `a`
-0:3  - 0:5          term
-0:3  - 0:5            operand: extended_atom
-0:3  - 0:4              "\\"
-0:4  - 0:5              atom_escape
-0:4  - 0:5                character_escape
-0:4  - 0:5                  "0"
-0:5  - 0:6          term
-0:5  - 0:6            operand: extended_atom
-0:5  - 0:6              extended_pattern_character
-0:5  - 0:6                source_character `_`
-0:6  - 0:8          term
-0:6  - 0:8            operand: extended_atom
-0:6  - 0:7              "\\"
-0:7  - 0:8              atom_escape
-0:7  - 0:8                character_escape
-0:7  - 0:8                  "0"
-0:8  - 0:12         term
-0:8  - 0:12           operand: extended_atom
-0:8  - 0:12             extended_pattern_character
-0:8  - 0:12               source_character `😀`
-0:12 - 0:14         term
-0:12 - 0:14           operand: extended_atom
-0:12 - 0:13             "\\"
-0:13 - 0:14             atom_escape
-0:13 - 0:14               character_escape
-0:13 - 0:14                 "0"
-0:14 - 0:16         term
-0:14 - 0:16           operand: extended_atom
-0:14 - 0:15             "\\"
-0:15 - 0:16             atom_escape
-0:15 - 0:16               character_escape
-0:15 - 0:16                 "0"
-
-==================
-null escape lookahead preserves following nondecimal characters and escapes
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :cst
 ==================
 \0a\0_\0😀\0\0
@@ -1771,8 +1524,8 @@ null escape lookahead preserves following nondecimal characters and escapes
 
 ==================
 code point escapes preserve leading zeroes up to the permitted lexical maximum
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :cst
 ==================
 \u{0}\u{000041}\u{10FFFF}\u{00000010FFFF}
@@ -1853,8 +1606,8 @@ code point escapes preserve leading zeroes up to the permitted lexical maximum
 
 ==================
 property existence and string set restrictions are left to the consumer
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :cst
 ==================
 \p{Not_A_Property}\p{1}\P{RGI_Emoji}\p{Age=V15_0}
@@ -2002,8 +1755,8 @@ property existence and string set restrictions are left to the consumer
 
 ==================
 a null escape cannot precede an octal digit in Unicode modes
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :error
 ==================
 \01
@@ -2013,8 +1766,8 @@ a null escape cannot precede an octal digit in Unicode modes
 
 ==================
 a null escape cannot precede a nonoctal decimal digit inside a Unicode class
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :error
 ==================
 [\09]
@@ -2024,8 +1777,8 @@ a null escape cannot precede a nonoctal decimal digit inside a Unicode class
 
 ==================
 a body identity escape cannot quote an ordinary letter in Unicode modes
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :error
 ==================
 \a
@@ -2035,8 +1788,8 @@ a body identity escape cannot quote an ordinary letter in Unicode modes
 
 ==================
 an escaped hyphen is only accepted in class context in Unicode modes
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :error
 ==================
 \-
@@ -2046,8 +1799,8 @@ an escaped hyphen is only accepted in class context in Unicode modes
 
 ==================
 a control letter escape requires an ASCII letter
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :error
 ==================
 \c1
@@ -2057,8 +1810,8 @@ a control letter escape requires an ASCII letter
 
 ==================
 the nonboundary assertion escape requires recovery in Unicode classes
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :error
 ==================
 [\B]
@@ -2068,8 +1821,8 @@ the nonboundary assertion escape requires recovery in Unicode classes
 
 ==================
 additional class control digits require recovery in Unicode modes
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :error
 ==================
 [\c1]
@@ -2079,8 +1832,8 @@ additional class control digits require recovery in Unicode modes
 
 ==================
 a hexadecimal escape requires two hexadecimal digits
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :error
 ==================
 \x4G
@@ -2090,8 +1843,8 @@ a hexadecimal escape requires two hexadecimal digits
 
 ==================
 an unbraced Unicode escape requires four hexadecimal digits
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :error
 ==================
 \u004G
@@ -2101,8 +1854,8 @@ an unbraced Unicode escape requires four hexadecimal digits
 
 ==================
 a code point escape requires nonempty hexadecimal digits
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :error
 ==================
 \u{}
@@ -2112,8 +1865,8 @@ a code point escape requires nonempty hexadecimal digits
 
 ==================
 a code point escape above the Unicode maximum requires recovery
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :error
 ==================
 \u{0}\u{000041}\u{10FFFF}\u{110000}
@@ -2123,8 +1876,8 @@ a code point escape above the Unicode maximum requires recovery
 
 ==================
 a Unicode property name before equals cannot contain a digit
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :error
 ==================
 \p{Sc1=Latin}
@@ -2134,8 +1887,8 @@ a Unicode property name before equals cannot contain a digit
 
 ==================
 a Unicode property value after equals cannot be empty
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :error
 ==================
 \p{Script=}
@@ -2145,8 +1898,8 @@ a Unicode property value after equals cannot be empty
 
 ==================
 a Unicode property value cannot contain a hyphen
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :error
 ==================
 \p{Script=Old-Italic}
@@ -2156,8 +1909,8 @@ a Unicode property value cannot contain a hyphen
 
 ==================
 a lone Unicode property spelling cannot be empty
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :error
 ==================
 \p{}
@@ -2166,42 +1919,9 @@ a lone Unicode property spelling cannot be empty
 
 
 ==================
-a dangling body backslash is not a complete escape
-:language(js_regex)
-:language(js_regex_u)
-:language(js_regex_v)
-:error
-==================
-ab\
-------------------
-
-
-
-==================
-a dangling backslash inside a class requires recovery
-:language(js_regex)
-:language(js_regex_u)
-:error
-==================
-[a\
-------------------
-
-
-
-==================
-a short hexadecimal escape inside a class requires recovery
-:language(js_regex_u)
-:error
-==================
-[\x4]b
-------------------
-
-
-
-==================
 a nonhexadecimal escape digit inside nested groups requires recovery
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :error
 ==================
 ((a\xG1)b)c
@@ -2211,8 +1931,8 @@ a nonhexadecimal escape digit inside nested groups requires recovery
 
 ==================
 a short Unicode escape before a group closer requires recovery
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :error
 ==================
 (\u12)|b
@@ -2221,165 +1941,22 @@ a short Unicode escape before a group closer requires recovery
 
 
 ==================
-an unclosed code point escape inside a class requires recovery
-:language(js_regex_u)
-:error
+PCRE2 normal hexadecimal braces form one escape
+:language(pcre2)
 ==================
-[\u{41]b
+\x{41}
 ------------------
 
-
+(pattern (alternation (concatenation (hex_escape (hexadecimal_digits)))))
 
 ==================
-an unclosed property escape inside a class requires recovery
-:language(js_regex_u)
-:error
+PCRE2 ignored property prefixes are separate from negation and the property name
+:language(pcre2)
 ==================
-[\p{ASCII]b
+\p{-^Lu}\p{_^Lu}
 ------------------
 
-
-
-==================
-every quoted character is a single token
-:language(posix_ere)
-:cst
-==================
-\^\.\[\]\$\(\)\|\*\+\?\{\}\\
-------------------
-
-0:0  - 0:28   extended_reg_exp
-0:0  - 0:28     ere_branch
-0:0  - 0:2        ere_expression
-0:0  - 0:2          one_char_or_coll_elem_ere
-0:0  - 0:2            quoted_character `\\^`
-0:2  - 0:4        ere_expression
-0:2  - 0:4          one_char_or_coll_elem_ere
-0:2  - 0:4            quoted_character `\\.`
-0:4  - 0:6        ere_expression
-0:4  - 0:6          one_char_or_coll_elem_ere
-0:4  - 0:6            quoted_character `\\[`
-0:6  - 0:8        ere_expression
-0:6  - 0:8          one_char_or_coll_elem_ere
-0:6  - 0:8            quoted_character `\\]`
-0:8  - 0:10       ere_expression
-0:8  - 0:10         one_char_or_coll_elem_ere
-0:8  - 0:10           quoted_character `\\$`
-0:10 - 0:12       ere_expression
-0:10 - 0:12         one_char_or_coll_elem_ere
-0:10 - 0:12           quoted_character `\\(`
-0:12 - 0:14       ere_expression
-0:12 - 0:14         one_char_or_coll_elem_ere
-0:12 - 0:14           quoted_character `\\)`
-0:14 - 0:16       ere_expression
-0:14 - 0:16         one_char_or_coll_elem_ere
-0:14 - 0:16           quoted_character `\\|`
-0:16 - 0:18       ere_expression
-0:16 - 0:18         one_char_or_coll_elem_ere
-0:16 - 0:18           quoted_character `\\*`
-0:18 - 0:20       ere_expression
-0:18 - 0:20         one_char_or_coll_elem_ere
-0:18 - 0:20           quoted_character `\\+`
-0:20 - 0:22       ere_expression
-0:20 - 0:22         one_char_or_coll_elem_ere
-0:20 - 0:22           quoted_character `\\?`
-0:22 - 0:24       ere_expression
-0:22 - 0:24         one_char_or_coll_elem_ere
-0:22 - 0:24           quoted_character `\\{`
-0:24 - 0:26       ere_expression
-0:24 - 0:26         one_char_or_coll_elem_ere
-0:24 - 0:26           quoted_character `\\}`
-0:26 - 0:28       ere_expression
-0:26 - 0:28         one_char_or_coll_elem_ere
-0:26 - 0:28           quoted_character `\\\\`
-
-==================
-every quoted character is a single token
-:language(posix_bre)
-:cst
-==================
-\?\+\|\^\.\*\[\]\$\\
-------------------
-
-0:0  - 0:20   basic_reg_exp
-0:0  - 0:20     bre_branch
-0:0  - 0:2        bre_expression
-0:0  - 0:2          simple_bre
-0:0  - 0:2            nondupl_bre
-0:0  - 0:2              one_char_or_coll_elem_bre
-0:0  - 0:2                quoted_character `\\?`
-0:2  - 0:4        bre_expression
-0:2  - 0:4          simple_bre
-0:2  - 0:4            nondupl_bre
-0:2  - 0:4              one_char_or_coll_elem_bre
-0:2  - 0:4                quoted_character `\\+`
-0:4  - 0:6        bre_expression
-0:4  - 0:6          simple_bre
-0:4  - 0:6            nondupl_bre
-0:4  - 0:6              one_char_or_coll_elem_bre
-0:4  - 0:6                quoted_character `\\|`
-0:6  - 0:8        bre_expression
-0:6  - 0:8          simple_bre
-0:6  - 0:8            nondupl_bre
-0:6  - 0:8              one_char_or_coll_elem_bre
-0:6  - 0:8                quoted_character `\\^`
-0:8  - 0:10       bre_expression
-0:8  - 0:10         simple_bre
-0:8  - 0:10           nondupl_bre
-0:8  - 0:10             one_char_or_coll_elem_bre
-0:8  - 0:10               quoted_character `\\.`
-0:10 - 0:12       bre_expression
-0:10 - 0:12         simple_bre
-0:10 - 0:12           nondupl_bre
-0:10 - 0:12             one_char_or_coll_elem_bre
-0:10 - 0:12               quoted_character `\\*`
-0:12 - 0:14       bre_expression
-0:12 - 0:14         simple_bre
-0:12 - 0:14           nondupl_bre
-0:12 - 0:14             one_char_or_coll_elem_bre
-0:12 - 0:14               quoted_character `\\[`
-0:14 - 0:16       bre_expression
-0:14 - 0:16         simple_bre
-0:14 - 0:16           nondupl_bre
-0:14 - 0:16             one_char_or_coll_elem_bre
-0:14 - 0:16               quoted_character `\\]`
-0:16 - 0:18       bre_expression
-0:16 - 0:18         simple_bre
-0:16 - 0:18           nondupl_bre
-0:16 - 0:18             one_char_or_coll_elem_bre
-0:16 - 0:18               quoted_character `\\$`
-0:18 - 0:20       bre_expression
-0:18 - 0:20         simple_bre
-0:18 - 0:20           nondupl_bre
-0:18 - 0:20             one_char_or_coll_elem_bre
-0:18 - 0:20               quoted_character `\\\\`
-
-==================
-a back-reference keeps its spelling
-:language(posix_bre)
-:cst
-==================
-\(a\)\1
-------------------
-
-0:0 - 0:7   basic_reg_exp
-0:0 - 0:7     bre_branch
-0:0 - 0:5       bre_expression
-0:0 - 0:5         simple_bre
-0:0 - 0:5           nondupl_bre
-0:0 - 0:2             "\\("
-0:2 - 0:3             expression: basic_reg_exp
-0:2 - 0:3               bre_branch
-0:2 - 0:3                 bre_expression
-0:2 - 0:3                   simple_bre
-0:2 - 0:3                     nondupl_bre
-0:2 - 0:3                       one_char_or_coll_elem_bre
-0:2 - 0:3                         ordinary_character `a`
-0:3 - 0:5             "\\)"
-0:5 - 0:7       bre_expression
-0:5 - 0:7         simple_bre
-0:5 - 0:7           nondupl_bre
-0:5 - 0:7             backreference `\\1`
+(pattern (alternation (concatenation (unicode_property (property_escape) (property_ignored) (property_name)) (unicode_property (property_escape) (property_ignored) (property_name)))))
 
 ==================
 PCRE2 quotation leaves the last character as the repeated operand
@@ -2605,203 +2182,6 @@ PCRE2 property prefix "\\P-" precedes negation
         name: (property_name)))))
 
 ==================
-Python escaped brace remains in the Unicode name
-:language(python_re)
-:language(python_re_verbose)
-:cst
-==================
-\N{\}}
-------------------
-
-0:0 - 0:6   pattern
-0:0 - 0:6     body: alternation
-0:0 - 0:6       concatenation
-0:0 - 0:6         named_unicode_escape
-0:0 - 0:2           "\\N"
-0:2 - 0:3           "{"
-0:3 - 0:5           name: unicode_character_name `\\}`
-0:5 - 0:6           "}"
-
-==================
-Python escaped NUL leaves a following literal NUL
-:language(python_re)
-:language(python_re_verbose)
-:cst
-==================
-\  
-------------------
-
-0:0 - 0:3   pattern
-0:0 - 0:3     body: alternation
-0:0 - 0:3       concatenation
-0:0 - 0:2         literal_escape `\\\0`
-0:2 - 0:3         literal_character `\0`
-
-==================
-Python NUL remains inside a Unicode name
-:language(python_re)
-:language(python_re_verbose)
-:cst
-==================
-\N{A B}
-------------------
-
-0:0 - 0:7   pattern
-0:0 - 0:7     body: alternation
-0:0 - 0:7       concatenation
-0:0 - 0:7         named_unicode_escape
-0:0 - 0:2           "\\N"
-0:2 - 0:3           "{"
-0:3 - 0:6           name: unicode_character_name `A\0B`
-0:6 - 0:7           "}"
-
-==================
-Python \377 preserves bounded digits
-:language(python_re)
-:language(python_re_verbose)
-:cst
-==================
-\3770
-------------------
-
-0:0 - 0:5   pattern
-0:0 - 0:5     body: alternation
-0:0 - 0:5       concatenation
-0:0 - 0:4         octal_escape
-0:0 - 0:1           "\\"
-0:1 - 0:4           digits: octal_digits `377`
-0:4 - 0:5         literal_character `0`
-
-==================
-Python \uD800 preserves bounded digits
-:language(python_re)
-:language(python_re_verbose)
-:cst
-==================
-\uD800
-------------------
-
-0:0 - 0:6   pattern
-0:0 - 0:6     body: alternation
-0:0 - 0:6       concatenation
-0:0 - 0:6         unicode_escape
-0:0 - 0:2           "\\u"
-0:2 - 0:6           digits: hexadecimal_digits `D800`
-
-==================
-Python \uDFFF preserves bounded digits
-:language(python_re)
-:language(python_re_verbose)
-:cst
-==================
-\uDFFF
-------------------
-
-0:0 - 0:6   pattern
-0:0 - 0:6     body: alternation
-0:0 - 0:6       concatenation
-0:0 - 0:6         unicode_escape
-0:0 - 0:2           "\\u"
-0:2 - 0:6           digits: hexadecimal_digits `DFFF`
-
-==================
-Python \U0000D800 preserves bounded digits
-:language(python_re)
-:language(python_re_verbose)
-:cst
-==================
-\U0000D800
-------------------
-
-0:0  - 0:10   pattern
-0:0  - 0:10     body: alternation
-0:0  - 0:10       concatenation
-0:0  - 0:10         unicode_escape
-0:0  - 0:2            "\\U"
-0:2  - 0:10           digits: hexadecimal_digits `0000D800`
-
-==================
-Python \U0000DFFF preserves bounded digits
-:language(python_re)
-:language(python_re_verbose)
-:cst
-==================
-\U0000DFFF
-------------------
-
-0:0  - 0:10   pattern
-0:0  - 0:10     body: alternation
-0:0  - 0:10       concatenation
-0:0  - 0:10         unicode_escape
-0:0  - 0:2            "\\U"
-0:2  - 0:10           digits: hexadecimal_digits `0000DFFF`
-
-==================
-Python \U000FFFFF preserves bounded digits
-:language(python_re)
-:language(python_re_verbose)
-:cst
-==================
-\U000FFFFF
-------------------
-
-0:0  - 0:10   pattern
-0:0  - 0:10     body: alternation
-0:0  - 0:10       concatenation
-0:0  - 0:10         unicode_escape
-0:0  - 0:2            "\\U"
-0:2  - 0:10           digits: hexadecimal_digits `000FFFFF`
-
-==================
-Python \U00100000 preserves bounded digits
-:language(python_re)
-:language(python_re_verbose)
-:cst
-==================
-\U00100000
-------------------
-
-0:0  - 0:10   pattern
-0:0  - 0:10     body: alternation
-0:0  - 0:10       concatenation
-0:0  - 0:10         unicode_escape
-0:0  - 0:2            "\\U"
-0:2  - 0:10           digits: hexadecimal_digits `00100000`
-
-==================
-Python \U0010FFFF preserves bounded digits
-:language(python_re)
-:language(python_re_verbose)
-:cst
-==================
-\U0010FFFF0
-------------------
-
-0:0  - 0:11   pattern
-0:0  - 0:11     body: alternation
-0:0  - 0:11       concatenation
-0:0  - 0:10         unicode_escape
-0:0  - 0:2            "\\U"
-0:2  - 0:10           digits: hexadecimal_digits `0010FFFF`
-0:10 - 0:11         literal_character `0`
-
-==================
-Python \U0010ffff preserves bounded digits
-:language(python_re)
-:language(python_re_verbose)
-:cst
-==================
-\U0010ffff
-------------------
-
-0:0  - 0:10   pattern
-0:0  - 0:10     body: alternation
-0:0  - 0:10       concatenation
-0:0  - 0:10         unicode_escape
-0:0  - 0:2            "\\U"
-0:2  - 0:10           digits: hexadecimal_digits `0010ffff`
-
-==================
 pcre2: PCRE2 property negation separates leading ignored characters from the name — "\\p{-^^Lu}"
 :language(pcre2)
 :error
@@ -2882,6 +2262,94 @@ pcre2: PCRE2 rejects alternate escapes and invalid Unicode scalars — "\\U"
 
 
 ==================
+every quoted character is a single token
+:language(posix_bre)
+:cst
+==================
+\?\+\|\^\.\*\[\]\$\\
+------------------
+
+0:0  - 0:20   basic_reg_exp
+0:0  - 0:20     bre_branch
+0:0  - 0:2        bre_expression
+0:0  - 0:2          simple_bre
+0:0  - 0:2            nondupl_bre
+0:0  - 0:2              one_char_or_coll_elem_bre
+0:0  - 0:2                quoted_character `\\?`
+0:2  - 0:4        bre_expression
+0:2  - 0:4          simple_bre
+0:2  - 0:4            nondupl_bre
+0:2  - 0:4              one_char_or_coll_elem_bre
+0:2  - 0:4                quoted_character `\\+`
+0:4  - 0:6        bre_expression
+0:4  - 0:6          simple_bre
+0:4  - 0:6            nondupl_bre
+0:4  - 0:6              one_char_or_coll_elem_bre
+0:4  - 0:6                quoted_character `\\|`
+0:6  - 0:8        bre_expression
+0:6  - 0:8          simple_bre
+0:6  - 0:8            nondupl_bre
+0:6  - 0:8              one_char_or_coll_elem_bre
+0:6  - 0:8                quoted_character `\\^`
+0:8  - 0:10       bre_expression
+0:8  - 0:10         simple_bre
+0:8  - 0:10           nondupl_bre
+0:8  - 0:10             one_char_or_coll_elem_bre
+0:8  - 0:10               quoted_character `\\.`
+0:10 - 0:12       bre_expression
+0:10 - 0:12         simple_bre
+0:10 - 0:12           nondupl_bre
+0:10 - 0:12             one_char_or_coll_elem_bre
+0:10 - 0:12               quoted_character `\\*`
+0:12 - 0:14       bre_expression
+0:12 - 0:14         simple_bre
+0:12 - 0:14           nondupl_bre
+0:12 - 0:14             one_char_or_coll_elem_bre
+0:12 - 0:14               quoted_character `\\[`
+0:14 - 0:16       bre_expression
+0:14 - 0:16         simple_bre
+0:14 - 0:16           nondupl_bre
+0:14 - 0:16             one_char_or_coll_elem_bre
+0:14 - 0:16               quoted_character `\\]`
+0:16 - 0:18       bre_expression
+0:16 - 0:18         simple_bre
+0:16 - 0:18           nondupl_bre
+0:16 - 0:18             one_char_or_coll_elem_bre
+0:16 - 0:18               quoted_character `\\$`
+0:18 - 0:20       bre_expression
+0:18 - 0:20         simple_bre
+0:18 - 0:20           nondupl_bre
+0:18 - 0:20             one_char_or_coll_elem_bre
+0:18 - 0:20               quoted_character `\\\\`
+
+==================
+a back-reference keeps its spelling
+:language(posix_bre)
+:cst
+==================
+\(a\)\1
+------------------
+
+0:0 - 0:7   basic_reg_exp
+0:0 - 0:7     bre_branch
+0:0 - 0:5       bre_expression
+0:0 - 0:5         simple_bre
+0:0 - 0:5           nondupl_bre
+0:0 - 0:2             "\\("
+0:2 - 0:3             expression: basic_reg_exp
+0:2 - 0:3               bre_branch
+0:2 - 0:3                 bre_expression
+0:2 - 0:3                   simple_bre
+0:2 - 0:3                     nondupl_bre
+0:2 - 0:3                       one_char_or_coll_elem_bre
+0:2 - 0:3                         ordinary_character `a`
+0:3 - 0:5             "\\)"
+0:5 - 0:7       bre_expression
+0:5 - 0:7         simple_bre
+0:5 - 0:7           nondupl_bre
+0:5 - 0:7             backreference `\\1`
+
+==================
 malformed unknown ASCII-letter escape uses standard recovery — "\\q"
 :language(posix_bre)
 :language(posix_ere)
@@ -2904,9 +2372,541 @@ malformed zero numeric escape uses standard recovery — "\\0"
 
 
 ==================
-python_re: out-of-range numeric escapes cannot split into shorter escapes or references — "\\777"
-:language(python_re)
-:language(python_re_verbose)
+every quoted character is a single token
+:language(posix_ere)
+:cst
+==================
+\^\.\[\]\$\(\)\|\*\+\?\{\}\\
+------------------
+
+0:0  - 0:28   extended_reg_exp
+0:0  - 0:28     ere_branch
+0:0  - 0:2        ere_expression
+0:0  - 0:2          one_char_or_coll_elem_ere
+0:0  - 0:2            quoted_character `\\^`
+0:2  - 0:4        ere_expression
+0:2  - 0:4          one_char_or_coll_elem_ere
+0:2  - 0:4            quoted_character `\\.`
+0:4  - 0:6        ere_expression
+0:4  - 0:6          one_char_or_coll_elem_ere
+0:4  - 0:6            quoted_character `\\[`
+0:6  - 0:8        ere_expression
+0:6  - 0:8          one_char_or_coll_elem_ere
+0:6  - 0:8            quoted_character `\\]`
+0:8  - 0:10       ere_expression
+0:8  - 0:10         one_char_or_coll_elem_ere
+0:8  - 0:10           quoted_character `\\$`
+0:10 - 0:12       ere_expression
+0:10 - 0:12         one_char_or_coll_elem_ere
+0:10 - 0:12           quoted_character `\\(`
+0:12 - 0:14       ere_expression
+0:12 - 0:14         one_char_or_coll_elem_ere
+0:12 - 0:14           quoted_character `\\)`
+0:14 - 0:16       ere_expression
+0:14 - 0:16         one_char_or_coll_elem_ere
+0:14 - 0:16           quoted_character `\\|`
+0:16 - 0:18       ere_expression
+0:16 - 0:18         one_char_or_coll_elem_ere
+0:16 - 0:18           quoted_character `\\*`
+0:18 - 0:20       ere_expression
+0:18 - 0:20         one_char_or_coll_elem_ere
+0:18 - 0:20           quoted_character `\\+`
+0:20 - 0:22       ere_expression
+0:20 - 0:22         one_char_or_coll_elem_ere
+0:20 - 0:22           quoted_character `\\?`
+0:22 - 0:24       ere_expression
+0:22 - 0:24         one_char_or_coll_elem_ere
+0:22 - 0:24           quoted_character `\\{`
+0:24 - 0:26       ere_expression
+0:24 - 0:26         one_char_or_coll_elem_ere
+0:24 - 0:26           quoted_character `\\}`
+0:26 - 0:28       ere_expression
+0:26 - 0:28         one_char_or_coll_elem_ere
+0:26 - 0:28           quoted_character `\\\\`
+
+==================
+fixed escapes remain atoms in both Python modes
+:language(pyregex)
+:language(pyregex_verbose)
+==================
+\ \#\!\a\f\n\r\t\v\d\D\s\S\w\W\A\z\Z\b\B\
+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (literal_escape)
+      (literal_escape)
+      (literal_escape)
+      (control_escape)
+      (control_escape)
+      (control_escape)
+      (control_escape)
+      (control_escape)
+      (control_escape)
+      (character_class_escape)
+      (character_class_escape)
+      (character_class_escape)
+      (character_class_escape)
+      (character_class_escape)
+      (character_class_escape)
+      (anchor_escape)
+      (anchor_escape)
+      (anchor_escape)
+      (word_boundary_escape)
+      (word_boundary_escape)
+      (literal_escape))))
+
+==================
+hexadecimal and Unicode escapes own fixed introducers and digit fields
+:language(pyregex)
+:language(pyregex_verbose)
+:cst
+==================
+\x41\u0042
+------------------
+
+0:0  - 0:10   pattern
+0:0  - 0:10     body: alternation
+0:0  - 0:10       concatenation
+0:0  - 0:4          hex_escape
+0:0  - 0:2            "\\x"
+0:2  - 0:4            digits: hexadecimal_digits `41`
+0:4  - 0:10         unicode_escape
+0:4  - 0:6            "\\u"
+0:6  - 0:10           digits: hexadecimal_digits `0042`
+
+==================
+hex escapes expose their digits in both Python modes
+:language(pyregex)
+:language(pyregex_verbose)
+==================
+\x00|\xAf\
+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (hex_escape
+        digits: (hexadecimal_digits)))
+    (concatenation
+      (hex_escape
+        digits: (hexadecimal_digits))
+      (literal_escape))))
+
+==================
+fixed and named Unicode escapes expose their fields
+:language(pyregex)
+:language(pyregex_verbose)
+==================
+\u0041|\U00000042|\N{LATIN CAPITAL LETTER A}\
+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (unicode_escape
+        digits: (hexadecimal_digits)))
+    (concatenation
+      (unicode_escape
+        digits: (hexadecimal_digits)))
+    (concatenation
+      (named_unicode_escape
+        name: (unicode_character_name))
+      (literal_escape))))
+
+==================
+numeric escapes follow octal and backreference boundaries
+:language(pyregex)
+:language(pyregex_verbose)
+==================
+\0|\00|\000|\0000|\08|\1234|\128|\300|\377|\1|\12|\8|\99|\999\
+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (octal_escape
+        digits: (octal_digits)))
+    (concatenation
+      (octal_escape
+        digits: (octal_digits)))
+    (concatenation
+      (octal_escape
+        digits: (octal_digits)))
+    (concatenation
+      (octal_escape
+        digits: (octal_digits))
+      (literal_character))
+    (concatenation
+      (octal_escape
+        digits: (octal_digits))
+      (literal_character))
+    (concatenation
+      (octal_escape
+        digits: (octal_digits))
+      (literal_character))
+    (concatenation
+      (numeric_backreference
+        group: (group_id))
+      (literal_character))
+    (concatenation
+      (octal_escape
+        digits: (octal_digits)))
+    (concatenation
+      (octal_escape
+        digits: (octal_digits)))
+    (concatenation
+      (numeric_backreference
+        group: (group_id)))
+    (concatenation
+      (numeric_backreference
+        group: (group_id)))
+    (concatenation
+      (numeric_backreference
+        group: (group_id)))
+    (concatenation
+      (numeric_backreference
+        group: (group_id)))
+    (concatenation
+      (numeric_backreference
+        group: (group_id))
+      (literal_character)
+      (literal_escape))))
+
+==================
+Python numeric escape limits retain their digit fields
+:language(pyregex)
+:language(pyregex_verbose)
+==================
+\377\U0010FFFF
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (octal_escape
+        digits: (octal_digits))
+      (unicode_escape
+        digits: (hexadecimal_digits)))))
+
+==================
+Python Unicode escapes admit surrogate code points
+:language(pyregex)
+:language(pyregex_verbose)
+==================
+\uD800\U0000DFFF
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (unicode_escape
+        digits: (hexadecimal_digits))
+      (unicode_escape
+        digits: (hexadecimal_digits)))))
+
+==================
+named Unicode payload can begin with a brace
+:language(pyregex)
+:language(pyregex_verbose)
+==================
+\N{{}}\
+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (named_unicode_escape
+        name: (unicode_character_name))
+      (literal_character)
+      (literal_escape))))
+
+==================
+named Unicode payload owns separators through its closing brace
+:language(pyregex)
+:language(pyregex_verbose)
+==================
+\N{A|B}|z\
+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (named_unicode_escape
+        name: (unicode_character_name)))
+    (concatenation
+      (literal_character)
+      (literal_escape))))
+
+==================
+complete named Unicode escape owns an internal newline
+:language(pyregex)
+:language(pyregex_verbose)
+==================
+\N{A
+B}\
+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (named_unicode_escape
+        name: (unicode_character_name))
+      (literal_escape))))
+
+==================
+Python escaped brace remains in the Unicode name
+:language(pyregex)
+:language(pyregex_verbose)
+:cst
+==================
+\N{\}}
+------------------
+
+0:0 - 0:6   pattern
+0:0 - 0:6     body: alternation
+0:0 - 0:6       concatenation
+0:0 - 0:6         named_unicode_escape
+0:0 - 0:2           "\\N"
+0:2 - 0:3           "{"
+0:3 - 0:5           name: unicode_character_name `\\}`
+0:5 - 0:6           "}"
+
+==================
+Python escaped NUL leaves a following literal NUL
+:language(pyregex)
+:language(pyregex_verbose)
+:cst
+==================
+\  
+------------------
+
+0:0 - 0:3   pattern
+0:0 - 0:3     body: alternation
+0:0 - 0:3       concatenation
+0:0 - 0:2         literal_escape `\\\0`
+0:2 - 0:3         literal_character `\0`
+
+==================
+Python NUL remains inside a Unicode name
+:language(pyregex)
+:language(pyregex_verbose)
+:cst
+==================
+\N{A B}
+------------------
+
+0:0 - 0:7   pattern
+0:0 - 0:7     body: alternation
+0:0 - 0:7       concatenation
+0:0 - 0:7         named_unicode_escape
+0:0 - 0:2           "\\N"
+0:2 - 0:3           "{"
+0:3 - 0:6           name: unicode_character_name `A\0B`
+0:6 - 0:7           "}"
+
+==================
+Python \377 preserves bounded digits
+:language(pyregex)
+:language(pyregex_verbose)
+:cst
+==================
+\3770
+------------------
+
+0:0 - 0:5   pattern
+0:0 - 0:5     body: alternation
+0:0 - 0:5       concatenation
+0:0 - 0:4         octal_escape
+0:0 - 0:1           "\\"
+0:1 - 0:4           digits: octal_digits `377`
+0:4 - 0:5         literal_character `0`
+
+==================
+Python \uD800 preserves bounded digits
+:language(pyregex)
+:language(pyregex_verbose)
+:cst
+==================
+\uD800
+------------------
+
+0:0 - 0:6   pattern
+0:0 - 0:6     body: alternation
+0:0 - 0:6       concatenation
+0:0 - 0:6         unicode_escape
+0:0 - 0:2           "\\u"
+0:2 - 0:6           digits: hexadecimal_digits `D800`
+
+==================
+Python \uDFFF preserves bounded digits
+:language(pyregex)
+:language(pyregex_verbose)
+:cst
+==================
+\uDFFF
+------------------
+
+0:0 - 0:6   pattern
+0:0 - 0:6     body: alternation
+0:0 - 0:6       concatenation
+0:0 - 0:6         unicode_escape
+0:0 - 0:2           "\\u"
+0:2 - 0:6           digits: hexadecimal_digits `DFFF`
+
+==================
+Python \U0000D800 preserves bounded digits
+:language(pyregex)
+:language(pyregex_verbose)
+:cst
+==================
+\U0000D800
+------------------
+
+0:0  - 0:10   pattern
+0:0  - 0:10     body: alternation
+0:0  - 0:10       concatenation
+0:0  - 0:10         unicode_escape
+0:0  - 0:2            "\\U"
+0:2  - 0:10           digits: hexadecimal_digits `0000D800`
+
+==================
+Python \U0000DFFF preserves bounded digits
+:language(pyregex)
+:language(pyregex_verbose)
+:cst
+==================
+\U0000DFFF
+------------------
+
+0:0  - 0:10   pattern
+0:0  - 0:10     body: alternation
+0:0  - 0:10       concatenation
+0:0  - 0:10         unicode_escape
+0:0  - 0:2            "\\U"
+0:2  - 0:10           digits: hexadecimal_digits `0000DFFF`
+
+==================
+Python \U000FFFFF preserves bounded digits
+:language(pyregex)
+:language(pyregex_verbose)
+:cst
+==================
+\U000FFFFF
+------------------
+
+0:0  - 0:10   pattern
+0:0  - 0:10     body: alternation
+0:0  - 0:10       concatenation
+0:0  - 0:10         unicode_escape
+0:0  - 0:2            "\\U"
+0:2  - 0:10           digits: hexadecimal_digits `000FFFFF`
+
+==================
+Python \U00100000 preserves bounded digits
+:language(pyregex)
+:language(pyregex_verbose)
+:cst
+==================
+\U00100000
+------------------
+
+0:0  - 0:10   pattern
+0:0  - 0:10     body: alternation
+0:0  - 0:10       concatenation
+0:0  - 0:10         unicode_escape
+0:0  - 0:2            "\\U"
+0:2  - 0:10           digits: hexadecimal_digits `00100000`
+
+==================
+Python \U0010FFFF preserves bounded digits
+:language(pyregex)
+:language(pyregex_verbose)
+:cst
+==================
+\U0010FFFF0
+------------------
+
+0:0  - 0:11   pattern
+0:0  - 0:11     body: alternation
+0:0  - 0:11       concatenation
+0:0  - 0:10         unicode_escape
+0:0  - 0:2            "\\U"
+0:2  - 0:10           digits: hexadecimal_digits `0010FFFF`
+0:10 - 0:11         literal_character `0`
+
+==================
+Python \U0010ffff preserves bounded digits
+:language(pyregex)
+:language(pyregex_verbose)
+:cst
+==================
+\U0010ffff
+------------------
+
+0:0  - 0:10   pattern
+0:0  - 0:10     body: alternation
+0:0  - 0:10       concatenation
+0:0  - 0:10         unicode_escape
+0:0  - 0:2            "\\U"
+0:2  - 0:10           digits: hexadecimal_digits `0010ffff`
+
+==================
+a Python octal escape above the byte maximum requires recovery
+:language(pyregex)
+:language(pyregex_verbose)
+:error
+==================
+\400
+------------------
+
+
+
+==================
+a Python class octal escape above the byte maximum requires recovery
+:language(pyregex)
+:language(pyregex_verbose)
+:error
+==================
+[\777]
+------------------
+
+
+
+==================
+a Python Unicode escape above the code point maximum requires recovery
+:language(pyregex)
+:language(pyregex_verbose)
+:error
+==================
+\U00110000
+------------------
+
+
+
+==================
+a Python class Unicode escape above the code point maximum requires recovery
+:language(pyregex)
+:language(pyregex_verbose)
+:error
+==================
+[\UFFFFFFFF]
+------------------
+
+
+
+==================
+pyregex: out-of-range numeric escapes cannot split into shorter escapes or references — "\\777"
+:language(pyregex)
+:language(pyregex_verbose)
 :error
 ==================
 \777
@@ -2915,9 +2915,9 @@ python_re: out-of-range numeric escapes cannot split into shorter escapes or ref
 
 
 ==================
-python_re: out-of-range numeric escapes cannot split into shorter escapes or references — "\\4000"
-:language(python_re)
-:language(python_re_verbose)
+pyregex: out-of-range numeric escapes cannot split into shorter escapes or references — "\\4000"
+:language(pyregex)
+:language(pyregex_verbose)
 :error
 ==================
 \4000
@@ -2926,9 +2926,9 @@ python_re: out-of-range numeric escapes cannot split into shorter escapes or ref
 
 
 ==================
-python_re: out-of-range numeric escapes cannot split into shorter escapes or references — "\\7777"
-:language(python_re)
-:language(python_re_verbose)
+pyregex: out-of-range numeric escapes cannot split into shorter escapes or references — "\\7777"
+:language(pyregex)
+:language(pyregex_verbose)
 :error
 ==================
 \7777
@@ -2937,9 +2937,9 @@ python_re: out-of-range numeric escapes cannot split into shorter escapes or ref
 
 
 ==================
-python_re: out-of-range numeric escapes cannot split into shorter escapes or references — "\\UFFFFFFFF"
-:language(python_re)
-:language(python_re_verbose)
+pyregex: out-of-range numeric escapes cannot split into shorter escapes or references — "\\UFFFFFFFF"
+:language(pyregex)
+:language(pyregex_verbose)
 :error
 ==================
 \UFFFFFFFF
@@ -2948,9 +2948,9 @@ python_re: out-of-range numeric escapes cannot split into shorter escapes or ref
 
 
 ==================
-python_re: malformed an escaped closer leaves a capturing name unterminated uses standard recovery — "(?P<a\\>"
-:language(python_re)
-:language(python_re_verbose)
+pyregex: malformed an escaped closer leaves a capturing name unterminated uses standard recovery — "(?P<a\\>"
+:language(pyregex)
+:language(pyregex_verbose)
 :error
 ==================
 (?P<a\>
@@ -2959,9 +2959,9 @@ python_re: malformed an escaped closer leaves a capturing name unterminated uses
 
 
 ==================
-python_re: malformed an escaped closer leaves a reference name unterminated uses standard recovery — "(?P=a\\)"
-:language(python_re)
-:language(python_re_verbose)
+pyregex: malformed an escaped closer leaves a reference name unterminated uses standard recovery — "(?P=a\\)"
+:language(pyregex)
+:language(pyregex_verbose)
 :error
 ==================
 (?P=a\)
@@ -2970,9 +2970,9 @@ python_re: malformed an escaped closer leaves a reference name unterminated uses
 
 
 ==================
-python_re: malformed an escaped brace leaves a Unicode character name unterminated uses standard recovery — "\\N{\\}"
-:language(python_re)
-:language(python_re_verbose)
+pyregex: malformed an escaped brace leaves a Unicode character name unterminated uses standard recovery — "\\N{\\}"
+:language(pyregex)
+:language(pyregex_verbose)
 :error
 ==================
 \N{\}
@@ -2981,9 +2981,9 @@ python_re: malformed an escaped brace leaves a Unicode character name unterminat
 
 
 ==================
-python_re: malformed incomplete hexadecimal escape before a complete escape uses standard recovery — "\\x0\\n\\\n"
-:language(python_re)
-:language(python_re_verbose)
+pyregex: malformed incomplete hexadecimal escape before a complete escape uses standard recovery — "\\x0\\n\\\n"
+:language(pyregex)
+:language(pyregex_verbose)
 :error
 ==================
 \x0\n\
@@ -2993,9 +2993,9 @@ python_re: malformed incomplete hexadecimal escape before a complete escape uses
 
 
 ==================
-python_re: malformed hexadecimal escape with a nonhexadecimal digit uses standard recovery — "\\xG\\\n"
-:language(python_re)
-:language(python_re_verbose)
+pyregex: malformed hexadecimal escape with a nonhexadecimal digit uses standard recovery — "\\xG\\\n"
+:language(pyregex)
+:language(pyregex_verbose)
 :error
 ==================
 \xG\
@@ -3005,9 +3005,9 @@ python_re: malformed hexadecimal escape with a nonhexadecimal digit uses standar
 
 
 ==================
-python_re: malformed Unicode escape without a character name uses standard recovery — "\\N{}\\\n"
-:language(python_re)
-:language(python_re_verbose)
+pyregex: malformed Unicode escape without a character name uses standard recovery — "\\N{}\\\n"
+:language(pyregex)
+:language(pyregex_verbose)
 :error
 ==================
 \N{}\
@@ -3017,9 +3017,9 @@ python_re: malformed Unicode escape without a character name uses standard recov
 
 
 ==================
-python_re: malformed unknown ASCII-letter escape uses standard recovery — "\\q|z\\\n"
-:language(python_re)
-:language(python_re_verbose)
+pyregex: malformed unknown ASCII-letter escape uses standard recovery — "\\q|z\\\n"
+:language(pyregex)
+:language(pyregex_verbose)
 :error
 ==================
 \q|z\
@@ -3029,9 +3029,9 @@ python_re: malformed unknown ASCII-letter escape uses standard recovery — "\\q
 
 
 ==================
-python_re: malformed incomplete hexadecimal escape before an alternative uses standard recovery — "\\xF|z\\\n"
-:language(python_re)
-:language(python_re_verbose)
+pyregex: malformed incomplete hexadecimal escape before an alternative uses standard recovery — "\\xF|z\\\n"
+:language(pyregex)
+:language(pyregex_verbose)
 :error
 ==================
 \xF|z\
@@ -3041,9 +3041,9 @@ python_re: malformed incomplete hexadecimal escape before an alternative uses st
 
 
 ==================
-python_re: malformed incomplete short Unicode escape uses standard recovery — "\\u123|z\\\n"
-:language(python_re)
-:language(python_re_verbose)
+pyregex: malformed incomplete short Unicode escape uses standard recovery — "\\u123|z\\\n"
+:language(pyregex)
+:language(pyregex_verbose)
 :error
 ==================
 \u123|z\
@@ -3053,9 +3053,9 @@ python_re: malformed incomplete short Unicode escape uses standard recovery — 
 
 
 ==================
-python_re: malformed incomplete long Unicode escape uses standard recovery — "\\U0000000|z\\\n"
-:language(python_re)
-:language(python_re_verbose)
+pyregex: malformed incomplete long Unicode escape uses standard recovery — "\\U0000000|z\\\n"
+:language(pyregex)
+:language(pyregex_verbose)
 :error
 ==================
 \U0000000|z\
@@ -3065,9 +3065,9 @@ python_re: malformed incomplete long Unicode escape uses standard recovery — "
 
 
 ==================
-python_re: malformed unterminated named Unicode escape uses standard recovery — "\\N{NAME|z\\\n"
-:language(python_re)
-:language(python_re_verbose)
+pyregex: malformed unterminated named Unicode escape uses standard recovery — "\\N{NAME|z\\\n"
+:language(pyregex)
+:language(pyregex_verbose)
 :error
 ==================
 \N{NAME|z\

@@ -562,7 +562,7 @@ static bool scan_quoted(
   bool in_class
 ) {
   if (!valid[QUOTE_END]) return false;
-  // Emit even invalid tokens to prevent lexer fallback inside quoted source.
+  // Emit unrequested tokens to prevent lexer fallback inside quotes.
   lexer->result_symbol = in_class ? CLASS_CHARACTER : LITERAL_CHARACTER;
   if (lexer->lookahead != '\\') {
     advance(lexer);
@@ -653,11 +653,10 @@ scan_pattern_token(Scanner *scanner, TSLexer *lexer, const bool *valid) {
   if (c == '{' && (valid[QUANTIFIER_OPEN] || valid[LITERAL_CHARACTER])) {
     advance(lexer);
     lexer->mark_end(lexer);
-    return emit(
-      lexer,
-      valid,
-      scan_quantifier(lexer) ? QUANTIFIER_OPEN : LITERAL_CHARACTER
-    );
+    const enum TokenType token =
+      scan_quantifier(lexer) ? QUANTIFIER_OPEN : LITERAL_CHARACTER;
+    return (!valid[ERROR_SENTINEL] || token == LITERAL_CHARACTER) &&
+      emit(lexer, valid, token);
   }
   if (c == '*' || c == '+' || c == '?') {
     advance(lexer);
@@ -682,16 +681,11 @@ scan_token(Scanner *scanner, TSLexer *lexer, const bool *valid, bool in_class) {
     if (scanner->quoted) return scan_quoted(scanner, lexer, valid, false);
     if (lexer->lookahead == '\\')
       return scan_escape(scanner, lexer, valid, false);
-    if (lexer->lookahead == '(') return scan_open(scanner, lexer, valid);
-    if (lexer->lookahead == ')') return scan_close(scanner, lexer, valid);
-    if (lexer->lookahead == '|') return scan_pipe(scanner, lexer, valid);
     if (lexer->lookahead == '[') {
       advance(lexer);
       return emit(lexer, valid, CLASS_OPEN);
     }
-    if (lexer->lookahead == '#' && (scanner->flags & LAYOUT_MASK))
-      return scan_comment(scanner, lexer, valid);
-    return false;
+    return scan_pattern_token(scanner, lexer, valid);
   }
   if (scanner->quoted) return scan_quoted(scanner, lexer, valid, in_class);
   if (lexer->lookahead == '[' && valid[CLASS_OPEN]) {
@@ -723,8 +717,7 @@ scan_token(Scanner *scanner, TSLexer *lexer, const bool *valid, bool in_class) {
 }
 
 static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid) {
-  // Recovery supplies no token at EOF, so a notification there would only
-  // change which standard recovery is selected.
+  // EOF context changes disrupt standard recovery.
   if (
     !valid[ERROR_SENTINEL] &&
     valid[PATTERN_CONTEXT] &&
@@ -812,7 +805,6 @@ static bool restore(Scanner *scanner, const char *buffer, unsigned length) {
   return offset == length;
 }
 
-// Scopes from depth onward are unread.
 static void reset(Scanner *scanner) {
   scanner->captures = 0;
   scanner->depth = 0;

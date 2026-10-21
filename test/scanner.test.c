@@ -11,6 +11,7 @@
 #define REGEX_SCANNER(suffix) tree_sitter_pcre2_external_scanner_##suffix
 #endif
 
+#define COUNT(array) (sizeof(array) / sizeof((array)[0]))
 #define TOKEN_COUNT (ERROR_SENTINEL + 1)
 
 enum { SERIALIZATION_GUARD_BYTE = 0x5a };
@@ -119,9 +120,7 @@ static void assert_scan_declines(
 static void assert_scans_decline(void *scanner, const bool *valid_symbols) {
   const char *sources[] =
     {"(?<x>a)", "(?i)a", "3", "u0041", "#comment", "[", "*", " ", ""};
-  for (
-    size_t index = 0; index < sizeof(sources) / sizeof(sources[0]); index++
-  ) {
+  for (size_t index = 0; index < COUNT(sources); index++) {
     assert_scan_declines(
       scanner,
       valid_symbols,
@@ -135,7 +134,7 @@ static void assert_scans_decline(void *scanner, const bool *valid_symbols) {
 
 static void test_disabled_and_blocked_recovery_scans_preserve_state(void) {
   void *scanner = REGEX_SCANNER(create)();
-#if defined(JS_REGEX_MODE) && JS_REGEX_MODE == 0
+#if defined(ECMAREGEX_MODE) && ECMAREGEX_MODE == 0
   *(Scanner *)scanner =
     (Scanner){.capture_count = 2, .has_named_capture = true};
 #elif defined(PCRE2_SCANNER)
@@ -150,10 +149,10 @@ static void test_disabled_and_blocked_recovery_scans_preserve_state(void) {
   REGEX_SCANNER(destroy)(scanner);
 }
 
-#if (defined(JS_REGEX_MODE) && JS_REGEX_MODE == 0) || defined(PCRE2_SCANNER)
+#if (defined(ECMAREGEX_MODE) && ECMAREGEX_MODE == 0) || defined(PCRE2_SCANNER)
 static void test_unallocated_payload_declines_without_state(void) {
   void *scanner = REGEX_SCANNER(create)();
-#if defined(JS_REGEX_MODE) && JS_REGEX_MODE == 0
+#if defined(ECMAREGEX_MODE) && ECMAREGEX_MODE == 0
   ((Scanner *)scanner)->capture_count = 1;
 #endif
   char buffer[TREE_SITTER_SERIALIZATION_BUFFER_SIZE];
@@ -171,7 +170,7 @@ static void test_unallocated_payload_declines_without_state(void) {
 }
 #endif
 
-#if defined(POSIX_REGEX_MODE) || defined(PYTHON_RE_LANGUAGE)
+#if defined(POSIX_REGEX_MODE) || defined(PYREGEX_LANGUAGE)
 static void test_stateless_lifecycle_and_serialization(void) {
   void *scanner = REGEX_SCANNER(create)();
   assert(scanner == NULL);
@@ -187,7 +186,7 @@ static void test_stateless_lifecycle_and_serialization(void) {
 }
 #endif
 
-#if defined(JS_REGEX_MODE)
+#if defined(ECMAREGEX_MODE)
 static void check_token_bytes(
   void *scanner,
   const char *source,
@@ -216,7 +215,7 @@ static void check_token(
   check_token_bytes(scanner, source, strlen(source), token, accepted, end);
 }
 
-#if JS_REGEX_MODE == 0
+#if ECMAREGEX_MODE == 0
 static void test_serialization_and_reset(void) {
   Scanner *scanner = REGEX_SCANNER(create)();
   assert(scanner != NULL);
@@ -229,7 +228,7 @@ static void test_serialization_and_reset(void) {
     (uint32_t)UINT16_MAX + 1,
     UINT32_MAX
   };
-  for (size_t index = 0; index < sizeof(counts) / sizeof(counts[0]); index++) {
+  for (size_t index = 0; index < COUNT(counts); index++) {
     for (unsigned flags = 0; flags < 2; flags++) {
       *scanner = (Scanner){
         .capture_count = counts[index],
@@ -288,7 +287,7 @@ static void test_capture_context_stops_at_the_lexer_boundary(void) {
     {"(?<x>a)/; /(b)/", 7, 1, true},
     {"\\1()/; /(?<outside>a)/", 4, 1, false},
   };
-  for (size_t i = 0; i < sizeof(cases) / sizeof(cases[0]); i++) {
+  for (size_t i = 0; i < COUNT(cases); i++) {
     check_token_bytes(
       &scanner,
       cases[i].source,
@@ -326,7 +325,7 @@ static void test_stateless_lifecycle_and_unicode_tokens(void) {
     0
   );
   check_token(scanner, "\\uDC00", UNICODE_PAIR_SEPARATOR, true, 2);
-#if JS_REGEX_MODE == 2
+#if ECMAREGEX_MODE == 2
   const char nul[] = "\0";
   check_token(scanner, "&&x", CLASS_INTERSECTION, true, 2);
   check_token(scanner, "&&&", CLASS_INTERSECTION, false, 0);
@@ -383,9 +382,7 @@ static void test_compound_payloads_end_at_their_closer_or_the_input_end(void) {
     {"a=", false, EQUIVALENCE_CLASS_MULTI, 2},
     {"a.]", false, EQUIVALENCE_CLASS_MULTI, 3},
   };
-  for (
-    unsigned index = 0; index < sizeof(cases) / sizeof(cases[0]); index += 1
-  ) {
+  for (unsigned index = 0; index < COUNT(cases); index += 1) {
     bool valid_symbols[TOKEN_COUNT] = {false};
     enable_compound_payload(valid_symbols, cases[index].collating);
     MockLexer mock =
@@ -406,9 +403,7 @@ static void test_empty_payloads_are_not_emitted(void) {
     {"", true},
     {"", false},
   };
-  for (
-    unsigned index = 0; index < sizeof(cases) / sizeof(cases[0]); index += 1
-  ) {
+  for (unsigned index = 0; index < COUNT(cases); index += 1) {
     bool valid_symbols[TOKEN_COUNT] = {false};
     enable_compound_payload(valid_symbols, cases[index].collating);
     MockLexer mock =
@@ -433,7 +428,7 @@ static void test_compound_payloads_respect_enabled_token_types(void) {
     {"ab=]", EQUIVALENCE_CLASS_SINGLE, false},
     {"a=]", EQUIVALENCE_CLASS_MULTI, false},
   };
-  for (size_t index = 0; index < sizeof(cases) / sizeof(cases[0]); index++) {
+  for (size_t index = 0; index < COUNT(cases); index++) {
     bool valid_symbols[TOKEN_COUNT] = {false};
     valid_symbols[cases[index].enabled] = true;
     MockLexer mock =
@@ -461,9 +456,7 @@ static void test_right_anchor_requires_eof(void) {
     {"$\\)", false},
     {"a$", false},
   };
-  for (
-    unsigned index = 0; index < sizeof(cases) / sizeof(cases[0]); index += 1
-  ) {
+  for (unsigned index = 0; index < COUNT(cases); index += 1) {
     bool valid_symbols[TOKEN_COUNT] = {false};
     valid_symbols[BRE_RIGHT_ANCHOR] = true;
     MockLexer mock =
@@ -490,9 +483,7 @@ static void test_trailing_bracket_hyphen_requires_a_closing_bracket(void) {
     {"--]", false},
     {"a]", false},
   };
-  for (
-    unsigned index = 0; index < sizeof(cases) / sizeof(cases[0]); index += 1
-  ) {
+  for (unsigned index = 0; index < COUNT(cases); index += 1) {
     bool valid_symbols[TOKEN_COUNT] = {false};
     valid_symbols[TRAILING_BRACKET_HYPHEN] = true;
     MockLexer mock =
@@ -519,7 +510,7 @@ static void test_literal_bracket_does_not_split_compound_openers(void) {
     {"[=", false},
     {"[:", false},
   };
-  for (size_t index = 0; index < sizeof(cases) / sizeof(cases[0]); index++) {
+  for (size_t index = 0; index < COUNT(cases); index++) {
     bool valid_symbols[TOKEN_COUNT] = {false};
     valid_symbols[BRACKET_OPEN_CHARACTER] = true;
     MockLexer mock =
@@ -535,7 +526,7 @@ static void test_literal_bracket_does_not_split_compound_openers(void) {
   }
 }
 
-#elif defined(PYTHON_RE_LANGUAGE)
+#elif defined(PYREGEX_LANGUAGE)
 static void assert_token(const char *source, TSSymbol token, size_t length) {
   MockLexer mock = make_lexer(source, strlen(source));
   bool valid_symbols[TOKEN_COUNT] = {false};
@@ -569,9 +560,7 @@ static void test_token_ranges_follow_the_grammar_context(void) {
     {"\\8", NUMERIC_ESCAPE_START, 1},
     {"\\99", NUMERIC_ESCAPE_START, 1},
   };
-  for (
-    unsigned index = 0; index < sizeof(cases) / sizeof(cases[0]); index += 1
-  ) {
+  for (unsigned index = 0; index < COUNT(cases); index += 1) {
     assert_token(cases[index].source, cases[index].token, cases[index].length);
   }
   const char nul_source[] = "\0x";
@@ -588,7 +577,7 @@ static void test_token_ranges_follow_the_grammar_context(void) {
       ESCAPED_NUL_CHARACTER,
       2},
   };
-  for (size_t i = 0; i < sizeof(nul_cases) / sizeof(nul_cases[0]); i++) {
+  for (size_t i = 0; i < COUNT(nul_cases); i++) {
     MockLexer mock = make_lexer(nul_cases[i].source, nul_cases[i].length);
     bool valid[TOKEN_COUNT] = {false};
     valid[nul_cases[i].token] = true;
@@ -620,9 +609,7 @@ static void test_invalid_tokens_are_not_emitted(void) {
     {"\\a", NUMERIC_ESCAPE_START},
     {"\\ 400", NUMERIC_ESCAPE_START},
   };
-  for (
-    unsigned index = 0; index < sizeof(cases) / sizeof(cases[0]); index += 1
-  ) {
+  for (unsigned index = 0; index < COUNT(cases); index += 1) {
     bool valid_symbols[TOKEN_COUNT] = {false};
     valid_symbols[cases[index].token] = true;
     MockLexer mock =
@@ -676,7 +663,7 @@ static void test_pcre2_recovery_respects_serialized_lexical_context(void) {
     {"\\p{L}", PROPERTY_PREFIX},
     {"{2}", QUANTIFIER_OPEN},
   };
-  for (unsigned i = 0; i < sizeof(blocked) / sizeof(blocked[0]); i++) {
+  for (unsigned i = 0; i < COUNT(blocked); i++) {
     REGEX_SCANNER(deserialize)(scanner, NULL, 0);
     assert(scan_pcre2(scanner, "(", CAPTURE_OPEN));
     assert(scan_pcre2(scanner, "a", LITERAL_CHARACTER));
@@ -685,6 +672,9 @@ static void test_pcre2_recovery_respects_serialized_lexical_context(void) {
     REGEX_SCANNER(deserialize)(restored, buffer, length);
     check_pcre2_recovery(restored, ")", ERROR_SENTINEL, 0);
     check_pcre2_recovery(restored, "|", ERROR_SENTINEL, 0);
+    check_pcre2_recovery(restored, "x", ERROR_SENTINEL, 0);
+    check_pcre2_recovery(restored, " ", ERROR_SENTINEL, 0);
+    check_pcre2_recovery(restored, "*", ERROR_SENTINEL, 0);
 
     bool valid[TOKEN_COUNT] = {false};
     valid[PATTERN_CONTEXT] = true;
@@ -717,8 +707,18 @@ static void test_pcre2_recovery_respects_serialized_lexical_context(void) {
     assert(mock.mark == 2);
     unsigned length = serialize_state(scanner, buffer);
     REGEX_SCANNER(deserialize)(restored, buffer, length);
-    check_pcre2_recovery(restored, "G", ERROR_SENTINEL, 0);
-    check_pcre2_recovery(restored, "4", ERROR_SENTINEL, 0);
+    check_pcre2_recovery(
+      restored,
+      "G",
+      in_class ? ERROR_SENTINEL : LITERAL_CHARACTER,
+      1
+    );
+    check_pcre2_recovery(
+      restored,
+      "4",
+      in_class ? ERROR_SENTINEL : LITERAL_CHARACTER,
+      1
+    );
     check_pcre2_recovery(restored, "|", in_class ? ERROR_SENTINEL : PIPE, 1);
     check_pcre2_recovery(
       restored,
@@ -750,6 +750,52 @@ static void test_pcre2_recovery_respects_serialized_lexical_context(void) {
   assert(((Scanner *)scanner)->captures == 1);
   assert(((Scanner *)scanner)->flags == 0);
   check_pcre2_recovery(scanner, ")", ERROR_SENTINEL, 0);
+  REGEX_SCANNER(destroy)(scanner);
+  REGEX_SCANNER(destroy)(restored);
+}
+
+static void test_pcre2_recovery_supplies_pattern_tokens(void) {
+  const struct {
+    const char *flags;
+    const char *source;
+    TSSymbol token;
+    size_t end;
+  } cases[] = {
+    {"", "xyz", LITERAL_CHARACTER, 1},
+    {"", "#text", LITERAL_CHARACTER, 1},
+    {"", " \t", LITERAL_CHARACTER, 1},
+    {"", "{text", LITERAL_CHARACTER, 1},
+    {"", "*a", QUANTIFIER_STAR, 1},
+    {"", "+a", QUANTIFIER_PLUS, 1},
+    {"", "?a", QUANTIFIER_QUESTION, 1},
+    {"xx", " \t\nabc", VERBOSE_WHITESPACE, 3},
+    {"x", "#text\nabc", VERBOSE_COMMENT, 6},
+  };
+  void *scanner = REGEX_SCANNER(create)();
+  void *restored = REGEX_SCANNER(create)();
+  for (unsigned i = 0; i < COUNT(cases); i++) {
+    REGEX_SCANNER(deserialize)(scanner, NULL, 0);
+    if (*cases[i].flags)
+      assert(scan_pcre2(scanner, cases[i].flags, ENABLE_FLAGS));
+    assert(scan_pcre2(scanner, "a", LITERAL_CHARACTER));
+    char buffer[TREE_SITTER_SERIALIZATION_BUFFER_SIZE];
+    unsigned length = serialize_state(scanner, buffer);
+    REGEX_SCANNER(deserialize)(restored, buffer, length);
+    check_pcre2_recovery(
+      restored,
+      cases[i].source,
+      cases[i].token,
+      cases[i].end
+    );
+    assert(scan_pcre2(scanner, cases[i].source, cases[i].token));
+    char expected[TREE_SITTER_SERIALIZATION_BUFFER_SIZE];
+    unsigned expected_length = serialize_state(scanner, expected);
+    length = serialize_state(restored, buffer);
+    assert(length == expected_length);
+    assert(memcmp(buffer, expected, length) == 0);
+  }
+  check_pcre2_recovery(restored, "", ERROR_SENTINEL, 0);
+  check_pcre2_recovery(restored, "{2,3}", ERROR_SENTINEL, 0);
   REGEX_SCANNER(destroy)(scanner);
   REGEX_SCANNER(destroy)(restored);
 }
@@ -797,7 +843,7 @@ static void test_pcre2_complete_state_roundtrip_and_scope_limit(void) {
 
 #ifdef TREE_SITTER_REUSE_ALLOCATOR
 static void test_reuse_allocator_contract(void) {
-#if (defined(JS_REGEX_MODE) && JS_REGEX_MODE == 0) || defined(PCRE2_SCANNER)
+#if (defined(ECMAREGEX_MODE) && ECMAREGEX_MODE == 0) || defined(PCRE2_SCANNER)
   assert(reuse_calloc_calls > 0);
   reuse_fail_next_calloc = true;
   assert(REGEX_SCANNER(create)() == NULL);
@@ -812,11 +858,11 @@ static void test_reuse_allocator_contract(void) {
 
 int main(void) {
   test_disabled_and_blocked_recovery_scans_preserve_state();
-#if (defined(JS_REGEX_MODE) && JS_REGEX_MODE == 0) || defined(PCRE2_SCANNER)
+#if (defined(ECMAREGEX_MODE) && ECMAREGEX_MODE == 0) || defined(PCRE2_SCANNER)
   test_unallocated_payload_declines_without_state();
 #endif
-#if defined(JS_REGEX_MODE)
-#if JS_REGEX_MODE == 0
+#if defined(ECMAREGEX_MODE)
+#if ECMAREGEX_MODE == 0
   test_serialization_and_reset();
   test_capture_context_and_failed_scan();
   test_capture_context_stops_at_the_lexer_boundary();
@@ -833,12 +879,13 @@ int main(void) {
 #if POSIX_REGEX_MODE == 0
   test_right_anchor_requires_eof();
 #endif
-#elif defined(PYTHON_RE_LANGUAGE)
+#elif defined(PYREGEX_LANGUAGE)
   test_stateless_lifecycle_and_serialization();
   test_token_ranges_follow_the_grammar_context();
   test_invalid_tokens_are_not_emitted();
 #elif defined(PCRE2_SCANNER)
   test_pcre2_recovery_respects_serialized_lexical_context();
+  test_pcre2_recovery_supplies_pattern_tokens();
   test_pcre2_complete_state_roundtrip_and_scope_limit();
 #endif
 #ifdef TREE_SITTER_REUSE_ALLOCATOR

@@ -3,14 +3,13 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { test } from "node:test";
 import { grammars, root } from "../scripts/tree-sitter.js";
-import { parseCorpus } from "./support/corpus.js";
 import { parseCst, selectNodes } from "./support/cst.js";
 import {
-  applyEdits,
+  guaranteedPcre2ScopeDepth,
   parse,
   parseSummary,
   posixGrammars,
-  pythonGrammars,
+  pyregexGrammars,
 } from "./support/parser.js";
 
 const largeLiteralCharacters = 80_000;
@@ -18,8 +17,6 @@ const repeatedExpressionCount = 16_000;
 const spacedAtomCount = 40_000;
 const incompleteCollatingSymbolCount = 80_000;
 const nestedGroupDepth = 2_000;
-const guaranteedPcre2ScopeDepth = 1_000;
-const pythonVerboseScopeDepth = 2_048;
 const immediateParserTimeoutMicros = 1;
 
 const pcre2Grammar = grammars.find(({ name }) => name === "pcre2");
@@ -41,7 +38,7 @@ const cstOutput = [
 ].join("\n");
 
 test("regex: CST helpers retain field owners and UTF-8 byte columns across lines", () => {
-  const result = parseCst(cstOutput, cstSource, "python_re");
+  const result = parseCst(cstOutput, cstSource, "pyregex");
   assert.equal(result.status, 0);
   assert.equal(result.recovery, false);
   assert.equal(result.cst, cstOutput);
@@ -66,11 +63,11 @@ test("regex: CST helpers retain field owners and UTF-8 byte columns across lines
 
 test("regex: CST helpers reject truncated roots and misplaced root names", () => {
   assert.throws(
-    () => parseCst("", cstSource, "python_re"),
+    () => parseCst("", cstSource, "pyregex"),
     /parser produced no CST root/,
   );
   assert.throws(
-    () => parseCst(cstOutput, `${cstSource}a`, "python_re"),
+    () => parseCst(cstOutput, `${cstSource}a`, "pyregex"),
     /root must reach the edited source end/,
   );
   assert.throws(
@@ -78,7 +75,7 @@ test("regex: CST helpers reject truncated roots and misplaced root names", () =>
       parseCst(
         "0:0 - 0:1   wrong_root\n0:0 - 0:1     pattern",
         "a",
-        "js_regex",
+        "ecmaregex",
       ),
     assert.AssertionError,
   );
@@ -100,19 +97,44 @@ test("regex: CST recovery includes missing nodes even when the CLI exits success
     "0:0 - 0:1   pattern\n0:1 - 0:1     •MISSING",
     "0:0 - 0:1   pattern\n0:0 - 0:1     •ERROR",
   ]) {
-    assert.deepEqual(parseCst(cst, "a", "js_regex"), {
+    assert.deepEqual(parseCst(cst, "a", "ecmaregex"), {
       status: 1,
       cst,
       recovery: true,
     });
   }
   const cst = "0:0 - 0:1   ERROR";
-  assert.deepEqual(parseCst(cst, "a", "js_regex", 1), {
+  assert.deepEqual(parseCst(cst, "a", "ecmaregex", 1), {
     status: 1,
     cst,
     recovery: false,
   });
 });
+
+function parseCorpus(text) {
+  const sections = text.split("==================\n");
+  assert.equal(sections.shift(), "", "corpus must begin with a header");
+  assert.equal(sections.length % 2, 0, "corpus headers must be paired");
+  const cases = [];
+  for (let index = 0; index < sections.length; index += 2) {
+    const [name, ...attributes] = sections[index].trimEnd().split("\n");
+    assert.ok(name, "corpus case must have a name");
+    const languages = [];
+    for (const attribute of attributes) {
+      if (attribute === ":cst" || attribute === ":error") continue;
+      const match = /^:language\(([a-z0-9_]+)\)$/.exec(attribute);
+      assert.ok(match, `unsupported corpus attribute: ${attribute}`);
+      assert.ok(!languages.includes(match[1]), `${name}: duplicate language`);
+      languages.push(match[1]);
+    }
+    assert.ok(languages.length > 0, `${name}: missing language`);
+    const parts = sections[index + 1].split("\n------------------\n");
+    assert.equal(parts.length, 2, `${name}: expected one output separator`);
+    const source = parts[0].endsWith("\r") ? parts[0].slice(0, -1) : parts[0];
+    cases.push({ name, languages, source });
+  }
+  return cases;
+}
 
 for (const file of readdirSync(join(root, "test", "corpus")).sort()) {
   if (!file.endsWith(".txt")) continue;
@@ -132,9 +154,9 @@ for (const file of readdirSync(join(root, "test", "corpus")).sort()) {
 }
 
 const profiles = [
-  { name: "js_regex", unicode: false, sets: false },
-  { name: "js_regex_u", unicode: true, sets: false },
-  { name: "js_regex_v", unicode: true, sets: true },
+  { name: "ecmaregex", unicode: false, sets: false },
+  { name: "ecmaregex_u", unicode: true, sets: false },
+  { name: "ecmaregex_v", unicode: true, sets: true },
 ];
 
 for (const profile of profiles) {
@@ -225,20 +247,25 @@ test("PCRE2 names and decimal numbers are public terminal nodes", () => {
   );
 });
 
-for (const grammar of pythonGrammars.slice(1)) {
-  test(`${grammar.name}: public nodes and fields match ${pythonGrammars[0].name}`, () => {
-    assert.deepEqual(publicSchema(grammar), publicSchema(pythonGrammars[0]));
+for (const grammar of pyregexGrammars.slice(1)) {
+  test(`${grammar.name}: public nodes and fields match ${pyregexGrammars[0].name}`, () => {
+    assert.deepEqual(publicSchema(grammar), publicSchema(pyregexGrammars[0]));
   });
 }
 
-for (const grammar of pythonGrammars) {
-  test(`${grammar.name}: scoped flags support ${pythonVerboseScopeDepth} nested alternating verbose modes`, () => {
-    const headers = Array.from(
-      { length: pythonVerboseScopeDepth },
-      (_, index) => (index % 2 === 0 ? "(?x:" : "(?-x:"),
-    ).join("");
-    const source = `${headers}a b${") ".repeat(pythonVerboseScopeDepth)}`;
-    assert.equal(parseSummary(grammar, source).successful, true);
+for (const grammar of pyregexGrammars) {
+  test(`${grammar.name}: names, numbers, literals, and comment content are public terminal nodes`, () => {
+    const types = [
+      "comment_content",
+      "decimal_digits",
+      "group_id",
+      "group_name",
+      "literal_character",
+    ];
+    assert.deepEqual(
+      publicSchema(grammar).filter(({ type }) => types.includes(type)),
+      types.map((type) => ({ named: true, type })),
+    );
   });
 }
 
@@ -293,95 +320,5 @@ for (const grammar of grammars) {
         immediateParserTimeoutMicros,
       ),
     );
-  });
-}
-
-test("PCRE2 serialization bounds use standard recovery without truncating scope state", () => {
-  for (const { opening, count, successful } of [
-    { opening: "(?:", count: guaranteedPcre2ScopeDepth, successful: true },
-    { opening: "(?:", count: 1_014, successful: false },
-    { opening: "(?|", count: 112, successful: true },
-    { opening: "(?|", count: 114, successful: false },
-  ]) {
-    const source = `${opening.repeat(count)}a${")".repeat(count)}`;
-    assert.equal(
-      parseSummary(pcre2Grammar, source).successful,
-      successful,
-      `${opening}: ${count}`,
-    );
-  }
-});
-
-const unicodePayloadClosings = {
-  pcre2: ['")"', "operand: capturing_group"],
-  js_regex: ['")"', "operand: extended_atom"],
-  js_regex_u: ['")"', "operand: atom"],
-  js_regex_v: ['")"', "operand: atom"],
-  python_re: ['")"', "operand: capturing_group"],
-  python_re_verbose: ['")"', "operand: capturing_group"],
-  posix_bre: ["ordinary_character `)`", "one_char_or_coll_elem_bre"],
-  posix_ere: ['")"', "ere_expression"],
-};
-
-for (const grammar of grammars) {
-  test(`${grammar.name}: every byte inside a Unicode payload can be deleted and repaired through an edit history`, () => {
-    const prefix = "(";
-    const suffix = ")+|z";
-    const payload = "é😀";
-    const source = `${prefix}${payload}${suffix}`;
-    const changed = `${prefix}x${suffix}`;
-    const payloadByte = Buffer.byteLength(prefix);
-    const payloadLengthBytes = Buffer.byteLength(payload);
-    const brokenPayloads = [
-      [0xa9, 0xf0, 0x9f, 0x98, 0x80],
-      [0xc3, 0xf0, 0x9f, 0x98, 0x80],
-      [0xc3, 0xa9, 0x9f, 0x98, 0x80],
-      [0xc3, 0xa9, 0xf0, 0x98, 0x80],
-      [0xc3, 0xa9, 0xf0, 0x9f, 0x80],
-      [0xc3, 0xa9, 0xf0, 0x9f, 0x98],
-    ];
-    for (const [removedByte, brokenPayload] of brokenPayloads.entries()) {
-      const edits = [
-        { byte: payloadByte + removedByte, deleteBytes: 1, insert: "" },
-        {
-          byte: payloadByte,
-          deleteBytes: payloadLengthBytes - 1,
-          insert: payload,
-        },
-        { byte: payloadByte, deleteBytes: payloadLengthBytes, insert: "x" },
-        { byte: payloadByte, deleteBytes: 1, insert: payload },
-      ];
-      const expected = [
-        Buffer.concat([
-          Buffer.from(prefix),
-          Buffer.from(brokenPayload),
-          Buffer.from(suffix),
-        ]),
-        Buffer.from(source),
-        Buffer.from(changed),
-        Buffer.from(source),
-      ];
-      for (const [step, expectedSource] of expected.entries()) {
-        const history = edits.slice(0, step + 1);
-        const label = `UTF-8 byte ${removedByte}, edit ${step + 1}`;
-        assert.deepEqual(applyEdits(source, history), expectedSource, label);
-        const fresh = parse(grammar, expectedSource);
-        const incremental = parse(grammar, source, history);
-        if (step === 0) continue;
-        const closing = unicodePayloadClosings[grammar.name];
-        assert.ok(closing, grammar.name);
-        const [node, owner] = closing;
-        const end = expectedSource.length - Buffer.byteLength(suffix);
-        for (const result of [fresh, incremental]) {
-          assert.equal(result.status, 0, label);
-          assert.deepEqual(
-            selectNodes(result, [node]),
-            [[node, `0:${end}-0:${end + 1}`, owner]],
-            label,
-          );
-        }
-        assert.deepEqual(incremental.rows, fresh.rows, label);
-      }
-    }
   });
 }

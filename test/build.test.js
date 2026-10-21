@@ -15,7 +15,7 @@ import { pathToFileURL } from "node:url";
 import {
   unicodeIdContinue,
   unicodeIdStart,
-} from "../javascript/common/unicode.js";
+} from "../ecmascript/common/unicode.js";
 import {
   copyFiles,
   createTreeSitter,

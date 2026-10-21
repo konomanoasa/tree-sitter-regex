@@ -2,7 +2,7 @@
 name = "konomanoasa-tree-sitter-regex"
 version = "0.10.1"
 edition = "2024"
-description = "Tree-sitter grammars for JavaScript regex, PCRE2, POSIX BRE/ERE, and Python re."
+description = "Tree-sitter grammars for ECMAScript regex, PCRE2, POSIX BRE/ERE, and Python re."
 readme = "README.md"
 repository = "https://github.com/konomanoasa/tree-sitter-regex"
 license = "MIT"
@@ -13,11 +13,11 @@ include = [
   "/LICENSE-UNICODE",
   "/README.md",
   "/bindings/rust/*.rs",
-  "/javascript/**/queries/*.scm",
-  "/javascript/**/src/*.c",
-  "/javascript/**/src/node-types.json",
-  "/javascript/**/src/tree_sitter/*.h",
-  "/javascript/common/*.h",
+  "/ecmascript/**/queries/*.scm",
+  "/ecmascript/**/src/*.c",
+  "/ecmascript/**/src/node-types.json",
+  "/ecmascript/**/src/tree_sitter/*.h",
+  "/ecmascript/common/*.h",
   "/pcre2/queries/*.scm",
   "/pcre2/src/*.c",
   "/pcre2/src/node-types.json",
@@ -43,10 +43,10 @@ name = "bindings"
 path = "test/bindings.test.rs"
 
 [dependencies]
-tree-sitter-language = "0.1.8"
+tree-sitter-language = "=0.1.9"
 
 [dev-dependencies]
-tree-sitter = "0.27.1"
+tree-sitter = "=0.27.1"
 
 [build-dependencies]
-cc = "1.4"
+cc = "=1.10.0"

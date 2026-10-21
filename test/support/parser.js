@@ -6,6 +6,8 @@ import { after, before } from "node:test";
 import { createTreeSitter, grammars } from "../../scripts/tree-sitter.js";
 import { parseCst, sourceEndPoint } from "./cst.js";
 
+const guaranteedPcre2ScopeDepth = 1_000;
+
 const commandTimeoutMs = 60_000;
 const cstOutputLimitBytes = 16 * 1024 * 1024;
 const summaryTimeoutMicros = 10_000_000;
@@ -104,12 +106,12 @@ function parseFile(path, language, edits = []) {
   return parseCst(cst, applyEdits(readFileSync(path), edits), language, status);
 }
 
-const javascriptLanguages = ["js_regex", "js_regex_u", "js_regex_v"];
+const ecmaregexLanguages = ["ecmaregex", "ecmaregex_u", "ecmaregex_v"];
 
-const unicodeLanguages = ["js_regex_u", "js_regex_v"];
+const unicodeLanguages = ["ecmaregex_u", "ecmaregex_v"];
 
-const pythonGrammars = grammars.filter(
-  ({ name }) => name === "python_re" || name === "python_re_verbose",
+const pyregexGrammars = grammars.filter(
+  ({ name }) => name === "pyregex" || name === "pyregex_verbose",
 );
 
 const posixGrammars = grammars.filter(({ name }) => name.startsWith("posix_"));
@@ -169,12 +171,13 @@ function parseSummary(grammar, source, timeoutMicros = summaryTimeoutMicros) {
 export {
   applyEdits,
   cache,
-  javascriptLanguages,
+  ecmaregexLanguages,
+  guaranteedPcre2ScopeDepth,
   parse,
   parseFile,
   parseSequence,
   parseSummary,
   posixGrammars,
-  pythonGrammars,
+  pyregexGrammars,
   unicodeLanguages,
 };

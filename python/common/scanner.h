@@ -1,5 +1,5 @@
-#ifndef PYTHON_RE_SCANNER_H
-#define PYTHON_RE_SCANNER_H
+#ifndef PYREGEX_SCANNER_H
+#define PYREGEX_SCANNER_H
 
 #include "tree_sitter/parser.h"
 
@@ -7,8 +7,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#ifndef PYTHON_RE_LANGUAGE
-#error "PYTHON_RE_LANGUAGE must name the generated Tree-sitter language"
+#ifndef PYREGEX_LANGUAGE
+#error "PYREGEX_LANGUAGE must name the generated Tree-sitter language"
 #endif
 
 #define REGEX_SCANNER_ENTRY_INNER(language, suffix) \
@@ -16,7 +16,7 @@
 #define REGEX_SCANNER_ENTRY(language, suffix) \
   REGEX_SCANNER_ENTRY_INNER(language, suffix)
 
-#define REGEX_SCANNER(suffix) REGEX_SCANNER_ENTRY(PYTHON_RE_LANGUAGE, suffix)
+#define REGEX_SCANNER(suffix) REGEX_SCANNER_ENTRY(PYREGEX_LANGUAGE, suffix)
 
 enum TokenType {
   OPEN_BRACE,

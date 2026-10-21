@@ -186,12 +186,7 @@
   },
   "language_retrieval_patterns": ["([^/]+)/queries/[^/]+[.]scm$"],
   "parser_aliases": {
-    "regex": "js_regex",
-    "regex_u": "js_regex_u",
-    "regex_v": "js_regex_v",
     "bre": "posix_bre",
-    "ere": "posix_ere",
-    "re": "python_re",
-    "re_verbose": "python_re_verbose"
+    "ere": "posix_ere"
   }
 }

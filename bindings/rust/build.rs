@@ -15,27 +15,33 @@ fn main() {
     println!("cargo::rerun-if-changed={}", Path::new(&headers).display());
   }
 
-  for (name, path) in [
-    ("js_regex", "javascript/regex"),
-    ("js_regex_u", "javascript/regex_u"),
-    ("js_regex_v", "javascript/regex_v"),
-    ("pcre2", "pcre2"),
-    ("posix_bre", "posix/bre"),
-    ("posix_ere", "posix/ere"),
-    ("python_re", "python/re"),
-    ("python_re_verbose", "python/re_verbose"),
-  ] {
-    let directory = format!("{path}/src");
-    let library = format!("tree-sitter-{}", name.replace('_', "-"));
+  let grammars = [
+    ("ecmascript/ecmaregex/src", "tree-sitter-ecmaregex"),
+    ("ecmascript/ecmaregex_u/src", "tree-sitter-ecmaregex-u"),
+    ("ecmascript/ecmaregex_v/src", "tree-sitter-ecmaregex-v"),
+    ("pcre2/src", "tree-sitter-pcre2"),
+    ("posix/bre/src", "tree-sitter-posix-bre"),
+    ("posix/ere/src", "tree-sitter-posix-ere"),
+    ("python/pyregex/src", "tree-sitter-pyregex"),
+    ("python/pyregex_verbose/src", "tree-sitter-pyregex-verbose"),
+  ];
+  for (directory, _) in grammars {
     println!("cargo::rerun-if-changed={directory}");
-    let directory = Path::new(&directory);
+  }
+  for header in [
+    "ecmascript/common/scanner.h",
+    "posix/common/scanner.h",
+    "python/common/scanner.h",
+  ] {
+    println!("cargo::rerun-if-changed={header}");
+  }
+
+  for (directory, library) in grammars {
+    let directory = Path::new(directory);
     build
       .clone()
       .include(directory)
       .files([directory.join("parser.c"), directory.join("scanner.c")])
-      .compile(&library);
+      .compile(library);
   }
-  println!("cargo::rerun-if-changed=javascript/common/scanner.h");
-  println!("cargo::rerun-if-changed=posix/common/scanner.h");
-  println!("cargo::rerun-if-changed=python/common/scanner.h");
 }

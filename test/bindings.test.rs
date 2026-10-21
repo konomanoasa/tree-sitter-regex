@@ -1,4 +1,5 @@
 use konomanoasa_tree_sitter_regex as grammar;
+use std::collections::BTreeSet;
 use std::ops::ControlFlow;
 use tree_sitter::{
   InputEdit, Language, ParseOptions, ParseState, Parser, Point, Query,
@@ -8,23 +9,23 @@ use tree_sitter::{
 fn parses_valid_source() {
   for (language, node_types, highlights, source, root_kind) in [
     (
-      grammar::LANGUAGE_JS,
-      grammar::NODE_TYPES_JS,
-      grammar::HIGHLIGHTS_QUERY_JS,
+      grammar::LANGUAGE_ECMAREGEX,
+      grammar::NODE_TYPES_ECMAREGEX,
+      grammar::HIGHLIGHTS_QUERY_ECMAREGEX,
       r"(?<name>a+)\k<name>",
       "pattern",
     ),
     (
-      grammar::LANGUAGE_JS_U,
-      grammar::NODE_TYPES_JS_U,
-      grammar::HIGHLIGHTS_QUERY_JS_U,
+      grammar::LANGUAGE_ECMAREGEX_U,
+      grammar::NODE_TYPES_ECMAREGEX_U,
+      grammar::HIGHLIGHTS_QUERY_ECMAREGEX_U,
       r"\u{1F600}",
       "pattern",
     ),
     (
-      grammar::LANGUAGE_JS_V,
-      grammar::NODE_TYPES_JS_V,
-      grammar::HIGHLIGHTS_QUERY_JS_V,
+      grammar::LANGUAGE_ECMAREGEX_V,
+      grammar::NODE_TYPES_ECMAREGEX_V,
+      grammar::HIGHLIGHTS_QUERY_ECMAREGEX_V,
       r"[\q{ab|cd}]",
       "pattern",
     ),
@@ -43,16 +44,16 @@ fn parses_valid_source() {
       "extended_reg_exp",
     ),
     (
-      grammar::LANGUAGE_PYTHON,
-      grammar::NODE_TYPES_PYTHON,
-      grammar::HIGHLIGHTS_QUERY_PYTHON,
+      grammar::LANGUAGE_PYREGEX,
+      grammar::NODE_TYPES_PYREGEX,
+      grammar::HIGHLIGHTS_QUERY_PYREGEX,
       "(?P<name>a+)(?P=name)",
       "pattern",
     ),
     (
-      grammar::LANGUAGE_PYTHON_VERBOSE,
-      grammar::NODE_TYPES_PYTHON_VERBOSE,
-      grammar::HIGHLIGHTS_QUERY_PYTHON_VERBOSE,
+      grammar::LANGUAGE_PYREGEX_VERBOSE,
+      grammar::NODE_TYPES_PYREGEX_VERBOSE,
+      grammar::HIGHLIGHTS_QUERY_PYREGEX_VERBOSE,
       "a # comment\n b",
       "pattern",
     ),
@@ -160,32 +161,61 @@ fn posix_group_and_repetition_fields_resolve_to_direct_children() {
 }
 
 #[test]
-fn pcre2_name_and_decimal_leaves_are_nonempty_unless_missing() {
-  let mut parser = Parser::new();
-  parser
-    .set_language(&grammar::LANGUAGE_PCRE2.into())
-    .unwrap();
-  for source in [
-    r"(?<name>a){012}(?(VERSION=1001.01001)b)\k<name>",
-    r"\k<>",
-    "(?<>a)",
-    "(*LIMIT_MATCH=)",
-    "(?(VERSION=)a)",
-    "(?(VERSION=10.)a)",
+fn public_payload_leaves_are_nonempty_unless_missing() {
+  for (languages, kinds, sources) in [
+    (
+      vec![grammar::LANGUAGE_PCRE2],
+      vec!["group_name", "decimal_digits"],
+      vec![
+        r"(?<name>a){012}(?(VERSION=1001.01001)b)\k<name>",
+        r"\k<>",
+        "(?<>a)",
+        "(*LIMIT_MATCH=)",
+        "(?(VERSION=)a)",
+        "(?(VERSION=10.)a)",
+      ],
+    ),
+    (
+      vec![grammar::LANGUAGE_PYREGEX, grammar::LANGUAGE_PYREGEX_VERBOSE],
+      vec![
+        "group_id",
+        "group_name",
+        "literal_character",
+        "decimal_digits",
+        "comment_content",
+      ],
+      vec![
+        "(?P<name>é{02,3})(?P=name)(?(001)a|b)(?#text)\\1\0{",
+        "(?())",
+        "(?P=)",
+        "a{,}+?{",
+        "a(?P<>)b",
+        "a(?#\\)",
+      ],
+    ),
   ] {
-    let tree = parser.parse(source, None).unwrap();
-    let mut pending = vec![tree.root_node()];
-    while let Some(node) = pending.pop() {
-      if matches!(node.kind(), "group_name" | "decimal_digits") {
-        assert_eq!(node.child_count(), 0, "{source}: {}", node.kind());
-        assert_eq!(
-          node.byte_range().is_empty(),
-          node.is_missing(),
-          "{source}: {}",
-          node.kind()
-        );
+    for language in languages {
+      let mut parser = Parser::new();
+      parser.set_language(&language.into()).unwrap();
+      let mut seen = BTreeSet::new();
+      for source in &sources {
+        let tree = parser.parse(source, None).unwrap();
+        let mut pending = vec![tree.root_node()];
+        while let Some(node) = pending.pop() {
+          if kinds.contains(&node.kind()) {
+            assert_eq!(node.child_count(), 0, "{source}: {}", node.kind());
+            assert_eq!(
+              node.byte_range().is_empty(),
+              node.is_missing(),
+              "{source}: {}",
+              node.kind()
+            );
+            seen.insert(node.kind().to_owned());
+          }
+          pending.extend(node.children(&mut node.walk()));
+        }
       }
-      pending.extend(node.children(&mut node.walk()));
+      assert!(kinds.iter().all(|kind| seen.contains(*kind)));
     }
   }
 }
@@ -195,10 +225,10 @@ fn fresh_parse_after_prefix_deletion_excludes_the_new_initial_bom() {
   let edited_source = "\u{feff}a";
   for (language, prefix) in [
     (grammar::LANGUAGE_POSIX_ERE, "a|"),
-    (grammar::LANGUAGE_JS_U, "a|"),
-    (grammar::LANGUAGE_JS_V, "a|"),
-    (grammar::LANGUAGE_PYTHON, "a|"),
-    (grammar::LANGUAGE_PYTHON_VERBOSE, "a|"),
+    (grammar::LANGUAGE_ECMAREGEX_U, "a|"),
+    (grammar::LANGUAGE_ECMAREGEX_V, "a|"),
+    (grammar::LANGUAGE_PYREGEX, "a|"),
+    (grammar::LANGUAGE_PYREGEX_VERBOSE, "a|"),
     (grammar::LANGUAGE_PCRE2, "^"),
   ] {
     let source = format!("{prefix}{edited_source}");
@@ -233,12 +263,14 @@ fn fresh_parse_after_prefix_deletion_excludes_the_new_initial_bom() {
 }
 
 #[test]
-fn python_alternations_resumed_after_cancels_match_uninterrupted_parses() {
-  for language in [grammar::LANGUAGE_PYTHON, grammar::LANGUAGE_PYTHON_VERBOSE] {
+fn pyregex_alternations_resumed_after_cancels_match_uninterrupted_parses() {
+  for language in [grammar::LANGUAGE_PYREGEX, grammar::LANGUAGE_PYREGEX_VERBOSE]
+  {
     let mut parser = Parser::new();
     parser.set_language(&language.into()).unwrap();
     let mut cancels = 0;
-    for count in 2..=64 {
+    const ALTERNATIVE_COUNTS: std::ops::RangeInclusive<usize> = 2..=64;
+    for count in ALTERNATIVE_COUNTS {
       let alternatives = vec!["a"; count].join("|");
       for source in [format!("x{alternatives}"), format!("({alternatives})")] {
         let expected = parser.parse(&source, None).unwrap();
@@ -271,13 +303,13 @@ fn python_alternations_resumed_after_cancels_match_uninterrupted_parses() {
 #[test]
 fn uses_distinct_grammars() {
   let languages = [
-    grammar::LANGUAGE_JS,
-    grammar::LANGUAGE_JS_U,
-    grammar::LANGUAGE_JS_V,
+    grammar::LANGUAGE_ECMAREGEX,
+    grammar::LANGUAGE_ECMAREGEX_U,
+    grammar::LANGUAGE_ECMAREGEX_V,
     grammar::LANGUAGE_POSIX_BRE,
     grammar::LANGUAGE_POSIX_ERE,
-    grammar::LANGUAGE_PYTHON,
-    grammar::LANGUAGE_PYTHON_VERBOSE,
+    grammar::LANGUAGE_PYREGEX,
+    grammar::LANGUAGE_PYREGEX_VERBOSE,
     grammar::LANGUAGE_PCRE2,
   ]
   .map(Language::new);

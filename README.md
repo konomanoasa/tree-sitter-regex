@@ -6,7 +6,25 @@
 
 [Tree-sitter](https://tree-sitter.github.io/tree-sitter/) grammars for
 ECMAScript 2026 regular expressions, PCRE2 10.49, POSIX.1-2024 BRE/ERE,
-and Python 3.14 `re`.
+and Python 3.14 regular expressions.
+
+## Grammars
+
+| Grammar     | Language   |
+| ----------- | ---------- |
+| `ecmaregex` | ECMAScript |
+| `pcre2`     | PCRE2      |
+| `posix_bre` | POSIX BRE  |
+| `posix_ere` | POSIX ERE  |
+| `pyregex`   | Python     |
+
+## Parsing Options
+
+| Option              | Grammar           |
+| ------------------- | ----------------- |
+| ECMAScript `u`      | `ecmaregex_u`     |
+| ECMAScript `v`      | `ecmaregex_v`     |
+| Python `re.VERBOSE` | `pyregex_verbose` |
 
 ## Installation
 
@@ -14,24 +32,7 @@ and Python 3.14 `re`.
 npm install @konomanoasa/tree-sitter-regex
 ```
 
-## Grammars
-
-Syntax differs across languages and options, so separate grammars are provided.
-
-| Grammar             | Description                             |
-| ------------------- | --------------------------------------- |
-| `js_regex`          | ECMAScript 2026, neither `u` nor `v`    |
-| `js_regex_u`        | ECMAScript 2026, `u`                    |
-| `js_regex_v`        | ECMAScript 2026, `v`                    |
-| `pcre2`             | PCRE2 10.49                             |
-| `posix_bre`         | POSIX.1-2024 BRE                        |
-| `posix_ere`         | POSIX.1-2024 ERE                        |
-| `python_re`         | Python 3.14, initial `VERBOSE` disabled |
-| `python_re_verbose` | Python 3.14, initial `VERBOSE` enabled  |
-
 ## Development
-
-Development uses Node.js 24.21.0 or later.
 
 ```sh
 npm install

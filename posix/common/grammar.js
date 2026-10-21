@@ -49,7 +49,6 @@ function interval($, opening, closing) {
 function breRules() {
   return {
     basic_reg_exp: ($) => $.bre_branch,
-    // Separate anchor-only branches so ^ binds to the following operand.
     bre_branch: ($) =>
       choice(
         alias($._bre_anchor_only_expression, $.bre_expression),

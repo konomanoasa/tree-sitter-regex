@@ -1,33 +1,28 @@
 ==================
-PCRE2 class operators preserve left association and precedence
-:language(pcre2)
+a class string disjunction cannot occur outside a class
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:error
 ==================
-(?[[a]|[b]^[c]&![d]])
+\q{a}
 ------------------
 
-(pattern (alternation (concatenation (extended_character_class (class_symmetric_difference (class_union (character_class (class_character)) (character_class (class_character))) (class_intersection (character_class (class_character)) (class_complement (character_class (class_character)))))))))
+
 
 ==================
-PCRE2 extended classes take POSIX class operands outside nested classes
-:language(pcre2)
+extra reserved punctuation escapes are limited to class context
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:error
 ==================
-(?[ [:alpha:] - [z] ])
+\&
 ------------------
 
-(pattern (alternation (concatenation (extended_character_class (verbose_whitespace) (class_subtraction (posix_character_class (class_name)) (verbose_whitespace) (verbose_whitespace) (character_class (class_character))) (verbose_whitespace)))))
 
-==================
-PCRE2 extended classes ignore quote markers between operands
-:language(pcre2)
-==================
-(?[\E[a]&\Q\E![b]\E])
-------------------
-
-(pattern (alternation (concatenation (extended_character_class (quote_end) (class_intersection (character_class (class_character)) (quote_start) (quote_end) (class_complement (character_class (class_character)))) (quote_end)))))
 
 ==================
 nested classes remain separate operands of an implicit union
-:language(js_regex_v)
+:language(ecmaregex_v)
 :cst
 ==================
 [[a][b]c]
@@ -67,7 +62,7 @@ nested classes remain separate operands of an implicit union
 
 ==================
 intersection retains a source ordered sequence of operands
-:language(js_regex_v)
+:language(ecmaregex_v)
 :cst
 ==================
 [a&&b&&c]
@@ -97,7 +92,7 @@ intersection retains a source ordered sequence of operands
 
 ==================
 subtraction retains the minuend followed by each successive subtrahend
-:language(js_regex_v)
+:language(ecmaregex_v)
 :cst
 ==================
 [a--b--c]
@@ -127,7 +122,7 @@ subtraction retains the minuend followed by each successive subtrahend
 
 ==================
 every doubled reserved punctuation remains a character when it occurs singly
-:language(js_regex_v)
+:language(ecmaregex_v)
 :cst
 ==================
 [&!#$%*+,.:;<=>?@^`~]
@@ -203,7 +198,7 @@ every doubled reserved punctuation remains a character when it occurs singly
 
 ==================
 every reserved punctuator can be escaped in a Unicode set
-:language(js_regex_v)
+:language(ecmaregex_v)
 :cst
 ==================
 [\&\-\!\#\%\,\:\;\<\=\>\@\`\~]
@@ -278,7 +273,7 @@ every reserved punctuator can be escaped in a Unicode set
 
 ==================
 repeated nonreserved characters stay ordinary including spaces and non-BMP characters
-:language(js_regex_v)
+:language(ecmaregex_v)
 :cst
 ==================
 [aa00__  "'😀😀]
@@ -333,7 +328,7 @@ repeated nonreserved characters stay ordinary including spaces and non-BMP chara
 
 ==================
 an implicit union can contain characters properties strings and empty classes
-:language(js_regex_v)
+:language(ecmaregex_v)
 :cst
 ==================
 [a\p{RGI_Emoji}\q{ab|cd}[]]
@@ -413,7 +408,7 @@ an implicit union can contain characters properties strings and empty classes
 
 ==================
 class escapes properties and string disjunctions can be intersection operands
-:language(js_regex_v)
+:language(ecmaregex_v)
 :cst
 ==================
 [\d&&\p{ASCII}&&\q{0|1}]
@@ -476,7 +471,7 @@ class escapes properties and string disjunctions can be intersection operands
 
 ==================
 nested classes combine range union intersection and subtraction without implicit precedence
-:language(js_regex_v)
+:language(ecmaregex_v)
 :cst
 ==================
 [[[a-z]&&\p{ASCII}]--[aeiou]]
@@ -561,7 +556,7 @@ nested classes combine range union intersection and subtraction without implicit
 
 ==================
 ranges can use escaped reserved punctuation and ordinary single punctuation as endpoints
-:language(js_regex_v)
+:language(ecmaregex_v)
 :cst
 ==================
 [\&-\~!-?]
@@ -594,7 +589,7 @@ ranges can use escaped reserved punctuation and ordinary single punctuation as e
 
 ==================
 pattern operators are characters within class strings and quantifiers remain outside the class
-:language(js_regex_v)
+:language(ecmaregex_v)
 :cst
 ==================
 [\q{a.b*+?^$}]+
@@ -639,7 +634,7 @@ pattern operators are characters within class strings and quantifiers remain out
 
 ==================
 character escapes inside class strings retain their classifications and escaped delimiters
-:language(js_regex_v)
+:language(ecmaregex_v)
 :cst
 ==================
 [\q{\|\}\]\\\b\cA\x42\u0043\uD83D\uDE00\u{1F600}\0}]
@@ -746,7 +741,7 @@ character escapes inside class strings retain their classifications and escaped 
 
 ==================
 class strings allow the extra reserved punctuation escapes
-:language(js_regex_v)
+:language(ecmaregex_v)
 :cst
 ==================
 [\q{\&\-\!\#\%\,\:\;\<\=\>\@\`\~}]
@@ -814,7 +809,7 @@ class strings allow the extra reserved punctuation escapes
 
 ==================
 single reserved punctuation remains literal within class strings
-:language(js_regex_v)
+:language(ecmaregex_v)
 :cst
 ==================
 [\q{&!#$%*+,.:;<=>?@^`~}]
@@ -878,7 +873,7 @@ single reserved punctuation remains literal within class strings
 
 ==================
 negation and property restrictions on string sets remain consumer checks
-:language(js_regex_v)
+:language(ecmaregex_v)
 :cst
 ==================
 [^\q{ab}][\w&&[^\P{RGI_Emoji}]]
@@ -965,7 +960,7 @@ negation and property restrictions on string sets remain consumer checks
 
 ==================
 escaping either adjacent punctuation prevents a reserved doubled spelling
-:language(js_regex_v)
+:language(ecmaregex_v)
 :cst
 ==================
 [!\!!][\!!\!]
@@ -1012,7 +1007,7 @@ escaping either adjacent punctuation prevents a reserved doubled spelling
 
 ==================
 escaped ampersands remain distinct from the intersection operator
-:language(js_regex_v)
+:language(ecmaregex_v)
 :cst
 ==================
 [&\&][a&&\&][a\&&b][\&&&b]
@@ -1088,7 +1083,7 @@ escaped ampersands remain distinct from the intersection operator
 
 ==================
 nested negated classes own separate brackets and carets and an intersection owns both ampersands
-:language(js_regex_v)
+:language(ecmaregex_v)
 :cst
 ==================
 [^[^a]&&[\q{b|😀}]]
@@ -1138,7 +1133,7 @@ nested negated classes own separate brackets and carets and an intersection owns
 
 ==================
 escaped string separators and closers keep their complete source ranges
-:language(js_regex_v)
+:language(ecmaregex_v)
 :cst
 ==================
 [\q{a\|b\}c\]d}]
@@ -1187,7 +1182,7 @@ escaped string separators and closers keep their complete source ranges
 
 ==================
 empty string alternatives retain delimiters without zero width string nodes
-:language(js_regex_v)
+:language(ecmaregex_v)
 :cst
 ==================
 [\q{}][\q{|}][\q{a||b|}]
@@ -1246,8 +1241,41 @@ empty string alternatives retain delimiters without zero width string nodes
 0:23 - 0:24               "]"
 
 ==================
+class string retains NUL and empty alternatives
+:language(ecmaregex_v)
+:cst
+==================
+[\q{ ||a}]
+------------------
+
+0:0  - 0:10   pattern
+0:0  - 0:10     body: disjunction
+0:0  - 0:10       alternative
+0:0  - 0:10         term
+0:0  - 0:10           operand: atom
+0:0  - 0:10             character_class
+0:0  - 0:1                "["
+0:1  - 0:9                class_set_expression
+0:1  - 0:9                  class_union
+0:1  - 0:9                    class_set_operand
+0:1  - 0:9                      class_string_disjunction
+0:1  - 0:3                        "\\q"
+0:3  - 0:4                        "{"
+0:4  - 0:8                        class_string_disjunction_contents
+0:4  - 0:5                          non_empty_class_string
+0:4  - 0:5                            class_set_character
+0:4  - 0:5                              source_character `\0`
+0:5  - 0:6                          "|"
+0:6  - 0:7                          "|"
+0:7  - 0:8                          non_empty_class_string
+0:7  - 0:8                            class_set_character
+0:7  - 0:8                              source_character `a`
+0:8  - 0:9                        "}"
+0:9  - 0:10               "]"
+
+==================
 an intersection cannot follow an implicit union
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [ab&&c]
@@ -1257,7 +1285,7 @@ an intersection cannot follow an implicit union
 
 ==================
 an intersection cannot be followed by an implicit union
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a&&bc]
@@ -1267,7 +1295,7 @@ an intersection cannot be followed by an implicit union
 
 ==================
 a subtraction cannot follow an implicit union
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [ab--c]
@@ -1277,7 +1305,7 @@ a subtraction cannot follow an implicit union
 
 ==================
 a subtraction cannot be followed by an implicit union
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a--bc]
@@ -1287,7 +1315,7 @@ a subtraction cannot be followed by an implicit union
 
 ==================
 an intersection and a subtraction cannot share a class level
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a&&b--c]
@@ -1297,7 +1325,7 @@ an intersection and a subtraction cannot share a class level
 
 ==================
 a subtraction and an intersection cannot share a class level
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a--b&&c]
@@ -1307,7 +1335,7 @@ a subtraction and an intersection cannot share a class level
 
 ==================
 a range cannot be the left operand of an intersection
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a-z&&b]
@@ -1317,7 +1345,7 @@ a range cannot be the left operand of an intersection
 
 ==================
 a range cannot be the right operand of an intersection
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a&&b-z]
@@ -1327,7 +1355,7 @@ a range cannot be the right operand of an intersection
 
 ==================
 a range cannot be the left operand of a subtraction
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a-z--b]
@@ -1337,7 +1365,7 @@ a range cannot be the left operand of a subtraction
 
 ==================
 a range cannot be the right operand of a subtraction
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a--b-z]
@@ -1346,20 +1374,8 @@ a range cannot be the right operand of a subtraction
 
 
 ==================
-a class escape cannot be a Unicode set range endpoint
-:language(js_regex_v)
-:language(python_re)
-:language(python_re_verbose)
-:error
-==================
-[\d-a]
-------------------
-
-
-
-==================
 a property escape cannot be a Unicode set range endpoint
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a-\p{ASCII}]
@@ -1369,7 +1385,7 @@ a property escape cannot be a Unicode set range endpoint
 
 ==================
 a nested class cannot be a Unicode set range endpoint
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [[a]-b]
@@ -1379,7 +1395,7 @@ a nested class cannot be a Unicode set range endpoint
 
 ==================
 a class string cannot be a Unicode set range endpoint
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a-\q{b}]
@@ -1389,7 +1405,7 @@ a class string cannot be a Unicode set range endpoint
 
 ==================
 a leading raw hyphen is not a Unicode set character
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [-a]
@@ -1399,7 +1415,7 @@ a leading raw hyphen is not a Unicode set character
 
 ==================
 a trailing raw hyphen is not a Unicode set character
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a-]
@@ -1409,7 +1425,7 @@ a trailing raw hyphen is not a Unicode set character
 
 ==================
 an intersection operator requires a left operand
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [&&a]
@@ -1419,7 +1435,7 @@ an intersection operator requires a left operand
 
 ==================
 an intersection operator cannot precede a raw ampersand
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a&&&b]
@@ -1429,7 +1445,7 @@ an intersection operator cannot precede a raw ampersand
 
 ==================
 a doubled ampersand is not an operator inside a class string
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [\q{a&&b}]
@@ -1439,7 +1455,7 @@ a doubled ampersand is not an operator inside a class string
 
 ==================
 a doubled plus is reserved inside a class string
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [\q{a++b}]
@@ -1449,7 +1465,7 @@ a doubled plus is reserved inside a class string
 
 ==================
 class escapes cannot occur inside class strings
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [\q{\d}]
@@ -1459,7 +1475,7 @@ class escapes cannot occur inside class strings
 
 ==================
 property escapes cannot occur inside class strings
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [\q{\p{ASCII}}]
@@ -1469,7 +1485,7 @@ property escapes cannot occur inside class strings
 
 ==================
 a class string cannot contain a nested class
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [\q{[a]}]
@@ -1479,7 +1495,7 @@ a class string cannot contain a nested class
 
 ==================
 a class string cannot contain a raw range separator
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [\q{a-b}]
@@ -1489,7 +1505,7 @@ a class string cannot contain a raw range separator
 
 ==================
 a class string cannot contain another string disjunction
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [\q{\q{a}}]
@@ -1499,7 +1515,7 @@ a class string cannot contain another string disjunction
 
 ==================
 parentheses cannot create groups inside Unicode sets
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [(a)]
@@ -1509,7 +1525,7 @@ parentheses cannot create groups inside Unicode sets
 
 ==================
 a raw slash cannot be a Unicode set character
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a/b]
@@ -1519,7 +1535,7 @@ a raw slash cannot be a Unicode set character
 
 ==================
 a raw pipe does not separate Unicode set operands
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a|b]
@@ -1529,7 +1545,7 @@ a raw pipe does not separate Unicode set operands
 
 ==================
 braces cannot introduce quantifiers inside Unicode sets
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a{2}]
@@ -1538,30 +1554,8 @@ braces cannot introduce quantifiers inside Unicode sets
 
 
 ==================
-a class string disjunction cannot occur outside a class
-:language(js_regex_u)
-:language(js_regex_v)
-:error
-==================
-\q{a}
-------------------
-
-
-
-==================
-extra reserved punctuation escapes are limited to class context
-:language(js_regex_u)
-:language(js_regex_v)
-:error
-==================
-\&
-------------------
-
-
-
-==================
 raw doubled exclamation marks are reserved in Unicode sets
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a!!b]
@@ -1571,7 +1565,7 @@ raw doubled exclamation marks are reserved in Unicode sets
 
 ==================
 raw doubled hash signs are reserved in Unicode sets
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a##b]
@@ -1581,7 +1575,7 @@ raw doubled hash signs are reserved in Unicode sets
 
 ==================
 raw doubled dollar signs are reserved in Unicode sets
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a$$b]
@@ -1591,7 +1585,7 @@ raw doubled dollar signs are reserved in Unicode sets
 
 ==================
 raw doubled percent signs are reserved in Unicode sets
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a%%b]
@@ -1601,7 +1595,7 @@ raw doubled percent signs are reserved in Unicode sets
 
 ==================
 raw doubled asterisks are reserved in Unicode sets
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a**b]
@@ -1611,7 +1605,7 @@ raw doubled asterisks are reserved in Unicode sets
 
 ==================
 raw doubled plus signs are reserved in Unicode sets
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a++b]
@@ -1621,7 +1615,7 @@ raw doubled plus signs are reserved in Unicode sets
 
 ==================
 raw doubled commas are reserved in Unicode sets
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a,,b]
@@ -1631,7 +1625,7 @@ raw doubled commas are reserved in Unicode sets
 
 ==================
 raw doubled dots are reserved in Unicode sets
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a..b]
@@ -1641,7 +1635,7 @@ raw doubled dots are reserved in Unicode sets
 
 ==================
 raw doubled colons are reserved in Unicode sets
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a::b]
@@ -1651,7 +1645,7 @@ raw doubled colons are reserved in Unicode sets
 
 ==================
 raw doubled semicolons are reserved in Unicode sets
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a;;b]
@@ -1661,7 +1655,7 @@ raw doubled semicolons are reserved in Unicode sets
 
 ==================
 raw doubled less than signs are reserved in Unicode sets
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a<<b]
@@ -1671,7 +1665,7 @@ raw doubled less than signs are reserved in Unicode sets
 
 ==================
 raw doubled equals signs are reserved in Unicode sets
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a==b]
@@ -1681,7 +1675,7 @@ raw doubled equals signs are reserved in Unicode sets
 
 ==================
 raw doubled greater than signs are reserved in Unicode sets
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a>>b]
@@ -1691,7 +1685,7 @@ raw doubled greater than signs are reserved in Unicode sets
 
 ==================
 raw doubled question marks are reserved in Unicode sets
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a??b]
@@ -1701,7 +1695,7 @@ raw doubled question marks are reserved in Unicode sets
 
 ==================
 raw doubled at signs are reserved in Unicode sets
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a@@b]
@@ -1711,7 +1705,7 @@ raw doubled at signs are reserved in Unicode sets
 
 ==================
 raw doubled carets are reserved in Unicode sets
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a^^b]
@@ -1721,7 +1715,7 @@ raw doubled carets are reserved in Unicode sets
 
 ==================
 raw doubled backticks are reserved in Unicode sets
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a``b]
@@ -1731,7 +1725,7 @@ raw doubled backticks are reserved in Unicode sets
 
 ==================
 raw doubled tildes are reserved in Unicode sets
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a~~b]
@@ -1741,7 +1735,7 @@ raw doubled tildes are reserved in Unicode sets
 
 ==================
 an outer Unicode set without its closing bracket requires recovery
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [[a]
@@ -1751,7 +1745,7 @@ an outer Unicode set without its closing bracket requires recovery
 
 ==================
 unclosed nested Unicode sets require recovery
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [[a
@@ -1761,7 +1755,7 @@ unclosed nested Unicode sets require recovery
 
 ==================
 real inner brackets stay with their classes when the outer bracket is missing
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [[a]&&[b]
@@ -1771,7 +1765,7 @@ real inner brackets stay with their classes when the outer bracket is missing
 
 ==================
 an unclosed class string before a bracket requires recovery
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [\q{ab]c
@@ -1781,7 +1775,7 @@ an unclosed class string before a bracket requires recovery
 
 ==================
 unclosed class string alternatives require recovery
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [\q{a||b
@@ -1791,7 +1785,7 @@ unclosed class string alternatives require recovery
 
 ==================
 an unclosed class string after a code point escape requires recovery
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [\q{\u{41}a]b
@@ -1801,7 +1795,7 @@ an unclosed class string after a code point escape requires recovery
 
 ==================
 an unclosed Unicode set after reserved punctuation requires recovery
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a!
@@ -1811,7 +1805,7 @@ an unclosed Unicode set after reserved punctuation requires recovery
 
 ==================
 an intersection without a right operand requires recovery
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a&&]b
@@ -1821,7 +1815,7 @@ an intersection without a right operand requires recovery
 
 ==================
 a subtraction without a right operand requires recovery
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a--]b
@@ -1831,7 +1825,7 @@ a subtraction without a right operand requires recovery
 
 ==================
 mixed intersection and subtraction require recovery at the same class level
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a&&b--c]d
@@ -1841,7 +1835,7 @@ mixed intersection and subtraction require recovery at the same class level
 
 ==================
 a third raw ampersand cannot become a valid intersection operand
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a&&&]
@@ -1851,13 +1845,52 @@ a third raw ampersand cannot become a valid intersection operand
 
 ==================
 a third ampersand in an intersection requires recovery before following text
-:language(js_regex_v)
+:language(ecmaregex_v)
 :error
 ==================
 [a&&&b]c
 ------------------
 
 
+
+==================
+a class escape cannot be a Unicode set range endpoint
+:language(ecmaregex_v)
+:language(pyregex)
+:language(pyregex_verbose)
+:error
+==================
+[\d-a]
+------------------
+
+
+
+==================
+PCRE2 class operators preserve left association and precedence
+:language(pcre2)
+==================
+(?[[a]|[b]^[c]&![d]])
+------------------
+
+(pattern (alternation (concatenation (extended_character_class (class_symmetric_difference (class_union (character_class (class_character)) (character_class (class_character))) (class_intersection (character_class (class_character)) (class_complement (character_class (class_character)))))))))
+
+==================
+PCRE2 extended classes take POSIX class operands outside nested classes
+:language(pcre2)
+==================
+(?[ [:alpha:] - [z] ])
+------------------
+
+(pattern (alternation (concatenation (extended_character_class (verbose_whitespace) (class_subtraction (posix_character_class (class_name)) (verbose_whitespace) (verbose_whitespace) (character_class (class_character))) (verbose_whitespace)))))
+
+==================
+PCRE2 extended classes ignore quote markers between operands
+:language(pcre2)
+==================
+(?[\E[a]&\Q\E![b]\E])
+------------------
+
+(pattern (alternation (concatenation (extended_character_class (quote_end) (class_intersection (character_class (class_character)) (quote_start) (quote_end) (class_complement (character_class (class_character)))) (quote_end)))))
 
 ==================
 PCRE2 intersection owns a range and complemented class
@@ -1931,39 +1964,6 @@ PCRE2 an incomplete collating prefix remains an ordinary class operand
           (class_character)
           (class_character))
         (verbose_whitespace)))))
-
-==================
-class string retains NUL and empty alternatives
-:language(js_regex_v)
-:cst
-==================
-[\q{ ||a}]
-------------------
-
-0:0  - 0:10   pattern
-0:0  - 0:10     body: disjunction
-0:0  - 0:10       alternative
-0:0  - 0:10         term
-0:0  - 0:10           operand: atom
-0:0  - 0:10             character_class
-0:0  - 0:1                "["
-0:1  - 0:9                class_set_expression
-0:1  - 0:9                  class_union
-0:1  - 0:9                    class_set_operand
-0:1  - 0:9                      class_string_disjunction
-0:1  - 0:3                        "\\q"
-0:3  - 0:4                        "{"
-0:4  - 0:8                        class_string_disjunction_contents
-0:4  - 0:5                          non_empty_class_string
-0:4  - 0:5                            class_set_character
-0:4  - 0:5                              source_character `\0`
-0:5  - 0:6                          "|"
-0:6  - 0:7                          "|"
-0:7  - 0:8                          non_empty_class_string
-0:7  - 0:8                            class_set_character
-0:7  - 0:8                              source_character `a`
-0:8  - 0:9                        "}"
-0:9  - 0:10               "]"
 
 ==================
 pcre2: PCRE2 class brackets introduce POSIX syntax only with a complete delimiter pair — "(?[[[=a=]]])"

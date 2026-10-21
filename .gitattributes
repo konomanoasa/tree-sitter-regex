@@ -4,7 +4,7 @@
 **/src/node-types.json linguist-generated=true
 **/src/parser.c linguist-generated=true
 **/src/tree_sitter/*.h linguist-generated=true
-javascript/common/unicode.js linguist-generated=true
+ecmascript/common/unicode.js linguist-generated=true
 pcre2/unicode.js linguist-generated=true
 
 test/corpus/**/*.txt -text whitespace=-blank-at-eol,-space-before-tab

@@ -1,6 +1,6 @@
 ==================
 numeric references use the total capture count including later captures
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \2(a)(b)\1
@@ -43,53 +43,8 @@ numeric references use the total capture count including later captures
 0:9  - 0:10                 non_zero_digit `1`
 
 ==================
-numeric references use the total capture count including later captures
-:language(js_regex_u)
-:language(js_regex_v)
-:cst
-==================
-\2(a)(b)\1
-------------------
-
-0:0  - 0:10   pattern
-0:0  - 0:10     body: disjunction
-0:0  - 0:10       alternative
-0:0  - 0:2          term
-0:0  - 0:2            operand: atom
-0:0  - 0:1              "\\"
-0:1  - 0:2              atom_escape
-0:1  - 0:2                decimal_escape
-0:1  - 0:2                  non_zero_digit `2`
-0:2  - 0:5          term
-0:2  - 0:5            operand: atom
-0:2  - 0:3              "("
-0:3  - 0:4              body: disjunction
-0:3  - 0:4                alternative
-0:3  - 0:4                  term
-0:3  - 0:4                    operand: atom
-0:3  - 0:4                      pattern_character
-0:3  - 0:4                        source_character `a`
-0:4  - 0:5              ")"
-0:5  - 0:8          term
-0:5  - 0:8            operand: atom
-0:5  - 0:6              "("
-0:6  - 0:7              body: disjunction
-0:6  - 0:7                alternative
-0:6  - 0:7                  term
-0:6  - 0:7                    operand: atom
-0:6  - 0:7                      pattern_character
-0:6  - 0:7                        source_character `b`
-0:7  - 0:8              ")"
-0:8  - 0:10         term
-0:8  - 0:10           operand: atom
-0:8  - 0:9              "\\"
-0:9  - 0:10             atom_escape
-0:9  - 0:10               decimal_escape
-0:9  - 0:10                 non_zero_digit `1`
-
-==================
-named references keep the same delimiter ownership in all JavaScript modes
-:language(js_regex)
+named references keep the same delimiter ownership in all ECMAScript modes
+:language(ecmaregex)
 :cst
 ==================
 \k<x>(?<x>a)
@@ -131,71 +86,8 @@ named references keep the same delimiter ownership in all JavaScript modes
 0:11 - 0:12             ")"
 
 ==================
-named references keep the same delimiter ownership in all JavaScript modes
-:language(js_regex_u)
-:language(js_regex_v)
-:cst
-==================
-\k<x>(?<x>a)
-------------------
-
-0:0  - 0:12   pattern
-0:0  - 0:12     body: disjunction
-0:0  - 0:12       alternative
-0:0  - 0:5          term
-0:0  - 0:5            operand: atom
-0:0  - 0:1              "\\"
-0:1  - 0:5              atom_escape
-0:1  - 0:2                "k"
-0:2  - 0:5                group_name
-0:2  - 0:3                  "<"
-0:3  - 0:4                  name: reg_exp_identifier_name
-0:3  - 0:4                    reg_exp_identifier_start
-0:3  - 0:4                      identifier_start_char
-0:3  - 0:4                        unicode_id_start `x`
-0:4  - 0:5                  ">"
-0:5  - 0:12         term
-0:5  - 0:12           operand: atom
-0:5  - 0:6              "("
-0:6  - 0:10             group_specifier
-0:6  - 0:7                "?"
-0:7  - 0:10               group_name
-0:7  - 0:8                  "<"
-0:8  - 0:9                  name: reg_exp_identifier_name
-0:8  - 0:9                    reg_exp_identifier_start
-0:8  - 0:9                      identifier_start_char
-0:8  - 0:9                        unicode_id_start `x`
-0:9  - 0:10                 ">"
-0:10 - 0:11             body: disjunction
-0:10 - 0:11               alternative
-0:10 - 0:11                 term
-0:10 - 0:11                   operand: atom
-0:10 - 0:11                     pattern_character
-0:10 - 0:11                       source_character `a`
-0:11 - 0:12             ")"
-
-==================
-named reference introducer and operator own separate source ranges
-:language(python_re)
-:language(python_re_verbose)
-:cst
-==================
-(?P=name)
-------------------
-
-0:0 - 0:9   pattern
-0:0 - 0:9     body: alternation
-0:0 - 0:9       concatenation
-0:0 - 0:9         named_backreference
-0:0 - 0:1           "("
-0:1 - 0:3           "?P"
-0:3 - 0:4           "="
-0:4 - 0:8           name: group_name `name`
-0:8 - 0:9           ")"
-
-==================
 named references preserve forward and escaped names
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \k<x>(?<x>a)\k<\u0078>?
@@ -259,125 +151,8 @@ named references preserve forward and escaped names
 0:22 - 0:23               "?"
 
 ==================
-named references preserve forward and escaped names
-:language(js_regex_u)
-:language(js_regex_v)
-:cst
-==================
-\k<x>(?<x>a)\k<\u0078>?
-------------------
-
-0:0  - 0:23   pattern
-0:0  - 0:23     body: disjunction
-0:0  - 0:23       alternative
-0:0  - 0:5          term
-0:0  - 0:5            operand: atom
-0:0  - 0:1              "\\"
-0:1  - 0:5              atom_escape
-0:1  - 0:2                "k"
-0:2  - 0:5                group_name
-0:2  - 0:3                  "<"
-0:3  - 0:4                  name: reg_exp_identifier_name
-0:3  - 0:4                    reg_exp_identifier_start
-0:3  - 0:4                      identifier_start_char
-0:3  - 0:4                        unicode_id_start `x`
-0:4  - 0:5                  ">"
-0:5  - 0:12         term
-0:5  - 0:12           operand: atom
-0:5  - 0:6              "("
-0:6  - 0:10             group_specifier
-0:6  - 0:7                "?"
-0:7  - 0:10               group_name
-0:7  - 0:8                  "<"
-0:8  - 0:9                  name: reg_exp_identifier_name
-0:8  - 0:9                    reg_exp_identifier_start
-0:8  - 0:9                      identifier_start_char
-0:8  - 0:9                        unicode_id_start `x`
-0:9  - 0:10                 ">"
-0:10 - 0:11             body: disjunction
-0:10 - 0:11               alternative
-0:10 - 0:11                 term
-0:10 - 0:11                   operand: atom
-0:10 - 0:11                     pattern_character
-0:10 - 0:11                       source_character `a`
-0:11 - 0:12             ")"
-0:12 - 0:23         term
-0:12 - 0:22           operand: atom
-0:12 - 0:13             "\\"
-0:13 - 0:22             atom_escape
-0:13 - 0:14               "k"
-0:14 - 0:22               group_name
-0:14 - 0:15                 "<"
-0:15 - 0:21                 name: reg_exp_identifier_name
-0:15 - 0:21                   reg_exp_identifier_start
-0:15 - 0:16                     "\\"
-0:16 - 0:21                     reg_exp_unicode_escape_sequence
-0:16 - 0:17                       "u"
-0:17 - 0:21                       hex_non_surrogate
-0:17 - 0:21                         hex4_digits
-0:17 - 0:18                           hex_digit `0`
-0:18 - 0:19                           hex_digit `0`
-0:19 - 0:20                           hex_digit `7`
-0:20 - 0:21                           hex_digit `8`
-0:21 - 0:22                 ">"
-0:22 - 0:23           quantifier: quantifier
-0:22 - 0:23             quantifier_prefix
-0:22 - 0:23               "?"
-
-==================
-escaped group names and named references retain their own delimiters
-:language(js_regex_u)
-:language(js_regex_v)
-:cst
-==================
-(?<\u{61}>a)\k<a>
-------------------
-
-0:0  - 0:17   pattern
-0:0  - 0:17     body: disjunction
-0:0  - 0:17       alternative
-0:0  - 0:12         term
-0:0  - 0:12           operand: atom
-0:0  - 0:1              "("
-0:1  - 0:10             group_specifier
-0:1  - 0:2                "?"
-0:2  - 0:10               group_name
-0:2  - 0:3                  "<"
-0:3  - 0:9                  name: reg_exp_identifier_name
-0:3  - 0:9                    reg_exp_identifier_start
-0:3  - 0:4                      "\\"
-0:4  - 0:9                      reg_exp_unicode_escape_sequence
-0:4  - 0:5                        "u"
-0:5  - 0:6                        "{"
-0:6  - 0:8                        code_point
-0:6  - 0:8                          hex_digits
-0:6  - 0:7                            hex_digit `6`
-0:7  - 0:8                            hex_digit `1`
-0:8  - 0:9                        "}"
-0:9  - 0:10                 ">"
-0:10 - 0:11             body: disjunction
-0:10 - 0:11               alternative
-0:10 - 0:11                 term
-0:10 - 0:11                   operand: atom
-0:10 - 0:11                     pattern_character
-0:10 - 0:11                       source_character `a`
-0:11 - 0:12             ")"
-0:12 - 0:17         term
-0:12 - 0:17           operand: atom
-0:12 - 0:13             "\\"
-0:13 - 0:17             atom_escape
-0:13 - 0:14               "k"
-0:14 - 0:17               group_name
-0:14 - 0:15                 "<"
-0:15 - 0:16                 name: reg_exp_identifier_name
-0:15 - 0:16                   reg_exp_identifier_start
-0:15 - 0:16                     identifier_start_char
-0:15 - 0:16                       unicode_id_start `a`
-0:16 - 0:17                 ">"
-
-==================
 lookarounds noncapturing groups and modifier groups do not increase the capture count
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \1(?:)(?=)(?!)(?<=)(?<!)(?i:)
@@ -437,7 +212,7 @@ lookarounds noncapturing groups and modifier groups do not increase the capture 
 
 ==================
 captures inside every lookaround and modifier body contribute to the total
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \5\6(?=(a))(?!(b))(?<=(c))(?<!(d))(?i:(e))
@@ -557,7 +332,7 @@ captures inside every lookaround and modifier body contribute to the total
 
 ==================
 named captures in separate alternatives also contribute to numeric classification
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \2(?<x>a)|(?<x>b)
@@ -614,67 +389,8 @@ named captures in separate alternatives also contribute to numeric classificatio
 0:16 - 0:17             ")"
 
 ==================
-named captures in separate alternatives also contribute to numeric classification
-:language(js_regex_u)
-:language(js_regex_v)
-:cst
-==================
-\2(?<x>a)|(?<x>b)
-------------------
-
-0:0  - 0:17   pattern
-0:0  - 0:17     body: disjunction
-0:0  - 0:9        alternative
-0:0  - 0:2          term
-0:0  - 0:2            operand: atom
-0:0  - 0:1              "\\"
-0:1  - 0:2              atom_escape
-0:1  - 0:2                decimal_escape
-0:1  - 0:2                  non_zero_digit `2`
-0:2  - 0:9          term
-0:2  - 0:9            operand: atom
-0:2  - 0:3              "("
-0:3  - 0:7              group_specifier
-0:3  - 0:4                "?"
-0:4  - 0:7                group_name
-0:4  - 0:5                  "<"
-0:5  - 0:6                  name: reg_exp_identifier_name
-0:5  - 0:6                    reg_exp_identifier_start
-0:5  - 0:6                      identifier_start_char
-0:5  - 0:6                        unicode_id_start `x`
-0:6  - 0:7                  ">"
-0:7  - 0:8              body: disjunction
-0:7  - 0:8                alternative
-0:7  - 0:8                  term
-0:7  - 0:8                    operand: atom
-0:7  - 0:8                      pattern_character
-0:7  - 0:8                        source_character `a`
-0:8  - 0:9              ")"
-0:9  - 0:10       "|"
-0:10 - 0:17       alternative
-0:10 - 0:17         term
-0:10 - 0:17           operand: atom
-0:10 - 0:11             "("
-0:11 - 0:15             group_specifier
-0:11 - 0:12               "?"
-0:12 - 0:15               group_name
-0:12 - 0:13                 "<"
-0:13 - 0:14                 name: reg_exp_identifier_name
-0:13 - 0:14                   reg_exp_identifier_start
-0:13 - 0:14                     identifier_start_char
-0:13 - 0:14                       unicode_id_start `x`
-0:14 - 0:15                 ">"
-0:15 - 0:16             body: disjunction
-0:15 - 0:16               alternative
-0:15 - 0:16                 term
-0:15 - 0:16                   operand: atom
-0:15 - 0:16                     pattern_character
-0:15 - 0:16                       source_character `b`
-0:16 - 0:17             ")"
-
-==================
 without named captures k is an identity escape inside and outside classes
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \k<x>[\k]\k
@@ -728,7 +444,7 @@ without named captures k is an identity escape inside and outside classes
 
 ==================
 a named group spelling in a class cannot enable named references
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \k<x>[(?<x>)]
@@ -781,7 +497,7 @@ a named group spelling in a class cannot enable named references
 
 ==================
 an escaped named group spelling cannot enable named references
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \k<x>\(\?<x>\)
@@ -849,7 +565,7 @@ an escaped named group spelling cannot enable named references
 
 ==================
 escaped parentheses do not create captures
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \1\(a\)
@@ -889,7 +605,7 @@ escaped parentheses do not create captures
 
 ==================
 parentheses inside a basic class do not create captures
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \1[(a)]
@@ -924,7 +640,7 @@ parentheses inside a basic class do not create captures
 
 ==================
 encoded parentheses do not create source captures
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \1\u0028\x28
@@ -965,7 +681,7 @@ encoded parentheses do not create source captures
 
 ==================
 an escaped backslash leaves the following parenthesis available to open a capture
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \1\\(a)
@@ -1000,44 +716,8 @@ an escaped backslash leaves the following parenthesis available to open a captur
 0:6 - 0:7             ")"
 
 ==================
-an escaped backslash leaves the following parenthesis available to open a capture
-:language(js_regex_u)
-:language(js_regex_v)
-:cst
-==================
-\1\\(a)
-------------------
-
-0:0 - 0:7   pattern
-0:0 - 0:7     body: disjunction
-0:0 - 0:7       alternative
-0:0 - 0:2         term
-0:0 - 0:2           operand: atom
-0:0 - 0:1             "\\"
-0:1 - 0:2             atom_escape
-0:1 - 0:2               decimal_escape
-0:1 - 0:2                 non_zero_digit `1`
-0:2 - 0:4         term
-0:2 - 0:4           operand: atom
-0:2 - 0:3             "\\"
-0:3 - 0:4             atom_escape
-0:3 - 0:4               character_escape
-0:3 - 0:4                 identity_escape
-0:3 - 0:4                   syntax_character `\\`
-0:4 - 0:7         term
-0:4 - 0:7           operand: atom
-0:4 - 0:5             "("
-0:5 - 0:6             body: disjunction
-0:5 - 0:6               alternative
-0:5 - 0:6                 term
-0:5 - 0:6                   operand: atom
-0:5 - 0:6                     pattern_character
-0:5 - 0:6                       source_character `a`
-0:6 - 0:7             ")"
-
-==================
 the entire decimal value is tested before falling back to octal
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \11\18(a)
@@ -1079,7 +759,7 @@ the entire decimal value is tested before falling back to octal
 
 ==================
 eight becomes a reference only when all digits fit the total capture count
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \8\81\9()()()()()()()()
@@ -1149,7 +829,7 @@ eight becomes a reference only when all digits fit the total capture count
 
 ==================
 nine and multidigit decimal references are recognized with enough captures
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \9\10()()()()()()()()()()
@@ -1215,7 +895,7 @@ nine and multidigit decimal references are recognized with enough captures
 
 ==================
 references octal prefixes and remaining digits own distinct source ranges
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \1(a)\1234\8
@@ -1263,50 +943,8 @@ references octal prefixes and remaining digits own distinct source ranges
 0:11 - 0:12                     source_character `8`
 
 ==================
-numeric references retain maximal digits without resolving captures in Unicode modes
-:language(js_regex_u)
-:language(js_regex_v)
-:cst
-==================
-\1(a)\1234+
-------------------
-
-0:0  - 0:11   pattern
-0:0  - 0:11     body: disjunction
-0:0  - 0:11       alternative
-0:0  - 0:2          term
-0:0  - 0:2            operand: atom
-0:0  - 0:1              "\\"
-0:1  - 0:2              atom_escape
-0:1  - 0:2                decimal_escape
-0:1  - 0:2                  non_zero_digit `1`
-0:2  - 0:5          term
-0:2  - 0:5            operand: atom
-0:2  - 0:3              "("
-0:3  - 0:4              body: disjunction
-0:3  - 0:4                alternative
-0:3  - 0:4                  term
-0:3  - 0:4                    operand: atom
-0:3  - 0:4                      pattern_character
-0:3  - 0:4                        source_character `a`
-0:4  - 0:5              ")"
-0:5  - 0:11         term
-0:5  - 0:10           operand: atom
-0:5  - 0:6              "\\"
-0:6  - 0:10             atom_escape
-0:6  - 0:10               decimal_escape
-0:6  - 0:7                  non_zero_digit `1`
-0:7  - 0:10                 decimal_digits
-0:7  - 0:8                    decimal_digit `2`
-0:8  - 0:9                    decimal_digit `3`
-0:9  - 0:10                   decimal_digit `4`
-0:10 - 0:11           quantifier: quantifier
-0:10 - 0:11             quantifier_prefix
-0:10 - 0:11               "+"
-
-==================
 named reference classification does not resolve the requested name
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \k<other>(?<x>a)
@@ -1360,9 +998,557 @@ named reference classification does not resolve the requested name
 0:15 - 0:16             ")"
 
 ==================
+an escaped class closer keeps apparent captures inside the class
+:language(ecmaregex)
+:cst
+==================
+\1[^\](a)]
+------------------
+
+0:0  - 0:10   pattern
+0:0  - 0:10     body: disjunction
+0:0  - 0:10       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: extended_atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                character_escape
+0:1  - 0:2                  legacy_octal_escape_sequence
+0:1  - 0:2                    non_zero_octal_digit
+0:1  - 0:2                      octal_digit `1`
+0:2  - 0:10         term
+0:2  - 0:10           operand: extended_atom
+0:2  - 0:10             character_class
+0:2  - 0:3                "["
+0:3  - 0:4                "^"
+0:4  - 0:9                nonempty_class_ranges
+0:4  - 0:6                  class_atom
+0:4  - 0:6                    class_atom_no_dash
+0:4  - 0:5                      "\\"
+0:5  - 0:6                      class_escape
+0:5  - 0:6                        character_escape
+0:5  - 0:6                          identity_escape
+0:5  - 0:6                            source_character_identity_escape
+0:5  - 0:6                              source_character `]`
+0:6  - 0:9                  nonempty_class_ranges_no_dash
+0:6  - 0:7                    class_atom_no_dash
+0:6  - 0:7                      source_character `(`
+0:7  - 0:8                    class_atom_no_dash
+0:7  - 0:8                      source_character `a`
+0:8  - 0:9                    class_atom
+0:8  - 0:9                      class_atom_no_dash
+0:8  - 0:9                        source_character `)`
+0:9  - 0:10               "]"
+
+==================
+the first unescaped closer ends an empty class before a capture
+:language(ecmaregex)
+:cst
+==================
+\1[]()
+------------------
+
+0:0 - 0:6   pattern
+0:0 - 0:6     body: disjunction
+0:0 - 0:6       alternative
+0:0 - 0:2         term
+0:0 - 0:2           operand: extended_atom
+0:0 - 0:1             "\\"
+0:1 - 0:2             atom_escape
+0:1 - 0:2               decimal_escape
+0:1 - 0:2                 non_zero_digit `1`
+0:2 - 0:4         term
+0:2 - 0:4           operand: extended_atom
+0:2 - 0:4             character_class
+0:2 - 0:3               "["
+0:3 - 0:4               "]"
+0:4 - 0:6         term
+0:4 - 0:6           operand: extended_atom
+0:4 - 0:5             "("
+0:5 - 0:6             ")"
+
+==================
+an incomplete control escape does not hide the following capture
+:language(ecmaregex)
+:cst
+==================
+\1\c(a)
+------------------
+
+0:0 - 0:7   pattern
+0:0 - 0:7     body: disjunction
+0:0 - 0:7       alternative
+0:0 - 0:2         term
+0:0 - 0:2           operand: extended_atom
+0:0 - 0:1             "\\"
+0:1 - 0:2             atom_escape
+0:1 - 0:2               decimal_escape
+0:1 - 0:2                 non_zero_digit `1`
+0:2 - 0:3         term
+0:2 - 0:3           operand: extended_atom
+0:2 - 0:3             "\\"
+0:3 - 0:4         term
+0:3 - 0:4           operand: extended_atom
+0:3 - 0:4             extended_pattern_character
+0:3 - 0:4               source_character `c`
+0:4 - 0:7         term
+0:4 - 0:7           operand: extended_atom
+0:4 - 0:5             "("
+0:5 - 0:6             body: disjunction
+0:5 - 0:6               alternative
+0:5 - 0:6                 term
+0:5 - 0:6                   operand: extended_atom
+0:5 - 0:6                     extended_pattern_character
+0:5 - 0:6                       source_character `a`
+0:6 - 0:7             ")"
+
+==================
+a numeric reference before an unclosed capture requires recovery
+:language(ecmaregex)
+:error
+==================
+\1(
+------------------
+
+
+
+==================
+a numeric reference before an incomplete group introducer requires recovery
+:language(ecmaregex)
+:error
+==================
+\1(?
+------------------
+
+
+
+==================
+a named reference before an incomplete named group requires recovery
+:language(ecmaregex)
+:error
+==================
+\k<x>(?<
+------------------
+
+
+
+==================
+apparent captures inside an unclosed class require recovery
+:language(ecmaregex)
+:error
+==================
+\1[(a)
+------------------
+
+
+
+==================
+a named capture disables the k identity escape inside a class
+:language(ecmaregex)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:error
+==================
+[\k](?<x>a)
+------------------
+
+
+
+==================
+a named capture requires the body k escape to introduce a group name
+:language(ecmaregex)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:error
+==================
+\k(?<x>a)
+------------------
+
+
+
+==================
+an unexpected closer before a numeric reference requires recovery
+:language(ecmaregex)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:error
+==================
+)\1(a)
+------------------
+
+
+
+==================
+a malformed reference before a complete named capture requires recovery
+:language(ecmaregex)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:error
+==================
+(\k<x)(?<x>a)
+------------------
+
+
+
+==================
+a numeric reference before an unclosed named capture requires recovery
+:language(ecmaregex)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:error
+==================
+\1(?<x>a
+------------------
+
+
+
+==================
+numeric references use the total capture count including later captures
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:cst
+==================
+\2(a)(b)\1
+------------------
+
+0:0  - 0:10   pattern
+0:0  - 0:10     body: disjunction
+0:0  - 0:10       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                decimal_escape
+0:1  - 0:2                  non_zero_digit `2`
+0:2  - 0:5          term
+0:2  - 0:5            operand: atom
+0:2  - 0:3              "("
+0:3  - 0:4              body: disjunction
+0:3  - 0:4                alternative
+0:3  - 0:4                  term
+0:3  - 0:4                    operand: atom
+0:3  - 0:4                      pattern_character
+0:3  - 0:4                        source_character `a`
+0:4  - 0:5              ")"
+0:5  - 0:8          term
+0:5  - 0:8            operand: atom
+0:5  - 0:6              "("
+0:6  - 0:7              body: disjunction
+0:6  - 0:7                alternative
+0:6  - 0:7                  term
+0:6  - 0:7                    operand: atom
+0:6  - 0:7                      pattern_character
+0:6  - 0:7                        source_character `b`
+0:7  - 0:8              ")"
+0:8  - 0:10         term
+0:8  - 0:10           operand: atom
+0:8  - 0:9              "\\"
+0:9  - 0:10             atom_escape
+0:9  - 0:10               decimal_escape
+0:9  - 0:10                 non_zero_digit `1`
+
+==================
+named references keep the same delimiter ownership in all ECMAScript modes
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:cst
+==================
+\k<x>(?<x>a)
+------------------
+
+0:0  - 0:12   pattern
+0:0  - 0:12     body: disjunction
+0:0  - 0:12       alternative
+0:0  - 0:5          term
+0:0  - 0:5            operand: atom
+0:0  - 0:1              "\\"
+0:1  - 0:5              atom_escape
+0:1  - 0:2                "k"
+0:2  - 0:5                group_name
+0:2  - 0:3                  "<"
+0:3  - 0:4                  name: reg_exp_identifier_name
+0:3  - 0:4                    reg_exp_identifier_start
+0:3  - 0:4                      identifier_start_char
+0:3  - 0:4                        unicode_id_start `x`
+0:4  - 0:5                  ">"
+0:5  - 0:12         term
+0:5  - 0:12           operand: atom
+0:5  - 0:6              "("
+0:6  - 0:10             group_specifier
+0:6  - 0:7                "?"
+0:7  - 0:10               group_name
+0:7  - 0:8                  "<"
+0:8  - 0:9                  name: reg_exp_identifier_name
+0:8  - 0:9                    reg_exp_identifier_start
+0:8  - 0:9                      identifier_start_char
+0:8  - 0:9                        unicode_id_start `x`
+0:9  - 0:10                 ">"
+0:10 - 0:11             body: disjunction
+0:10 - 0:11               alternative
+0:10 - 0:11                 term
+0:10 - 0:11                   operand: atom
+0:10 - 0:11                     pattern_character
+0:10 - 0:11                       source_character `a`
+0:11 - 0:12             ")"
+
+==================
+named references preserve forward and escaped names
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:cst
+==================
+\k<x>(?<x>a)\k<\u0078>?
+------------------
+
+0:0  - 0:23   pattern
+0:0  - 0:23     body: disjunction
+0:0  - 0:23       alternative
+0:0  - 0:5          term
+0:0  - 0:5            operand: atom
+0:0  - 0:1              "\\"
+0:1  - 0:5              atom_escape
+0:1  - 0:2                "k"
+0:2  - 0:5                group_name
+0:2  - 0:3                  "<"
+0:3  - 0:4                  name: reg_exp_identifier_name
+0:3  - 0:4                    reg_exp_identifier_start
+0:3  - 0:4                      identifier_start_char
+0:3  - 0:4                        unicode_id_start `x`
+0:4  - 0:5                  ">"
+0:5  - 0:12         term
+0:5  - 0:12           operand: atom
+0:5  - 0:6              "("
+0:6  - 0:10             group_specifier
+0:6  - 0:7                "?"
+0:7  - 0:10               group_name
+0:7  - 0:8                  "<"
+0:8  - 0:9                  name: reg_exp_identifier_name
+0:8  - 0:9                    reg_exp_identifier_start
+0:8  - 0:9                      identifier_start_char
+0:8  - 0:9                        unicode_id_start `x`
+0:9  - 0:10                 ">"
+0:10 - 0:11             body: disjunction
+0:10 - 0:11               alternative
+0:10 - 0:11                 term
+0:10 - 0:11                   operand: atom
+0:10 - 0:11                     pattern_character
+0:10 - 0:11                       source_character `a`
+0:11 - 0:12             ")"
+0:12 - 0:23         term
+0:12 - 0:22           operand: atom
+0:12 - 0:13             "\\"
+0:13 - 0:22             atom_escape
+0:13 - 0:14               "k"
+0:14 - 0:22               group_name
+0:14 - 0:15                 "<"
+0:15 - 0:21                 name: reg_exp_identifier_name
+0:15 - 0:21                   reg_exp_identifier_start
+0:15 - 0:16                     "\\"
+0:16 - 0:21                     reg_exp_unicode_escape_sequence
+0:16 - 0:17                       "u"
+0:17 - 0:21                       hex_non_surrogate
+0:17 - 0:21                         hex4_digits
+0:17 - 0:18                           hex_digit `0`
+0:18 - 0:19                           hex_digit `0`
+0:19 - 0:20                           hex_digit `7`
+0:20 - 0:21                           hex_digit `8`
+0:21 - 0:22                 ">"
+0:22 - 0:23           quantifier: quantifier
+0:22 - 0:23             quantifier_prefix
+0:22 - 0:23               "?"
+
+==================
+escaped group names and named references retain their own delimiters
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:cst
+==================
+(?<\u{61}>a)\k<a>
+------------------
+
+0:0  - 0:17   pattern
+0:0  - 0:17     body: disjunction
+0:0  - 0:17       alternative
+0:0  - 0:12         term
+0:0  - 0:12           operand: atom
+0:0  - 0:1              "("
+0:1  - 0:10             group_specifier
+0:1  - 0:2                "?"
+0:2  - 0:10               group_name
+0:2  - 0:3                  "<"
+0:3  - 0:9                  name: reg_exp_identifier_name
+0:3  - 0:9                    reg_exp_identifier_start
+0:3  - 0:4                      "\\"
+0:4  - 0:9                      reg_exp_unicode_escape_sequence
+0:4  - 0:5                        "u"
+0:5  - 0:6                        "{"
+0:6  - 0:8                        code_point
+0:6  - 0:8                          hex_digits
+0:6  - 0:7                            hex_digit `6`
+0:7  - 0:8                            hex_digit `1`
+0:8  - 0:9                        "}"
+0:9  - 0:10                 ">"
+0:10 - 0:11             body: disjunction
+0:10 - 0:11               alternative
+0:10 - 0:11                 term
+0:10 - 0:11                   operand: atom
+0:10 - 0:11                     pattern_character
+0:10 - 0:11                       source_character `a`
+0:11 - 0:12             ")"
+0:12 - 0:17         term
+0:12 - 0:17           operand: atom
+0:12 - 0:13             "\\"
+0:13 - 0:17             atom_escape
+0:13 - 0:14               "k"
+0:14 - 0:17               group_name
+0:14 - 0:15                 "<"
+0:15 - 0:16                 name: reg_exp_identifier_name
+0:15 - 0:16                   reg_exp_identifier_start
+0:15 - 0:16                     identifier_start_char
+0:15 - 0:16                       unicode_id_start `a`
+0:16 - 0:17                 ">"
+
+==================
+named captures in separate alternatives also contribute to numeric classification
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:cst
+==================
+\2(?<x>a)|(?<x>b)
+------------------
+
+0:0  - 0:17   pattern
+0:0  - 0:17     body: disjunction
+0:0  - 0:9        alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                decimal_escape
+0:1  - 0:2                  non_zero_digit `2`
+0:2  - 0:9          term
+0:2  - 0:9            operand: atom
+0:2  - 0:3              "("
+0:3  - 0:7              group_specifier
+0:3  - 0:4                "?"
+0:4  - 0:7                group_name
+0:4  - 0:5                  "<"
+0:5  - 0:6                  name: reg_exp_identifier_name
+0:5  - 0:6                    reg_exp_identifier_start
+0:5  - 0:6                      identifier_start_char
+0:5  - 0:6                        unicode_id_start `x`
+0:6  - 0:7                  ">"
+0:7  - 0:8              body: disjunction
+0:7  - 0:8                alternative
+0:7  - 0:8                  term
+0:7  - 0:8                    operand: atom
+0:7  - 0:8                      pattern_character
+0:7  - 0:8                        source_character `a`
+0:8  - 0:9              ")"
+0:9  - 0:10       "|"
+0:10 - 0:17       alternative
+0:10 - 0:17         term
+0:10 - 0:17           operand: atom
+0:10 - 0:11             "("
+0:11 - 0:15             group_specifier
+0:11 - 0:12               "?"
+0:12 - 0:15               group_name
+0:12 - 0:13                 "<"
+0:13 - 0:14                 name: reg_exp_identifier_name
+0:13 - 0:14                   reg_exp_identifier_start
+0:13 - 0:14                     identifier_start_char
+0:13 - 0:14                       unicode_id_start `x`
+0:14 - 0:15                 ">"
+0:15 - 0:16             body: disjunction
+0:15 - 0:16               alternative
+0:15 - 0:16                 term
+0:15 - 0:16                   operand: atom
+0:15 - 0:16                     pattern_character
+0:15 - 0:16                       source_character `b`
+0:16 - 0:17             ")"
+
+==================
+an escaped backslash leaves the following parenthesis available to open a capture
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:cst
+==================
+\1\\(a)
+------------------
+
+0:0 - 0:7   pattern
+0:0 - 0:7     body: disjunction
+0:0 - 0:7       alternative
+0:0 - 0:2         term
+0:0 - 0:2           operand: atom
+0:0 - 0:1             "\\"
+0:1 - 0:2             atom_escape
+0:1 - 0:2               decimal_escape
+0:1 - 0:2                 non_zero_digit `1`
+0:2 - 0:4         term
+0:2 - 0:4           operand: atom
+0:2 - 0:3             "\\"
+0:3 - 0:4             atom_escape
+0:3 - 0:4               character_escape
+0:3 - 0:4                 identity_escape
+0:3 - 0:4                   syntax_character `\\`
+0:4 - 0:7         term
+0:4 - 0:7           operand: atom
+0:4 - 0:5             "("
+0:5 - 0:6             body: disjunction
+0:5 - 0:6               alternative
+0:5 - 0:6                 term
+0:5 - 0:6                   operand: atom
+0:5 - 0:6                     pattern_character
+0:5 - 0:6                       source_character `a`
+0:6 - 0:7             ")"
+
+==================
+numeric references retain maximal digits without resolving captures in Unicode modes
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:cst
+==================
+\1(a)\1234+
+------------------
+
+0:0  - 0:11   pattern
+0:0  - 0:11     body: disjunction
+0:0  - 0:11       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: atom
+0:0  - 0:1              "\\"
+0:1  - 0:2              atom_escape
+0:1  - 0:2                decimal_escape
+0:1  - 0:2                  non_zero_digit `1`
+0:2  - 0:5          term
+0:2  - 0:5            operand: atom
+0:2  - 0:3              "("
+0:3  - 0:4              body: disjunction
+0:3  - 0:4                alternative
+0:3  - 0:4                  term
+0:3  - 0:4                    operand: atom
+0:3  - 0:4                      pattern_character
+0:3  - 0:4                        source_character `a`
+0:4  - 0:5              ")"
+0:5  - 0:11         term
+0:5  - 0:10           operand: atom
+0:5  - 0:6              "\\"
+0:6  - 0:10             atom_escape
+0:6  - 0:10               decimal_escape
+0:6  - 0:7                  non_zero_digit `1`
+0:7  - 0:10                 decimal_digits
+0:7  - 0:8                    decimal_digit `2`
+0:8  - 0:9                    decimal_digit `3`
+0:9  - 0:10                   decimal_digit `4`
+0:10 - 0:11           quantifier: quantifier
+0:10 - 0:11             quantifier_prefix
+0:10 - 0:11               "+"
+
+==================
 named reference classification does not resolve the requested name
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :cst
 ==================
 \k<other>(?<x>a)
@@ -1416,137 +1602,9 @@ named reference classification does not resolve the requested name
 0:15 - 0:16             ")"
 
 ==================
-reference spelling remains structural without semantic validation
-:language(python_re)
-:language(python_re_verbose)
-==================
-(?P<a-b>x)(?P=a-b)(?(12x)y|z)(?(000)q)\
-
-------------------
-
-(pattern
-  body: (alternation
-    (concatenation
-      (named_capturing_group
-        name: (group_name)
-        body: (alternation
-          (concatenation
-            (literal_character))))
-      (named_backreference
-        name: (group_name))
-      (conditional_group
-        condition: (group_name)
-        yes_pattern: (concatenation
-          (literal_character))
-        no_pattern: (concatenation
-          (literal_character)))
-      (conditional_group
-        condition: (group_id)
-        yes_pattern: (concatenation
-          (literal_character)))
-      (literal_escape))))
-
-==================
-group and reference payloads can begin with a brace
-:language(python_re)
-:language(python_re_verbose)
-==================
-(?P<{>a)(?P={})(?({)a|b)\
-
-------------------
-
-(pattern
-  body: (alternation
-    (concatenation
-      (named_capturing_group
-        name: (group_name)
-        body: (alternation
-          (concatenation
-            (literal_character))))
-      (named_backreference
-        name: (group_name))
-      (conditional_group
-        condition: (group_name)
-        yes_pattern: (concatenation
-          (literal_character))
-        no_pattern: (concatenation
-          (literal_character)))
-      (literal_escape))))
-
-==================
-an escaped class closer keeps apparent captures inside the class
-:language(js_regex)
-:cst
-==================
-\1[^\](a)]
-------------------
-
-0:0  - 0:10   pattern
-0:0  - 0:10     body: disjunction
-0:0  - 0:10       alternative
-0:0  - 0:2          term
-0:0  - 0:2            operand: extended_atom
-0:0  - 0:1              "\\"
-0:1  - 0:2              atom_escape
-0:1  - 0:2                character_escape
-0:1  - 0:2                  legacy_octal_escape_sequence
-0:1  - 0:2                    non_zero_octal_digit
-0:1  - 0:2                      octal_digit `1`
-0:2  - 0:10         term
-0:2  - 0:10           operand: extended_atom
-0:2  - 0:10             character_class
-0:2  - 0:3                "["
-0:3  - 0:4                "^"
-0:4  - 0:9                nonempty_class_ranges
-0:4  - 0:6                  class_atom
-0:4  - 0:6                    class_atom_no_dash
-0:4  - 0:5                      "\\"
-0:5  - 0:6                      class_escape
-0:5  - 0:6                        character_escape
-0:5  - 0:6                          identity_escape
-0:5  - 0:6                            source_character_identity_escape
-0:5  - 0:6                              source_character `]`
-0:6  - 0:9                  nonempty_class_ranges_no_dash
-0:6  - 0:7                    class_atom_no_dash
-0:6  - 0:7                      source_character `(`
-0:7  - 0:8                    class_atom_no_dash
-0:7  - 0:8                      source_character `a`
-0:8  - 0:9                    class_atom
-0:8  - 0:9                      class_atom_no_dash
-0:8  - 0:9                        source_character `)`
-0:9  - 0:10               "]"
-
-==================
 the first unescaped closer ends an empty class before a capture
-:language(js_regex)
-:cst
-==================
-\1[]()
-------------------
-
-0:0 - 0:6   pattern
-0:0 - 0:6     body: disjunction
-0:0 - 0:6       alternative
-0:0 - 0:2         term
-0:0 - 0:2           operand: extended_atom
-0:0 - 0:1             "\\"
-0:1 - 0:2             atom_escape
-0:1 - 0:2               decimal_escape
-0:1 - 0:2                 non_zero_digit `1`
-0:2 - 0:4         term
-0:2 - 0:4           operand: extended_atom
-0:2 - 0:4             character_class
-0:2 - 0:3               "["
-0:3 - 0:4               "]"
-0:4 - 0:6         term
-0:4 - 0:6           operand: extended_atom
-0:4 - 0:5             "("
-0:5 - 0:6             ")"
-
-==================
-the first unescaped closer ends an empty class before a capture
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :cst
 ==================
 \1[]()
@@ -1572,44 +1630,9 @@ the first unescaped closer ends an empty class before a capture
 0:5 - 0:6             ")"
 
 ==================
-an incomplete control escape does not hide the following capture
-:language(js_regex)
-:cst
-==================
-\1\c(a)
-------------------
-
-0:0 - 0:7   pattern
-0:0 - 0:7     body: disjunction
-0:0 - 0:7       alternative
-0:0 - 0:2         term
-0:0 - 0:2           operand: extended_atom
-0:0 - 0:1             "\\"
-0:1 - 0:2             atom_escape
-0:1 - 0:2               decimal_escape
-0:1 - 0:2                 non_zero_digit `1`
-0:2 - 0:3         term
-0:2 - 0:3           operand: extended_atom
-0:2 - 0:3             "\\"
-0:3 - 0:4         term
-0:3 - 0:4           operand: extended_atom
-0:3 - 0:4             extended_pattern_character
-0:3 - 0:4               source_character `c`
-0:4 - 0:7         term
-0:4 - 0:7           operand: extended_atom
-0:4 - 0:5             "("
-0:5 - 0:6             body: disjunction
-0:5 - 0:6               alternative
-0:5 - 0:6                 term
-0:5 - 0:6                   operand: extended_atom
-0:5 - 0:6                     extended_pattern_character
-0:5 - 0:6                       source_character `a`
-0:6 - 0:7             ")"
-
-==================
 numeric references require recovery in Unicode classes
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :error
 ==================
 [\1]
@@ -1619,8 +1642,8 @@ numeric references require recovery in Unicode classes
 
 ==================
 named references require recovery in Unicode classes
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :error
 ==================
 [\k<x>]
@@ -1629,125 +1652,15 @@ named references require recovery in Unicode classes
 
 
 ==================
-a named capture disables the k identity escape inside a class
-:language(js_regex)
-:language(js_regex_u)
-:language(js_regex_v)
-:error
-==================
-[\k](?<x>a)
-------------------
-
-
-
-==================
-a named capture requires the body k escape to introduce a group name
-:language(js_regex)
-:language(js_regex_u)
-:language(js_regex_v)
-:error
-==================
-\k(?<x>a)
-------------------
-
-
-
-==================
-an unexpected closer before a numeric reference requires recovery
-:language(js_regex)
-:language(js_regex_u)
-:language(js_regex_v)
-:error
-==================
-)\1(a)
-------------------
-
-
-
-==================
 an unclosed named reference before an alternative requires recovery
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :error
 ==================
 (\k<x)|b
 ------------------
 
 
-
-==================
-a malformed reference before a complete named capture requires recovery
-:language(js_regex)
-:language(js_regex_u)
-:language(js_regex_v)
-:error
-==================
-(\k<x)(?<x>a)
-------------------
-
-
-
-==================
-a numeric reference before an unclosed capture requires recovery
-:language(js_regex)
-:error
-==================
-\1(
-------------------
-
-
-
-==================
-a numeric reference before an incomplete group introducer requires recovery
-:language(js_regex)
-:error
-==================
-\1(?
-------------------
-
-
-
-==================
-a named reference before an incomplete named group requires recovery
-:language(js_regex)
-:error
-==================
-\k<x>(?<
-------------------
-
-
-
-==================
-a numeric reference before an unclosed named capture requires recovery
-:language(js_regex)
-:language(js_regex_u)
-:language(js_regex_v)
-:error
-==================
-\1(?<x>a
-------------------
-
-
-
-==================
-apparent captures inside an unclosed class require recovery
-:language(js_regex)
-:error
-==================
-\1[(a)
-------------------
-
-
-
-==================
-Python escaped closers remain in names until the next unescaped delimiter
-:language(python_re)
-:language(python_re_verbose)
-==================
-(?P<a\>>x)(?P=a\))(?(a\))b)\N{\}}
-------------------
-
-(pattern (alternation (concatenation (named_capturing_group (group_name) (alternation (concatenation (literal_character)))) (named_backreference (group_name)) (conditional_group (group_name) (concatenation (literal_character))) (named_unicode_escape (unicode_character_name)))))
 
 ==================
 PCRE2 named capture and reference keep their names
@@ -2161,61 +2074,6 @@ PCRE2 three-digit reference uses 118 preceding captures
         group: (group_number)))))
 
 ==================
-Python escaped parenthesis remains in the reference name
-:language(python_re)
-:language(python_re_verbose)
-:cst
-==================
-(?P=a\))
-------------------
-
-0:0 - 0:8   pattern
-0:0 - 0:8     body: alternation
-0:0 - 0:8       concatenation
-0:0 - 0:8         named_backreference
-0:0 - 0:1           "("
-0:1 - 0:3           "?P"
-0:3 - 0:4           "="
-0:4 - 0:7           name: group_name `a\\)`
-0:7 - 0:8           ")"
-
-==================
-Python NUL remains inside a reference name
-:language(python_re)
-:language(python_re_verbose)
-:cst
-==================
-(?P=a b)
-------------------
-
-0:0 - 0:8   pattern
-0:0 - 0:8     body: alternation
-0:0 - 0:8       concatenation
-0:0 - 0:8         named_backreference
-0:0 - 0:1           "("
-0:1 - 0:3           "?P"
-0:3 - 0:4           "="
-0:4 - 0:7           name: group_name `a\0b`
-0:7 - 0:8           ")"
-
-==================
-posix_bre: empty capture may be referenced
-:language(posix_bre)
-==================
-\(\)\1
-------------------
-
-(basic_reg_exp
-  (bre_branch
-    (bre_expression
-      (simple_bre
-        (nondupl_bre)))
-    (bre_expression
-      (simple_bre
-        (nondupl_bre
-          (backreference))))))
-
-==================
 PCRE2 name and decimal leaves preserve nonempty source
 :language(pcre2)
 :cst
@@ -2292,6 +2150,30 @@ pcre2: PCRE2 rejects incomplete structures using standard recovery — "\\k{ +1 
 
 
 ==================
+PCRE2 missing name or number in "\\k<>"
+:language(pcre2)
+:error
+==================
+\k<>
+------------------
+==================
+posix_bre: empty capture may be referenced
+:language(posix_bre)
+==================
+\(\)\1
+------------------
+
+(basic_reg_exp
+  (bre_branch
+    (bre_expression
+      (simple_bre
+        (nondupl_bre)))
+    (bre_expression
+      (simple_bre
+        (nondupl_bre
+          (backreference))))))
+
+==================
 posix_ere: malformed backreference extension uses standard recovery — "\\1"
 :language(posix_ere)
 :error
@@ -2302,9 +2184,134 @@ posix_ere: malformed backreference extension uses standard recovery — "\\1"
 
 
 ==================
-python_re: malformed layout cannot separate the named reference introducer from its operator uses standard recovery — "(?P =name)"
-:language(python_re)
-:language(python_re_verbose)
+named reference introducer and operator own separate source ranges
+:language(pyregex)
+:language(pyregex_verbose)
+:cst
+==================
+(?P=name)
+------------------
+
+0:0 - 0:9   pattern
+0:0 - 0:9     body: alternation
+0:0 - 0:9       concatenation
+0:0 - 0:9         named_backreference
+0:0 - 0:1           "("
+0:1 - 0:3           "?P"
+0:3 - 0:4           "="
+0:4 - 0:8           name: group_name `name`
+0:8 - 0:9           ")"
+
+==================
+reference spelling remains structural without semantic validation
+:language(pyregex)
+:language(pyregex_verbose)
+==================
+(?P<a-b>x)(?P=a-b)(?(12x)y|z)(?(000)q)\
+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (named_capturing_group
+        name: (group_name)
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (named_backreference
+        name: (group_name))
+      (conditional_group
+        condition: (group_name)
+        yes_pattern: (concatenation
+          (literal_character))
+        no_pattern: (concatenation
+          (literal_character)))
+      (conditional_group
+        condition: (group_id)
+        yes_pattern: (concatenation
+          (literal_character)))
+      (literal_escape))))
+
+==================
+group and reference payloads can begin with a brace
+:language(pyregex)
+:language(pyregex_verbose)
+==================
+(?P<{>a)(?P={})(?({)a|b)\
+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (named_capturing_group
+        name: (group_name)
+        body: (alternation
+          (concatenation
+            (literal_character))))
+      (named_backreference
+        name: (group_name))
+      (conditional_group
+        condition: (group_name)
+        yes_pattern: (concatenation
+          (literal_character))
+        no_pattern: (concatenation
+          (literal_character)))
+      (literal_escape))))
+
+==================
+Python escaped closers remain in names until the next unescaped delimiter
+:language(pyregex)
+:language(pyregex_verbose)
+==================
+(?P<a\>>x)(?P=a\))(?(a\))b)\N{\}}
+------------------
+
+(pattern (alternation (concatenation (named_capturing_group (group_name) (alternation (concatenation (literal_character)))) (named_backreference (group_name)) (conditional_group (group_name) (concatenation (literal_character))) (named_unicode_escape (unicode_character_name)))))
+
+==================
+Python escaped parenthesis remains in the reference name
+:language(pyregex)
+:language(pyregex_verbose)
+:cst
+==================
+(?P=a\))
+------------------
+
+0:0 - 0:8   pattern
+0:0 - 0:8     body: alternation
+0:0 - 0:8       concatenation
+0:0 - 0:8         named_backreference
+0:0 - 0:1           "("
+0:1 - 0:3           "?P"
+0:3 - 0:4           "="
+0:4 - 0:7           name: group_name `a\\)`
+0:7 - 0:8           ")"
+
+==================
+Python NUL remains inside a reference name
+:language(pyregex)
+:language(pyregex_verbose)
+:cst
+==================
+(?P=a b)
+------------------
+
+0:0 - 0:8   pattern
+0:0 - 0:8     body: alternation
+0:0 - 0:8       concatenation
+0:0 - 0:8         named_backreference
+0:0 - 0:1           "("
+0:1 - 0:3           "?P"
+0:3 - 0:4           "="
+0:4 - 0:7           name: group_name `a\0b`
+0:7 - 0:8           ")"
+
+==================
+pyregex: malformed layout cannot separate the named reference introducer from its operator uses standard recovery — "(?P =name)"
+:language(pyregex)
+:language(pyregex_verbose)
 :error
 ==================
 (?P =name)
@@ -2313,9 +2320,9 @@ python_re: malformed layout cannot separate the named reference introducer from 
 
 
 ==================
-python_re: malformed empty named backreference uses standard recovery — "(?P=)\\\n"
-:language(python_re)
-:language(python_re_verbose)
+pyregex: malformed empty named backreference uses standard recovery — "(?P=)\\\n"
+:language(pyregex)
+:language(pyregex_verbose)
 :error
 ==================
 (?P=)\
@@ -2325,21 +2332,11 @@ python_re: malformed empty named backreference uses standard recovery — "(?P=)
 
 
 ==================
-python_re: malformed unterminated named reference uses standard recovery — "(?P=name|z\\\n"
-:language(python_re)
-:language(python_re_verbose)
+pyregex: malformed unterminated named reference uses standard recovery — "(?P=name|z\\\n"
+:language(pyregex)
+:language(pyregex_verbose)
 :error
 ==================
 (?P=name|z\
 
-------------------
-
-
-
-==================
-PCRE2 missing name or number in "\\k<>"
-:language(pcre2)
-:error
-==================
-\k<>
 ------------------

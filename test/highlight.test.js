@@ -434,13 +434,13 @@ const finalCaptureCases = [
   },
   {
     name: "UTF-8 characters and literal punctuation retain literal captures",
-    languages: ["js_regex", "js_regex_u", "js_regex_v"],
+    languages: ["ecmaregex", "ecmaregex_u", "ecmaregex_v"],
     source: "é 😀-_,;:#",
     captures: [[0, 13, "string.regexp"]],
   },
   {
     name: "assertions differ from literal characters and wildcard",
-    languages: ["js_regex", "js_regex_u", "js_regex_v"],
+    languages: ["ecmaregex", "ecmaregex_u", "ecmaregex_v"],
     source: String.raw`^a|.$\b\B`,
     captures: [
       [0, 1, "operator"],
@@ -452,7 +452,7 @@ const finalCaptureCases = [
   },
   {
     name: "group punctuation is split by role for all lookarounds",
-    languages: ["js_regex", "js_regex_u", "js_regex_v"],
+    languages: ["ecmaregex", "ecmaregex_u", "ecmaregex_v"],
     source: "(a)(?:b)(?=c)(?!d)(?<=e)(?<!f)",
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -482,7 +482,7 @@ const finalCaptureCases = [
   },
   {
     name: "inline modifiers and quantifiers use their separate leaf roles",
-    languages: ["js_regex", "js_regex_u", "js_regex_v"],
+    languages: ["ecmaregex", "ecmaregex_u", "ecmaregex_v"],
     source: "(?im-s:a+?b*?c??d{12,34}?e{2,}f{3})",
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -517,7 +517,7 @@ const finalCaptureCases = [
   },
   {
     name: "named groups and references preserve escaped UTF-8 identifier leaves",
-    languages: ["js_regex", "js_regex_u", "js_regex_v"],
+    languages: ["ecmaregex", "ecmaregex_u", "ecmaregex_v"],
     source: String.raw`(?<$_é\u0061>x)\k<$_é\u0061>`,
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -537,7 +537,7 @@ const finalCaptureCases = [
   },
   {
     name: "ordinary surrogate-pair name leaves retain labels before identifier validation",
-    languages: ["js_regex"],
+    languages: ["ecmaregex"],
     source: String.raw`(?<😀𐐀>)\k<😀𐐀>`,
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -553,7 +553,7 @@ const finalCaptureCases = [
   },
   {
     name: "braced Unicode identifier escapes retain their bracket captures",
-    languages: ["js_regex", "js_regex_u", "js_regex_v"],
+    languages: ["ecmaregex", "ecmaregex_u", "ecmaregex_v"],
     source: String.raw`(?<\u{61}>x)\k<a>`,
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -573,13 +573,13 @@ const finalCaptureCases = [
   },
   {
     name: "character escapes retain source leaves for prefixes and digits",
-    languages: ["js_regex", "js_regex_u", "js_regex_v"],
+    languages: ["ecmaregex", "ecmaregex_u", "ecmaregex_v"],
     source: String.raw`\n\r\t\f\v\cA\0\x41\u0041\/`,
     captures: [[0, 27, "string.escape"]],
   },
   {
     name: "numeric backreferences are escapes rather than repetition counts",
-    languages: ["js_regex", "js_regex_u", "js_regex_v"],
+    languages: ["ecmaregex", "ecmaregex_u", "ecmaregex_v"],
     source: String.raw`(a)\1`,
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -590,13 +590,13 @@ const finalCaptureCases = [
   },
   {
     name: "escaped regex punctuation remains an escape",
-    languages: ["js_regex", "js_regex_u", "js_regex_v"],
+    languages: ["ecmaregex", "ecmaregex_u", "ecmaregex_v"],
     source: String.raw`\^\$\.\*\+\?\(\)\[\]\{\}\|`,
     captures: [[0, 26, "string.escape"]],
   },
   {
     name: "classic classes separate range operators and backspace escape leaves",
-    languages: ["js_regex", "js_regex_u"],
+    languages: ["ecmaregex", "ecmaregex_u"],
     source: String.raw`[a-z\d\b]`,
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -610,7 +610,7 @@ const finalCaptureCases = [
   },
   {
     name: "Unicode set classes preserve the backspace terminal as one leaf",
-    languages: ["js_regex_v"],
+    languages: ["ecmaregex_v"],
     source: String.raw`[a-z\d\b]`,
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -624,7 +624,7 @@ const finalCaptureCases = [
   },
   {
     name: "all shorthand character classes keep special character captures",
-    languages: ["js_regex", "js_regex_u", "js_regex_v"],
+    languages: ["ecmaregex", "ecmaregex_u", "ecmaregex_v"],
     source: String.raw`\d\D\s\S\w\W[\D\s\S\w\W]`,
     captures: [
       [0, 12, "character.special"],
@@ -635,7 +635,7 @@ const finalCaptureCases = [
   },
   {
     name: "classic class hyphens remain literal at both edges",
-    languages: ["js_regex", "js_regex_u"],
+    languages: ["ecmaregex", "ecmaregex_u"],
     source: "[-a-]",
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -645,7 +645,7 @@ const finalCaptureCases = [
   },
   {
     name: "Annex B identity octal and literal fallback spellings differ",
-    languages: ["js_regex"],
+    languages: ["ecmaregex"],
     source: String.raw`\8\11\c_\p{L}]}{`,
     captures: [
       [0, 5, "string.escape"],
@@ -656,7 +656,7 @@ const finalCaptureCases = [
   },
   {
     name: "Annex B class control escapes include numeric and underscore payloads",
-    languages: ["js_regex"],
+    languages: ["ecmaregex"],
     source: String.raw`[\c1\c_]`,
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -666,7 +666,7 @@ const finalCaptureCases = [
   },
   {
     name: "Annex B reference markers without named groups are identity escapes",
-    languages: ["js_regex"],
+    languages: ["ecmaregex"],
     source: String.raw`\k<a>`,
     captures: [
       [0, 2, "string.escape"],
@@ -675,7 +675,7 @@ const finalCaptureCases = [
   },
   {
     name: "Annex B invalid braced quantifiers keep structural token classifications",
-    languages: ["js_regex"],
+    languages: ["ecmaregex"],
     source: "{2,1}a{2,1}",
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -693,7 +693,7 @@ const finalCaptureCases = [
   },
   {
     name: "Unicode code points and surrogate pairs preserve distinct leaf ranges",
-    languages: ["js_regex_u", "js_regex_v"],
+    languages: ["ecmaregex_u", "ecmaregex_v"],
     source: String.raw`\u{41}\uD83D\uDE00`,
     captures: [
       [0, 2, "string.escape"],
@@ -705,7 +705,7 @@ const finalCaptureCases = [
   },
   {
     name: "Unicode property payloads exclude braces and equality operators",
-    languages: ["js_regex_u", "js_regex_v"],
+    languages: ["ecmaregex_u", "ecmaregex_v"],
     source: String.raw`\p{L}\P{gc=Lu}\p{scx=Latn}`,
     captures: [
       [0, 2, "character.special"],
@@ -728,7 +728,7 @@ const finalCaptureCases = [
   },
   {
     name: "property spelling is highlighted without validating Unicode names",
-    languages: ["js_regex_u", "js_regex_v"],
+    languages: ["ecmaregex_u", "ecmaregex_v"],
     source: String.raw`\p{A_=B_2}`,
     captures: [
       [0, 2, "character.special"],
@@ -741,7 +741,7 @@ const finalCaptureCases = [
   },
   {
     name: "Unicode sets separate nested brackets operators and class strings",
-    languages: ["js_regex_v"],
+    languages: ["ecmaregex_v"],
     source: String.raw`[[a-z]&&[^x]][\p{L}--\q{a|é|\n}]`,
     captures: [
       [0, 2, "punctuation.bracket"],
@@ -771,7 +771,7 @@ const finalCaptureCases = [
   },
   {
     name: "Unicode set reserved punctuation stays escaped",
-    languages: ["js_regex_v"],
+    languages: ["ecmaregex_v"],
     source: "[\\&\\-\\!\\#\\%\\,\\:\\;\\<\\=\\>\\@\\`\\~\\b]",
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -781,7 +781,7 @@ const finalCaptureCases = [
   },
   {
     name: "character class negation differs from a literal caret",
-    languages: ["js_regex", "js_regex_u", "js_regex_v"],
+    languages: ["ecmaregex", "ecmaregex_u", "ecmaregex_v"],
     source: "[^^]",
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -792,7 +792,7 @@ const finalCaptureCases = [
   },
   {
     name: "multi-digit backreferences keep every decimal leaf escaped",
-    languages: ["js_regex", "js_regex_u", "js_regex_v"],
+    languages: ["ecmaregex", "ecmaregex_u", "ecmaregex_v"],
     source: String.raw`()()()()()()()()()()\10`,
     captures: [
       [0, 20, "punctuation.bracket"],
@@ -801,7 +801,7 @@ const finalCaptureCases = [
   },
   {
     name: "Annex B literal backslashes in classes keep literal capture roles",
-    languages: ["js_regex"],
+    languages: ["ecmaregex"],
     source: String.raw`[\c]`,
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -811,13 +811,13 @@ const finalCaptureCases = [
   },
   {
     name: "Annex B surrogate escapes remain separate fixed-width escapes",
-    languages: ["js_regex"],
+    languages: ["ecmaregex"],
     source: String.raw`\uD83D\uDE00`,
     captures: [[0, 12, "string.escape"]],
   },
   {
     name: "Annex B quantifiable assertions distinguish introducer and quantifier",
-    languages: ["js_regex"],
+    languages: ["ecmaregex"],
     source: "(?=a)?",
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -830,7 +830,7 @@ const finalCaptureCases = [
   },
   {
     name: "empty class string alternatives retain only real separator leaves",
-    languages: ["js_regex_v"],
+    languages: ["ecmaregex_v"],
     source: String.raw`[\q{|a||}]`,
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -844,7 +844,7 @@ const finalCaptureCases = [
   },
   {
     name: "Unicode multi-digit references retain maximal spelling without resolving groups",
-    languages: ["js_regex_u", "js_regex_v"],
+    languages: ["ecmaregex_u", "ecmaregex_v"],
     source: String.raw`\12+\100?`,
     captures: [
       [0, 3, "string.escape"],
@@ -855,13 +855,13 @@ const finalCaptureCases = [
   },
   {
     name: "ordinary characters retain literal punctuation and UTF-8 byte ranges",
-    languages: ["python_re"],
+    languages: ["pyregex"],
     source: "é -{}]:,#",
     captures: [[0, 10, "string.regexp"]],
   },
   {
     name: "wildcard, alternation, anchors and boundary escapes",
-    languages: ["python_re", "python_re_verbose"],
+    languages: ["pyregex", "pyregex_verbose"],
     source: String.raw`^.|\b\B\A\z\Z$`,
     captures: [
       [0, 1, "operator"],
@@ -871,7 +871,7 @@ const finalCaptureCases = [
   },
   {
     name: "character class negation, range and class escape",
-    languages: ["python_re", "python_re_verbose"],
+    languages: ["pyregex", "pyregex_verbose"],
     source: String.raw`[^a-z\d\D\s\S\w\W]`,
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -885,7 +885,7 @@ const finalCaptureCases = [
   },
   {
     name: "character class punctuation and whitespace remain literal",
-    languages: ["python_re", "python_re_verbose"],
+    languages: ["pyregex", "pyregex_verbose"],
     source: "[.^$(){}|?*+ #-]",
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -895,7 +895,7 @@ const finalCaptureCases = [
   },
   {
     name: "leading closing bracket and trailing dash are class characters",
-    languages: ["python_re", "python_re_verbose"],
+    languages: ["pyregex", "pyregex_verbose"],
     source: "[]-]",
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -905,7 +905,7 @@ const finalCaptureCases = [
   },
   {
     name: "backspace and split numeric escapes inside a character class",
-    languages: ["python_re", "python_re_verbose"],
+    languages: ["pyregex", "pyregex_verbose"],
     source: String.raw`[\b\1\077\x41\N{SPACE}]`,
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -917,13 +917,13 @@ const finalCaptureCases = [
   },
   {
     name: "literal and control escapes retain complete leaves",
-    languages: ["python_re", "python_re_verbose"],
+    languages: ["pyregex", "pyregex_verbose"],
     source: "\\n\\a\\f\\r\\t\\v\\/\\#\\ \\\\",
     captures: [[0, 20, "string.escape"]],
   },
   {
     name: "hexadecimal, Unicode and named Unicode escapes split their payloads",
-    languages: ["python_re", "python_re_verbose"],
+    languages: ["pyregex", "pyregex_verbose"],
     source: String.raw`\x41\u0041\U00000041\N{LATIN CAPITAL LETTER A}`,
     captures: [
       [0, 22, "string.escape"],
@@ -934,13 +934,13 @@ const finalCaptureCases = [
   },
   {
     name: "octal escapes and numeric references classify each public leaf",
-    languages: ["python_re", "python_re_verbose"],
+    languages: ["pyregex", "pyregex_verbose"],
     source: String.raw`\0\077\123\1\99`,
     captures: [[0, 15, "string.escape"]],
   },
   {
     name: "capturing, non-capturing, lookaround and atomic groups separate marker roles",
-    languages: ["python_re", "python_re_verbose"],
+    languages: ["pyregex", "pyregex_verbose"],
     source: "()(?:a)(?=b)(?!c)(?<=d)(?<!e)(?>f)",
     captures: [
       [0, 3, "punctuation.bracket"],
@@ -972,7 +972,7 @@ const finalCaptureCases = [
   },
   {
     name: "named capture and reference preserve multibyte name ranges",
-    languages: ["python_re", "python_re_verbose"],
+    languages: ["pyregex", "pyregex_verbose"],
     source: "(?P<é>a)(?P=é)",
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -990,7 +990,7 @@ const finalCaptureCases = [
   },
   {
     name: "conditional numeric and named references use labels",
-    languages: ["python_re", "python_re_verbose"],
+    languages: ["pyregex", "pyregex_verbose"],
     source: "(?(12)a|b)(?(name)c|d)",
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -1014,7 +1014,7 @@ const finalCaptureCases = [
   },
   {
     name: "inline flags classify complete flag sets and disabling operators",
-    languages: ["python_re", "python_re_verbose"],
+    languages: ["pyregex", "pyregex_verbose"],
     source: "(?im)(?ai-ms:a)",
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -1032,7 +1032,7 @@ const finalCaptureCases = [
   },
   {
     name: "global verbose flags make subsequent layout and comments non-literal",
-    languages: ["python_re", "python_re_verbose"],
+    languages: ["pyregex", "pyregex_verbose"],
     source: "(?imx) a # note\n b",
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -1046,7 +1046,7 @@ const finalCaptureCases = [
   },
   {
     name: "disabling verbose flags makes spaces and hash characters literal",
-    languages: ["python_re", "python_re_verbose"],
+    languages: ["pyregex", "pyregex_verbose"],
     source: "(?-x: #)",
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -1060,7 +1060,7 @@ const finalCaptureCases = [
   },
   {
     name: "nested verbose scopes restore non-verbose outer layout",
-    languages: ["python_re"],
+    languages: ["pyregex"],
     source: "(?x:a (?-x: b#c) d # note\n e) f",
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -1084,7 +1084,7 @@ const finalCaptureCases = [
   },
   {
     name: "nested verbose scopes restore verbose outer layout",
-    languages: ["python_re_verbose"],
+    languages: ["pyregex_verbose"],
     source: "(?x:a (?-x: b#c) d # note\n e) f",
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -1108,7 +1108,7 @@ const finalCaptureCases = [
   },
   {
     name: "comment groups expose markers, content and brackets separately",
-    languages: ["python_re", "python_re_verbose"],
+    languages: ["pyregex", "pyregex_verbose"],
     source: "(?#é)(?#)",
     captures: [
       [0, 1, "punctuation.bracket"],
@@ -1122,7 +1122,7 @@ const finalCaptureCases = [
   },
   {
     name: "verbose classes and escaped layout preserve literal roles",
-    languages: ["python_re_verbose"],
+    languages: ["pyregex_verbose"],
     source: String.raw`[ #] \#\  #é
 `,
     captures: [
@@ -1135,7 +1135,7 @@ const finalCaptureCases = [
   },
   {
     name: "quantifiers separate operators, counts and interval punctuation",
-    languages: ["python_re", "python_re_verbose"],
+    languages: ["pyregex", "pyregex_verbose"],
     source: "a*b+?c??d*+e{12}f{2,4}?g{,3}+h{,}",
     captures: [
       [0, 1, "string.regexp"],
@@ -1171,7 +1171,7 @@ const finalCaptureCases = [
   },
   {
     name: "verbose layout between operand and quantifier remains unhighlighted",
-    languages: ["python_re_verbose"],
+    languages: ["pyregex_verbose"],
     source: "a # repeat\n +?",
     captures: [
       [0, 1, "string.regexp"],

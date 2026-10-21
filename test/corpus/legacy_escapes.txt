@@ -1,6 +1,6 @@
 ==================
 ordinary identity escapes preserve letters punctuation whitespace and non-BMP source characters
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \a\z\-\_\ \😀
@@ -60,7 +60,7 @@ ordinary identity escapes preserve letters punctuation whitespace and non-BMP so
 
 ==================
 without captures nonzero digits become octal or single identity escapes
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \1\7\8\9
@@ -104,7 +104,7 @@ without captures nonzero digits become octal or single identity escapes
 
 ==================
 a leading zero distinguishes null from legacy octal even before eight or nine
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \01\00\000\08\09\0
@@ -169,7 +169,7 @@ a leading zero distinguishes null from legacy octal even before eight or nine
 
 ==================
 legacy octal uses at most three digits below four and two digits above three
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \377\400\777\1234\478\18\81\999
@@ -279,7 +279,7 @@ legacy octal uses at most three digits below four and two digits above three
 
 ==================
 a class B escape is an identity character while b remains backspace
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 [\B\b]
@@ -311,7 +311,7 @@ a class B escape is an identity character while b remains backspace
 
 ==================
 classes use legacy numeric escapes even when the same body escape is a reference
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 (\1)[\1\8\08]
@@ -366,7 +366,7 @@ classes use legacy numeric escapes even when the same body escape is a reference
 
 ==================
 a quantifier attaches to the remaining digit after an octal or identity prefix
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \1234+\81?\7*
@@ -420,7 +420,7 @@ a quantifier attaches to the remaining digit after an octal or identity prefix
 
 ==================
 legacy octal and class control escapes can be range endpoints
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 [\00-\37\c0-\c9\c_-\cA]
@@ -485,7 +485,7 @@ legacy octal and class control escapes can be range endpoints
 
 ==================
 numeric braces quantify identity escapes in ordinary mode
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \u{2}\p{3}\q{4}
@@ -539,7 +539,7 @@ numeric braces quantify identity escapes in ordinary mode
 
 ==================
 escape introducers and braces remain ordinary class members in ordinary mode
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 [\u{2}\p{a}\q{b}]
@@ -599,7 +599,7 @@ escape introducers and braces remain ordinary class members in ordinary mode
 
 ==================
 the c after a literal backslash can be quantified while class punctuation remains a member
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \c+[\c+]
@@ -636,7 +636,7 @@ the c after a literal backslash can be quantified while class punctuation remain
 
 ==================
 an overflowing decimal value cannot wrap into a small numeric reference
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \4294967297(a)
@@ -698,7 +698,7 @@ an overflowing decimal value cannot wrap into a small numeric reference
 
 ==================
 an escaped non-BMP source character remains whole before a quantifier and an octal prefix
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \😀+\3778
@@ -734,7 +734,7 @@ an escaped non-BMP source character remains whole before a quantifier and an oct
 
 ==================
 invalid body control escapes preserve a literal backslash and leave c and its suffix separate
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \c1\c_\c
@@ -775,7 +775,7 @@ invalid body control escapes preserve a literal backslash and leave c and its su
 
 ==================
 class control prefixes and fallback backslashes preserve the real class closer
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 [\c1\c]
@@ -806,7 +806,7 @@ class control prefixes and fallback backslashes preserve the real class closer
 
 ==================
 class control escapes distinguish digits underscores letters and an incomplete spelling
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 [\c1\c_\cA\c]
@@ -849,7 +849,7 @@ class control escapes distinguish digits underscores letters and an incomplete s
 
 ==================
 incomplete hexadecimal and Unicode spellings fall back to identity escapes in the body
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 \x4G\u004G
@@ -901,7 +901,7 @@ incomplete hexadecimal and Unicode spellings fall back to identity escapes in th
 
 ==================
 incomplete hexadecimal and Unicode spellings fall back to identity escapes in a class
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 [\x4G\u004G]

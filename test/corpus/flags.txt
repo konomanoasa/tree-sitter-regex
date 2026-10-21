@@ -1,158 +1,6 @@
 ==================
-PCRE2 property names allow loose spacing before negation and the L& name
-:language(pcre2)
-==================
-\p{L&}\P{ ^ Bi-di class = Al }\p{
-^L
-u}
-------------------
-
-(pattern (alternation (concatenation (unicode_property (property_escape) (property_name)) (unicode_property (property_escape) (property_ignored) (property_name)) (unicode_property (property_escape) (property_ignored) (property_name)))))
-
-==================
-PCRE2 x letters enable class spacing only as an adjacent pair
-:language(pcre2)
-==================
-(?^)(?xix)[ a](?xx)[ b]
-------------------
-
-(pattern (alternation (concatenation (global_flags) (global_flags (flag_set)) (character_class (class_character) (class_character)) (global_flags (flag_set)) (character_class (verbose_whitespace) (class_character)))))
-
-==================
-PCRE2 an empty disabling list does not create an empty flag set
-:language(pcre2)
-==================
-(?-)(?i-)(?-:a)
-------------------
-
-(pattern (alternation (concatenation (global_flags) (global_flags (flag_set)) (scoped_flags_group (alternation (concatenation (literal_character)))))))
-
-==================
-normal mode retains spaces comments and newlines
-:language(python_re)
-==================
-a b#c
-d
-
-------------------
-
-(pattern
-  body: (alternation
-    (concatenation
-      (literal_character)
-      (literal_character)
-      (literal_character)
-      (literal_character)
-      (literal_character)
-      (literal_character)
-      (literal_character)
-      (literal_character))))
-
-==================
-initial verbose mode retains ignored source as layout
-:language(python_re_verbose)
-==================
-a b#c
-d
-
-------------------
-
-(pattern
-  body: (alternation
-    (concatenation
-      (literal_character)
-      (verbose_whitespace)
-      (literal_character)
-      (verbose_comment)
-      (verbose_whitespace)
-      (literal_character)
-      (verbose_whitespace))))
-
-==================
-completed global flags change the remaining prefix mode
-:language(python_re)
-:language(python_re_verbose)
-==================
-(?#p)(?i)(?x) a#c
-d
-
-------------------
-
-(pattern
-  (comment_group
-    (comment_content))
-  (global_flags
-    flags: (flag_set))
-  (global_flags
-    flags: (flag_set))
-  (verbose_whitespace)
-  body: (alternation
-    (concatenation
-      (literal_character)
-      (verbose_comment)
-      (verbose_whitespace)
-      (literal_character)
-      (verbose_whitespace))))
-
-==================
-scoped x enable restores normal mode
-:language(python_re)
-==================
-(?x:a b#c
-d)e #f
-
-------------------
-
-(pattern
-  body: (alternation
-    (concatenation
-      (scoped_flags_group
-        enable: (flag_set)
-        body: (alternation
-          (concatenation
-            (literal_character)
-            (verbose_whitespace)
-            (literal_character)
-            (verbose_comment)
-            (verbose_whitespace)
-            (literal_character))))
-      (literal_character)
-      (literal_character)
-      (literal_character)
-      (literal_character)
-      (literal_character))))
-
-==================
-scoped x disable restores verbose mode
-:language(python_re_verbose)
-==================
-(?-x:a b#c)d #e
-f
-
-------------------
-
-(pattern
-  body: (alternation
-    (concatenation
-      (scoped_flags_group
-        disable: (flag_set)
-        body: (alternation
-          (concatenation
-            (literal_character)
-            (literal_character)
-            (literal_character)
-            (literal_character)
-            (literal_character))))
-      (literal_character)
-      (verbose_whitespace)
-      (verbose_comment)
-      (verbose_whitespace)
-      (literal_character)
-      (verbose_whitespace))))
-
-==================
 nested modifier groups preserve enable disable and body fields
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 (?im-s:a(?s-i:b)c)
@@ -202,9 +50,119 @@ nested modifier groups preserve enable disable and body fields
 0:17 - 0:18             ")"
 
 ==================
+modifier consistency is left to the consumer
+:language(ecmaregex)
+:cst
+==================
+(?ii-i:a)(?-:)
+------------------
+
+0:0  - 0:14   pattern
+0:0  - 0:14     body: disjunction
+0:0  - 0:14       alternative
+0:0  - 0:9          term
+0:0  - 0:9            operand: extended_atom
+0:0  - 0:1              "("
+0:1  - 0:2              "?"
+0:2  - 0:4              enable: regular_expression_modifiers
+0:2  - 0:3                regular_expression_modifier `i`
+0:3  - 0:4                regular_expression_modifier `i`
+0:4  - 0:5              "-"
+0:5  - 0:6              disable: regular_expression_modifiers
+0:5  - 0:6                regular_expression_modifier `i`
+0:6  - 0:7              ":"
+0:7  - 0:8              body: disjunction
+0:7  - 0:8                alternative
+0:7  - 0:8                  term
+0:7  - 0:8                    operand: extended_atom
+0:7  - 0:8                      extended_pattern_character
+0:7  - 0:8                        source_character `a`
+0:8  - 0:9              ")"
+0:9  - 0:14         term
+0:9  - 0:14           operand: extended_atom
+0:9  - 0:10             "("
+0:10 - 0:11             "?"
+0:11 - 0:12             "-"
+0:12 - 0:13             ":"
+0:13 - 0:14             ")"
+
+==================
+modifier spelling remains structural before flag validity checks
+:language(ecmaregex)
+:cst
+==================
+(?ii-m:x)(?-:)
+------------------
+
+0:0  - 0:14   pattern
+0:0  - 0:14     body: disjunction
+0:0  - 0:14       alternative
+0:0  - 0:9          term
+0:0  - 0:9            operand: extended_atom
+0:0  - 0:1              "("
+0:1  - 0:2              "?"
+0:2  - 0:4              enable: regular_expression_modifiers
+0:2  - 0:3                regular_expression_modifier `i`
+0:3  - 0:4                regular_expression_modifier `i`
+0:4  - 0:5              "-"
+0:5  - 0:6              disable: regular_expression_modifiers
+0:5  - 0:6                regular_expression_modifier `m`
+0:6  - 0:7              ":"
+0:7  - 0:8              body: disjunction
+0:7  - 0:8                alternative
+0:7  - 0:8                  term
+0:7  - 0:8                    operand: extended_atom
+0:7  - 0:8                      extended_pattern_character
+0:7  - 0:8                        source_character `x`
+0:8  - 0:9              ")"
+0:9  - 0:14         term
+0:9  - 0:14           operand: extended_atom
+0:9  - 0:10             "("
+0:10 - 0:11             "?"
+0:11 - 0:12             "-"
+0:12 - 0:13             ":"
+0:13 - 0:14             ")"
+
+==================
+modifier groups accept only i m and s
+:language(ecmaregex)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:error
+==================
+(?x:a)
+------------------
+
+
+
+==================
+an incomplete modifier group requires recovery
+:language(ecmaregex)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:error
+==================
+(?i:
+------------------
+
+
+
+==================
+nested modifier groups require all closing parentheses
+:language(ecmaregex)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:error
+==================
+(?i:a(?-m:b)
+------------------
+
+
+
+==================
 nested modifier groups preserve enable disable and body fields
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :cst
 ==================
 (?im-s:a(?s-i:b)c)
@@ -254,82 +212,9 @@ nested modifier groups preserve enable disable and body fields
 0:17 - 0:18             ")"
 
 ==================
-nested scoped modes restore in stack order
-:language(python_re)
-==================
-(?x:a(?-x:b c#d)e #f
-)g #h
-
-------------------
-
-(pattern
-  body: (alternation
-    (concatenation
-      (scoped_flags_group
-        enable: (flag_set)
-        body: (alternation
-          (concatenation
-            (literal_character)
-            (scoped_flags_group
-              disable: (flag_set)
-              body: (alternation
-                (concatenation
-                  (literal_character)
-                  (literal_character)
-                  (literal_character)
-                  (literal_character)
-                  (literal_character))))
-            (literal_character)
-            (verbose_whitespace)
-            (verbose_comment)
-            (verbose_whitespace))))
-      (literal_character)
-      (literal_character)
-      (literal_character)
-      (literal_character)
-      (literal_character))))
-
-==================
 modifier consistency is left to the consumer
-:language(js_regex)
-:cst
-==================
-(?ii-i:a)(?-:)
-------------------
-
-0:0  - 0:14   pattern
-0:0  - 0:14     body: disjunction
-0:0  - 0:14       alternative
-0:0  - 0:9          term
-0:0  - 0:9            operand: extended_atom
-0:0  - 0:1              "("
-0:1  - 0:2              "?"
-0:2  - 0:4              enable: regular_expression_modifiers
-0:2  - 0:3                regular_expression_modifier `i`
-0:3  - 0:4                regular_expression_modifier `i`
-0:4  - 0:5              "-"
-0:5  - 0:6              disable: regular_expression_modifiers
-0:5  - 0:6                regular_expression_modifier `i`
-0:6  - 0:7              ":"
-0:7  - 0:8              body: disjunction
-0:7  - 0:8                alternative
-0:7  - 0:8                  term
-0:7  - 0:8                    operand: extended_atom
-0:7  - 0:8                      extended_pattern_character
-0:7  - 0:8                        source_character `a`
-0:8  - 0:9              ")"
-0:9  - 0:14         term
-0:9  - 0:14           operand: extended_atom
-0:9  - 0:10             "("
-0:10 - 0:11             "?"
-0:11 - 0:12             "-"
-0:12 - 0:13             ":"
-0:13 - 0:14             ")"
-
-==================
-modifier consistency is left to the consumer
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :cst
 ==================
 (?ii-i:a)(?-:)
@@ -366,45 +251,8 @@ modifier consistency is left to the consumer
 
 ==================
 modifier spelling remains structural before flag validity checks
-:language(js_regex)
-:cst
-==================
-(?ii-m:x)(?-:)
-------------------
-
-0:0  - 0:14   pattern
-0:0  - 0:14     body: disjunction
-0:0  - 0:14       alternative
-0:0  - 0:9          term
-0:0  - 0:9            operand: extended_atom
-0:0  - 0:1              "("
-0:1  - 0:2              "?"
-0:2  - 0:4              enable: regular_expression_modifiers
-0:2  - 0:3                regular_expression_modifier `i`
-0:3  - 0:4                regular_expression_modifier `i`
-0:4  - 0:5              "-"
-0:5  - 0:6              disable: regular_expression_modifiers
-0:5  - 0:6                regular_expression_modifier `m`
-0:6  - 0:7              ":"
-0:7  - 0:8              body: disjunction
-0:7  - 0:8                alternative
-0:7  - 0:8                  term
-0:7  - 0:8                    operand: extended_atom
-0:7  - 0:8                      extended_pattern_character
-0:7  - 0:8                        source_character `x`
-0:8  - 0:9              ")"
-0:9  - 0:14         term
-0:9  - 0:14           operand: extended_atom
-0:9  - 0:10             "("
-0:10 - 0:11             "?"
-0:11 - 0:12             "-"
-0:12 - 0:13             ":"
-0:13 - 0:14             ")"
-
-==================
-modifier spelling remains structural before flag validity checks
-:language(js_regex_u)
-:language(js_regex_v)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
 :cst
 ==================
 (?ii-m:x)(?-:)
@@ -440,84 +288,33 @@ modifier spelling remains structural before flag validity checks
 0:13 - 0:14             ")"
 
 ==================
-x enabled and disabled together keeps normal mode
-:language(python_re)
+PCRE2 property names allow loose spacing before negation and the L& name
+:language(pcre2)
 ==================
-(?x-x:a b)c
-
+\p{L&}\P{ ^ Bi-di class = Al }\p{
+^L
+u}
 ------------------
 
-(pattern
-  body: (alternation
-    (concatenation
-      (scoped_flags_group
-        enable: (flag_set)
-        disable: (flag_set)
-        body: (alternation
-          (concatenation
-            (literal_character)
-            (literal_character)
-            (literal_character))))
-      (literal_character)
-      (literal_character))))
+(pattern (alternation (concatenation (unicode_property (property_escape) (property_name)) (unicode_property (property_escape) (property_ignored) (property_name)) (unicode_property (property_escape) (property_ignored) (property_name)))))
 
 ==================
-x enabled and disabled together keeps verbose mode
-:language(python_re_verbose)
+PCRE2 x letters enable class spacing only as an adjacent pair
+:language(pcre2)
 ==================
-(?x-x:a b)c
-
+(?^)(?xix)[ a](?xx)[ b]
 ------------------
 
-(pattern
-  body: (alternation
-    (concatenation
-      (scoped_flags_group
-        enable: (flag_set)
-        disable: (flag_set)
-        body: (alternation
-          (concatenation
-            (literal_character)
-            (verbose_whitespace)
-            (literal_character))))
-      (literal_character)
-      (verbose_whitespace))))
+(pattern (alternation (concatenation (global_flags) (global_flags (flag_set)) (character_class (class_character) (class_character)) (global_flags (flag_set)) (character_class (verbose_whitespace) (class_character)))))
 
 ==================
-modifier groups accept only i m and s
-:language(js_regex)
-:language(js_regex_u)
-:language(js_regex_v)
-:error
+PCRE2 an empty disabling list does not create an empty flag set
+:language(pcre2)
 ==================
-(?x:a)
+(?-)(?i-)(?-:a)
 ------------------
 
-
-
-==================
-an incomplete modifier group requires recovery
-:language(js_regex)
-:language(js_regex_u)
-:language(js_regex_v)
-:error
-==================
-(?i:
-------------------
-
-
-
-==================
-nested modifier groups require all closing parentheses
-:language(js_regex)
-:language(js_regex_u)
-:language(js_regex_v)
-:error
-==================
-(?i:a(?-m:b)
-------------------
-
-
+(pattern (alternation (concatenation (global_flags) (global_flags (flag_set)) (scoped_flags_group (alternation (concatenation (literal_character)))))))
 
 ==================
 PCRE2 scoped verbose mode restores literal spaces
@@ -1250,55 +1047,32 @@ PCRE2 reset scope restores captures and literal spaces
       (literal_character))))
 
 ==================
-Python disabled verbose scope retains NUL and escaped NUL
-:language(python_re)
-:language(python_re_verbose)
+PCRE2 UTF8 preserves its spelling among UTF start options
+:language(pcre2)
 :cst
 ==================
-(?-x: \ )
+(*UTF)(*UTF8)(*UCP)é
 ------------------
 
-0:0 - 0:9   pattern
-0:0 - 0:9     body: alternation
-0:0 - 0:9       concatenation
-0:0 - 0:9         scoped_flags_group
-0:0 - 0:1           "("
-0:1 - 0:2           "?"
-0:2 - 0:3           "-"
-0:3 - 0:4           disable: flag_set `x`
-0:4 - 0:5           ":"
-0:5 - 0:8           body: alternation
-0:5 - 0:8             concatenation
-0:5 - 0:6               literal_character `\0`
-0:6 - 0:8               literal_escape `\\\0`
-0:8 - 0:9           ")"
-
-==================
-Python initial normal mode treats whitespace and hash as literals
-:language(python_re)
-:cst
-==================
- #x
-------------------
-
-0:0 - 0:3   pattern
-0:0 - 0:3     body: alternation
-0:0 - 0:3       concatenation
-0:0 - 0:1         literal_character ` `
-0:1 - 0:2         literal_character `#`
-0:2 - 0:3         literal_character `x`
-
-==================
-Python initial verbose mode retains layout at the root
-:language(python_re_verbose)
-:cst
-==================
- #x
-------------------
-
-0:0 - 0:3   pattern
-0:0 - 0:1     verbose_whitespace ` `
-0:1 - 0:3     verbose_comment `#x`
+0:0  - 0:21   pattern
+0:0  - 0:6      start_option
+0:0  - 0:1        "("
+0:1  - 0:2        "*"
+0:2  - 0:5        name: option_name `UTF`
+0:5  - 0:6        ")"
+0:6  - 0:13     start_option
+0:6  - 0:7        "("
+0:7  - 0:8        "*"
+0:8  - 0:12       name: option_name `UTF8`
+0:12 - 0:13       ")"
+0:13 - 0:19     start_option
+0:13 - 0:14       "("
+0:14 - 0:15       "*"
+0:15 - 0:18       name: option_name `UCP`
+0:18 - 0:19       ")"
+0:19 - 0:21     body: alternation
+0:19 - 0:21       concatenation
+0:19 - 0:21         literal_character `é`
 
 ==================
 pcre2: PCRE2 LIMIT options preserve decimal values independently of engine limits — "(*LIMIT_MATCH=)"
@@ -1441,78 +1215,6 @@ pcre2: PCRE2 empty disabling lists retain their hyphen without an empty flag set
 
 
 ==================
-python_re: malformed global inline flags after a consuming expression uses standard recovery — "a(?x)b c\\\n"
-:language(python_re)
-:error
-==================
-a(?x)b c\
-
-------------------
-
-
-
-==================
-python_re: malformed missing scoped closer uses standard recovery — "(?x:a #c\nb\n"
-:language(python_re)
-:error
-==================
-(?x:a #c
-b
-
-------------------
-
-
-
-==================
-python_re: malformed incomplete hexadecimal escape before a scoped group closer uses standard recovery — "(?x:\\x0)\\\n"
-:language(python_re)
-:language(python_re_verbose)
-:error
-==================
-(?x:\x0)\
-
-------------------
-
-
-
-==================
-python_re_verbose: malformed verbose layout cannot split a scoped flag header uses standard recovery — "(? x:a|b\n"
-:language(python_re_verbose)
-:error
-==================
-(? x:a|b
-
-------------------
-
-==================
-PCRE2 UTF8 preserves its spelling among UTF start options
-:language(pcre2)
-:cst
-==================
-(*UTF)(*UTF8)(*UCP)é
-------------------
-
-0:0  - 0:21   pattern
-0:0  - 0:6      start_option
-0:0  - 0:1        "("
-0:1  - 0:2        "*"
-0:2  - 0:5        name: option_name `UTF`
-0:5  - 0:6        ")"
-0:6  - 0:13     start_option
-0:6  - 0:7        "("
-0:7  - 0:8        "*"
-0:8  - 0:12       name: option_name `UTF8`
-0:12 - 0:13       ")"
-0:13 - 0:19     start_option
-0:13 - 0:14       "("
-0:14 - 0:15       "*"
-0:15 - 0:18       name: option_name `UCP`
-0:18 - 0:19       ")"
-0:19 - 0:21     body: alternation
-0:19 - 0:21       concatenation
-0:19 - 0:21         literal_character `é`
-
-==================
 PCRE2 UTF16 is unavailable under the fixed 8-bit conditions
 :language(pcre2)
 :error
@@ -1578,4 +1280,301 @@ PCRE2 UTF8 cannot appear inside a group
 :error
 ==================
 (?:(*UTF8)a)
+------------------
+==================
+normal mode retains spaces comments and newlines
+:language(pyregex)
+==================
+a b#c
+d
+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character))))
+
+==================
+scoped x enable restores normal mode
+:language(pyregex)
+==================
+(?x:a b#c
+d)e #f
+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (scoped_flags_group
+        enable: (flag_set)
+        body: (alternation
+          (concatenation
+            (literal_character)
+            (verbose_whitespace)
+            (literal_character)
+            (verbose_comment)
+            (verbose_whitespace)
+            (literal_character))))
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character))))
+
+==================
+nested scoped modes restore in stack order
+:language(pyregex)
+==================
+(?x:a(?-x:b c#d)e #f
+)g #h
+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (scoped_flags_group
+        enable: (flag_set)
+        body: (alternation
+          (concatenation
+            (literal_character)
+            (scoped_flags_group
+              disable: (flag_set)
+              body: (alternation
+                (concatenation
+                  (literal_character)
+                  (literal_character)
+                  (literal_character)
+                  (literal_character)
+                  (literal_character))))
+            (literal_character)
+            (verbose_whitespace)
+            (verbose_comment)
+            (verbose_whitespace))))
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_character))))
+
+==================
+x enabled and disabled together keeps normal mode
+:language(pyregex)
+==================
+(?x-x:a b)c
+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (scoped_flags_group
+        enable: (flag_set)
+        disable: (flag_set)
+        body: (alternation
+          (concatenation
+            (literal_character)
+            (literal_character)
+            (literal_character))))
+      (literal_character)
+      (literal_character))))
+
+==================
+Python initial normal mode treats whitespace and hash as literals
+:language(pyregex)
+:cst
+==================
+ #x
+------------------
+
+0:0 - 0:3   pattern
+0:0 - 0:3     body: alternation
+0:0 - 0:3       concatenation
+0:0 - 0:1         literal_character ` `
+0:1 - 0:2         literal_character `#`
+0:2 - 0:3         literal_character `x`
+
+==================
+pyregex: malformed global inline flags after a consuming expression uses standard recovery — "a(?x)b c\\\n"
+:language(pyregex)
+:error
+==================
+a(?x)b c\
+
+------------------
+
+
+
+==================
+pyregex: malformed missing scoped closer uses standard recovery — "(?x:a #c\nb\n"
+:language(pyregex)
+:error
+==================
+(?x:a #c
+b
+
+------------------
+
+
+
+==================
+completed global flags change the remaining prefix mode
+:language(pyregex)
+:language(pyregex_verbose)
+==================
+(?#p)(?i)(?x) a#c
+d
+
+------------------
+
+(pattern
+  (comment_group
+    (comment_content))
+  (global_flags
+    flags: (flag_set))
+  (global_flags
+    flags: (flag_set))
+  (verbose_whitespace)
+  body: (alternation
+    (concatenation
+      (literal_character)
+      (verbose_comment)
+      (verbose_whitespace)
+      (literal_character)
+      (verbose_whitespace))))
+
+==================
+Python disabled verbose scope retains NUL and escaped NUL
+:language(pyregex)
+:language(pyregex_verbose)
+:cst
+==================
+(?-x: \ )
+------------------
+
+0:0 - 0:9   pattern
+0:0 - 0:9     body: alternation
+0:0 - 0:9       concatenation
+0:0 - 0:9         scoped_flags_group
+0:0 - 0:1           "("
+0:1 - 0:2           "?"
+0:2 - 0:3           "-"
+0:3 - 0:4           disable: flag_set `x`
+0:4 - 0:5           ":"
+0:5 - 0:8           body: alternation
+0:5 - 0:8             concatenation
+0:5 - 0:6               literal_character `\0`
+0:6 - 0:8               literal_escape `\\\0`
+0:8 - 0:9           ")"
+
+==================
+pyregex: malformed incomplete hexadecimal escape before a scoped group closer uses standard recovery — "(?x:\\x0)\\\n"
+:language(pyregex)
+:language(pyregex_verbose)
+:error
+==================
+(?x:\x0)\
+
+------------------
+
+
+
+==================
+initial verbose mode retains ignored source as layout
+:language(pyregex_verbose)
+==================
+a b#c
+d
+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (literal_character)
+      (verbose_whitespace)
+      (literal_character)
+      (verbose_comment)
+      (verbose_whitespace)
+      (literal_character)
+      (verbose_whitespace))))
+
+==================
+scoped x disable restores verbose mode
+:language(pyregex_verbose)
+==================
+(?-x:a b#c)d #e
+f
+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (scoped_flags_group
+        disable: (flag_set)
+        body: (alternation
+          (concatenation
+            (literal_character)
+            (literal_character)
+            (literal_character)
+            (literal_character)
+            (literal_character))))
+      (literal_character)
+      (verbose_whitespace)
+      (verbose_comment)
+      (verbose_whitespace)
+      (literal_character)
+      (verbose_whitespace))))
+
+==================
+x enabled and disabled together keeps verbose mode
+:language(pyregex_verbose)
+==================
+(?x-x:a b)c
+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (scoped_flags_group
+        enable: (flag_set)
+        disable: (flag_set)
+        body: (alternation
+          (concatenation
+            (literal_character)
+            (verbose_whitespace)
+            (literal_character))))
+      (literal_character)
+      (verbose_whitespace))))
+
+==================
+Python initial verbose mode retains layout at the root
+:language(pyregex_verbose)
+:cst
+==================
+ #x
+------------------
+
+0:0 - 0:3   pattern
+0:0 - 0:1     verbose_whitespace ` `
+0:1 - 0:3     verbose_comment `#x`
+
+==================
+pyregex_verbose: malformed verbose layout cannot split a scoped flag header uses standard recovery — "(? x:a|b\n"
+:language(pyregex_verbose)
+:error
+==================
+(? x:a|b
+
 ------------------

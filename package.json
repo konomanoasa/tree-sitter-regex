@@ -2,7 +2,7 @@
   "name": "@konomanoasa/tree-sitter-regex",
   "version": "0.10.1",
   "type": "module",
-  "description": "Tree-sitter grammars for JavaScript regex, PCRE2, POSIX BRE/ERE, and Python re.",
+  "description": "Tree-sitter grammars for ECMAScript regex, PCRE2, POSIX BRE/ERE, and Python re.",
   "license": "MIT",
   "repository": "git+https://github.com/konomanoasa/tree-sitter-regex.git",
   "files": [
@@ -25,7 +25,7 @@
   },
   "scripts": {
     "build": "npm run tree-sitter -- build-all",
-    "check": "biome check . && tsc --noEmit",
+    "check": "biome check . && tsc",
     "check:queries": "npm run tree-sitter -- check-queries",
     "format": "biome format --write .",
     "generate": "node scripts/generate-unicode.js && npm run tree-sitter -- generate-all",
@@ -39,7 +39,7 @@
     "tree-sitter": "node scripts/tree-sitter.js"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.15",
+    "@biomejs/biome": "2.6.2",
     "@types/node": "26.6.5",
     "@unicode/unicode-17.0.0": "2.0.8",
     "tree-sitter-cli": "0.27.1",

@@ -1,14 +1,14 @@
 import assert from "node:assert/strict";
 
 const rootNodes = {
-  js_regex: "pattern",
-  js_regex_u: "pattern",
-  js_regex_v: "pattern",
+  ecmaregex: "pattern",
+  ecmaregex_u: "pattern",
+  ecmaregex_v: "pattern",
   pcre2: "pattern",
   posix_bre: "basic_reg_exp",
   posix_ere: "extended_reg_exp",
-  python_re: "pattern",
-  python_re_verbose: "pattern",
+  pyregex: "pattern",
+  pyregex_verbose: "pattern",
 };
 
 function sourceEndPoint(source) {

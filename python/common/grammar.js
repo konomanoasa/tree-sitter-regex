@@ -132,8 +132,7 @@ function modeRules(verbose) {
         modeNode($, "concatenation", verbose),
         $[rule("alternative")],
       ),
-    // Resumed balancing after a progress cancel can misplace aliases inside a
-    // multi-symbol repeat element, so repeat this single rule instead.
+    // Keep aliases intact when balancing resumes after cancellation.
     [rule("alternative")]: ($) =>
       seq("|", optional(modeNode($, "concatenation", verbose))),
     [rule("concatenation")]: ($) =>
@@ -153,13 +152,16 @@ function modeRules(verbose) {
       choice($[rule("quantifiable_atom")], $._non_quantifiable_atom),
     [rule("literal_character")]: ($) =>
       choice(
-        verbose ? /[^.^$\\()\x5b*+?|{# \t\r\n\v\f]/ : /[^.^$\\()\x5b*+?|{]/,
-        $._nul_character,
-        $._literal_open_brace,
+        alias(
+          verbose ? /[^.^$\\()\x5b*+?|{# \t\r\n\v\f]/ : /[^.^$\\()\x5b*+?|{]/,
+          $.literal_character,
+        ),
+        alias($._nul_character, $.literal_character),
+        alias($._literal_open_brace, $.literal_character),
       ),
     [rule("quantifiable_atom")]: ($) =>
       choice(
-        alias($[rule("literal_character")], $.literal_character),
+        $[rule("literal_character")],
         $.wildcard,
         $._literal_escape,
         $.control_escape,
@@ -200,7 +202,7 @@ function modeRules(verbose) {
         field(
           "condition",
           choice(
-            alias($._conditional_group_id, $.group_id),
+            alias($.decimal_digits, $.group_id),
             alias($._conditional_group_name, $.group_name),
           ),
         ),
@@ -392,7 +394,7 @@ export default function defineGrammar(name, mode) {
           "(",
           "?P",
           "=",
-          field("name", alias($._parenthesized_group_name, $.group_name)),
+          field("name", alias($._parenthesized_text, $.group_name)),
           ")",
         ),
       _global_flags_with_x: ($) => globalFlags($, $._enable_flags_with_x),
@@ -402,8 +404,7 @@ export default function defineGrammar(name, mode) {
       _disable_flags_with_x: () => /[ims]*x[imsx]*/,
       _disable_flags_without_x: () => /[ims]+/,
       _angle_group_name: () => token(repeat1(textUnit(">"))),
-      _parenthesized_group_name: () => token(repeat1(textUnit(")"))),
-      _conditional_group_id: () => /[0-9]+/,
+      _parenthesized_text: () => token(repeat1(textUnit(")"))),
       _conditional_group_name: () =>
         token(seq(repeat(/[0-9]/), textUnit("0-9)"), repeat(textUnit(")")))),
       _unicode_character_name: () => token(repeat1(textUnit("}"))),
@@ -412,11 +413,10 @@ export default function defineGrammar(name, mode) {
           "(",
           "?",
           "#",
-          optional(alias($._comment_group_content, $.comment_content)),
+          optional(alias($._parenthesized_text, $.comment_content)),
           ")",
         ),
       verbose_whitespace: () => /[ \t\n\v\f\r]+/,
-      _comment_group_content: () => token(repeat1(textUnit(")"))),
       verbose_comment: () => token(seq("#", repeat(textUnit("\n")))),
     },
   });

@@ -1,6 +1,6 @@
 ==================
 concatenation retains individual literal characters
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 abc
@@ -23,73 +23,8 @@ abc
 0:2 - 0:3               source_character `c`
 
 ==================
-concatenation retains individual literal characters
-:language(js_regex_u)
-:language(js_regex_v)
-:cst
-==================
-abc
-------------------
-
-0:0 - 0:3   pattern
-0:0 - 0:3     body: disjunction
-0:0 - 0:3       alternative
-0:0 - 0:1         term
-0:0 - 0:1           operand: atom
-0:0 - 0:1             pattern_character
-0:0 - 0:1               source_character `a`
-0:1 - 0:2         term
-0:1 - 0:2           operand: atom
-0:1 - 0:2             pattern_character
-0:1 - 0:2               source_character `b`
-0:2 - 0:3         term
-0:2 - 0:3           operand: atom
-0:2 - 0:3             pattern_character
-0:2 - 0:3               source_character `c`
-
-==================
-normal mode preserves expression hierarchy and basic atoms
-:language(python_re)
-==================
-ab|.^$-
-
-------------------
-
-(pattern
-  body: (alternation
-    (concatenation
-      (literal_character)
-      (literal_character))
-    (concatenation
-      (wildcard)
-      (start_anchor)
-      (end_anchor)
-      (literal_character)
-      (literal_character))))
-
-==================
-verbose mode preserves expression hierarchy and basic atoms
-:language(python_re_verbose)
-==================
-ab|.^$-
-
-------------------
-
-(pattern
-  body: (alternation
-    (concatenation
-      (literal_character)
-      (literal_character))
-    (concatenation
-      (wildcard)
-      (start_anchor)
-      (end_anchor)
-      (literal_character)
-      (verbose_whitespace))))
-
-==================
 whitespace and hash characters remain literals
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 a # b
@@ -120,58 +55,8 @@ a # b
 0:4 - 0:5               source_character `b`
 
 ==================
-whitespace and hash characters remain literals
-:language(js_regex_u)
-:language(js_regex_v)
-:cst
-==================
-a # b
-------------------
-
-0:0 - 0:5   pattern
-0:0 - 0:5     body: disjunction
-0:0 - 0:5       alternative
-0:0 - 0:1         term
-0:0 - 0:1           operand: atom
-0:0 - 0:1             pattern_character
-0:0 - 0:1               source_character `a`
-0:1 - 0:2         term
-0:1 - 0:2           operand: atom
-0:1 - 0:2             pattern_character
-0:1 - 0:2               source_character ` `
-0:2 - 0:3         term
-0:2 - 0:3           operand: atom
-0:2 - 0:3             pattern_character
-0:2 - 0:3               source_character `#`
-0:3 - 0:4         term
-0:3 - 0:4           operand: atom
-0:3 - 0:4             pattern_character
-0:3 - 0:4               source_character ` `
-0:4 - 0:5         term
-0:4 - 0:5           operand: atom
-0:4 - 0:5             pattern_character
-0:4 - 0:5               source_character `b`
-
-==================
-closing bracket is ordinary outside a character class
-:language(python_re)
-:language(python_re_verbose)
-==================
-a]b\
-
-------------------
-
-(pattern
-  body: (alternation
-    (concatenation
-      (literal_character)
-      (literal_character)
-      (literal_character)
-      (literal_escape))))
-
-==================
 concatenation binds more tightly than alternation
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 ab|c.d
@@ -203,42 +88,8 @@ ab|c.d
 0:5 - 0:6               source_character `d`
 
 ==================
-concatenation binds more tightly than alternation
-:language(js_regex_u)
-:language(js_regex_v)
-:cst
-==================
-ab|c.d
-------------------
-
-0:0 - 0:6   pattern
-0:0 - 0:6     body: disjunction
-0:0 - 0:2       alternative
-0:0 - 0:1         term
-0:0 - 0:1           operand: atom
-0:0 - 0:1             pattern_character
-0:0 - 0:1               source_character `a`
-0:1 - 0:2         term
-0:1 - 0:2           operand: atom
-0:1 - 0:2             pattern_character
-0:1 - 0:2               source_character `b`
-0:2 - 0:3       "|"
-0:3 - 0:6       alternative
-0:3 - 0:4         term
-0:3 - 0:4           operand: atom
-0:3 - 0:4             pattern_character
-0:3 - 0:4               source_character `c`
-0:4 - 0:5         term
-0:4 - 0:5           operand: atom
-0:4 - 0:5             "."
-0:5 - 0:6         term
-0:5 - 0:6           operand: atom
-0:5 - 0:6             pattern_character
-0:5 - 0:6               source_character `d`
-
-==================
 a quantifier after a space applies to that space
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 a ?
@@ -260,32 +111,8 @@ a ?
 0:2 - 0:3               "?"
 
 ==================
-a quantifier after a space applies to that space
-:language(js_regex_u)
-:language(js_regex_v)
-:cst
-==================
-a ?
-------------------
-
-0:0 - 0:3   pattern
-0:0 - 0:3     body: disjunction
-0:0 - 0:3       alternative
-0:0 - 0:1         term
-0:0 - 0:1           operand: atom
-0:0 - 0:1             pattern_character
-0:0 - 0:1               source_character `a`
-0:1 - 0:3         term
-0:1 - 0:2           operand: atom
-0:1 - 0:2             pattern_character
-0:1 - 0:2               source_character ` `
-0:2 - 0:3           quantifier: quantifier
-0:2 - 0:3             quantifier_prefix
-0:2 - 0:3               "?"
-
-==================
 anchors negated classes and lazy quantifiers share the same token ownership
-:language(js_regex)
+:language(ecmaregex)
 :cst
 ==================
 ^[^a]+?$
@@ -316,97 +143,8 @@ anchors negated classes and lazy quantifiers share the same token ownership
 0:7 - 0:8             "$"
 
 ==================
-anchors negated classes and lazy quantifiers share the same token ownership
-:language(js_regex_u)
-:cst
-==================
-^[^a]+?$
-------------------
-
-0:0 - 0:8   pattern
-0:0 - 0:8     body: disjunction
-0:0 - 0:8       alternative
-0:0 - 0:1         term
-0:0 - 0:1           assertion
-0:0 - 0:1             "^"
-0:1 - 0:7         term
-0:1 - 0:5           operand: atom
-0:1 - 0:5             character_class
-0:1 - 0:2               "["
-0:2 - 0:3               "^"
-0:3 - 0:4               nonempty_class_ranges
-0:3 - 0:4                 class_atom
-0:3 - 0:4                   class_atom_no_dash
-0:3 - 0:4                     source_character `a`
-0:4 - 0:5               "]"
-0:5 - 0:7           quantifier: quantifier
-0:5 - 0:6             quantifier_prefix
-0:5 - 0:6               "+"
-0:6 - 0:7             "?"
-0:7 - 0:8         term
-0:7 - 0:8           assertion
-0:7 - 0:8             "$"
-
-==================
-anchors negated classes and lazy quantifiers share the same token ownership
-:language(js_regex_v)
-:cst
-==================
-^[^a]+?$
-------------------
-
-0:0 - 0:8   pattern
-0:0 - 0:8     body: disjunction
-0:0 - 0:8       alternative
-0:0 - 0:1         term
-0:0 - 0:1           assertion
-0:0 - 0:1             "^"
-0:1 - 0:7         term
-0:1 - 0:5           operand: atom
-0:1 - 0:5             character_class
-0:1 - 0:2               "["
-0:2 - 0:3               "^"
-0:3 - 0:4               class_set_expression
-0:3 - 0:4                 class_union
-0:3 - 0:4                   class_set_operand
-0:3 - 0:4                     class_set_character
-0:3 - 0:4                       source_character `a`
-0:4 - 0:5               "]"
-0:5 - 0:7           quantifier: quantifier
-0:5 - 0:6             quantifier_prefix
-0:5 - 0:6               "+"
-0:6 - 0:7             "?"
-0:7 - 0:8         term
-0:7 - 0:8           assertion
-0:7 - 0:8             "$"
-
-==================
-anchors negated classes and lazy quantifiers retain Python token ownership
-:language(python_re)
-:language(python_re_verbose)
-:cst
-==================
-^[^a]+?$
-------------------
-
-0:0 - 0:8   pattern
-0:0 - 0:8     body: alternation
-0:0 - 0:8       concatenation
-0:0 - 0:1         start_anchor `^`
-0:1 - 0:7         repetition
-0:1 - 0:5           operand: character_class
-0:1 - 0:2             "["
-0:2 - 0:3             "^"
-0:3 - 0:4             class_character `a`
-0:4 - 0:5             "]"
-0:5 - 0:7           quantifier: quantifier
-0:5 - 0:6             "+"
-0:6 - 0:7             "?"
-0:7 - 0:8         end_anchor `$`
-
-==================
-groups modifiers assertions escapes and repetition share the same structure in every JavaScript mode
-:language(js_regex)
+groups modifiers assertions escapes and repetition share the same structure in every ECMAScript mode
+:language(ecmaregex)
 :cst
 ==================
 ^(?<名>(?im-s:a|b){1,3}?)(?=\k<名>)[\d\-]\1$
@@ -519,8 +257,182 @@ groups modifiers assertions escapes and repetition share the same structure in e
 0:45 - 0:46             "$"
 
 ==================
-groups modifiers assertions escapes and repetition share the same structure in every JavaScript mode
-:language(js_regex_u)
+literal characters and named group quantifiers retain Unicode byte ranges
+:language(ecmaregex)
+:cst
+==================
+é😀(?<名>a){2,3}?|b
+------------------
+
+0:0  - 0:23   pattern
+0:0  - 0:23     body: disjunction
+0:0  - 0:21       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: extended_atom
+0:0  - 0:2              extended_pattern_character
+0:0  - 0:2                source_character `é`
+0:2  - 0:6          term
+0:2  - 0:6            operand: extended_atom
+0:2  - 0:6              extended_pattern_character
+0:2  - 0:6                source_character `😀`
+0:6  - 0:21         term
+0:6  - 0:15           operand: extended_atom
+0:6  - 0:7              "("
+0:7  - 0:13             group_specifier
+0:7  - 0:8                "?"
+0:8  - 0:13               group_name
+0:8  - 0:9                  "<"
+0:9  - 0:12                 name: reg_exp_identifier_name
+0:9  - 0:12                   reg_exp_identifier_start
+0:9  - 0:12                     identifier_start_char
+0:9  - 0:12                       unicode_id_start `名`
+0:12 - 0:13                 ">"
+0:13 - 0:14             body: disjunction
+0:13 - 0:14               alternative
+0:13 - 0:14                 term
+0:13 - 0:14                   operand: extended_atom
+0:13 - 0:14                     extended_pattern_character
+0:13 - 0:14                       source_character `a`
+0:14 - 0:15             ")"
+0:15 - 0:21           quantifier: quantifier
+0:15 - 0:20             quantifier_prefix
+0:15 - 0:16               "{"
+0:16 - 0:17               minimum: decimal_digits
+0:16 - 0:17                 decimal_digit `2`
+0:17 - 0:18               ","
+0:18 - 0:19               maximum: decimal_digits
+0:18 - 0:19                 decimal_digit `3`
+0:19 - 0:20               "}"
+0:20 - 0:21             "?"
+0:21 - 0:22       "|"
+0:22 - 0:23       alternative
+0:22 - 0:23         term
+0:22 - 0:23           operand: extended_atom
+0:22 - 0:23             extended_pattern_character
+0:22 - 0:23               source_character `b`
+
+==================
+group alternatives and repetition retain complete Unicode byte ranges
+:language(ecmaregex)
+:cst
+==================
+(?:é|😀){2,3}?
+------------------
+
+0:0  - 0:17   pattern
+0:0  - 0:17     body: disjunction
+0:0  - 0:17       alternative
+0:0  - 0:17         term
+0:0  - 0:11           operand: extended_atom
+0:0  - 0:1              "("
+0:1  - 0:2              "?"
+0:2  - 0:3              ":"
+0:3  - 0:10             body: disjunction
+0:3  - 0:5                alternative
+0:3  - 0:5                  term
+0:3  - 0:5                    operand: extended_atom
+0:3  - 0:5                      extended_pattern_character
+0:3  - 0:5                        source_character `é`
+0:5  - 0:6                "|"
+0:6  - 0:10               alternative
+0:6  - 0:10                 term
+0:6  - 0:10                   operand: extended_atom
+0:6  - 0:10                     extended_pattern_character
+0:6  - 0:10                       source_character `😀`
+0:10 - 0:11             ")"
+0:11 - 0:17           quantifier: quantifier
+0:11 - 0:16             quantifier_prefix
+0:11 - 0:12               "{"
+0:12 - 0:13               minimum: decimal_digits
+0:12 - 0:13                 decimal_digit `2`
+0:13 - 0:14               ","
+0:14 - 0:15               maximum: decimal_digits
+0:14 - 0:15                 decimal_digit `3`
+0:15 - 0:16               "}"
+0:16 - 0:17             "?"
+
+==================
+empty alternatives retain separators without empty concatenations
+:language(ecmaregex)
+:cst
+==================
+|a||
+------------------
+
+0:0 - 0:4   pattern
+0:0 - 0:4     body: disjunction
+0:0 - 0:1       "|"
+0:1 - 0:2       alternative
+0:1 - 0:2         term
+0:1 - 0:2           operand: extended_atom
+0:1 - 0:2             extended_pattern_character
+0:1 - 0:2               source_character `a`
+0:2 - 0:3       "|"
+0:3 - 0:4       "|"
+
+==================
+an alternation of empty branches retains only the separator
+:language(ecmaregex)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:cst
+==================
+|
+------------------
+
+0:0 - 0:1   pattern
+0:0 - 0:1     body: disjunction
+0:0 - 0:1       "|"
+
+==================
+empty input has no body or zero-width children
+:language(ecmaregex)
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:language(pyregex)
+:language(pyregex_verbose)
+:cst
+==================
+
+------------------
+
+0:0 - 0:0   pattern
+
+==================
+anchors negated classes and lazy quantifiers share the same token ownership
+:language(ecmaregex_u)
+:cst
+==================
+^[^a]+?$
+------------------
+
+0:0 - 0:8   pattern
+0:0 - 0:8     body: disjunction
+0:0 - 0:8       alternative
+0:0 - 0:1         term
+0:0 - 0:1           assertion
+0:0 - 0:1             "^"
+0:1 - 0:7         term
+0:1 - 0:5           operand: atom
+0:1 - 0:5             character_class
+0:1 - 0:2               "["
+0:2 - 0:3               "^"
+0:3 - 0:4               nonempty_class_ranges
+0:3 - 0:4                 class_atom
+0:3 - 0:4                   class_atom_no_dash
+0:3 - 0:4                     source_character `a`
+0:4 - 0:5               "]"
+0:5 - 0:7           quantifier: quantifier
+0:5 - 0:6             quantifier_prefix
+0:5 - 0:6               "+"
+0:6 - 0:7             "?"
+0:7 - 0:8         term
+0:7 - 0:8           assertion
+0:7 - 0:8             "$"
+
+==================
+groups modifiers assertions escapes and repetition share the same structure in every ECMAScript mode
+:language(ecmaregex_u)
 :cst
 ==================
 ^(?<名>(?im-s:a|b){1,3}?)(?=\k<名>)[\d\-]\1$
@@ -629,8 +541,274 @@ groups modifiers assertions escapes and repetition share the same structure in e
 0:45 - 0:46             "$"
 
 ==================
-groups modifiers assertions escapes and repetition share the same structure in every JavaScript mode
-:language(js_regex_v)
+concatenation retains individual literal characters
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:cst
+==================
+abc
+------------------
+
+0:0 - 0:3   pattern
+0:0 - 0:3     body: disjunction
+0:0 - 0:3       alternative
+0:0 - 0:1         term
+0:0 - 0:1           operand: atom
+0:0 - 0:1             pattern_character
+0:0 - 0:1               source_character `a`
+0:1 - 0:2         term
+0:1 - 0:2           operand: atom
+0:1 - 0:2             pattern_character
+0:1 - 0:2               source_character `b`
+0:2 - 0:3         term
+0:2 - 0:3           operand: atom
+0:2 - 0:3             pattern_character
+0:2 - 0:3               source_character `c`
+
+==================
+whitespace and hash characters remain literals
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:cst
+==================
+a # b
+------------------
+
+0:0 - 0:5   pattern
+0:0 - 0:5     body: disjunction
+0:0 - 0:5       alternative
+0:0 - 0:1         term
+0:0 - 0:1           operand: atom
+0:0 - 0:1             pattern_character
+0:0 - 0:1               source_character `a`
+0:1 - 0:2         term
+0:1 - 0:2           operand: atom
+0:1 - 0:2             pattern_character
+0:1 - 0:2               source_character ` `
+0:2 - 0:3         term
+0:2 - 0:3           operand: atom
+0:2 - 0:3             pattern_character
+0:2 - 0:3               source_character `#`
+0:3 - 0:4         term
+0:3 - 0:4           operand: atom
+0:3 - 0:4             pattern_character
+0:3 - 0:4               source_character ` `
+0:4 - 0:5         term
+0:4 - 0:5           operand: atom
+0:4 - 0:5             pattern_character
+0:4 - 0:5               source_character `b`
+
+==================
+concatenation binds more tightly than alternation
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:cst
+==================
+ab|c.d
+------------------
+
+0:0 - 0:6   pattern
+0:0 - 0:6     body: disjunction
+0:0 - 0:2       alternative
+0:0 - 0:1         term
+0:0 - 0:1           operand: atom
+0:0 - 0:1             pattern_character
+0:0 - 0:1               source_character `a`
+0:1 - 0:2         term
+0:1 - 0:2           operand: atom
+0:1 - 0:2             pattern_character
+0:1 - 0:2               source_character `b`
+0:2 - 0:3       "|"
+0:3 - 0:6       alternative
+0:3 - 0:4         term
+0:3 - 0:4           operand: atom
+0:3 - 0:4             pattern_character
+0:3 - 0:4               source_character `c`
+0:4 - 0:5         term
+0:4 - 0:5           operand: atom
+0:4 - 0:5             "."
+0:5 - 0:6         term
+0:5 - 0:6           operand: atom
+0:5 - 0:6             pattern_character
+0:5 - 0:6               source_character `d`
+
+==================
+a quantifier after a space applies to that space
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:cst
+==================
+a ?
+------------------
+
+0:0 - 0:3   pattern
+0:0 - 0:3     body: disjunction
+0:0 - 0:3       alternative
+0:0 - 0:1         term
+0:0 - 0:1           operand: atom
+0:0 - 0:1             pattern_character
+0:0 - 0:1               source_character `a`
+0:1 - 0:3         term
+0:1 - 0:2           operand: atom
+0:1 - 0:2             pattern_character
+0:1 - 0:2               source_character ` `
+0:2 - 0:3           quantifier: quantifier
+0:2 - 0:3             quantifier_prefix
+0:2 - 0:3               "?"
+
+==================
+literal characters and named group quantifiers retain Unicode byte ranges
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:cst
+==================
+é😀(?<名>a){2,3}?|b
+------------------
+
+0:0  - 0:23   pattern
+0:0  - 0:23     body: disjunction
+0:0  - 0:21       alternative
+0:0  - 0:2          term
+0:0  - 0:2            operand: atom
+0:0  - 0:2              pattern_character
+0:0  - 0:2                source_character `é`
+0:2  - 0:6          term
+0:2  - 0:6            operand: atom
+0:2  - 0:6              pattern_character
+0:2  - 0:6                source_character `😀`
+0:6  - 0:21         term
+0:6  - 0:15           operand: atom
+0:6  - 0:7              "("
+0:7  - 0:13             group_specifier
+0:7  - 0:8                "?"
+0:8  - 0:13               group_name
+0:8  - 0:9                  "<"
+0:9  - 0:12                 name: reg_exp_identifier_name
+0:9  - 0:12                   reg_exp_identifier_start
+0:9  - 0:12                     identifier_start_char
+0:9  - 0:12                       unicode_id_start `名`
+0:12 - 0:13                 ">"
+0:13 - 0:14             body: disjunction
+0:13 - 0:14               alternative
+0:13 - 0:14                 term
+0:13 - 0:14                   operand: atom
+0:13 - 0:14                     pattern_character
+0:13 - 0:14                       source_character `a`
+0:14 - 0:15             ")"
+0:15 - 0:21           quantifier: quantifier
+0:15 - 0:20             quantifier_prefix
+0:15 - 0:16               "{"
+0:16 - 0:17               minimum: decimal_digits
+0:16 - 0:17                 decimal_digit `2`
+0:17 - 0:18               ","
+0:18 - 0:19               maximum: decimal_digits
+0:18 - 0:19                 decimal_digit `3`
+0:19 - 0:20               "}"
+0:20 - 0:21             "?"
+0:21 - 0:22       "|"
+0:22 - 0:23       alternative
+0:22 - 0:23         term
+0:22 - 0:23           operand: atom
+0:22 - 0:23             pattern_character
+0:22 - 0:23               source_character `b`
+
+==================
+group alternatives and repetition retain complete Unicode byte ranges
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:cst
+==================
+(?:é|😀){2,3}?
+------------------
+
+0:0  - 0:17   pattern
+0:0  - 0:17     body: disjunction
+0:0  - 0:17       alternative
+0:0  - 0:17         term
+0:0  - 0:11           operand: atom
+0:0  - 0:1              "("
+0:1  - 0:2              "?"
+0:2  - 0:3              ":"
+0:3  - 0:10             body: disjunction
+0:3  - 0:5                alternative
+0:3  - 0:5                  term
+0:3  - 0:5                    operand: atom
+0:3  - 0:5                      pattern_character
+0:3  - 0:5                        source_character `é`
+0:5  - 0:6                "|"
+0:6  - 0:10               alternative
+0:6  - 0:10                 term
+0:6  - 0:10                   operand: atom
+0:6  - 0:10                     pattern_character
+0:6  - 0:10                       source_character `😀`
+0:10 - 0:11             ")"
+0:11 - 0:17           quantifier: quantifier
+0:11 - 0:16             quantifier_prefix
+0:11 - 0:12               "{"
+0:12 - 0:13               minimum: decimal_digits
+0:12 - 0:13                 decimal_digit `2`
+0:13 - 0:14               ","
+0:14 - 0:15               maximum: decimal_digits
+0:14 - 0:15                 decimal_digit `3`
+0:15 - 0:16               "}"
+0:16 - 0:17             "?"
+
+==================
+empty alternatives retain separators without empty concatenations
+:language(ecmaregex_u)
+:language(ecmaregex_v)
+:cst
+==================
+|a||
+------------------
+
+0:0 - 0:4   pattern
+0:0 - 0:4     body: disjunction
+0:0 - 0:1       "|"
+0:1 - 0:2       alternative
+0:1 - 0:2         term
+0:1 - 0:2           operand: atom
+0:1 - 0:2             pattern_character
+0:1 - 0:2               source_character `a`
+0:2 - 0:3       "|"
+0:3 - 0:4       "|"
+
+==================
+anchors negated classes and lazy quantifiers share the same token ownership
+:language(ecmaregex_v)
+:cst
+==================
+^[^a]+?$
+------------------
+
+0:0 - 0:8   pattern
+0:0 - 0:8     body: disjunction
+0:0 - 0:8       alternative
+0:0 - 0:1         term
+0:0 - 0:1           assertion
+0:0 - 0:1             "^"
+0:1 - 0:7         term
+0:1 - 0:5           operand: atom
+0:1 - 0:5             character_class
+0:1 - 0:2               "["
+0:2 - 0:3               "^"
+0:3 - 0:4               class_set_expression
+0:3 - 0:4                 class_union
+0:3 - 0:4                   class_set_operand
+0:3 - 0:4                     class_set_character
+0:3 - 0:4                       source_character `a`
+0:4 - 0:5               "]"
+0:5 - 0:7           quantifier: quantifier
+0:5 - 0:6             quantifier_prefix
+0:5 - 0:6               "+"
+0:6 - 0:7             "?"
+0:7 - 0:8         term
+0:7 - 0:8           assertion
+0:7 - 0:8             "$"
+
+==================
+groups modifiers assertions escapes and repetition share the same structure in every ECMAScript mode
+:language(ecmaregex_v)
 :cst
 ==================
 ^(?<名>(?im-s:a|b){1,3}?)(?=\k<名>)[\d\-]\1$
@@ -737,478 +915,36 @@ groups modifiers assertions escapes and repetition share the same structure in e
 0:45 - 0:46             "$"
 
 ==================
-comment group is normal-mode prefix layout
-:language(python_re)
+pcre2: PCRE2 rejects incomplete structures using standard recovery — "\\j"
+:language(pcre2)
+:error
 ==================
-(?# comment | # (? )a
-
+\j
 ------------------
 
-(pattern
-  (comment_group
-    (comment_content))
-  body: (alternation
-    (concatenation
-      (literal_character)
-      (literal_character))))
+
 
 ==================
-comment group is verbose-mode prefix layout
-:language(python_re_verbose)
+pcre2: PCRE2 rejects incomplete structures using standard recovery — "a(**)"
+:language(pcre2)
+:error
 ==================
-(?# comment | # (? )a
-
+a(**)
 ------------------
 
-(pattern
-  (comment_group
-    (comment_content))
-  body: (alternation
-    (concatenation
-      (literal_character)
-      (verbose_whitespace))))
+
 
 ==================
-literal characters and named group quantifiers retain Unicode byte ranges
-:language(js_regex)
-:cst
+rejects incomplete structures using standard recovery — "\\"
+:language(pcre2)
+:language(pyregex)
+:language(pyregex_verbose)
+:error
 ==================
-é😀(?<名>a){2,3}?|b
+\
 ------------------
 
-0:0  - 0:23   pattern
-0:0  - 0:23     body: disjunction
-0:0  - 0:21       alternative
-0:0  - 0:2          term
-0:0  - 0:2            operand: extended_atom
-0:0  - 0:2              extended_pattern_character
-0:0  - 0:2                source_character `é`
-0:2  - 0:6          term
-0:2  - 0:6            operand: extended_atom
-0:2  - 0:6              extended_pattern_character
-0:2  - 0:6                source_character `😀`
-0:6  - 0:21         term
-0:6  - 0:15           operand: extended_atom
-0:6  - 0:7              "("
-0:7  - 0:13             group_specifier
-0:7  - 0:8                "?"
-0:8  - 0:13               group_name
-0:8  - 0:9                  "<"
-0:9  - 0:12                 name: reg_exp_identifier_name
-0:9  - 0:12                   reg_exp_identifier_start
-0:9  - 0:12                     identifier_start_char
-0:9  - 0:12                       unicode_id_start `名`
-0:12 - 0:13                 ">"
-0:13 - 0:14             body: disjunction
-0:13 - 0:14               alternative
-0:13 - 0:14                 term
-0:13 - 0:14                   operand: extended_atom
-0:13 - 0:14                     extended_pattern_character
-0:13 - 0:14                       source_character `a`
-0:14 - 0:15             ")"
-0:15 - 0:21           quantifier: quantifier
-0:15 - 0:20             quantifier_prefix
-0:15 - 0:16               "{"
-0:16 - 0:17               minimum: decimal_digits
-0:16 - 0:17                 decimal_digit `2`
-0:17 - 0:18               ","
-0:18 - 0:19               maximum: decimal_digits
-0:18 - 0:19                 decimal_digit `3`
-0:19 - 0:20               "}"
-0:20 - 0:21             "?"
-0:21 - 0:22       "|"
-0:22 - 0:23       alternative
-0:22 - 0:23         term
-0:22 - 0:23           operand: extended_atom
-0:22 - 0:23             extended_pattern_character
-0:22 - 0:23               source_character `b`
 
-==================
-literal characters and named group quantifiers retain Unicode byte ranges
-:language(js_regex_u)
-:language(js_regex_v)
-:cst
-==================
-é😀(?<名>a){2,3}?|b
-------------------
-
-0:0  - 0:23   pattern
-0:0  - 0:23     body: disjunction
-0:0  - 0:21       alternative
-0:0  - 0:2          term
-0:0  - 0:2            operand: atom
-0:0  - 0:2              pattern_character
-0:0  - 0:2                source_character `é`
-0:2  - 0:6          term
-0:2  - 0:6            operand: atom
-0:2  - 0:6              pattern_character
-0:2  - 0:6                source_character `😀`
-0:6  - 0:21         term
-0:6  - 0:15           operand: atom
-0:6  - 0:7              "("
-0:7  - 0:13             group_specifier
-0:7  - 0:8                "?"
-0:8  - 0:13               group_name
-0:8  - 0:9                  "<"
-0:9  - 0:12                 name: reg_exp_identifier_name
-0:9  - 0:12                   reg_exp_identifier_start
-0:9  - 0:12                     identifier_start_char
-0:9  - 0:12                       unicode_id_start `名`
-0:12 - 0:13                 ">"
-0:13 - 0:14             body: disjunction
-0:13 - 0:14               alternative
-0:13 - 0:14                 term
-0:13 - 0:14                   operand: atom
-0:13 - 0:14                     pattern_character
-0:13 - 0:14                       source_character `a`
-0:14 - 0:15             ")"
-0:15 - 0:21           quantifier: quantifier
-0:15 - 0:20             quantifier_prefix
-0:15 - 0:16               "{"
-0:16 - 0:17               minimum: decimal_digits
-0:16 - 0:17                 decimal_digit `2`
-0:17 - 0:18               ","
-0:18 - 0:19               maximum: decimal_digits
-0:18 - 0:19                 decimal_digit `3`
-0:19 - 0:20               "}"
-0:20 - 0:21             "?"
-0:21 - 0:22       "|"
-0:22 - 0:23       alternative
-0:22 - 0:23         term
-0:22 - 0:23           operand: atom
-0:22 - 0:23             pattern_character
-0:22 - 0:23               source_character `b`
-
-==================
-group alternatives and repetition retain complete Unicode byte ranges
-:language(js_regex)
-:cst
-==================
-(?:é|😀){2,3}?
-------------------
-
-0:0  - 0:17   pattern
-0:0  - 0:17     body: disjunction
-0:0  - 0:17       alternative
-0:0  - 0:17         term
-0:0  - 0:11           operand: extended_atom
-0:0  - 0:1              "("
-0:1  - 0:2              "?"
-0:2  - 0:3              ":"
-0:3  - 0:10             body: disjunction
-0:3  - 0:5                alternative
-0:3  - 0:5                  term
-0:3  - 0:5                    operand: extended_atom
-0:3  - 0:5                      extended_pattern_character
-0:3  - 0:5                        source_character `é`
-0:5  - 0:6                "|"
-0:6  - 0:10               alternative
-0:6  - 0:10                 term
-0:6  - 0:10                   operand: extended_atom
-0:6  - 0:10                     extended_pattern_character
-0:6  - 0:10                       source_character `😀`
-0:10 - 0:11             ")"
-0:11 - 0:17           quantifier: quantifier
-0:11 - 0:16             quantifier_prefix
-0:11 - 0:12               "{"
-0:12 - 0:13               minimum: decimal_digits
-0:12 - 0:13                 decimal_digit `2`
-0:13 - 0:14               ","
-0:14 - 0:15               maximum: decimal_digits
-0:14 - 0:15                 decimal_digit `3`
-0:15 - 0:16               "}"
-0:16 - 0:17             "?"
-
-==================
-group alternatives and repetition retain complete Unicode byte ranges
-:language(js_regex_u)
-:language(js_regex_v)
-:cst
-==================
-(?:é|😀){2,3}?
-------------------
-
-0:0  - 0:17   pattern
-0:0  - 0:17     body: disjunction
-0:0  - 0:17       alternative
-0:0  - 0:17         term
-0:0  - 0:11           operand: atom
-0:0  - 0:1              "("
-0:1  - 0:2              "?"
-0:2  - 0:3              ":"
-0:3  - 0:10             body: disjunction
-0:3  - 0:5                alternative
-0:3  - 0:5                  term
-0:3  - 0:5                    operand: atom
-0:3  - 0:5                      pattern_character
-0:3  - 0:5                        source_character `é`
-0:5  - 0:6                "|"
-0:6  - 0:10               alternative
-0:6  - 0:10                 term
-0:6  - 0:10                   operand: atom
-0:6  - 0:10                     pattern_character
-0:6  - 0:10                       source_character `😀`
-0:10 - 0:11             ")"
-0:11 - 0:17           quantifier: quantifier
-0:11 - 0:16             quantifier_prefix
-0:11 - 0:12               "{"
-0:12 - 0:13               minimum: decimal_digits
-0:12 - 0:13                 decimal_digit `2`
-0:13 - 0:14               ","
-0:14 - 0:15               maximum: decimal_digits
-0:14 - 0:15                 decimal_digit `3`
-0:15 - 0:16               "}"
-0:16 - 0:17             "?"
-
-==================
-group alternatives and repetition retain complete Unicode byte ranges
-:language(python_re)
-:language(python_re_verbose)
-:cst
-==================
-(?:é|😀){2,3}?
-------------------
-
-0:0  - 0:17   pattern
-0:0  - 0:17     body: alternation
-0:0  - 0:17       concatenation
-0:0  - 0:17         repetition
-0:0  - 0:11           operand: non_capturing_group
-0:0  - 0:1              "("
-0:1  - 0:2              "?"
-0:2  - 0:3              ":"
-0:3  - 0:10             body: alternation
-0:3  - 0:5                concatenation
-0:3  - 0:5                  literal_character `é`
-0:5  - 0:6                "|"
-0:6  - 0:10               concatenation
-0:6  - 0:10                 literal_character `😀`
-0:10 - 0:11             ")"
-0:11 - 0:17           quantifier: quantifier
-0:11 - 0:12             "{"
-0:12 - 0:13             minimum: decimal_digits `2`
-0:13 - 0:14             ","
-0:14 - 0:15             maximum: decimal_digits `3`
-0:15 - 0:16             "}"
-0:16 - 0:17             "?"
-
-==================
-empty input has no body or zero-width children
-:language(js_regex)
-:language(js_regex_u)
-:language(js_regex_v)
-:language(python_re)
-:language(python_re_verbose)
-:cst
-==================
-
-------------------
-
-0:0 - 0:0   pattern
-
-==================
-an alternation of empty branches retains only the separator
-:language(js_regex)
-:language(js_regex_u)
-:language(js_regex_v)
-:cst
-==================
-|
-------------------
-
-0:0 - 0:1   pattern
-0:0 - 0:1     body: disjunction
-0:0 - 0:1       "|"
-
-==================
-empty alternatives retain separators without empty concatenations
-:language(js_regex)
-:cst
-==================
-|a||
-------------------
-
-0:0 - 0:4   pattern
-0:0 - 0:4     body: disjunction
-0:0 - 0:1       "|"
-0:1 - 0:2       alternative
-0:1 - 0:2         term
-0:1 - 0:2           operand: extended_atom
-0:1 - 0:2             extended_pattern_character
-0:1 - 0:2               source_character `a`
-0:2 - 0:3       "|"
-0:3 - 0:4       "|"
-
-==================
-empty alternatives retain separators without empty concatenations
-:language(js_regex_u)
-:language(js_regex_v)
-:cst
-==================
-|a||
-------------------
-
-0:0 - 0:4   pattern
-0:0 - 0:4     body: disjunction
-0:0 - 0:1       "|"
-0:1 - 0:2       alternative
-0:1 - 0:2         term
-0:1 - 0:2           operand: atom
-0:1 - 0:2             pattern_character
-0:1 - 0:2               source_character `a`
-0:2 - 0:3       "|"
-0:3 - 0:4       "|"
-
-==================
-empty alternatives retain separators without empty concatenations
-:language(python_re)
-:language(python_re_verbose)
-:cst
-==================
-|a||
-------------------
-
-0:0 - 0:4   pattern
-0:0 - 0:4     body: alternation
-0:0 - 0:1       "|"
-0:1 - 0:2       concatenation
-0:1 - 0:2         literal_character `a`
-0:2 - 0:3       "|"
-0:3 - 0:4       "|"
-
-==================
-empty alternatives retain a normal trailing newline
-:language(python_re)
-==================
-|a|
-
-------------------
-
-(pattern
-  body: (alternation
-    (concatenation
-      (literal_character))
-    (concatenation
-      (literal_character))))
-
-==================
-empty alternatives retain a verbose trailing newline
-:language(python_re_verbose)
-==================
-|a|
-
-------------------
-
-(pattern
-  body: (alternation
-    (concatenation
-      (literal_character))
-    (concatenation
-      (verbose_whitespace))))
-
-==================
-concatenation retains individual literal characters
-:language(posix_ere)
-:cst
-==================
-abc
-------------------
-
-0:0 - 0:3   extended_reg_exp
-0:0 - 0:3     ere_branch
-0:0 - 0:1       ere_expression
-0:0 - 0:1         one_char_or_coll_elem_ere
-0:0 - 0:1           ordinary_character `a`
-0:1 - 0:2       ere_expression
-0:1 - 0:2         one_char_or_coll_elem_ere
-0:1 - 0:2           ordinary_character `b`
-0:2 - 0:3       ere_expression
-0:2 - 0:3         one_char_or_coll_elem_ere
-0:2 - 0:3           ordinary_character `c`
-
-==================
-alternation separates branches
-:language(posix_ere)
-:cst
-==================
-ab|c
-------------------
-
-0:0 - 0:4   extended_reg_exp
-0:0 - 0:2     ere_branch
-0:0 - 0:1       ere_expression
-0:0 - 0:1         one_char_or_coll_elem_ere
-0:0 - 0:1           ordinary_character `a`
-0:1 - 0:2       ere_expression
-0:1 - 0:2         one_char_or_coll_elem_ere
-0:1 - 0:2           ordinary_character `b`
-0:2 - 0:3     "|"
-0:3 - 0:4     ere_branch
-0:3 - 0:4       ere_expression
-0:3 - 0:4         one_char_or_coll_elem_ere
-0:3 - 0:4           ordinary_character `c`
-
-==================
-anchors and the wildcard are expression bases
-:language(posix_ere)
-:cst
-==================
-^.$
-------------------
-
-0:0 - 0:3   extended_reg_exp
-0:0 - 0:3     ere_branch
-0:0 - 0:1       ere_expression
-0:0 - 0:1         "^"
-0:1 - 0:2       ere_expression
-0:1 - 0:2         one_char_or_coll_elem_ere
-0:1 - 0:2           "."
-0:2 - 0:3       ere_expression
-0:2 - 0:3         "$"
-
-==================
-a group owns its delimiters and nested regular expression
-:language(posix_ere)
-:cst
-==================
-(a|b)
-------------------
-
-0:0 - 0:5   extended_reg_exp
-0:0 - 0:5     ere_branch
-0:0 - 0:5       ere_expression
-0:0 - 0:1         "("
-0:1 - 0:4         expression: extended_reg_exp
-0:1 - 0:2           ere_branch
-0:1 - 0:2             ere_expression
-0:1 - 0:2               one_char_or_coll_elem_ere
-0:1 - 0:2                 ordinary_character `a`
-0:2 - 0:3           "|"
-0:3 - 0:4           ere_branch
-0:3 - 0:4             ere_expression
-0:3 - 0:4               one_char_or_coll_elem_ere
-0:3 - 0:4                 ordinary_character `b`
-0:4 - 0:5         ")"
-
-==================
-unmatched closing punctuation is ordinary
-:language(posix_ere)
-:cst
-==================
-)]}
-------------------
-
-0:0 - 0:3   extended_reg_exp
-0:0 - 0:3     ere_branch
-0:0 - 0:1       ere_expression
-0:0 - 0:1         one_char_or_coll_elem_ere
-0:0 - 0:1           ordinary_character `)`
-0:1 - 0:2       ere_expression
-0:1 - 0:2         one_char_or_coll_elem_ere
-0:1 - 0:2           ordinary_character `]`
-0:2 - 0:3       ere_expression
-0:2 - 0:3         one_char_or_coll_elem_ere
-0:2 - 0:3           ordinary_character `}`
 
 ==================
 concatenation retains individual literal characters
@@ -1461,6 +1197,123 @@ a quoted pipe does not introduce anchor positions
 0:7 - 0:8         "$"
 
 ==================
+malformed trailing backslash uses standard recovery — "a\\"
+:language(posix_bre)
+:language(posix_ere)
+:language(pyregex)
+:language(pyregex_verbose)
+:error
+==================
+a\
+------------------
+
+
+
+==================
+concatenation retains individual literal characters
+:language(posix_ere)
+:cst
+==================
+abc
+------------------
+
+0:0 - 0:3   extended_reg_exp
+0:0 - 0:3     ere_branch
+0:0 - 0:1       ere_expression
+0:0 - 0:1         one_char_or_coll_elem_ere
+0:0 - 0:1           ordinary_character `a`
+0:1 - 0:2       ere_expression
+0:1 - 0:2         one_char_or_coll_elem_ere
+0:1 - 0:2           ordinary_character `b`
+0:2 - 0:3       ere_expression
+0:2 - 0:3         one_char_or_coll_elem_ere
+0:2 - 0:3           ordinary_character `c`
+
+==================
+alternation separates branches
+:language(posix_ere)
+:cst
+==================
+ab|c
+------------------
+
+0:0 - 0:4   extended_reg_exp
+0:0 - 0:2     ere_branch
+0:0 - 0:1       ere_expression
+0:0 - 0:1         one_char_or_coll_elem_ere
+0:0 - 0:1           ordinary_character `a`
+0:1 - 0:2       ere_expression
+0:1 - 0:2         one_char_or_coll_elem_ere
+0:1 - 0:2           ordinary_character `b`
+0:2 - 0:3     "|"
+0:3 - 0:4     ere_branch
+0:3 - 0:4       ere_expression
+0:3 - 0:4         one_char_or_coll_elem_ere
+0:3 - 0:4           ordinary_character `c`
+
+==================
+anchors and the wildcard are expression bases
+:language(posix_ere)
+:cst
+==================
+^.$
+------------------
+
+0:0 - 0:3   extended_reg_exp
+0:0 - 0:3     ere_branch
+0:0 - 0:1       ere_expression
+0:0 - 0:1         "^"
+0:1 - 0:2       ere_expression
+0:1 - 0:2         one_char_or_coll_elem_ere
+0:1 - 0:2           "."
+0:2 - 0:3       ere_expression
+0:2 - 0:3         "$"
+
+==================
+a group owns its delimiters and nested regular expression
+:language(posix_ere)
+:cst
+==================
+(a|b)
+------------------
+
+0:0 - 0:5   extended_reg_exp
+0:0 - 0:5     ere_branch
+0:0 - 0:5       ere_expression
+0:0 - 0:1         "("
+0:1 - 0:4         expression: extended_reg_exp
+0:1 - 0:2           ere_branch
+0:1 - 0:2             ere_expression
+0:1 - 0:2               one_char_or_coll_elem_ere
+0:1 - 0:2                 ordinary_character `a`
+0:2 - 0:3           "|"
+0:3 - 0:4           ere_branch
+0:3 - 0:4             ere_expression
+0:3 - 0:4               one_char_or_coll_elem_ere
+0:3 - 0:4                 ordinary_character `b`
+0:4 - 0:5         ")"
+
+==================
+unmatched closing punctuation is ordinary
+:language(posix_ere)
+:cst
+==================
+)]}
+------------------
+
+0:0 - 0:3   extended_reg_exp
+0:0 - 0:3     ere_branch
+0:0 - 0:1       ere_expression
+0:0 - 0:1         one_char_or_coll_elem_ere
+0:0 - 0:1           ordinary_character `)`
+0:1 - 0:2       ere_expression
+0:1 - 0:2         one_char_or_coll_elem_ere
+0:1 - 0:2           ordinary_character `]`
+0:2 - 0:3       ere_expression
+0:2 - 0:3         one_char_or_coll_elem_ere
+0:2 - 0:3           ordinary_character `}`
+
+==================
 posix_ere: an empty group may form one branch
 :language(posix_ere)
 ==================
@@ -1474,51 +1327,6 @@ posix_ere: an empty group may form one branch
     (ere_expression
       (one_char_or_coll_elem_ere
         (ordinary_character)))))
-
-==================
-rejects incomplete structures using standard recovery — "\\"
-:language(pcre2)
-:language(python_re)
-:language(python_re_verbose)
-:error
-==================
-\
-------------------
-
-
-
-==================
-pcre2: PCRE2 rejects incomplete structures using standard recovery — "\\j"
-:language(pcre2)
-:error
-==================
-\j
-------------------
-
-
-
-==================
-pcre2: PCRE2 rejects incomplete structures using standard recovery — "a(**)"
-:language(pcre2)
-:error
-==================
-a(**)
-------------------
-
-
-
-==================
-malformed trailing backslash uses standard recovery — "a\\"
-:language(posix_bre)
-:language(posix_ere)
-:language(python_re)
-:language(python_re_verbose)
-:error
-==================
-a\
-------------------
-
-
 
 ==================
 posix_ere: malformed leading empty alternative uses standard recovery — "|a"
@@ -1561,11 +1369,202 @@ posix_ere: malformed duplication symbol without an operand uses standard recover
 
 
 ==================
-python_re: malformed unexpected closer uses standard recovery — "a)b|c\\\n"
-:language(python_re)
-:language(python_re_verbose)
+normal mode preserves expression hierarchy and basic atoms
+:language(pyregex)
+==================
+ab|.^$-
+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (literal_character)
+      (literal_character))
+    (concatenation
+      (wildcard)
+      (start_anchor)
+      (end_anchor)
+      (literal_character)
+      (literal_character))))
+
+==================
+comment group is normal-mode prefix layout
+:language(pyregex)
+==================
+(?# comment | # (? )a
+
+------------------
+
+(pattern
+  (comment_group
+    (comment_content))
+  body: (alternation
+    (concatenation
+      (literal_character)
+      (literal_character))))
+
+==================
+empty alternatives retain a normal trailing newline
+:language(pyregex)
+==================
+|a|
+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (literal_character))
+    (concatenation
+      (literal_character))))
+
+==================
+closing bracket is ordinary outside a character class
+:language(pyregex)
+:language(pyregex_verbose)
+==================
+a]b\
+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (literal_character)
+      (literal_character)
+      (literal_character)
+      (literal_escape))))
+
+==================
+anchors negated classes and lazy quantifiers retain Python token ownership
+:language(pyregex)
+:language(pyregex_verbose)
+:cst
+==================
+^[^a]+?$
+------------------
+
+0:0 - 0:8   pattern
+0:0 - 0:8     body: alternation
+0:0 - 0:8       concatenation
+0:0 - 0:1         start_anchor `^`
+0:1 - 0:7         repetition
+0:1 - 0:5           operand: character_class
+0:1 - 0:2             "["
+0:2 - 0:3             "^"
+0:3 - 0:4             class_character `a`
+0:4 - 0:5             "]"
+0:5 - 0:7           quantifier: quantifier
+0:5 - 0:6             "+"
+0:6 - 0:7             "?"
+0:7 - 0:8         end_anchor `$`
+
+==================
+group alternatives and repetition retain complete Unicode byte ranges
+:language(pyregex)
+:language(pyregex_verbose)
+:cst
+==================
+(?:é|😀){2,3}?
+------------------
+
+0:0  - 0:17   pattern
+0:0  - 0:17     body: alternation
+0:0  - 0:17       concatenation
+0:0  - 0:17         repetition
+0:0  - 0:11           operand: non_capturing_group
+0:0  - 0:1              "("
+0:1  - 0:2              "?"
+0:2  - 0:3              ":"
+0:3  - 0:10             body: alternation
+0:3  - 0:5                concatenation
+0:3  - 0:5                  literal_character `é`
+0:5  - 0:6                "|"
+0:6  - 0:10               concatenation
+0:6  - 0:10                 literal_character `😀`
+0:10 - 0:11             ")"
+0:11 - 0:17           quantifier: quantifier
+0:11 - 0:12             "{"
+0:12 - 0:13             minimum: decimal_digits `2`
+0:13 - 0:14             ","
+0:14 - 0:15             maximum: decimal_digits `3`
+0:15 - 0:16             "}"
+0:16 - 0:17             "?"
+
+==================
+empty alternatives retain separators without empty concatenations
+:language(pyregex)
+:language(pyregex_verbose)
+:cst
+==================
+|a||
+------------------
+
+0:0 - 0:4   pattern
+0:0 - 0:4     body: alternation
+0:0 - 0:1       "|"
+0:1 - 0:2       concatenation
+0:1 - 0:2         literal_character `a`
+0:2 - 0:3       "|"
+0:3 - 0:4       "|"
+
+==================
+pyregex: malformed unexpected closer uses standard recovery — "a)b|c\\\n"
+:language(pyregex)
+:language(pyregex_verbose)
 :error
 ==================
 a)b|c\
 
 ------------------
+==================
+verbose mode preserves expression hierarchy and basic atoms
+:language(pyregex_verbose)
+==================
+ab|.^$-
+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (literal_character)
+      (literal_character))
+    (concatenation
+      (wildcard)
+      (start_anchor)
+      (end_anchor)
+      (literal_character)
+      (verbose_whitespace))))
+
+==================
+comment group is verbose-mode prefix layout
+:language(pyregex_verbose)
+==================
+(?# comment | # (? )a
+
+------------------
+
+(pattern
+  (comment_group
+    (comment_content))
+  body: (alternation
+    (concatenation
+      (literal_character)
+      (verbose_whitespace))))
+
+==================
+empty alternatives retain a verbose trailing newline
+:language(pyregex_verbose)
+==================
+|a|
+
+------------------
+
+(pattern
+  body: (alternation
+    (concatenation
+      (literal_character))
+    (concatenation
+      (verbose_whitespace))))

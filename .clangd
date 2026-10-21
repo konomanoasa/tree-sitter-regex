@@ -25,8 +25,8 @@ CompileFlags:
 ---
 If:
   PathMatch:
-    - javascript/regex(_u|_v)?/src/.*
-    - python/re(_verbose)?/src/.*
+    - ecmascript/ecmaregex(_u|_v)?/src/.*
+    - python/pyregex(_verbose)?/src/.*
     - posix/(bre|ere)/src/.*
 CompileFlags:
   Add:
@@ -34,19 +34,19 @@ CompileFlags:
 
 ---
 If:
-  PathMatch: javascript/common/scanner\.h
+  PathMatch: ecmascript/common/scanner\.h
 CompileFlags:
   Add:
-    - -DJS_REGEX_MODE=0
-    - -I../regex/src
+    - -DECMAREGEX_MODE=0
+    - -I../ecmaregex/src
 
 ---
 If:
   PathMatch: python/common/scanner\.h
 CompileFlags:
   Add:
-    - -DPYTHON_RE_LANGUAGE=python_re
-    - -I../re/src
+    - -DPYREGEX_LANGUAGE=pyregex
+    - -I../pyregex/src
 
 ---
 If:
@@ -61,5 +61,5 @@ If:
   PathMatch: test/scanner\.test\.c
 CompileFlags:
   Add:
-    - -DREGEX_SCANNER_SOURCE="../python/re/src/scanner.c"
-    - -I../python/re/src
+    - -DREGEX_SCANNER_SOURCE="../python/pyregex/src/scanner.c"
+    - -I../python/pyregex/src
