@@ -1,6 +1,6 @@
 {
   "name": "@konomanoasa/tree-sitter-regex",
-  "version": "0.10.1",
+  "version": "0.11.0",
   "type": "module",
   "description": "Tree-sitter grammars for ECMAScript regex, PCRE2, POSIX BRE/ERE, and Python re.",
   "license": "MIT",
