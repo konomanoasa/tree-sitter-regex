@@ -3,6 +3,7 @@
 [![CI](https://github.com/konomanoasa/tree-sitter-regex/actions/workflows/ci.yaml/badge.svg)](https://github.com/konomanoasa/tree-sitter-regex/actions/workflows/ci.yaml)
 [![crates.io](https://img.shields.io/crates/v/konomanoasa-tree-sitter-regex)](https://crates.io/crates/konomanoasa-tree-sitter-regex)
 [![npm](https://img.shields.io/npm/v/@konomanoasa/tree-sitter-regex)](https://www.npmjs.com/package/@konomanoasa/tree-sitter-regex)
+[![PyPI](https://img.shields.io/pypi/v/konomanoasa-tree-sitter-regex)](https://pypi.org/project/konomanoasa-tree-sitter-regex/)
 
 [Tree-sitter](https://tree-sitter.github.io/tree-sitter/) grammars for
 ECMAScript 2026 regular expressions, PCRE2 10.49, POSIX.1-2024 BRE/ERE,

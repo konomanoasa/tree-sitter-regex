@@ -19,9 +19,8 @@ import {
 const pcre2Grammar = grammars.find(({ name }) => name === "pcre2");
 
 const fuzzSeed = 1n;
-const fuzzIterations = 100;
-const editsPerHistory = 5;
-const maximumFragments = 3;
+const historiesPerSource = 2;
+const editsPerHistory = 4;
 const maximumDeletionBytes = 2;
 const undoChanceDenominator = 3;
 const randomStateBits = 64;
@@ -111,14 +110,10 @@ function createEditHistoryGenerator() {
     );
     return Number(seed >> randomOutputShift) % maximum;
   }
-  return function* (fragments, insertions, joinSource) {
-    for (let iteration = 0; iteration < fuzzIterations; iteration++) {
-      const parts = [];
-      const count = 1 + next(maximumFragments);
-      for (let part = 0; part < count; part++) {
-        parts.push(fragments[next(fragments.length)]);
-      }
-      const initial = joinSource(parts);
+  return function* (sources, insertions) {
+    const historyCount = sources.length * historiesPerSource;
+    for (let iteration = 0; iteration < historyCount; iteration++) {
+      const initial = sources[iteration % sources.length];
       let source = Buffer.from(initial);
       const edits = [];
       let undo;
@@ -212,72 +207,21 @@ for (const grammar of grammars) {
   });
 }
 
-const fuzzFragments = [
-  "a",
-  ".",
-  "[abc]",
-  "(a|b)",
-  "a*",
-  "^a$",
-  "\\d+",
-  "(?:a)",
-  "a{1,3}",
-  "[^a]",
-  "",
-  "(",
-  "[",
-  "\\",
-  "a**",
-  "(a)\\1",
-];
-
 const fuzzInsertions = "abcxyz12!{}();,\n\\/*[]().^$|+?-:=# \t<>";
 
 test("regex: fixed-seed generated histories converge", (context) => {
   const generateHistories = createEditHistoryGenerator();
   for (const grammar of grammars) {
-    const fragments = [...fuzzFragments];
-    if (grammar.name.startsWith("ecmaregex")) {
-      fragments.push("(?<name>a)\\k<name>");
-      if (grammar.name === "ecmaregex") fragments.push("\\8", "{x}");
-      else fragments.push("\\u{61}", "\\p{L}");
-      if (grammar.name === "ecmaregex_v")
-        fragments.push("[a&&b]", "[a--b]", "[\\q{ab|cd}]");
-    } else if (grammar.name.startsWith("posix_")) {
-      fragments.push("[[:alpha:]]", "[[.ch.]]", "[[=a=]]", "[a-]", "[]a]");
-      if (grammar.name === "posix_bre")
-        fragments.push(String.raw`\(a\)\1`, String.raw`a\{1,3\}`, "^*a$");
-      else fragments.push("a*?");
-    } else if (grammar.name === "pcre2") {
-      fragments.push(
-        "(?n)(a)",
-        "(?xx)[a b]",
-        "(?x:a #c\nb)",
-        String.raw`(?|(a)|(b)(c))\11`,
-        String.raw`\Q(a)\E+`,
-        String.raw`\x{41}`,
-        String.raw`\u{41}`,
-        "(*CR)(?x)#a\rb",
-        "(?[[a]&![b]])",
-        "(?C'arg')",
-        "(*SKIP:tag)",
-      );
-    } else {
-      fragments.push(
-        "(?P<name>a)(?P=name)",
-        "(?x:a #c\nb)",
-        "(?#note)",
-        "(?>a)",
-        "(?(1)a|b)",
-      );
-    }
+    const sources = [...reproducedSources[grammar.path.split("/")[0]]];
+    if (grammar.name === "ecmaregex") sources.push(String.raw`\8`, "{x}");
+    if (grammar.name === "ecmaregex_v")
+      sources.push("[a&&b]", "[a--b]", String.raw`[\q{ab|cd}]`);
+    if (grammar.name === "posix_bre")
+      sources.push(String.raw`\(a\)\1`, String.raw`a\{1,3\}`);
+    if (grammar.name === "posix_ere") sources.push("(a|b)+?");
     let checked = 0;
     let compared = 0;
-    for (const history of generateHistories(
-      fragments,
-      fuzzInsertions,
-      (parts) => parts.join(""),
-    )) {
+    for (const history of generateHistories(sources, fuzzInsertions)) {
       const label = `${grammar.name}: ${history.context}`;
       const fresh = parse(grammar, history.source);
       const incremental = parse(grammar, history.initial, history.edits);
@@ -288,7 +232,10 @@ test("regex: fixed-seed generated histories converge", (context) => {
       }
       checked += 1;
     }
-    assert.equal(checked, fuzzIterations * editsPerHistory);
+    assert.equal(
+      checked,
+      sources.length * historiesPerSource * editsPerHistory,
+    );
     assert.ok(compared > 0);
     context.diagnostic(
       `${grammar.name}: checked ${checked} generated edit states, compared ${compared} valid CSTs`,

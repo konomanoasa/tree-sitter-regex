@@ -64,6 +64,7 @@ function formatEdit({ byte, deleteBytes, insert }) {
   return `${byte} ${deleteBytes} ${insert}`;
 }
 
+// The CLI exposes only the final CST, so edit histories replay short prefixes.
 function runParse(paths, language, edits) {
   const grammar = grammars.find(({ name }) => name === language);
   assert.ok(grammar, language);
