@@ -8,6 +8,12 @@
 ECMAScript 2026 regular expressions, PCRE2 10.49, POSIX.1-2024 BRE/ERE,
 and Python 3.14 regular expressions.
 
+## Installation
+
+```sh
+npm install @konomanoasa/tree-sitter-regex
+```
+
 ## Grammars
 
 | Grammar     | Language   |
@@ -25,12 +31,6 @@ and Python 3.14 regular expressions.
 | ECMAScript `u`      | `ecmaregex_u`     |
 | ECMAScript `v`      | `ecmaregex_v`     |
 | Python `re.VERBOSE` | `pyregex_verbose` |
-
-## Installation
-
-```sh
-npm install @konomanoasa/tree-sitter-regex
-```
 
 ## Development
 

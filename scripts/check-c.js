@@ -231,7 +231,6 @@ function checkAllocatorSymbols(clang, variant, directory) {
   const object = join(directory, `scanner-reuse-${variant.name}.o`);
   run(clang, [
     "-std=c17",
-    ...warningArguments,
     "-I",
     variant.includeDirectory,
     "-DTREE_SITTER_REUSE_ALLOCATOR",
@@ -241,7 +240,9 @@ function checkAllocatorSymbols(clang, variant, directory) {
     object,
   ]);
   const symbols = new Set(
-    run("nm", ["-u", object], { stdio: "pipe" })
+    run(process.platform === "win32" ? "llvm-nm" : "nm", ["-u", object], {
+      stdio: "pipe",
+    })
       .stdout.split("\n")
       .map((line) => line.trim().split(/ +/).at(-1)?.replace(/^_/, "")),
   );
@@ -256,9 +257,11 @@ function main(arguments_) {
   if (
     arguments_.length > 1 ||
     (arguments_.length === 1 &&
-      !["--write", "--sanitize"].includes(arguments_[0]))
+      !["--write", "--test", "--sanitize"].includes(arguments_[0]))
   ) {
-    throw new Error("Usage: node scripts/check-c.js [--write | --sanitize]");
+    throw new Error(
+      "Usage: node scripts/check-c.js [--write | --test | --sanitize]",
+    );
   }
   const sources = [
     ...new Set([
@@ -267,8 +270,24 @@ function main(arguments_) {
       scannerContract,
     ]),
   ];
-  const { clang, clangd, clangFormat } = llvmCommands();
-  if (new Set([clang, clangd, clangFormat].map(versionMajor)).size !== 1)
+  const testing = ["--test", "--sanitize"].includes(arguments_[0]);
+  const { clang, clangd, clangFormat } = testing
+    ? {
+        clang:
+          process.platform === "darwin"
+            ? "/opt/homebrew/opt/llvm/bin/clang"
+            : findExecutable(
+                process.env.CC ?? "clang",
+                (process.env.PATH ?? "").split(delimiter),
+              ),
+        clangd: "",
+        clangFormat: "",
+      }
+    : llvmCommands();
+  if (
+    !testing &&
+    new Set([clang, clangd, clangFormat].map(versionMajor)).size !== 1
+  )
     throw new Error(
       "clang, clangd, and clang-format must use the same LLVM major version.",
     );
@@ -288,14 +307,16 @@ function main(arguments_) {
       : [];
   const directory = mkdtempSync(join(tmpdir(), `${packageName}-scanner-`));
   try {
-    checkDiagnostics(clang, clangd, directory);
-    run(clangFormat, ["--dry-run", "--Werror", ...sources]);
+    if (!testing) {
+      checkDiagnostics(clang, clangd, directory);
+      run(clangFormat, ["--dry-run", "--Werror", ...sources]);
+      return;
+    }
     for (const standard of ["c99", "c17"]) {
       for (const variant of variants) {
         const compilerArguments = [
           ...sanitizerArguments,
           `-std=${standard}`,
-          ...warningArguments,
           "-I",
           variant.includeDirectory,
         ];

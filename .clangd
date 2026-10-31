@@ -63,3 +63,11 @@ CompileFlags:
   Add:
     - -DREGEX_SCANNER_SOURCE="../python/pyregex/src/scanner.c"
     - -I../python/pyregex/src
+
+---
+If:
+  PathMatch: bindings/python/.*\.c
+CompileFlags:
+  CompilationDatabase: None
+  Add:
+    - -I../../ecmascript/ecmaregex/src

@@ -1,0 +1,84 @@
+[project]
+name = "konomanoasa-tree-sitter-regex"
+version = "0.11.0"
+description = "Tree-sitter grammars for ECMAScript regex, PCRE2, POSIX BRE/ERE, and Python re."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE", "LICENSE-UNICODE"]
+
+[project.urls]
+Repository = "https://github.com/konomanoasa/tree-sitter-regex"
+
+[dependency-groups]
+dev = [
+    "poethepoet==0.49.0",
+    "ruff==0.17.3",
+    "setuptools==84.2.1",
+    "tree-sitter==0.26.0",
+    "twine==7.0.0",
+    "ty==0.0.95",
+]
+
+[build-system]
+requires = ["setuptools==84.2.1"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+include-package-data = false
+packages = [
+    "tree_sitter_regex",
+    "tree_sitter_regex.queries_ecmaregex",
+    "tree_sitter_regex.queries_ecmaregex_u",
+    "tree_sitter_regex.queries_ecmaregex_v",
+    "tree_sitter_regex.queries_pcre2",
+    "tree_sitter_regex.queries_posix_bre",
+    "tree_sitter_regex.queries_posix_ere",
+    "tree_sitter_regex.queries_pyregex",
+    "tree_sitter_regex.queries_pyregex_verbose",
+]
+
+[tool.setuptools.package-dir]
+tree_sitter_regex = "bindings/python"
+"tree_sitter_regex.queries_ecmaregex" = "ecmascript/ecmaregex/queries"
+"tree_sitter_regex.queries_ecmaregex_u" = "ecmascript/ecmaregex_u/queries"
+"tree_sitter_regex.queries_ecmaregex_v" = "ecmascript/ecmaregex_v/queries"
+"tree_sitter_regex.queries_pcre2" = "pcre2/queries"
+"tree_sitter_regex.queries_posix_bre" = "posix/bre/queries"
+"tree_sitter_regex.queries_posix_ere" = "posix/ere/queries"
+"tree_sitter_regex.queries_pyregex" = "python/pyregex/queries"
+"tree_sitter_regex.queries_pyregex_verbose" = "python/pyregex_verbose/queries"
+
+[tool.setuptools.package-data]
+tree_sitter_regex = ["*.pyi", "py.typed"]
+"tree_sitter_regex.queries_ecmaregex" = ["*.scm"]
+"tree_sitter_regex.queries_ecmaregex_u" = ["*.scm"]
+"tree_sitter_regex.queries_ecmaregex_v" = ["*.scm"]
+"tree_sitter_regex.queries_pcre2" = ["*.scm"]
+"tree_sitter_regex.queries_posix_bre" = ["*.scm"]
+"tree_sitter_regex.queries_posix_ere" = ["*.scm"]
+"tree_sitter_regex.queries_pyregex" = ["*.scm"]
+"tree_sitter_regex.queries_pyregex_verbose" = ["*.scm"]
+
+[tool.poe]
+executor.type = "simple"
+
+[tool.poe.tasks]
+build = "uv build --no-sources"
+check = [
+    { cmd = "ruff check setup.py bindings/python test/bindings.test.py" },
+    { cmd = "ty check setup.py bindings/python test/bindings.test.py" },
+    { cmd = "ruff format --check setup.py bindings/python test/bindings.test.py" },
+]
+format = "ruff format setup.py bindings/python test/bindings.test.py"
+test = "python test/bindings.test.py"
+
+[tool.ruff]
+indent-width = 4
+line-length = 80
+
+[tool.ruff.format]
+indent-style = "space"
+skip-magic-trailing-comma = true
+
+[tool.ruff.lint.isort]
+split-on-trailing-comma = false
