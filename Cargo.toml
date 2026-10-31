@@ -1,6 +1,6 @@
 [package]
 name = "konomanoasa-tree-sitter-regex"
-version = "0.12.0"
+version = "0.13.0"
 description = "Tree-sitter grammars for ECMAScript regex, PCRE2, POSIX BRE/ERE, and Python re."
 readme = "README.md"
 license = "MIT"
