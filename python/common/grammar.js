@@ -132,7 +132,6 @@ function modeRules(verbose) {
         modeNode($, "concatenation", verbose),
         $[rule("alternative")],
       ),
-    // Keep aliases intact when balancing resumes after cancellation.
     [rule("alternative")]: ($) =>
       seq("|", optional(modeNode($, "concatenation", verbose))),
     [rule("concatenation")]: ($) =>

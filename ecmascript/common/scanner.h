@@ -168,7 +168,6 @@ static bool expects_escaped_character(const bool *valid) {
     valid[NAMED_REFERENCE_START];
 }
 
-// Annex B escape classification needs captures from the whole pattern.
 static bool scan_pattern_start(Scanner *scanner, TSLexer *lexer) {
   *scanner = (Scanner){0};
   bool in_class = false;

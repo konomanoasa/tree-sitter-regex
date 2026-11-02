@@ -17,9 +17,6 @@ import { grammars, packageName, root } from "./tree-sitter.js";
 const enumerators = {};
 const tokenCount = "ERROR_SENTINEL + 1";
 
-// Included helpers may lack callers.
-const scannerDiagnosticArguments = ["-Wno-unused-function"];
-
 const commandTimeoutMs = 60_000;
 const diagnosticTimeoutMs = 180_000;
 const commandOutputLimitBytes = 64 * 1024 * 1024;
@@ -196,10 +193,11 @@ function checkDiagnostics(clang, clangd, directory) {
         "-I",
         variant.includeDirectory,
         ...warningArguments,
-        // Included helpers may lack callers.
-        ...(source === variant.source
-          ? scannerDiagnosticArguments
-          : ["-Wno-unused-function", ...variant.contractArguments]),
+        // clangd misreports functions in included scanner implementations as unused.
+        ...(source === variant.source && variant.headers.length > 0
+          ? ["-Wno-unused-function"]
+          : []),
+        ...(source === variant.source ? [] : variant.contractArguments),
         "-fsyntax-only",
         source,
       ],
@@ -273,13 +271,10 @@ function main(arguments_) {
   const testing = ["--test", "--sanitize"].includes(arguments_[0]);
   const { clang, clangd, clangFormat } = testing
     ? {
-        clang:
-          process.platform === "darwin"
-            ? "/opt/homebrew/opt/llvm/bin/clang"
-            : findExecutable(
-                process.env.CC ?? "clang",
-                (process.env.PATH ?? "").split(delimiter),
-              ),
+        clang: findExecutable(
+          process.env.CC ?? "cc",
+          (process.env.PATH ?? "").split(delimiter),
+        ),
         clangd: "",
         clangFormat: "",
       }

@@ -5,11 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include REGEX_SCANNER_SOURCE
-
-#ifdef PCRE2_SCANNER
-#define REGEX_SCANNER(suffix) tree_sitter_pcre2_external_scanner_##suffix
-#endif
+#include "tree_sitter/parser.h"
 
 #define COUNT(array) (sizeof(array) / sizeof((array)[0]))
 #define TOKEN_COUNT (ERROR_SENTINEL + 1)
@@ -87,6 +83,12 @@ static MockLexer make_lexer(const char *source, size_t length) {
     .mark = SIZE_MAX,
   };
 }
+
+#include REGEX_SCANNER_SOURCE
+
+#ifdef PCRE2_SCANNER
+#define REGEX_SCANNER(suffix) tree_sitter_pcre2_external_scanner_##suffix
+#endif
 
 static unsigned serialize_state(void *scanner, char *buffer) {
   char guarded[TREE_SITTER_SERIALIZATION_BUFFER_SIZE + 2];

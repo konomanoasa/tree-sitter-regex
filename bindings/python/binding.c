@@ -1,6 +1,6 @@
 #include <Python.h>
 
-#include "tree_sitter/parser.h"
+#include "../../ecmascript/ecmaregex/src/tree_sitter/parser.h"
 
 const TSLanguage *tree_sitter_ecmaregex(void);
 const TSLanguage *tree_sitter_ecmaregex_u(void);
