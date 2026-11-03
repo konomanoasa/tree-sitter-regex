@@ -7,7 +7,7 @@
 
 [Tree-sitter](https://tree-sitter.github.io/tree-sitter/) grammars for
 ECMAScript 2026 regular expressions, PCRE2 10.49, POSIX.1-2024 BRE/ERE,
-and Python 3.14 regular expressions.
+and Python 3.15 regular expressions.
 
 ## Installation
 
@@ -36,8 +36,7 @@ npm install @konomanoasa/tree-sitter-regex
 ## Development
 
 ```sh
-npm install
-npm run build
+npm ci
 npm test
 ```
 
@@ -49,8 +48,8 @@ npm test
 - [PCRE2 10.49 pattern syntax](https://raw.githubusercontent.com/PCRE2Project/pcre2/pcre2-10.49/doc/pcre2pattern.3)
 - [PCRE2 10.49 API options](https://raw.githubusercontent.com/PCRE2Project/pcre2/pcre2-10.49/doc/pcre2api.3)
 - [POSIX.1-2024 regular expressions](https://pubs.opengroup.org/onlinepubs/9799919799/basedefs/V1_chap09.html)
-- [Python 3.14 regular expression syntax](https://docs.python.org/3.14/library/re.html#regular-expression-syntax)
-- [Python 3.14 string and bytes literals](https://docs.python.org/3.14/reference/lexical_analysis.html#string-and-bytes-literals)
+- [Python 3.15 regular expression syntax](https://docs.python.org/3.15/library/re.html#regular-expression-syntax)
+- [Python 3.15 string and bytes literals](https://docs.python.org/3.15/reference/lexical_analysis.html#string-and-bytes-literals)
 
 ## Licenses
 
