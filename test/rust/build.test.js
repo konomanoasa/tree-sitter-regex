@@ -7,19 +7,20 @@ import {
   readFileSync,
   rmSync,
 } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
 import { copyFiles, packageName, root } from "../../scripts/tree-sitter.js";
 
 const archiveTimeoutMs = 120_000;
-const commandOutputBytes = 64 * 1024 * 1024;
+const commandMaxBufferBytes = 64 * 1024 * 1024;
 
 function run(command, arguments_, cwd = root) {
   const result = spawnSync(command, arguments_, {
     cwd,
     encoding: "utf8",
     timeout: archiveTimeoutMs,
-    maxBuffer: commandOutputBytes,
+    maxBuffer: commandMaxBufferBytes,
     killSignal: "SIGKILL",
   });
   assert.ifError(result.error);
@@ -30,6 +31,9 @@ function run(command, arguments_, cwd = root) {
 test("Rust metadata matches the grammar and license", {
   skip: Boolean(process.env.CI) && process.platform !== "darwin",
 }, () => {
+  const { metadata } = JSON.parse(
+    readFileSync(join(root, "tree-sitter.json"), "utf8"),
+  );
   const { packages } = JSON.parse(
     run("cargo", [
       "metadata",
@@ -40,24 +44,16 @@ test("Rust metadata matches the grammar and license", {
       "1",
     ]),
   );
-  const pkg = packages.find(
-    (item) => item.name === `konomanoasa-${packageName}`,
-  );
-  assert.ok(pkg);
-  const { metadata } = JSON.parse(
-    readFileSync(join(root, "tree-sitter.json"), "utf8"),
-  );
-  for (const key of ["version", "description", "license"])
-    assert.equal(pkg[key], metadata[key]);
-  assert.equal(pkg.repository, metadata.links.repository);
+  const [crate] = packages;
+  assert.equal(packages.length, 1);
+  assert.equal(crate.name, `konomanoasa-${packageName}`);
+  for (const key of ["version", "license", "description"])
+    assert.equal(crate[key], metadata[key]);
+  assert.equal(crate.repository, metadata.links.repository);
 });
 
 test("npm and Cargo archives contain buildable bindings for every language", () => {
-  const cache = join(root, "node_modules", ".cache");
-  mkdirSync(cache, { recursive: true });
-  const directory = mkdtempSync(
-    join(cache, `${packageName}-rust-distribution-`),
-  );
+  const directory = mkdtempSync(join(tmpdir(), "rust-dist-"));
   try {
     const npm = process.env.npm_execpath;
     assert.ok(npm, "Run Rust build checks through npm exec.");
