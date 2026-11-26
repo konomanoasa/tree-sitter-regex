@@ -14395,7 +14395,7 @@ TS_PUBLIC const TSLanguage *tree_sitter_pyregex_verbose(void) {
     .metadata = {
       .major_version = 0,
       .minor_version = 14,
-      .patch_version = 1,
+      .patch_version = 2,
     },
   };
   return &language;
