@@ -74,7 +74,7 @@
     }
   ],
   "metadata": {
-    "version": "0.14.2",
+    "version": "0.14.3",
     "license": "MIT",
     "description": "Tree-sitter grammars for ECMAScript regex, PCRE2, POSIX BRE/ERE, and Python re.",
     "links": {
